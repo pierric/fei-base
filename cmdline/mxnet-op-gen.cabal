@@ -1,0 +1,31 @@
+name:                mxnet-op-gen
+version:             0.1.0.0
+-- synopsis:
+-- description:
+homepage:            
+license:             BSD3
+license-file:        LICENSE
+author:              Jiasen Wu
+maintainer:          jiasenwu@hotmail.com
+copyright:           2018 Jiasen Wu
+category:            Machine Learning, AI
+build-type:          Simple
+extra-source-files:  README.md
+cabal-version:       >=1.10
+
+executable mxnet-op-gen
+  hs-source-dirs:      .
+  main-is:             Main.hs
+  build-depends:       base >= 4.7 && < 5,
+                       optparse-applicative >= 0.14 && < 0.15,
+                       haskell-src-exts >= 1.20,
+                       hslogger >= 1.2,
+                       text >= 1.2.0 && < 1.3,
+                       mtl,
+                       mxnet-c-apis
+  default-language:    Haskell2010
+  extra-libraries:     mxnet
+
+source-repository head
+  type:     git
+  location: https://github.com/pierric/mxnet-hs
