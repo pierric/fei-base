@@ -1,0 +1,44 @@
+name:                mxnet-c-apis
+version:             0.1.0.0
+-- synopsis:
+-- description:
+homepage:            
+license:             BSD3
+license-file:        LICENSE
+author:              Jiasen Wu
+maintainer:          jiasenwu@hotmail.com
+copyright:           2018 Jiasen Wu
+category:            Machine Learning, AI
+build-type:          Simple
+extra-source-files:  README.md
+cabal-version:       >=1.10
+
+library
+  hs-source-dirs:      .
+  build-depends:       base >= 4.7 && < 5,
+                       c2hs-extra == 0.1.0.1,
+                       tuple-ops == 0.0.0.3
+  default-language:    Haskell2010
+  Build-tools:         c2hs
+  default-extensions:  FlexibleContexts,
+                       GADTs,
+                       StandaloneDeriving,
+                       DeriveGeneric,
+                       GeneralizedNewtypeDeriving
+  exposed-modules:     MXNet.Base.Raw,
+                       MXNet.Base.Operator
+  other-modules:       MXNet.Base.Raw.Common,
+                       MXNet.Base.Raw.NDArray,
+                       MXNet.Base.Raw.Symbol,
+                       MXNet.Base.Raw.Executor
+
+-- executable haskell-mxnet
+--   hs-source-dirs:      cmdline
+--   main-is:             Main.hs
+--   build-depends:       base >= 4.7 && < 5
+--   default-language:    Haskell2010
+--   extra-libraries:     mxnet
+
+source-repository head
+  type:     git
+  location: https://github.com/pierric/mxnet-hs

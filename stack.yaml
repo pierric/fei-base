@@ -1,0 +1,13 @@
+resolver: lts-12.9
+packages:
+- c-apis
+- cmdline
+extra-deps:
+- ../tuple-ops
+- c2hs-extra-0.1.0.1
+- ../type-combinators
+extra-include-dirs:
+- /home/jiasen/dschungel/incubator-mxnet/include
+- /home/jiasen/dschungel/incubator-mxnet/nnvm/include
+extra-lib-dirs:
+- /home/jiasen/dschungel/incubator-mxnet/lib
