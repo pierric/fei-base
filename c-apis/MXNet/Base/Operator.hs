@@ -5,6 +5,7 @@
 {-# LANGUAGE UndecidableInstances #-}
 {-# LANGUAGE PartialTypeSignatures #-}
 {-# LANGUAGE ConstraintKinds #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 module MXNet.Base.Operator where
 
 import GHC.OverloadedLabels
@@ -16,21 +17,22 @@ data Proxy (s :: Symbol) = Proxy
 instance a ~ b => IsLabel a (Proxy b) where
   fromLabel = Proxy
 
-data EnumType (e :: [Symbol]) = EnumType 
+data EnumType (e :: [Symbol]) where
+  EnumType :: (KnownSymbol v, HasEnum v e) => Proxy v -> EnumType e
 
-type family HasEnum (s :: Symbol) (l :: [Symbol]) (e :: ErrorMessage) :: Constraint where
-  HasEnum s (s ': _) _ = ()
-  HasEnum s (z ': n) e = HasEnum s n e
-  HasEnum s '[] e = TypeError e
+instance Show (EnumType e) where
+  show (EnumType v) = symbolVal v
+
+type family HasEnum v e :: Constraint where
+  HasEnum v e = IfThenElse (HasElement v e) (() :: Constraint) (TypeError (Text "\"" :<>: Text v :<>: Text "\" is not a valid value for the enum: [" :<>: FormatEnum e :<>: Text "]"))
 
 type family FormatEnum (l :: [Symbol]) :: ErrorMessage where
   FormatEnum (s ': m ': n) = Text s :<>: Text ", " :<>: FormatEnum (m ': n)
   FormatEnum (s ': '[]) = Text s
   FormatEnum ('[]) = Text ""
 
-instance HasEnum v e (Text "\"" :<>: Text v :<>: Text "\" is not a valid value for the enum: [" :<>: FormatEnum e :<>: Text "]") 
-  => IsLabel v (EnumType e) where
-    fromLabel = EnumType
+instance (KnownSymbol v, HasEnum v e) => IsLabel v (EnumType e) where
+    fromLabel = EnumType (Proxy :: Proxy v)
   
 ----
 type family ParameterList (s :: Symbol) :: [(Symbol, Attr)]
@@ -63,33 +65,53 @@ type family FindKey (s :: Symbol) (l :: [(Symbol, k)]) (e :: ErrorMessage) :: k 
 data ArgOf s k v where
   (:=) :: (info ~ ResolveParameter s k, ParameterType info v) => Proxy k -> v -> ArgOf s k v
 
-data Arg (k :: Symbol) v = Arg (Proxy k) v
-
 data HMap (s :: Symbol) (kvs :: [*]) where
   Nil :: HMap s '[]
   Cons :: kv -> HMap s kvs -> HMap s (kv ': kvs)
 
-(.&) :: ArgOf s k v -> HMap s kvs -> HMap s (Arg k v ': kvs)
-(k := v) .& other = Cons (Arg k v) other
+(.&) :: ArgOf s k v -> HMap s kvs -> HMap s (ArgOf s k v ': kvs)
+kv .& other = Cons kv other
 
 infixr 8 .& 
 
 ----
+class DumpHMap a where
+  dump :: a -> [(String, String)]
+
+instance DumpHMap (HMap s '[]) where
+  dump = const []
+
+instance (DumpHMap (HMap s kvs), KnownSymbol k, Show v) => DumpHMap (HMap s (ArgOf s k v ': kvs)) where
+  dump (Cons (k := v) kvs) = (symbolVal k, show v) : dump kvs
+
+----
 type family Subset (s1 :: [Symbol]) (s2 :: [(Symbol, *)]) :: Constraint where
   Subset '[] _ = ()
-  Subset (a ': s1) s2 = (HasKey a s2 (Text "Argument '" :<>: Text a :<>: Text "' is required."), Subset s1 s2)
-
-type family HasKey (s :: Symbol) (l :: [(Symbol, *)]) (e :: ErrorMessage) :: Constraint where
-  HasKey s ('(s,_) ': _) _ = ()
-  HasKey s ('(z,_) ': n) e = HasKey s n e
-  HasKey s '[] e = TypeError e
+  Subset (a ': s1) s2 = ( IfThenElse (HasKey a s2) (() :: Constraint) (TypeError (Text "Argument '" :<>: Text a :<>: Text "' is required."))
+                        , Subset s1 s2)
 
 type family AsKVs (a :: [*]) :: [(Symbol, *)] where
-  AsKVs (Arg k v ': args) = '(k, v) ': AsKVs args
+  AsKVs (ArgOf s k v ': args) = '(k, v) ': AsKVs args
   AsKVs '[] = '[]
 
 type family Fullfilled (s :: Symbol) (args :: [*]) where
   Fullfilled s args = Subset (FilterRequired (ParameterList s)) (AsKVs args)
+
+
+----
+type family HasElement (s :: k) (l :: [k]) :: Bool where
+  HasElement s (s ': _) = True
+  HasElement s (z ': n) = HasElement s n
+  HasElement s '[] = False
+
+type family HasKey (s :: Symbol) (l :: [(Symbol, *)]) :: Bool where
+  HasKey s ('(s,_) ': _) = True
+  HasKey s ('(z,_) ': n) = HasKey s n
+  HasKey s '[] = False
+
+type family IfThenElse (b :: Bool) (t :: k) (f :: k) :: k where
+  IfThenElse True  t f = t
+  IfThenElse False t f = f
 
 -------------------------------------
 
@@ -112,7 +134,7 @@ args4 :: HMap "fn" _
 args4 = #a := 3 .& #c := #c1 .& Nil
 
 args5 :: HMap "fn" _
-args5 = #a := 3 .& #c := #c1 .& #d := Just #c1 .& Nil
+args5 = #a := 3 .& #c := #c1 .& #d := Just #c2 .& Nil
 
 fn :: Fullfilled "fn" args => HMap "fn" args -> Bool
 fn args = True
