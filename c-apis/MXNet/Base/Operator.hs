@@ -11,6 +11,7 @@ module MXNet.Base.Operator where
 import GHC.OverloadedLabels
 import GHC.TypeLits
 import GHC.Exts (Constraint)
+import Data.List (intersperse)
 
 data Proxy (s :: Symbol) = Proxy
 
@@ -19,9 +20,6 @@ instance a ~ b => IsLabel a (Proxy b) where
 
 data EnumType (e :: [Symbol]) where
   EnumType :: (KnownSymbol v, HasEnum v e) => Proxy v -> EnumType e
-
-instance Show (EnumType e) where
-  show (EnumType v) = symbolVal v
 
 type family HasEnum v e :: Constraint where
   HasEnum v e = IfThenElse (HasElement v e) (() :: Constraint) (TypeError (Text "\"" :<>: Text v :<>: Text "\" is not a valid value for the enum: [" :<>: FormatEnum e :<>: Text "]"))
@@ -75,14 +73,39 @@ kv .& other = Cons kv other
 infixr 8 .& 
 
 ----
+class Value a where
+  showValue :: a -> String
+
+instance Value (EnumType e) where
+  showValue (EnumType v) = symbolVal v
+
+instance Value Int where
+  showValue = show
+
+instance Value Bool where
+  showValue = show
+
+instance Value Float where
+  showValue = show
+
+instance Value Double where
+  showValue = show
+
+instance Value a => Value (Maybe a) where
+  showValue Nothing = "None"
+  showValue (Just a) = showValue a
+  
+instance Value a => Value [a] where
+  showValue as = "[" ++ concat (intersperse "," (map showValue as)) ++ "]"
+
 class DumpHMap a where
   dump :: a -> [(String, String)]
 
 instance DumpHMap (HMap s '[]) where
   dump = const []
 
-instance (DumpHMap (HMap s kvs), KnownSymbol k, Show v) => DumpHMap (HMap s (ArgOf s k v ': kvs)) where
-  dump (Cons (k := v) kvs) = (symbolVal k, show v) : dump kvs
+instance (DumpHMap (HMap s kvs), KnownSymbol k, Value v) => DumpHMap (HMap s (ArgOf s k v ': kvs)) where
+  dump (Cons (k := v) kvs) = (symbolVal k, showValue v) : dump kvs
 
 ----
 type family Subset (s1 :: [Symbol]) (s2 :: [(Symbol, *)]) :: Constraint where
