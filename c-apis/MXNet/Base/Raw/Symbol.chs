@@ -109,6 +109,11 @@ mxSymbolListAtomicSymbolCreators = do
     (cnt, ptr) <- checked $ mxSymbolListAtomicSymbolCreators_
     peekArray (fromIntegral cnt) ptr
 
+mxSymbolGetAtomicSymbolCreatorAt :: Int -> IO AtomicSymbolCreator
+mxSymbolGetAtomicSymbolCreatorAt idx = do
+    (cnt, ptr) <- checked $ mxSymbolListAtomicSymbolCreators_
+    peekElemOff ptr idx
+
 {#
 fun MXSymbolGetAtomicSymbolName as mxSymbolGetAtomicSymbolName_
     {
