@@ -26,7 +26,8 @@ library
                        DeriveGeneric,
                        GeneralizedNewtypeDeriving
   exposed-modules:     MXNet.Base.Raw,
-                       MXNet.Base.Operator
+                       MXNet.Base.Operator,
+                       MXNet.Base.HMap
   other-modules:       MXNet.Base.Raw.Common,
                        MXNet.Base.Raw.NDArray,
                        MXNet.Base.Raw.Symbol,

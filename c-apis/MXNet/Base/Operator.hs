@@ -11,9 +11,9 @@ module MXNet.Base.Operator where
 import GHC.OverloadedLabels
 import GHC.TypeLits
 import GHC.Exts (Constraint)
+import Data.Proxy
 import Data.List (intersperse)
-
-data Proxy (s :: Symbol) = Proxy
+import MXNet.Base.HMap
 
 instance a ~ b => IsLabel a (Proxy b) where
   fromLabel = Proxy
@@ -43,11 +43,6 @@ type family ParameterType (a :: Attr) (t :: *) :: Constraint where
   ParameterType (AttrReq a) t = a ~ t
   ParameterType (AttrOpt a) t = a ~ t
 
-type family FilterRequired (pl :: [(k, Attr)]) :: [k] where
-  FilterRequired '[] = '[]
-  FilterRequired ('(s, AttrReq t) ': pl) = s ': FilterRequired pl
-  FilterRequired (_ ': pl) = FilterRequired pl
-
 type family ResolveParameter (s :: Symbol) (k :: Symbol) :: Attr where
   ResolveParameter s k = FindKey k (ParameterList s) (Text "Parameter '" :<>: 
                               Text k :<>:
@@ -63,15 +58,16 @@ type family FindKey (s :: Symbol) (l :: [(Symbol, k)]) (e :: ErrorMessage) :: k 
 data ArgOf s k v where
   (:=) :: (info ~ ResolveParameter s k, ParameterType info v) => Proxy k -> v -> ArgOf s k v
 
-data HMap (s :: Symbol) (kvs :: [*]) where
-  Nil :: HMap s '[]
-  Cons :: kv -> HMap s kvs -> HMap s (kv ': kvs)
+type family MatchHeadArgOf s k v kvs where
+  MatchHeadArgOf s k v (ArgOf s k v ': kvs) = True
+  MatchHeadArgOf s k v (_ ': kvs) = False
 
-(.&) :: ArgOf s k v -> HMap s kvs -> HMap s (ArgOf s k v ': kvs)
-kv .& other = Cons kv other
+instance Pair (ArgOf s) where
+  key   (k := v) = k
+  value (k := v) = v
+  type MatchHead (ArgOf s) k v kvs = MatchHeadArgOf s k v kvs
 
-infixr 8 .& 
-
+type ArgsHMap s kvs = HMap (ArgOf s) kvs
 ----
 class Value a where
   showValue :: a -> String
@@ -98,39 +94,58 @@ instance Value a => Value (Maybe a) where
 instance Value a => Value [a] where
   showValue as = "[" ++ concat (intersperse "," (map showValue as)) ++ "]"
 
-class DumpHMap a where
+class Dump a where
   dump :: a -> [(String, String)]
 
-instance DumpHMap (HMap s '[]) where
+instance Dump (ArgsHMap s '[]) where
   dump = const []
 
-instance (DumpHMap (HMap s kvs), KnownSymbol k, Value v) => DumpHMap (HMap s (ArgOf s k v ': kvs)) where
+instance (Dump (ArgsHMap s kvs), KnownSymbol k, Value v) => Dump (ArgsHMap s (ArgOf s k v ': kvs)) where
   dump (Cons (k := v) kvs) = (symbolVal k, showValue v) : dump kvs
 
 ----
-type family Subset (s1 :: [Symbol]) (s2 :: [(Symbol, *)]) :: Constraint where
+type family Subset (s1 :: [(Symbol, *)]) (s2 :: [(Symbol, *)]) :: Constraint where
   Subset '[] _ = ()
-  Subset (a ': s1) s2 = ( IfThenElse (HasKey a s2) (() :: Constraint) (TypeError (Text "Argument '" :<>: Text a :<>: Text "' is required."))
-                        , Subset s1 s2)
+  Subset ('(a, t) ': s1) s2 = ( IfThenElse (HasElement '(a,t) s2) 
+                                  (() :: Constraint) 
+                                  (TypeError (Text "Argument '" :<>: Text a :<>: Text "' is required."))
+                              , Subset s1 s2)
+  Subset a b = TypeError (Text "xx")
 
 type family AsKVs (a :: [*]) :: [(Symbol, *)] where
   AsKVs (ArgOf s k v ': args) = '(k, v) ': AsKVs args
   AsKVs '[] = '[]
 
-type family Fullfilled (s :: Symbol) (args :: [*]) where
-  Fullfilled s args = Subset (FilterRequired (ParameterList s)) (AsKVs args)
+type family GenAccess s kvs (req :: [(Symbol, *)]) :: Constraint where
+  GenAccess s kvs '[] = ()
+  GenAccess s kvs ('(k, v) ': req) = (Access (MatchHeadArgOf s k v kvs) (ArgOf s) k v kvs, GenAccess s kvs req)
 
+type family GenQuery  s kvs (req :: [(Symbol, *)]) :: Constraint where
+  GenQuery  s kvs '[]  = ()
+  GenQuery  s kvs ('(k, v) ': req) = (Query  (InHMap (ArgOf s) k kvs)   (ArgOf s) k v kvs, GenQuery  s kvs req)
+
+
+type family FilterRequired (pl :: [(k, Attr)]) :: [(k, *)] where
+  FilterRequired '[] = '[]
+  FilterRequired ('(s, AttrReq t) ': pl) = '(s,t) ': FilterRequired pl
+  FilterRequired (_ ': pl) = FilterRequired pl
+
+
+type family AllArgs (pl :: [(k, Attr)]) :: [(k, *)] where
+  AllArgs '[] = '[]
+  AllArgs ('(s, AttrReq t) ': pl) = '(s,t) ': AllArgs pl
+  AllArgs ('(s, AttrOpt t) ': pl) = '(s,t) ': AllArgs pl
+
+type family Fullfilled (s :: Symbol) (args :: [*]) :: Constraint where
+  Fullfilled s args = ( Subset ( FilterRequired (ParameterList s)) (AsKVs args)
+                      , GenAccess s args (FilterRequired (ParameterList s))
+                      , GenQuery  s args (AllArgs (ParameterList s)))
 
 ----
 type family HasElement (s :: k) (l :: [k]) :: Bool where
   HasElement s (s ': _) = True
   HasElement s (z ': n) = HasElement s n
   HasElement s '[] = False
-
-type family HasKey (s :: Symbol) (l :: [(Symbol, *)]) :: Bool where
-  HasKey s ('(s,_) ': _) = True
-  HasKey s ('(z,_) ': n) = HasKey s n
-  HasKey s '[] = False
 
 type family IfThenElse (b :: Bool) (t :: k) (f :: k) :: k where
   IfThenElse True  t f = t
@@ -144,20 +159,20 @@ type instance ParameterList "fn" = [
   '("c", AttrReq (EnumType '["c1","c2"])),
   '("d", AttrOpt (Maybe (EnumType '["c1","c2"])))
   ]
-args1 :: HMap "fn" _
+args1 :: ArgsHMap "fn" _
 args1 = Nil
 
-args2 :: HMap "fn" _
+args2 :: ArgsHMap "fn" _
 args2 = #a := 3 .& Nil
 
-args3 :: HMap "fn" _
+args3 :: ArgsHMap "fn" _
 args3 = #a := 3 .& #b := "Hello" .& Nil
 
-args4 :: HMap "fn" _
+args4 :: ArgsHMap "fn" _
 args4 = #a := 3 .& #c := #c1 .& Nil
 
-args5 :: HMap "fn" _
+args5 :: ArgsHMap "fn" _
 args5 = #a := 3 .& #c := #c1 .& #d := Just #c2 .& Nil
 
-fn :: Fullfilled "fn" args => HMap "fn" args -> Bool
-fn args = True
+fn :: Fullfilled "fn" args => ArgsHMap "fn" args -> _
+fn args = args ! #a
