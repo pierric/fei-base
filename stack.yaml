@@ -1,7 +1,8 @@
-resolver: lts-12.9
+resolver: lts-12.16
 packages:
 - c-apis
 - cmdline
+- operators
 extra-deps:
 - ../tuple-ops
 - c2hs-extra-0.1.0.1

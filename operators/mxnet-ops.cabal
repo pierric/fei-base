@@ -1,4 +1,4 @@
-name:                mxnet-op-gen
+name:                mxnet-ops
 version:             0.1.0.0
 -- synopsis:
 -- description:
@@ -10,24 +10,21 @@ maintainer:          jiasenwu@hotmail.com
 copyright:           2018 Jiasen Wu
 category:            Machine Learning, AI
 build-type:          Simple
-extra-source-files:  README.md
 cabal-version:       >=1.10
 
-executable mxnet-op-gen
+library
   hs-source-dirs:      .
-  main-is:             Main.hs
   build-depends:       base >= 4.7 && < 5,
-                       optparse-applicative >= 0.14 && < 0.15,
-                       haskell-src-exts >= 1.20.3,
-                       hslogger >= 1.2,
-                       text >= 1.2.0 && < 1.3,
-                       mtl,
-                       filepath >= 1.4 && < 1.5,
-                       directory >= 1.3 && < 1.4,
                        mxnet-c-apis
   default-language:    Haskell2010
-  default-extensions:  FlexibleContexts
   extra-libraries:     mxnet
+  default-extensions:  ExplicitForAll,
+                       DataKinds,
+                       TypeFamilies,
+                       OverloadedLabels,
+                       TupleSections
+  exposed-modules:     MXNet.Base.Symbol
+  other-modules:       
 
 source-repository head
   type:     git
