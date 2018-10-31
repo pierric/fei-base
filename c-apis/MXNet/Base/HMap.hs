@@ -10,6 +10,7 @@ module MXNet.Base.HMap where
 import GHC.TypeLits
 import Data.Proxy
 import Data.Typeable
+import Data.Maybe
 
 class Pair (p :: Symbol -> * -> *) where
     key   :: p k v -> Proxy k
@@ -52,3 +53,8 @@ instance Query False p k v kvs where
 
 (!?) :: forall p k v kvs. Query (InHMap p k kvs) p k v kvs => HMap p kvs -> Proxy k -> Maybe v
 (!?) = query' (Proxy :: Proxy (InHMap p k kvs))
+
+-- note this definition 'isJust (hmap !? key)' wouldn't work, because the result type cannot
+-- be inferenced.
+hasKey :: forall p (k :: Symbol) kvs. Typeable (InHMap p k kvs) => HMap p kvs -> Proxy k -> Bool
+hasKey hmap key = typeRep (Proxy :: Proxy (InHMap p k kvs)) == typeRep (Proxy :: Proxy True)

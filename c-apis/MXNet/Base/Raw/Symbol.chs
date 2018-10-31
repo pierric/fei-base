@@ -46,6 +46,9 @@ withSymbolHandleArray array io = do
     mapM_ (touchForeignPtr . unSymbolHandle) array
     return r
 
+fromOpHandle :: OpHandle -> AtomicSymbolCreator
+fromOpHandle (OpHandle ptr) = AtomicSymbolCreator (C2HSImp.castPtr ptr)
+
 -- MXImperativeInvoke is hacky.
 -- num-outputs 
 --   0: create new NDArrayHandler in the array-of-NDArrayHandle
@@ -398,19 +401,21 @@ fun MXSymbolCompose as mxSymbolCompose_
         `SymbolHandle',
         `String',
         `MX_UINT',
-        withStringArray* `[String]',
+        id `Ptr (Ptr CChar)',
         withSymbolHandleArray* `[SymbolHandle]'
     } -> `CInt'
 #}
 
 mxSymbolCompose :: SymbolHandle 
                 -> String 
-                -> [String] 
+                -> Maybe [String] 
                 -> [SymbolHandle] 
                 -> IO ()
-mxSymbolCompose symbol name keys args = do
-    let len = fromIntegral $ length keys
-    checked $ mxSymbolCompose_ symbol name len keys args
+mxSymbolCompose symbol name maybekeys args = do
+    let len = fromIntegral $ length args
+    case maybekeys of 
+      Nothing -> checked $ mxSymbolCompose_ symbol name len C2HSImp.nullPtr args
+      Just keys -> withStringArray keys $ \pkeys -> checked $ mxSymbolCompose_ symbol name len pkeys args
  
 {#
 fun MXSymbolInferShape as mxSymbolInferShape_ 

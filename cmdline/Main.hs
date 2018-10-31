@@ -6,10 +6,13 @@ import Language.Haskell.Exts
 import qualified Data.Text as T
 import System.Log.Logger
 import Control.Monad
+import Control.Monad.Writer
 import Data.Either
 import Data.Char (toLower, isUpper, isSpace, isAlphaNum)
 import Text.Printf (printf)
 import Text.ParserCombinators.ReadP
+import System.FilePath
+import System.Directory
 
 import MXNet.Base.Raw
 
@@ -20,19 +23,25 @@ data Arguments = Arguments {
 }
 
 args_spec = Arguments 
-         <$> strOption (long "output" <> short 'o' <> metavar "OUTPUT-DIR")
+         <$> strOption (long "output" <> short 'o' <> value "operators" <> metavar "OUTPUT-DIR")
 
 main = do 
     args <- execParser opts
+    let base = output_dir args </> "MXNet" </> "Base"
+    createDirectoryIfMissing True base
 
     ops  <- mxSymbolListAtomicSymbolCreators
     funs <- concat <$> mapM genSymOp ops
 
-    -- putStrLn $ prettyPrint (mod funs)
-    prettyPrint (mod funs) `seq` return ()
+    writeFile (base </> "Symbol.hs") $ prettyPrint (mod funs)
+    -- prettyPrint (mod funs) `seq` return ()
   where
     opts = info (args_spec <**> helper) (fullDesc <> progDesc "Generate MXNet operators")
-    mod = Module () (Just $ ModuleHead () (ModuleName () "MXNet.Base.Symbol") Nothing Nothing) [] []
+    mod = Module () (Just $ ModuleHead () (ModuleName () "MXNet.Base.Symbol") Nothing Nothing) [] 
+            [ simpleImport "MXNet.Base.Raw"
+            , simpleImport "MXNet.Base.Operator"
+            , simpleImport "MXNet.Base.HMap"
+            , simpleImportVars "Data.Maybe" ["catMaybes"]]
 
 genSymOp :: AtomicSymbolCreator -> IO [Decl ()]
 genSymOp sc = do
@@ -40,94 +49,136 @@ genSymOp sc = do
     if symname `elem` ["_Native", "_NDArray"] then
         return []
     else do
-        symname_ <- normalizeName symname
-        let (errs, args) = partitionEithers $ zipWith resolveHaskellType argname argtype
-        forM errs $ \(name, msg) -> 
-            errorM _module_ (printf "Function: %s (%s, %s), %s" symname_ (show $ zip argname argtype) key_var_num_args msg)
+        let symname_ = normalizeName symname
+            (errs, scalarTypes, symbolTypes, arrayTypes) = execWriter $ zipWithM_ resolveHaskellType argname argtype
+        
+        if not (null errs) then do
+            forM errs $ \(name, msg) -> 
+                errorM _module_ (printf "Function: %s %s" symname_ msg)
+            return []
+        else if (length arrayTypes >= 2) then do
+            errorM _module_ (printf "Function: %s has more than Symbol[] argument." symname_)
+            return []
+        else if (not (null symbolTypes) && not (null arrayTypes)) then do
+            errorM _module_ (printf "Function: %s is varadic, but it also has Symbol argument." symname_)
+            return []
+        else if (not (null arrayTypes) && null key_var_num_args) then do
+            errorM _module_ (printf "Function: %s is varadic, but the variable name for num_args is not specified." symname_)
+            return []
+        else do
+            let paramList = map (\(name, typ1, typ2) -> tyPromotedTuple [tyPromotedStr name, tyApp typ1 typ2]) (scalarTypes ++ symbolTypes ++ arrayTypes) 
+                paramListInst = TypeInsDecl () 
+                                    (tyApp (tyCon $ unQual $ name "ParameterList") (tyPromotedStr symname_))
+                                    (tyPromotedList paramList)
+                cxfullfill = appA (name "Fullfilled") [tyPromotedStr symname_, tyVarIdent "args"]
 
-        let paramList = map (\(name, typ) -> tyPromotedTuple [tyPromotedStr name, typ]) args 
-            paramListInst = TypeInsDecl () 
-                                (tyApp (tyCon $ unQual $ name "ParameterList") (tyPromotedStr symname_))
-                                (tyPromotedList paramList)
-            cxfullfill = appA (name "Fullfilled") [tyPromotedStr symname_, tyVarIdent "args"]
+                typ = tyForall [unkindedVar (name "args")]
+                        (cxSingle cxfullfill)
+                        (tyFun 
+                          (tyCon $ unQual $ name "String")
+                          (tyFun 
+                            (tyApp (tyApp (tyCon $ unQual $ name "ArgsHMap") (tyPromotedStr symname_)) (tyVarIdent "args")) 
+                            (tyApp (tyCon $ unQual $ name "IO") (tyVarIdent "SymbolHandle"))))
+                sig = tySig [name symname_] typ
+    
+            let fun = sfun (name symname_) [name "name", name "args"] (UnGuardedRhs () body) Nothing
+                body =  letE ([
+                          patBind (pvar $ name "scalarArgs") (function "catMaybes" 
+                            `app` listE [
+                                infixApp (infixApp (tupleSection [Just $ strE argkey, Nothing]) (op $ sym ".") (function "showValue")) (op $ sym "<$>") $ 
+                                ExpTypeSig () (infixApp (var $ name "args") (op $ sym "!?") (OverloadedLabel () argkey)) (tyApp (tyCon $ unQual $ name "Maybe") typ) | (argkey, _, typ) <- scalarTypes])
+                        , patBind (pTuple [pvar $ name "scalarkeys", pvar $ name "scalarvals"]) (app (function "unzip") $ var $ name "scalarArgs")
+                        , patBind (pvar $ name "symbolArgs") (function "catMaybes" 
+                            `app` listE [
+                                infixApp (tupleSection [Just $ strE argkey, Nothing]) (op $ sym "<$>") $ 
+                                infixApp (var $ name "args") (op $ sym "!?") (OverloadedLabel () argkey) | (argkey, _, _) <- symbolTypes])
+                        , patBind (pTuple [pvar $ name "symbolkeys", pvar $ name "symbolvals"]) (app (function "unzip") $ var $ name "symbolArgs")]
+                        ++ 
+                        case arrayTypes of
+                          [(argkey,_,_)] -> [patBind (pvar $ name "array") $ function "fromMaybe" `app` eList `app` infixApp (var $ name "args") (op $ sym "!?") (OverloadedLabel () argkey)]
+                          _ -> [])
+                        (doE $ 
+                            [ genStmt (pvar $ name "op") $ function "nnGetOpHandle"`app` strE symname ] ++
+                            ( if null arrayTypes then
+                                  [ genStmt (pvar $ name "sym") $ function "mxSymbolCreateAtomicSymbol" 
+                                      `app` (function "fromOpHandle" `app` (var $ name "op"))
+                                      `app` (var $ name "scalarkeys")
+                                      `app` (var $ name "scalarvals")
+                                  , qualStmt $ function "mxSymbolCompose"
+                                      `app` (var $ name "sym")
+                                      `app` (var $ name "name")
+                                      `app` ((con $ unQual $ name "Just") `app` (var $ name "symbolkeys"))
+                                      `app` (var $ name "symbolvals") ]
+                              else 
+                                  [ genStmt (pvar $ name "sym") $ 
+                                      If () (function "hasKey" `app` (var $ name "scalarArgs") `app` (OverloadedLabel () key_var_num_args))
+                                          (function "mxSymbolCreateAtomicSymbol" 
+                                              `app` (function "fromOpHandle" `app` (var $ name "op"))
+                                              `app` (var $ name "scalarkeys")
+                                              `app` (var $ name "scalarvals"))
+                                          (function "mxSymbolCreateAtomicSymbol" 
+                                              `app` (function "fromOpHandle" `app` (var $ name "op"))
+                                              `app` (infixApp (strE key_var_num_args) (QConOp () $ Special () $ Cons ()) (var $ name "scalarkeys"))
+                                              `app` (infixApp (function "length" `app` (var $ name "array"))  (QConOp () $ Special () $ Cons ()) (var $ name "scalarvals")))
+                                  , qualStmt $ function "mxSymbolCompose"
+                                      `app` (var $ name "sym")
+                                      `app` (var $ name "name")
+                                      `app` (con $ unQual $ name "Nothing")
+                                      `app` (var $ name "symbolvals")] ) ++
+                            [ qualStmt $ function "return" `app` (var $ name "sym") ])
+            return [paramListInst, sig, fun]
 
-            typ = tyForall [unkindedVar (name "args")]
-                    (cxSingle cxfullfill)
-                    (tyFun 
-                      (tyCon $ unQual $ name "String")
-                      (tyFun 
-                        (tyApp (tyApp (tyCon $ unQual $ name "HMap") (tyPromotedStr symname_)) (tyVarIdent "args")) 
-                        (tyApp (tyCon $ unQual $ name "IO") (tyVarIdent "SymbolHandle"))))
-            sig = tySig [name symname_] typ
-
-        let dumps = function "dumps"
-            unzip = function "unzip"
-            keys = name "keys"
-            vals = name "vals"
-            fun = sfun (name symname_) [name "name", name "args"] (UnGuardedRhs () body) Nothing
-            body =  letE [
-                      patBind (pTuple [pvar keys, pvar vals]) (app unzip $ app dumps (var $ name "args"))
-                    ] (doE [
-                      genStmt (pvar $ name "op") $ function "NNGetOpHandle"
-                        `app` strE symname
-                    , genStmt (pvar $ name "sym") $ function "mxSymbolCreateAtomicSymbol" 
-                        `app` (var $ name "op") 
-                        `app` (var $ name "keys")
-                        `app` (var $ name "vals")
-                    , qualStmt $ function "mxSymbolCompose"
-                        `app` (var $ name "sym")
-                        `app` (var $ name "name")
-                        `app` eList
-                    , qualStmt $ function "return" `app` (var $ name "sym")
-                    ])
-        return [paramListInst, sig, fun]
-
-normalizeName :: String -> IO String
+normalizeName :: String -> String
 normalizeName name@(c:cs) 
-    | isUpper c = return $ toLower c:cs
-    | otherwise = return $ name
+    | isUpper c = '_' : name
+    | name == "where" = "_where"
+    | otherwise = name
 
 data ParamDesc = ParamDescItem String | ParamDescList Bool [String] deriving (Eq, Show)
 
-resolveHaskellType :: String -> String -> Either (String, String) (String, Type ())
+type ResolvedType = (String, Type (), Type ())
+resolveHaskellType :: String -> String -> Writer ([(String, String)], [ResolvedType], [ResolvedType], [ResolvedType]) ()
 resolveHaskellType symname desc = do
     let fields = runP desc
-        optional = if ParamDescItem "optional" `elem` fields then True else False
-        makeArgData = tyApp $ tyCon $ unQual $ name $ if optional then "AttrOpt" else "AttrReq"
-        succ hstyp = Right (symname, hstyp)
-        fail msg   = Left (symname, msg)    
+        optional = ParamDescItem "optional" `elem` fields
+        symname_ = normalizeName symname
+        attr = tyCon $ unQual $ name $ if optional then "AttrOpt" else "AttrReq"
+        scalar hstyp = tell ([], [(symname_, attr, hstyp)], [], [])
+        symbol hstyp = tell ([], [], [(symname_, attr, hstyp)], [])
+        array  hstyp = tell ([], [], [], [(symname_, attr, hstyp)])
+        fail   msg   = tell ([(symname, msg)], [], [], [])
     case head fields of 
-        ParamDescItem "Shape(tuple)"        -> succ $ makeArgData $ tyList $ tyCon $ unQual $ name "Int"
-        ParamDescItem "int"                 -> succ $ makeArgData $ tyCon $ unQual $ name "Int"
-        ParamDescItem "int (non-negative)"  -> succ $ makeArgData $ tyCon $ unQual $ name "Int"
-        ParamDescItem "long (non-negative)" -> succ $ makeArgData $ tyCon $ unQual $ name "Int"
-        ParamDescItem "boolean"             -> succ $ makeArgData $ tyCon $ unQual $ name "Bool"
-        ParamDescItem "float"               -> succ $ makeArgData $ tyCon $ unQual $ name "Float"
-        ParamDescItem "double"              -> succ $ makeArgData $ tyCon $ unQual $ name "Double"
-        ParamDescItem "float32"             -> succ $ makeArgData $ tyCon $ unQual $ name "Float"
+        ParamDescItem "Shape(tuple)"        -> scalar $ tyList $ tyCon $ unQual $ name "Int"
+        ParamDescItem "int"                 -> scalar $ tyCon $ unQual $ name "Int"
+        ParamDescItem "int (non-negative)"  -> scalar $ tyCon $ unQual $ name "Int"
+        ParamDescItem "long (non-negative)" -> scalar $ tyCon $ unQual $ name "Int"
+        ParamDescItem "boolean"             -> scalar $ tyCon $ unQual $ name "Bool"
+        ParamDescItem "float"               -> scalar $ tyCon $ unQual $ name "Float"
+        ParamDescItem "double"              -> scalar $ tyCon $ unQual $ name "Double"
+        ParamDescItem "float32"             -> scalar $ tyCon $ unQual $ name "Float"
         -- real_t (from mshadow) is by default float.
-        ParamDescItem "real_t"              -> succ $ makeArgData $ tyCon $ unQual $ name "Float"
-        ParamDescItem "string"              -> succ $ makeArgData $ tyCon $ unQual $ name "String"
-        ParamDescItem "int or None"         -> succ $ makeArgData $ tyApp (tyCon $ unQual $ name "Maybe") (tyCon $ unQual $ name "Int")
-        ParamDescItem "double or None"      -> succ $ makeArgData $ tyApp (tyCon $ unQual $ name "Maybe") (tyCon $ unQual $ name "Double")
-        ParamDescItem "tuple of <float>"    -> succ $ makeArgData $ tyList $ tyCon $ unQual $ name "Float"
-        ParamDescItem "tuple of <double>"   -> succ $ makeArgData $ tyList $ tyCon $ unQual $ name "Double"
+        ParamDescItem "real_t"              -> scalar $ tyCon $ unQual $ name "Float"
+        ParamDescItem "string"              -> scalar $ tyCon $ unQual $ name "String"
+        ParamDescItem "int or None"         -> scalar $ tyApp (tyCon $ unQual $ name "Maybe") (tyCon $ unQual $ name "Int")
+        ParamDescItem "double or None"      -> scalar $ tyApp (tyCon $ unQual $ name "Maybe") (tyCon $ unQual $ name "Double")
+        ParamDescItem "tuple of <float>"    -> scalar $ tyList $ tyCon $ unQual $ name "Float"
+        ParamDescItem "tuple of <double>"   -> scalar $ tyList $ tyCon $ unQual $ name "Double"
         ParamDescList hasnone vs -> do
             let vsprom = map tyPromotedStr vs
                 typ1 = tyApp (tyCon $ unQual $ name "EnumType") (tyPromotedList vsprom)
                 typ2 = tyApp (tyCon $ unQual $ name "Maybe") typ1
-            succ $ makeArgData $ if hasnone then typ2 else typ1
+            scalar $ if hasnone then typ2 else typ1
 
-        ParamDescItem "Symbol"              -> succ $ makeArgData $ tyCon $ unQual $ name "SymbolHandle"
-        ParamDescItem "NDArray"             -> succ $ makeArgData $ tyCon $ unQual $ name "NDArrayHandle"
-        ParamDescItem "NDArray-or-Symbol"   -> succ $ makeArgData $ tyCon $ unQual $ name "SymbolHandle"
+        ParamDescItem "Symbol"              -> symbol $ tyCon $ unQual $ name "SymbolHandle"
+        ParamDescItem "NDArray"             -> symbol $ tyCon $ unQual $ name "NDArrayHandle"
+        ParamDescItem "NDArray-or-Symbol"   -> symbol $ tyCon $ unQual $ name "SymbolHandle"
         -- operator can have only one argument of the type symbol or ndarray array
         -- and not having any other argument of symbol or ndarray
         -- besides the operator's info must definitely have a key_var_num_args, which
         -- indicates an (might be additional) argument which should be passed to mxSymbolCreateAtomicSymbol.
-        ParamDescItem "Symbol[]"            -> succ $ makeArgData $ tyList $ tyCon $ unQual $ name "SymbolHandle"
-        ParamDescItem "NDArray-or-Symbol[]" -> succ $ makeArgData $ tyList $ tyCon $ unQual $ name "SymbolHandle"
-        ParamDescItem "Symbol or Symbol[]"  -> succ $ makeArgData $ tyList $ tyCon $ unQual $ name "SymbolHandle"
+        ParamDescItem "Symbol[]"            -> array $ tyList $ tyCon $ unQual $ name "SymbolHandle"
+        ParamDescItem "NDArray-or-Symbol[]" -> array $ tyList $ tyCon $ unQual $ name "SymbolHandle"
+        ParamDescItem "Symbol or Symbol[]"  -> array $ tyList $ tyCon $ unQual $ name "SymbolHandle"
 
         t -> fail $ printf "Unknown type: arg %s(%s)." symname desc
   where
@@ -169,3 +220,29 @@ cxSingle = CxSingle ()
 cxTuple  = CxTuple ()
 
 appA = AppA ()
+
+tupleSection = TupleSection () Boxed
+
+con = Con ()
+
+simpleImport mod = ImportDecl {
+    importAnn = (),
+    importModule = ModuleName () mod,
+    importQualified = False,
+    importSrc = False,
+    importSafe = False,
+    importPkg = Nothing,
+    importAs = Nothing,
+    importSpecs = Nothing
+}
+
+simpleImportVars mod vars = ImportDecl {
+    importAnn = (),
+    importModule = ModuleName () mod,
+    importQualified = False,
+    importSrc = False,
+    importSafe = False,
+    importPkg = Nothing,
+    importAs = Nothing,
+    importSpecs = Just $ ImportSpecList () False [IVar () $ Ident () var | var <- vars]
+}
