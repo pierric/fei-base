@@ -41,7 +41,7 @@ main = do
             [ simpleImport "MXNet.Base.Raw"
             , simpleImport "MXNet.Base.Operator"
             , simpleImport "MXNet.Base.HMap"
-            , simpleImportVars "Data.Maybe" ["catMaybes"]]
+            , simpleImportVars "Data.Maybe" ["catMaybes", "fromMaybe"]]
 
 genSymOp :: AtomicSymbolCreator -> IO [Decl ()]
 genSymOp sc = do
@@ -91,11 +91,15 @@ genSymOp sc = do
                         , patBind (pvar $ name "symbolArgs") (function "catMaybes" 
                             `app` listE [
                                 infixApp (tupleSection [Just $ strE argkey, Nothing]) (op $ sym "<$>") $ 
-                                infixApp (var $ name "args") (op $ sym "!?") (OverloadedLabel () argkey) | (argkey, _, _) <- symbolTypes])
+                                ExpTypeSig () (infixApp (var $ name "args") (op $ sym "!?") (OverloadedLabel () argkey)) (tyApp (tyCon $ unQual $ name "Maybe") typ) | (argkey, _, typ) <- symbolTypes])
                         , patBind (pTuple [pvar $ name "symbolkeys", pvar $ name "symbolvals"]) (app (function "unzip") $ var $ name "symbolArgs")]
                         ++ 
                         case arrayTypes of
-                          [(argkey,_,_)] -> [patBind (pvar $ name "array") $ function "fromMaybe" `app` eList `app` infixApp (var $ name "args") (op $ sym "!?") (OverloadedLabel () argkey)]
+                          [(argkey,_,_)] -> [patBind (pvar $ name "array") $ function "fromMaybe" 
+                                                `app` eList 
+                                                `app` ExpTypeSig () 
+                                                        (infixApp (var $ name "args") (op $ sym "!?") (OverloadedLabel () argkey)) 
+                                                        (tyApp (tyCon $ unQual $ name "Maybe") (tyList $ tyCon $ unQual $ name "SymbolHandle"))]
                           _ -> [])
                         (doE $ 
                             [ genStmt (pvar $ name "op") $ function "nnGetOpHandle"`app` strE symname ] ++
@@ -111,7 +115,7 @@ genSymOp sc = do
                                       `app` (var $ name "symbolvals") ]
                               else 
                                   [ genStmt (pvar $ name "sym") $ 
-                                      If () (function "hasKey" `app` (var $ name "scalarArgs") `app` (OverloadedLabel () key_var_num_args))
+                                      If () (function "hasKey" `app` (var $ name "args") `app` (OverloadedLabel () key_var_num_args))
                                           (function "mxSymbolCreateAtomicSymbol" 
                                               `app` (function "fromOpHandle" `app` (var $ name "op"))
                                               `app` (var $ name "scalarkeys")
@@ -119,7 +123,7 @@ genSymOp sc = do
                                           (function "mxSymbolCreateAtomicSymbol" 
                                               `app` (function "fromOpHandle" `app` (var $ name "op"))
                                               `app` (infixApp (strE key_var_num_args) (QConOp () $ Special () $ Cons ()) (var $ name "scalarkeys"))
-                                              `app` (infixApp (function "length" `app` (var $ name "array"))  (QConOp () $ Special () $ Cons ()) (var $ name "scalarvals")))
+                                              `app` (infixApp (function "showValue" `app` (function "length" `app` (var $ name "array")))  (QConOp () $ Special () $ Cons ()) (var $ name "scalarvals")))
                                   , qualStmt $ function "mxSymbolCompose"
                                       `app` (var $ name "sym")
                                       `app` (var $ name "name")
@@ -170,7 +174,6 @@ resolveHaskellType symname desc = do
             scalar $ if hasnone then typ2 else typ1
 
         ParamDescItem "Symbol"              -> symbol $ tyCon $ unQual $ name "SymbolHandle"
-        ParamDescItem "NDArray"             -> symbol $ tyCon $ unQual $ name "NDArrayHandle"
         ParamDescItem "NDArray-or-Symbol"   -> symbol $ tyCon $ unQual $ name "SymbolHandle"
         -- operator can have only one argument of the type symbol or ndarray array
         -- and not having any other argument of symbol or ndarray
@@ -180,6 +183,7 @@ resolveHaskellType symname desc = do
         ParamDescItem "NDArray-or-Symbol[]" -> array $ tyList $ tyCon $ unQual $ name "SymbolHandle"
         ParamDescItem "Symbol or Symbol[]"  -> array $ tyList $ tyCon $ unQual $ name "SymbolHandle"
 
+        ParamDescItem "NDArray" -> fail $ printf "NDArrayHandle arg: %s" symname
         t -> fail $ printf "Unknown type: arg %s(%s)." symname desc
   where
     typedesc = do

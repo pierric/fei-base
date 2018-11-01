@@ -91,8 +91,21 @@ instance Value a => Value (Maybe a) where
   showValue Nothing = "None"
   showValue (Just a) = showValue a
   
-instance Value a => Value [a] where
-  showValue as = "[" ++ concat (intersperse "," (map showValue as)) ++ "]"
+instance ValueList (IsChar a) [a] => Value [a] where
+  showValue = showValueList (Proxy :: Proxy (IsChar a))
+
+class ValueList (str :: Bool) as where
+  showValueList :: Proxy str -> as -> String
+
+instance ValueList True String where
+  showValueList _ = id
+
+instance Value a => ValueList False [a] where
+  showValueList _ as = "[" ++ concat (intersperse "," (map showValue as)) ++ "]"
+
+type family IsChar a :: Bool where
+  IsChar Char = True
+  IsChar x = False
 
 class Dump a where
   dump :: a -> [(String, String)]

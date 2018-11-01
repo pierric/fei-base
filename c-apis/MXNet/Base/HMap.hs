@@ -5,12 +5,16 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE UndecidableInstances #-}
 {-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE TypeApplications #-}
 module MXNet.Base.HMap where
 
 import GHC.TypeLits
 import Data.Proxy
-import Data.Typeable
+import Data.Typeable (Typeable)
 import Data.Maybe
+import Data.Constraint (Dict(..))
+import Type.Reflection (someTypeRep)
+import Unsafe.Coerce (unsafeCoerce)
 
 class Pair (p :: Symbol -> * -> *) where
     key   :: p k v -> Proxy k
@@ -56,5 +60,9 @@ instance Query False p k v kvs where
 
 -- note this definition 'isJust (hmap !? key)' wouldn't work, because the result type cannot
 -- be inferenced.
-hasKey :: forall p (k :: Symbol) kvs. Typeable (InHMap p k kvs) => HMap p kvs -> Proxy k -> Bool
-hasKey hmap key = typeRep (Proxy :: Proxy (InHMap p k kvs)) == typeRep (Proxy :: Proxy True)
+hasKey :: forall p (k :: Symbol) kvs. KnownSymbol k => HMap p kvs -> Proxy k -> Bool
+hasKey hmap key = case axiomInHMapTypeable hmap key of
+                    Dict -> someTypeRep (Proxy :: Proxy (InHMap p k kvs)) == someTypeRep (Proxy :: Proxy True)
+
+axiomInHMapTypeable :: KnownSymbol k => HMap p kvs -> Proxy k -> Dict (Typeable (InHMap p k kvs))
+axiomInHMapTypeable _ _ = unsafeCoerce (Dict :: Dict ())
