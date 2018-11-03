@@ -61,6 +61,75 @@ fun MXGetLastError as mxGetLastError
     } -> `String' 
 #}
 
+{#
+pointer AtomicSymbolCreator newtype
+#}
+
+deriving instance Storable AtomicSymbolCreator
+
+fromOpHandle :: OpHandle -> AtomicSymbolCreator
+fromOpHandle (OpHandle ptr) = AtomicSymbolCreator (C2HSImp.castPtr ptr)
+
+{#
+fun MXSymbolListAtomicSymbolCreators as mxSymbolListAtomicSymbolCreators_
+    {
+        alloca- `MX_UINT' peek*,
+        alloca- `Ptr AtomicSymbolCreator' peek*
+    } -> `CInt'
+#}
+
+mxSymbolListAtomicSymbolCreators :: IO [AtomicSymbolCreator]
+mxSymbolListAtomicSymbolCreators = do
+    (cnt, ptr) <- checked $ mxSymbolListAtomicSymbolCreators_
+    peekArray (fromIntegral cnt) ptr
+
+mxSymbolGetAtomicSymbolCreatorAt :: Int -> IO AtomicSymbolCreator
+mxSymbolGetAtomicSymbolCreatorAt idx = do
+    (cnt, ptr) <- checked $ mxSymbolListAtomicSymbolCreators_
+    peekElemOff ptr idx
+
+{#
+fun MXSymbolGetAtomicSymbolName as mxSymbolGetAtomicSymbolName_
+    {
+        `AtomicSymbolCreator',
+        alloca- `String' peekString*
+    } -> `CInt'
+#}
+
+mxSymbolGetAtomicSymbolName :: AtomicSymbolCreator -> IO String
+mxSymbolGetAtomicSymbolName = checked . mxSymbolGetAtomicSymbolName_
+
+{#
+fun MXSymbolGetAtomicSymbolInfo as mxSymbolGetAtomicSymbolInfo_
+    {
+        `AtomicSymbolCreator',
+        alloca- `String' peekString*,
+        alloca- `String' peekString*,
+        alloca- `MX_UINT' peek*,
+        alloca- `Ptr (Ptr CChar)' peek*,
+        alloca- `Ptr (Ptr CChar)' peek*,
+        alloca- `Ptr (Ptr CChar)' peek*,
+        alloca- `String' peekString*,
+        alloca- `String' peekString*
+    } -> `CInt'
+#}
+
+mxSymbolGetAtomicSymbolInfo :: AtomicSymbolCreator
+                            -> IO (String, 
+                                   String, 
+                                   [String],
+                                   [String],
+                                   [String],
+                                   String,
+                                   String)
+mxSymbolGetAtomicSymbolInfo creator = do
+    (name, desc, argcnt, argname, argtype, argdesc, key_var_num_args, rettyp) <- checked $ mxSymbolGetAtomicSymbolInfo_ creator
+    let n = fromIntegral argcnt
+    argname <- peekStringArray n argname
+    argtype <- peekStringArray n argtype
+    argdesc <- peekStringArray n argdesc
+    return (name, desc, argname, argtype, argdesc, key_var_num_args, rettyp)
+
 ---------------------------------------------------
 type NN_UINT  = C2HSImp.CUInt
 

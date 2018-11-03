@@ -32,16 +32,21 @@ main = do
 
     ops  <- mxSymbolListAtomicSymbolCreators
     funs <- concat <$> mapM genSymOp ops
+    writeFile (base </> "Symbol.hs") $ prettyPrint (modSymbol funs)
 
-    writeFile (base </> "Symbol.hs") $ prettyPrint (mod funs)
-    -- prettyPrint (mod funs) `seq` return ()
+    
   where
     opts = info (args_spec <**> helper) (fullDesc <> progDesc "Generate MXNet operators")
-    mod = Module () (Just $ ModuleHead () (ModuleName () "MXNet.Base.Symbol") Nothing Nothing) [] 
-            [ simpleImport "MXNet.Base.Raw"
-            , simpleImport "MXNet.Base.Operator"
-            , simpleImport "MXNet.Base.HMap"
-            , simpleImportVars "Data.Maybe" ["catMaybes", "fromMaybe"]]
+    modSymbol = Module () (Just $ ModuleHead () (ModuleName () "MXNet.Base.Symbol") Nothing Nothing) [] 
+                [ simpleImport "MXNet.Base.Raw"
+                , simpleImport "MXNet.Base.Operator"
+                , simpleImport "MXNet.Base.HMap"
+                , simpleImportVars "Data.Maybe" ["catMaybes", "fromMaybe"]]
+    modArray  = Module () (Just $ ModuleHead () (ModuleName () "MXnet.Base.NDArray") Nothing Nothing) []
+                [ simpleImport "MXNet.Base.Raw"
+                , simpleImport "MXNet.Base.Operator"
+                , simpleImport "MXNet.Base.HMap"
+                , simpleImportVars "Data.Maybe" ["catMaybes", "fromMaybe"]]
 
 genSymOp :: AtomicSymbolCreator -> IO [Decl ()]
 genSymOp sc = do
