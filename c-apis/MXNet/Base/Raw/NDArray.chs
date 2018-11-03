@@ -1,10 +1,11 @@
+{-# LANGUAGE ScopedTypeVariables #-}
 module MXNet.Base.Raw.NDArray where
 
-import Foreign.Marshal (alloca, withArray)
-import Foreign.Storable (peek)
+import Foreign.Marshal (alloca, withArray, peekArray)
+import Foreign.Storable (Storable(..))
 import Foreign.ForeignPtr (newForeignPtr, touchForeignPtr)
 import Foreign.ForeignPtr.Unsafe (unsafeForeignPtrToPtr)
-import C2HS.C.Extra.Marshal (withIntegralArray)
+import C2HS.C.Extra.Marshal (withIntegralArray, withStringArray)
 import GHC.Generics (Generic)
 import Control.Monad ((>=>))
 
@@ -162,3 +163,53 @@ fun MXNDArrayGetShape as mxNDArrayGetShape_
         alloca- `Ptr MX_UINT' peek*
     } -> `CInt'
 #}
+
+-- MXImperativeInvoke is hacky.
+-- num-outputs 
+--   0: create new NDArrayHandler in the array-of-NDArrayHandle
+--   length of array-of-NDArrayHandle (non-0): reuse NDArrayHandler in the array-of-NDArrayHandle
+{#
+fun MXImperativeInvoke as mxImperativeInvoke_
+    {
+        `AtomicSymbolCreator',
+        `CInt',
+        withNDArrayHandleArray* `[NDArrayHandle]',
+        id `Ptr CInt',                    -- num-outputs
+        id `Ptr (Ptr NDArrayHandlePtr)',  -- array-of-NDArrayHandle
+        `CInt',
+        withStringArray* `[String]',
+        withStringArray* `[String]'
+    } -> `CInt'
+#}
+
+-- | Invoke a nnvm op and imperative function.
+mxImperativeInvoke :: AtomicSymbolCreator
+                   -> [NDArrayHandle]
+                   -> [(String, String)]
+                   -> Maybe [NDArrayHandle]
+                   -> IO [NDArrayHandle]
+mxImperativeInvoke creator inputs params outputs = do
+    let (keys, values) = unzip params
+        ninput = fromIntegral $ length inputs
+        nparam = fromIntegral $ length params
+    case outputs of
+        Nothing -> alloca $ \(pn :: Ptr CInt) ->
+            alloca $ \(pp :: Ptr (Ptr NDArrayHandlePtr)) -> do
+                poke pn 0
+                poke pp C2HSImp.nullPtr
+                checked $ mxImperativeInvoke_ creator ninput inputs pn pp nparam keys values
+                n' <- peek pn
+                p' <- peek pp
+                if n' == 0 
+                    then return []
+                    else do
+                        pa <- peekArray (fromIntegral n') (p' :: Ptr NDArrayHandlePtr)
+                        mapM newNDArrayHandle pa
+        Just out -> alloca $ \(pn :: Ptr CInt) ->
+            alloca $ \(pp :: Ptr (Ptr NDArrayHandlePtr)) -> do
+                n' <- withNDArrayHandleArray out $ \p' -> do
+                    poke pn (fromIntegral $ length out)
+                    poke pp p'
+                    checked $ mxImperativeInvoke_ creator ninput inputs pn pp nparam keys values
+                    peek pn
+                return $ take (fromIntegral n') out

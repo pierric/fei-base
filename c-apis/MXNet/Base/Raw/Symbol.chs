@@ -20,12 +20,6 @@ import Control.Monad ((>=>))
 {# default in `MX_UINT' [mx_uint] id #}
 
 {#
-pointer AtomicSymbolCreator newtype
-#}
-
-deriving instance Storable AtomicSymbolCreator
-
-{#
 pointer SymbolHandle foreign finalizer MXSymbolFree as mxSymbolFree newtype 
 #}
 
@@ -45,120 +39,6 @@ withSymbolHandleArray array io = do
     r <- withArray (map (unsafeForeignPtrToPtr . unSymbolHandle) array) io
     mapM_ (touchForeignPtr . unSymbolHandle) array
     return r
-
-fromOpHandle :: OpHandle -> AtomicSymbolCreator
-fromOpHandle (OpHandle ptr) = AtomicSymbolCreator (C2HSImp.castPtr ptr)
-
--- MXImperativeInvoke is hacky.
--- num-outputs 
---   0: create new NDArrayHandler in the array-of-NDArrayHandle
---   length of array-of-NDArrayHandle (non-0): reuse NDArrayHandler in the array-of-NDArrayHandle
-{#
-fun MXImperativeInvoke as mxImperativeInvoke_
-    {
-        `AtomicSymbolCreator',
-        `CInt',
-        withNDArrayHandleArray* `[NDArrayHandle]',
-        id `Ptr CInt',                    -- num-outputs
-        id `Ptr (Ptr NDArrayHandlePtr)',  -- array-of-NDArrayHandle
-        `CInt',
-        withStringArray* `[String]',
-        withStringArray* `[String]'
-    } -> `CInt'
-#}
-
--- | Invoke a nnvm op and imperative function.
-mxImperativeInvoke :: AtomicSymbolCreator
-                   -> [NDArrayHandle]
-                   -> [(String, String)]
-                   -> Maybe [NDArrayHandle]
-                   -> IO [NDArrayHandle]
-mxImperativeInvoke creator inputs params outputs = do
-    let (keys, values) = unzip params
-        ninput = fromIntegral $ length inputs
-        nparam = fromIntegral $ length params
-    case outputs of
-        Nothing -> alloca $ \(pn :: Ptr CInt) ->
-            alloca $ \(pp :: Ptr (Ptr NDArrayHandlePtr)) -> do
-                poke pn 0
-                poke pp C2HSImp.nullPtr
-                checked $ mxImperativeInvoke_ creator ninput inputs pn pp nparam keys values
-                n' <- peek pn
-                p' <- peek pp
-                if n' == 0 
-                    then return []
-                    else do
-                        pa <- peekArray (fromIntegral n') (p' :: Ptr NDArrayHandlePtr)
-                        mapM newNDArrayHandle pa
-        Just out -> alloca $ \(pn :: Ptr CInt) ->
-            alloca $ \(pp :: Ptr (Ptr NDArrayHandlePtr)) -> do
-                n' <- withNDArrayHandleArray out $ \p' -> do
-                    poke pn (fromIntegral $ length out)
-                    poke pp p'
-                    checked $ mxImperativeInvoke_ creator ninput inputs pn pp nparam keys values
-                    peek pn
-                return $ take (fromIntegral n') out
-
-{#
-fun MXSymbolListAtomicSymbolCreators as mxSymbolListAtomicSymbolCreators_
-    {
-        alloca- `MX_UINT' peek*,
-        alloca- `Ptr AtomicSymbolCreator' peek*
-    } -> `CInt'
-#}
-
-mxSymbolListAtomicSymbolCreators :: IO [AtomicSymbolCreator]
-mxSymbolListAtomicSymbolCreators = do
-    (cnt, ptr) <- checked $ mxSymbolListAtomicSymbolCreators_
-    peekArray (fromIntegral cnt) ptr
-
-mxSymbolGetAtomicSymbolCreatorAt :: Int -> IO AtomicSymbolCreator
-mxSymbolGetAtomicSymbolCreatorAt idx = do
-    (cnt, ptr) <- checked $ mxSymbolListAtomicSymbolCreators_
-    peekElemOff ptr idx
-
-{#
-fun MXSymbolGetAtomicSymbolName as mxSymbolGetAtomicSymbolName_
-    {
-        `AtomicSymbolCreator',
-        alloca- `String' peekString*
-    } -> `CInt'
-#}
-
-mxSymbolGetAtomicSymbolName :: AtomicSymbolCreator -> IO String
-mxSymbolGetAtomicSymbolName = checked . mxSymbolGetAtomicSymbolName_
-
-{#
-fun MXSymbolGetAtomicSymbolInfo as mxSymbolGetAtomicSymbolInfo_
-    {
-        `AtomicSymbolCreator',
-        alloca- `String' peekString*,
-        alloca- `String' peekString*,
-        alloca- `MX_UINT' peek*,
-        alloca- `Ptr (Ptr CChar)' peek*,
-        alloca- `Ptr (Ptr CChar)' peek*,
-        alloca- `Ptr (Ptr CChar)' peek*,
-        alloca- `String' peekString*,
-        alloca- `String' peekString*
-    } -> `CInt'
-#}
-
-mxSymbolGetAtomicSymbolInfo :: AtomicSymbolCreator
-                            -> IO (String, 
-                                   String, 
-                                   [String],
-                                   [String],
-                                   [String],
-                                   String,
-                                   String)
-mxSymbolGetAtomicSymbolInfo creator = do
-    (name, desc, argcnt, argname, argtype, argdesc, key_var_num_args, rettyp) <- checked $ mxSymbolGetAtomicSymbolInfo_ creator
-    let n = fromIntegral argcnt
-    argname <- peekStringArray n argname
-    argtype <- peekStringArray n argtype
-    argdesc <- peekStringArray n argdesc
-    return (name, desc, argname, argtype, argdesc, key_var_num_args, rettyp)
-
 
 {#
 fun MXSymbolCreateAtomicSymbol as mxSymbolCreateAtomicSymbol_
