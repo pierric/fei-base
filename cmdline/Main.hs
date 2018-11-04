@@ -25,15 +25,21 @@ data Arguments = Arguments {
 args_spec = Arguments 
          <$> strOption (long "output" <> short 'o' <> value "operators" <> metavar "OUTPUT-DIR")
 
-main = do 
+main = do
+    updateGlobalLogger _module_ (setLevel INFO)
     args <- execParser opts
     let base = output_dir args </> "MXNet" </> "Base"
     createDirectoryIfMissing True base
 
     ops  <- mxSymbolListAtomicSymbolCreators
-    funs <- concat <$> mapM genSymOp ops
-    writeFile (base </> "Symbol.hs") $ prettyPrint (modSymbol funs)
 
+    infoM _module_ "Generating Symbol operators..."
+    symbols <- concat <$> mapM genSymOp ops
+    writeFile (base </> "Symbol.hs") $ prettyPrint (modSymbol symbols)
+
+    infoM _module_ "Generating NDArray operators..."
+    arrays  <- concat <$> mapM genArrOp ops
+    writeFile (base </> "NDArray.hs") $ prettyPrint (modArray arrays)
     
   where
     opts = info (args_spec <**> helper) (fullDesc <> progDesc "Generate MXNet operators")
@@ -51,24 +57,24 @@ main = do
 genSymOp :: AtomicSymbolCreator -> IO [Decl ()]
 genSymOp sc = do
     (symname, desc, argname, argtype, argdesc, key_var_num_args, rettyp) <- mxSymbolGetAtomicSymbolInfo sc
-    if symname `elem` ["_Native", "_NDArray"] then
+    if symname `elem` ["_Native", "_NDArray", "Custom"] then
         return []
     else do
         let symname_ = normalizeName symname
-            (errs, scalarTypes, symbolTypes, arrayTypes) = execWriter $ zipWithM_ resolveHaskellType argname argtype
+            (errs, scalarTypes, symbolTypes, arrayTypes) = execWriter $ zipWithM_ (resolveHaskellType True) argname argtype
         
         if not (null errs) then do
             forM errs $ \(name, msg) -> 
-                errorM _module_ (printf "Function: %s %s" symname_ msg)
+                errorM _module_ (printf "Function: %s %s" symname msg)
             return []
         else if (length arrayTypes >= 2) then do
-            errorM _module_ (printf "Function: %s has more than Symbol[] argument." symname_)
+            errorM _module_ (printf "Function: %s has more than one Symbol[] argument." symname)
             return []
         else if (not (null symbolTypes) && not (null arrayTypes)) then do
-            errorM _module_ (printf "Function: %s is varadic, but it also has Symbol argument." symname_)
+            errorM _module_ (printf "Function: %s is varadic, but it also has Symbol argument." symname)
             return []
         else if (not (null arrayTypes) && null key_var_num_args) then do
-            errorM _module_ (printf "Function: %s is varadic, but the variable name for num_args is not specified." symname_)
+            errorM _module_ (printf "Function: %s is varadic, but the variable name for num_args is not specified." symname)
             return []
         else do
             let paramList = map (\(name, typ1, typ2) -> tyPromotedTuple [tyPromotedStr name, tyApp typ1 typ2]) (scalarTypes ++ symbolTypes ++ arrayTypes) 
@@ -137,6 +143,45 @@ genSymOp sc = do
                             [ qualStmt $ function "return" `app` (var $ name "sym") ])
             return [paramListInst, sig, fun]
 
+genArrOp :: AtomicSymbolCreator -> IO [Decl ()]
+genArrOp sc = do
+    (symname, desc, argname, argtype, argdesc, key_var_num_args, rettyp) <- mxSymbolGetAtomicSymbolInfo sc
+    if symname `elem` ["_Native", "_NDArray", "Custom"] then
+        return []
+    else do
+        let symname_ = normalizeName symname
+            (errs, scalarTypes, symbolTypes, arrayTypes) = execWriter $ zipWithM_ (resolveHaskellType False) argname argtype
+        
+        if not (null errs) then do
+            forM errs $ \(name, msg) -> 
+                errorM _module_ (printf "Function: %s %s" symname msg)
+            return []
+        else if (length arrayTypes >= 2) then do
+            errorM _module_ (printf "Function: %s has more than Symbol[] argument." symname)
+            return []
+        else if (not (null symbolTypes) && not (null arrayTypes)) then do
+            errorM _module_ (printf "Function: %s is varadic, but it also has Symbol argument." symname)
+            return []
+        else if (not (null arrayTypes) && null key_var_num_args) then do
+            errorM _module_ (printf "Function: %s is varadic, but the variable name for num_args is not specified." symname_)
+            return []
+        else do
+            let paramList = map (\(name, typ1, typ2) -> tyPromotedTuple [tyPromotedStr name, tyApp typ1 typ2]) (scalarTypes ++ symbolTypes ++ arrayTypes) 
+                paramListInst = TypeInsDecl () 
+                                    (tyApp (tyCon $ unQual $ name "ParameterList") (tyPromotedStr symname_))
+                                    (tyPromotedList paramList)
+                cxfullfill = appA (name "Fullfilled") [tyPromotedStr symname_, tyVarIdent "args"]
+
+                typ = tyForall [unkindedVar (name "args")]
+                        (cxSingle cxfullfill)
+                        (tyFun 
+                          (tyCon $ unQual $ name "String")
+                          (tyFun 
+                            (tyApp (tyApp (tyCon $ unQual $ name "ArgsHMap") (tyPromotedStr symname_)) (tyVarIdent "args")) 
+                            (tyApp (tyCon $ unQual $ name "IO") (tyVarIdent "NDArrayHandle"))))
+                sig = tySig [name symname_] typ
+            return [paramListInst, sig]
+
 normalizeName :: String -> String
 normalizeName name@(c:cs) 
     | isUpper c = '_' : name
@@ -146,16 +191,8 @@ normalizeName name@(c:cs)
 data ParamDesc = ParamDescItem String | ParamDescList Bool [String] deriving (Eq, Show)
 
 type ResolvedType = (String, Type (), Type ())
-resolveHaskellType :: String -> String -> Writer ([(String, String)], [ResolvedType], [ResolvedType], [ResolvedType]) ()
-resolveHaskellType symname desc = do
-    let fields = runP desc
-        optional = ParamDescItem "optional" `elem` fields
-        symname_ = normalizeName symname
-        attr = tyCon $ unQual $ name $ if optional then "AttrOpt" else "AttrReq"
-        scalar hstyp = tell ([], [(symname_, attr, hstyp)], [], [])
-        symbol hstyp = tell ([], [], [(symname_, attr, hstyp)], [])
-        array  hstyp = tell ([], [], [], [(symname_, attr, hstyp)])
-        fail   msg   = tell ([(symname, msg)], [], [], [])
+resolveHaskellType :: Bool -> String -> String -> Writer ([(String, String)], [ResolvedType], [ResolvedType], [ResolvedType]) ()
+resolveHaskellType asSymbol symname desc =
     case head fields of 
         ParamDescItem "Shape(tuple)"        -> scalar $ tyList $ tyCon $ unQual $ name "Int"
         ParamDescItem "int"                 -> scalar $ tyCon $ unQual $ name "Int"
@@ -178,18 +215,7 @@ resolveHaskellType symname desc = do
                 typ2 = tyApp (tyCon $ unQual $ name "Maybe") typ1
             scalar $ if hasnone then typ2 else typ1
 
-        ParamDescItem "Symbol"              -> symbol $ tyCon $ unQual $ name "SymbolHandle"
-        ParamDescItem "NDArray-or-Symbol"   -> symbol $ tyCon $ unQual $ name "SymbolHandle"
-        -- operator can have only one argument of the type symbol or ndarray array
-        -- and not having any other argument of symbol or ndarray
-        -- besides the operator's info must definitely have a key_var_num_args, which
-        -- indicates an (might be additional) argument which should be passed to mxSymbolCreateAtomicSymbol.
-        ParamDescItem "Symbol[]"            -> array $ tyList $ tyCon $ unQual $ name "SymbolHandle"
-        ParamDescItem "NDArray-or-Symbol[]" -> array $ tyList $ tyCon $ unQual $ name "SymbolHandle"
-        ParamDescItem "Symbol or Symbol[]"  -> array $ tyList $ tyCon $ unQual $ name "SymbolHandle"
-
-        ParamDescItem "NDArray" -> fail $ printf "NDArrayHandle arg: %s" symname
-        t -> fail $ printf "Unknown type: arg %s(%s)." symname desc
+        t -> (if asSymbol then handleSymbol else handleNDArray) t
   where
     typedesc = do
         ds <- sepBy (skipSpaces >> (list1 +++ list2 +++ item)) (char ',')
@@ -202,6 +228,41 @@ resolveHaskellType symname desc = do
     runP str = case readP_to_S typedesc str of 
                     [(xs, "")] -> xs
                     other -> error ("cannot parse type description: " ++ str)
+
+    fields = runP desc
+    optional = ParamDescItem "optional" `elem` fields
+    symname_ = normalizeName symname
+    attr = tyCon $ unQual $ name $ if optional then "AttrOpt" else "AttrReq"
+    scalar hstyp = tell ([], [(symname_, attr, hstyp)], [], [])
+    symbol hstyp = tell ([], [], [(symname_, attr, hstyp)], [])
+    array  hstyp = tell ([], [], [], [(symname_, attr, hstyp)])
+    fail   msg   = tell ([(symname, msg)], [], [], [])
+    --
+    -- symbol operators
+    --
+    -- operator can have only one argument of the type symbol or ndarray array
+    -- and not having any other argument of symbol or ndarray
+    -- besides the operator's info must definitely have a key_var_num_args, which
+    -- indicates an (might be additional) argument which should be passed to mxSymbolCreateAtomicSymbol.
+    handleSymbol (ParamDescItem "Symbol")              = symbol $ tyCon $ unQual $ name "SymbolHandle"
+    handleSymbol (ParamDescItem "NDArray-or-Symbol")   = symbol $ tyCon $ unQual $ name "SymbolHandle"
+    handleSymbol (ParamDescItem "Symbol[]")            = array $ tyList $ tyCon $ unQual $ name "SymbolHandle"
+    handleSymbol (ParamDescItem "NDArray-or-Symbol[]") = array $ tyList $ tyCon $ unQual $ name "SymbolHandle"
+    handleSymbol (ParamDescItem "Symbol or Symbol[]")  = array $ tyList $ tyCon $ unQual $ name "SymbolHandle"
+    handleSymbol (ParamDescItem "NDArray")             = fail $ printf "NDArrayHandle arg: %s" symname
+    handleSymbol t = fallThrough t
+    --
+    -- ndarray operators
+    --
+    handleNDArray (ParamDescItem "NDArray-or-Symbol")   = symbol $ tyCon $ unQual $ name "NDArrayHandle"
+    handleNDArray (ParamDescItem "NDArray-or-Symbol[]") = array $ tyList $ tyCon $ unQual $ name "NDArrayHandle"
+    handleNDArray (ParamDescItem "Symbol or Symbol[]")  = array $ tyList $ tyCon $ unQual $ name "NDArrayHandle"
+    handleNDArray (ParamDescItem "NDArray")             = symbol $ tyCon $ unQual $ name "NDArrayHandle"
+    handleNDArray (ParamDescItem "Symbol")              = fail $ printf "SymbolHandle arg: %s" symname
+    handleNDArray (ParamDescItem "Symbol[]")            = fail $ printf "SymbolHandle[] arg: %s" symname
+    handleNDArray t = fallThrough t
+
+    fallThrough t = fail $ printf "Unknown type: arg %s(%s)." symname desc
 
 unQual = UnQual ()
 unkindedVar = UnkindedVar ()
