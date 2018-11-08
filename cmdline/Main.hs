@@ -48,11 +48,32 @@ main = do
                 , simpleImport "MXNet.Base.Operator"
                 , simpleImport "MXNet.Base.HMap"
                 , simpleImportVars "Data.Maybe" ["catMaybes", "fromMaybe"]]
-    modArray  = Module () (Just $ ModuleHead () (ModuleName () "MXnet.Base.NDArray") Nothing Nothing) []
+    modArray  = Module () (Just $ ModuleHead () (ModuleName () "MXNet.Base.NDArray") Nothing Nothing) []
                 [ simpleImport "MXNet.Base.Raw"
                 , simpleImport "MXNet.Base.Operator"
                 , simpleImport "MXNet.Base.HMap"
                 , simpleImportVars "Data.Maybe" ["catMaybes", "fromMaybe"]]
+
+makeParamInst :: String -> [ResolvedType] -> Bool -> Decl ()
+makeParamInst symname typs symbolapi = 
+    TypeInsDecl () (tyApp (tyCon $ unQual $ name "ParameterList") (tyPromotedStr symname_with_appendix))
+                   (tyPromotedList paramList)
+  where
+    symname_with_appendix = symname ++ (if symbolapi then "(symbol)" else "(ndarray)")
+    paramList = map (\(name, typ1, typ2) -> tyPromotedTuple [tyPromotedStr name, tyApp typ1 typ2]) typs
+
+makeSignature :: String -> Bool -> Decl ()
+makeSignature symname symbolapi = 
+    let (appendix, rettype, maketype) = 
+            if symbolapi then
+                ("(symbol)", tyCon $ unQual $ name "SymbolHandle", tyFun (tyCon $ unQual $ name "String"))
+            else
+                ("(ndarray)", tyList $ tyCon $ unQual $ name "NDArrayHandle", id)
+        symname_with_appendix = symname ++ appendix
+        cxfullfill = appA (name "Fullfilled") [tyPromotedStr symname_with_appendix, tyVarIdent "args"]
+        fun = tyFun (tyApp (tyApp (tyCon $ unQual $ name "ArgsHMap") (tyPromotedStr symname_with_appendix)) (tyVarIdent "args")) 
+                    (tyApp (tyCon $ unQual $ name "IO") rettype)
+    in tySig [name symname] $ tyForall [unkindedVar (name "args")] (cxSingle cxfullfill) $ (maketype fun)
 
 genSymOp :: AtomicSymbolCreator -> IO [Decl ()]
 genSymOp sc = do
@@ -61,7 +82,7 @@ genSymOp sc = do
         return []
     else do
         let symname_ = normalizeName symname
-            (errs, scalarTypes, symbolTypes, arrayTypes) = execWriter $ zipWithM_ (resolveHaskellType True) argname argtype
+            (errs, scalarTypes, tensorTypes, arrayTypes) = execWriter $ zipWithM_ (resolveHaskellType True) argname argtype
         
         if not (null errs) then do
             forM errs $ \(name, msg) -> 
@@ -70,28 +91,15 @@ genSymOp sc = do
         else if (length arrayTypes >= 2) then do
             errorM _module_ (printf "Function: %s has more than one Symbol[] argument." symname)
             return []
-        else if (not (null symbolTypes) && not (null arrayTypes)) then do
+        else if (not (null tensorTypes) && not (null arrayTypes)) then do
             errorM _module_ (printf "Function: %s is varadic, but it also has Symbol argument." symname)
             return []
         else if (not (null arrayTypes) && null key_var_num_args) then do
             errorM _module_ (printf "Function: %s is varadic, but the variable name for num_args is not specified." symname)
             return []
         else do
-            let paramList = map (\(name, typ1, typ2) -> tyPromotedTuple [tyPromotedStr name, tyApp typ1 typ2]) (scalarTypes ++ symbolTypes ++ arrayTypes) 
-                paramListInst = TypeInsDecl () 
-                                    (tyApp (tyCon $ unQual $ name "ParameterList") (tyPromotedStr symname_))
-                                    (tyPromotedList paramList)
-                cxfullfill = appA (name "Fullfilled") [tyPromotedStr symname_, tyVarIdent "args"]
-
-                typ = tyForall [unkindedVar (name "args")]
-                        (cxSingle cxfullfill)
-                        (tyFun 
-                          (tyCon $ unQual $ name "String")
-                          (tyFun 
-                            (tyApp (tyApp (tyCon $ unQual $ name "ArgsHMap") (tyPromotedStr symname_)) (tyVarIdent "args")) 
-                            (tyApp (tyCon $ unQual $ name "IO") (tyVarIdent "SymbolHandle"))))
-                sig = tySig [name symname_] typ
-    
+            let paramListInst = makeParamInst symname_ (scalarTypes ++ tensorTypes ++ arrayTypes) True
+                sig = makeSignature symname_ True
             let fun = sfun (name symname_) [name "name", name "args"] (UnGuardedRhs () body) Nothing
                 body =  letE ([
                           patBind (pvar $ name "scalarArgs") (function "catMaybes" 
@@ -99,11 +107,11 @@ genSymOp sc = do
                                 infixApp (infixApp (tupleSection [Just $ strE argkey, Nothing]) (op $ sym ".") (function "showValue")) (op $ sym "<$>") $ 
                                 ExpTypeSig () (infixApp (var $ name "args") (op $ sym "!?") (OverloadedLabel () argkey)) (tyApp (tyCon $ unQual $ name "Maybe") typ) | (argkey, _, typ) <- scalarTypes])
                         , patBind (pTuple [pvar $ name "scalarkeys", pvar $ name "scalarvals"]) (app (function "unzip") $ var $ name "scalarArgs")
-                        , patBind (pvar $ name "symbolArgs") (function "catMaybes" 
+                        , patBind (pvar $ name "tensorArgs") (function "catMaybes" 
                             `app` listE [
                                 infixApp (tupleSection [Just $ strE argkey, Nothing]) (op $ sym "<$>") $ 
-                                ExpTypeSig () (infixApp (var $ name "args") (op $ sym "!?") (OverloadedLabel () argkey)) (tyApp (tyCon $ unQual $ name "Maybe") typ) | (argkey, _, typ) <- symbolTypes])
-                        , patBind (pTuple [pvar $ name "symbolkeys", pvar $ name "symbolvals"]) (app (function "unzip") $ var $ name "symbolArgs")]
+                                ExpTypeSig () (infixApp (var $ name "args") (op $ sym "!?") (OverloadedLabel () argkey)) (tyApp (tyCon $ unQual $ name "Maybe") typ) | (argkey, _, typ) <- tensorTypes])
+                        , patBind (pTuple [pvar $ name "tensorkeys", pvar $ name "tensorvals"]) (app (function "unzip") $ var $ name "tensorArgs")]
                         ++ 
                         case arrayTypes of
                           [(argkey,_,_)] -> [patBind (pvar $ name "array") $ function "fromMaybe" 
@@ -122,8 +130,8 @@ genSymOp sc = do
                                   , qualStmt $ function "mxSymbolCompose"
                                       `app` (var $ name "sym")
                                       `app` (var $ name "name")
-                                      `app` ((con $ unQual $ name "Just") `app` (var $ name "symbolkeys"))
-                                      `app` (var $ name "symbolvals") ]
+                                      `app` ((con $ unQual $ name "Just") `app` (var $ name "tensorkeys"))
+                                      `app` (var $ name "tensorvals") ]
                               else 
                                   [ genStmt (pvar $ name "sym") $ 
                                       If () (function "hasKey" `app` (var $ name "args") `app` (OverloadedLabel () key_var_num_args))
@@ -139,7 +147,7 @@ genSymOp sc = do
                                       `app` (var $ name "sym")
                                       `app` (var $ name "name")
                                       `app` (con $ unQual $ name "Nothing")
-                                      `app` (var $ name "symbolvals")] ) ++
+                                      `app` (var $ name "array")] ) ++
                             [ qualStmt $ function "return" `app` (var $ name "sym") ])
             return [paramListInst, sig, fun]
 
@@ -150,7 +158,7 @@ genArrOp sc = do
         return []
     else do
         let symname_ = normalizeName symname
-            (errs, scalarTypes, symbolTypes, arrayTypes) = execWriter $ zipWithM_ (resolveHaskellType False) argname argtype
+            (errs, scalarTypes, tensorTypes, arrayTypes) = execWriter $ zipWithM_ (resolveHaskellType False) argname argtype
         
         if not (null errs) then do
             forM errs $ \(name, msg) -> 
@@ -159,28 +167,61 @@ genArrOp sc = do
         else if (length arrayTypes >= 2) then do
             errorM _module_ (printf "Function: %s has more than Symbol[] argument." symname)
             return []
-        else if (not (null symbolTypes) && not (null arrayTypes)) then do
+        else if (not (null tensorTypes) && not (null arrayTypes)) then do
             errorM _module_ (printf "Function: %s is varadic, but it also has Symbol argument." symname)
             return []
         else if (not (null arrayTypes) && null key_var_num_args) then do
             errorM _module_ (printf "Function: %s is varadic, but the variable name for num_args is not specified." symname_)
             return []
         else do
-            let paramList = map (\(name, typ1, typ2) -> tyPromotedTuple [tyPromotedStr name, tyApp typ1 typ2]) (scalarTypes ++ symbolTypes ++ arrayTypes) 
-                paramListInst = TypeInsDecl () 
-                                    (tyApp (tyCon $ unQual $ name "ParameterList") (tyPromotedStr symname_))
-                                    (tyPromotedList paramList)
-                cxfullfill = appA (name "Fullfilled") [tyPromotedStr symname_, tyVarIdent "args"]
-
-                typ = tyForall [unkindedVar (name "args")]
-                        (cxSingle cxfullfill)
-                        (tyFun 
-                          (tyCon $ unQual $ name "String")
-                          (tyFun 
-                            (tyApp (tyApp (tyCon $ unQual $ name "ArgsHMap") (tyPromotedStr symname_)) (tyVarIdent "args")) 
-                            (tyApp (tyCon $ unQual $ name "IO") (tyVarIdent "NDArrayHandle"))))
-                sig = tySig [name symname_] typ
-            return [paramListInst, sig]
+            let paramListInst = makeParamInst symname_ (scalarTypes ++ tensorTypes ++ arrayTypes) False
+                sig = makeSignature symname_ False
+            let fun = sfun (name symname_) [name "args"] (UnGuardedRhs () body) Nothing
+                body =  letE ([
+                          patBind (pvar $ name "scalarArgs") (function "catMaybes" 
+                            `app` listE [
+                                infixApp (infixApp (tupleSection [Just $ strE argkey, Nothing]) (op $ sym ".") (function "showValue")) (op $ sym "<$>") $ 
+                                ExpTypeSig () (infixApp (var $ name "args") (op $ sym "!?") (OverloadedLabel () argkey)) (tyApp (tyCon $ unQual $ name "Maybe") typ) | (argkey, _, typ) <- scalarTypes])
+                        -- , patBind (pTuple [pvar $ name "scalarkeys", pvar $ name "scalarvals"]) (app (function "unzip") $ var $ name "scalarArgs")
+                        , patBind (pvar $ name "tensorArgs") (function "catMaybes" 
+                            `app` listE [
+                                infixApp (tupleSection [Just $ strE argkey, Nothing]) (op $ sym "<$>") $ 
+                                ExpTypeSig () (infixApp (var $ name "args") (op $ sym "!?") (OverloadedLabel () argkey)) (tyApp (tyCon $ unQual $ name "Maybe") typ) | (argkey, _, typ) <- tensorTypes])
+                        , patBind (pTuple [pvar $ name "tensorkeys", pvar $ name "tensorvals"]) (app (function "unzip") $ var $ name "tensorArgs")]
+                        ++ 
+                        case arrayTypes of
+                          [(argkey,_,_)] -> [patBind (pvar $ name "array") $ function "fromMaybe" 
+                                                `app` eList 
+                                                `app` ExpTypeSig () 
+                                                        (infixApp (var $ name "args") (op $ sym "!?") (OverloadedLabel () argkey)) 
+                                                        (tyApp (tyCon $ unQual $ name "Maybe") (tyList $ tyCon $ unQual $ name "NDArrayHandle"))]
+                          _ -> [])
+                        (doE $ 
+                            [ genStmt (pvar $ name "op") $ function "nnGetOpHandle"`app` strE symname ] ++
+                            ( if null arrayTypes then
+                                  [ genStmt (pvar $ name "listndarr") $ function "mxImperativeInvoke"
+                                      `app` (function "fromOpHandle" `app` (var $ name "op"))
+                                      `app` (var $ name "tensorvals")
+                                      `app` (var $ name $ "scalarArgs")
+                                      `app` (con $ unQual $ name "Nothing") ]
+                              else 
+                                  [ letStmt [
+                                        patBind (pvar $ name "scalarArgs'") (
+                                            If () (function "hasKey" `app` (var $ name "args") `app` (OverloadedLabel () key_var_num_args))
+                                                (var $ name $ "scalarArgs")
+                                                (let key_var = Con () (Special () (TupleCon () Boxed 2)) 
+                                                                `app` (strE key_var_num_args) 
+                                                                `app` (function "showValue" `app` (function "length" `app` (var $ name "array")))
+                                                in infixApp key_var (QConOp () $ Special () $ Cons ()) (var $ name $ "scalarArgs"))
+                                        )]
+                                  , genStmt (pvar $ name "listndarr") $ (function "mxImperativeInvoke"
+                                                  `app` (function "fromOpHandle" `app` (var $ name "op"))
+                                                  `app` (var $ name "array")
+                                                  `app` (var $ name $ "scalarArgs'")
+                                                  `app` (con $ unQual $ name "Nothing"))
+                                  ]) ++
+                            [ qualStmt $ function "return" `app` (var $ name "listndarr") ])
+            return [paramListInst, sig, fun]
 
 normalizeName :: String -> String
 normalizeName name@(c:cs) 
