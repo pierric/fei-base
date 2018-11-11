@@ -1,4 +1,4 @@
-name:                mxnet-c-apis
+name:                mxnet-base
 version:             0.1.0.0
 -- synopsis:
 -- description:
@@ -14,7 +14,7 @@ extra-source-files:  README.md
 cabal-version:       >=1.10
 
 library
-  hs-source-dirs:      .
+  hs-source-dirs:      c-apis
   build-depends:       base >= 4.7 && < 5,
                        c2hs-extra == 0.1.0.1,
                        tuple-ops == 0.0.0.3,
@@ -27,13 +27,28 @@ library
                        DeriveGeneric,
                        GeneralizedNewtypeDeriving
   exposed-modules:     MXNet.Base.Raw,
-                       MXNet.Base.Operator,
-                       MXNet.Base.HMap
+                       MXNet.Base.Spec.Operator,
+                       MXNet.Base.Spec.HMap
   other-modules:       MXNet.Base.Raw.Common,
                        MXNet.Base.Raw.NDArray,
                        MXNet.Base.Raw.Symbol,
                        MXNet.Base.Raw.Executor
 
+executable mxnet-op-gen
+  hs-source-dirs:      cmdline
+  main-is:             Main.hs
+  build-depends:       base >= 4.7 && < 5,
+                       optparse-applicative >= 0.14 && < 0.15,
+                       haskell-src-exts >= 1.20.3,
+                       hslogger >= 1.2,
+                       text >= 1.2.0 && < 1.3,
+                       mtl,
+                       filepath >= 1.4 && < 1.5,
+                       directory >= 1.3 && < 1.4,
+                       mxnet-base
+  default-language:    Haskell2010
+  default-extensions:  FlexibleContexts
+  extra-libraries:     mxnet                                                                            
 -- executable haskell-mxnet
 --   hs-source-dirs:      cmdline
 --   main-is:             Main.hs

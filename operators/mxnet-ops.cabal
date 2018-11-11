@@ -15,7 +15,7 @@ cabal-version:       >=1.10
 library
   hs-source-dirs:      .
   build-depends:       base >= 4.7 && < 5,
-                       mxnet-c-apis
+                       mxnet-base
   default-language:    Haskell2010
   extra-libraries:     mxnet
   default-extensions:  ExplicitForAll,
@@ -23,8 +23,8 @@ library
                        TypeFamilies,
                        OverloadedLabels,
                        TupleSections
-  exposed-modules:     MXNet.Base.Symbol, 
-                       MXNet.Base.NDArray
+  exposed-modules:     MXNet.Base.Operators.Symbol, 
+                       MXNet.Base.Operators.NDArray
   other-modules:       
 
 source-repository head
