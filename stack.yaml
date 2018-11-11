@@ -1,7 +1,6 @@
 resolver: lts-12.16
 packages:
-- c-apis
-- cmdline
+- base
 - operators
 extra-deps:
 - ../tuple-ops

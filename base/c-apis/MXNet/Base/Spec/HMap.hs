@@ -6,7 +6,7 @@
 {-# LANGUAGE UndecidableInstances #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TypeApplications #-}
-module MXNet.Base.HMap where
+module MXNet.Base.Spec.HMap where
 
 import GHC.TypeLits
 import Data.Proxy

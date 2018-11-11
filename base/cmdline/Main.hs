@@ -28,7 +28,7 @@ args_spec = Arguments
 main = do
     updateGlobalLogger _module_ (setLevel INFO)
     args <- execParser opts
-    let base = output_dir args </> "MXNet" </> "Base"
+    let base = output_dir args </> "MXNet" </> "Base" </> "Operators"
     createDirectoryIfMissing True base
 
     ops  <- mxSymbolListAtomicSymbolCreators
@@ -43,15 +43,15 @@ main = do
     
   where
     opts = info (args_spec <**> helper) (fullDesc <> progDesc "Generate MXNet operators")
-    modSymbol = Module () (Just $ ModuleHead () (ModuleName () "MXNet.Base.Symbol") Nothing Nothing) [] 
+    modSymbol = Module () (Just $ ModuleHead () (ModuleName () "MXNet.Base.Operators.Symbol") Nothing Nothing) [] 
                 [ simpleImport "MXNet.Base.Raw"
-                , simpleImport "MXNet.Base.Operator"
-                , simpleImport "MXNet.Base.HMap"
+                , simpleImport "MXNet.Base.Spec.Operator"
+                , simpleImport "MXNet.Base.Spec.HMap"
                 , simpleImportVars "Data.Maybe" ["catMaybes", "fromMaybe"]]
-    modArray  = Module () (Just $ ModuleHead () (ModuleName () "MXNet.Base.NDArray") Nothing Nothing) []
+    modArray  = Module () (Just $ ModuleHead () (ModuleName () "MXNet.Base.Operators.NDArray") Nothing Nothing) []
                 [ simpleImport "MXNet.Base.Raw"
-                , simpleImport "MXNet.Base.Operator"
-                , simpleImport "MXNet.Base.HMap"
+                , simpleImport "MXNet.Base.Spec.Operator"
+                , simpleImport "MXNet.Base.Spec.HMap"
                 , simpleImportVars "Data.Maybe" ["catMaybes", "fromMaybe"]]
 
 makeParamInst :: String -> [ResolvedType] -> Bool -> Decl ()

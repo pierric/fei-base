@@ -6,14 +6,14 @@
 {-# LANGUAGE PartialTypeSignatures #-}
 {-# LANGUAGE ConstraintKinds #-}
 {-# LANGUAGE ScopedTypeVariables #-}
-module MXNet.Base.Operator where
+module MXNet.Base.Spec.Operator where
 
 import GHC.OverloadedLabels
 import GHC.TypeLits
 import GHC.Exts (Constraint)
 import Data.Proxy
 import Data.List (intersperse)
-import MXNet.Base.HMap
+import MXNet.Base.Spec.HMap
 
 instance a ~ b => IsLabel a (Proxy b) where
   fromLabel = Proxy
