@@ -40,14 +40,17 @@ withNDArrayHandleArray array io = do
     return r
 
 {#
-fun MXNDArrayCreateNone as mxNDArrayCreateNone
+fun MXNDArrayCreateNone as mxNDArrayCreateNone_
     {
         alloca- `NDArrayHandle' peekNDArrayHandle*
     } -> `CInt'
 #}
 
+mxNDArrayCreateNone :: IO NDArrayHandle
+mxNDArrayCreateNone = checked mxNDArrayCreateNone_
+
 {#
-fun MXNDArrayCreate as mxNDArrayCreate
+fun MXNDArrayCreate as mxNDArrayCreate_
     {
         withArray* `[MX_UINT]',
         id `MX_UINT',
@@ -58,8 +61,16 @@ fun MXNDArrayCreate as mxNDArrayCreate
     } -> `CInt'
 #}
 
+mxNDArrayCreate :: [Int] -> Int -> Int -> Bool -> IO NDArrayHandle
+mxNDArrayCreate shape devtype devid delay_alloc = do
+    let shape_   = fromIntegral <$> shape
+        dim_     = fromIntegral (length shape_)
+        devtype_ = fromIntegral devtype
+        devid_   = fromIntegral devid
+    checked $ mxNDArrayCreate_ shape_ dim_ devtype_ devid_ (if delay_alloc then 1 else 0)
+
 {#
-fun MXNDArrayCreateEx as mxNDArrayCreateEx
+fun MXNDArrayCreateEx as mxNDArrayCreateEx_
     {
         withArray* `[MX_UINT]',
         id `MX_UINT',
@@ -71,8 +82,18 @@ fun MXNDArrayCreateEx as mxNDArrayCreateEx
     } -> `CInt'
 #}
 
+mxNDArrayCreateEx :: [Int] -> Int -> Int -> Bool -> Int -> IO NDArrayHandle
+mxNDArrayCreateEx shape devtype devid delay_alloc dtype = do
+    let shape_   = fromIntegral <$> shape
+        dim_     = fromIntegral (length shape_)
+        devtype_ = fromIntegral devtype
+        devid_   = fromIntegral devid
+        dtype_   = fromIntegral dtype
+    checked $ mxNDArrayCreateEx_ shape_ dim_ devtype_ devid_ (if delay_alloc then 1 else 0) dtype_
+
+
 {#
-fun MXNDArraySyncCopyFromCPU as mxNDArraySyncCopyFromCPU
+fun MXNDArraySyncCopyFromCPU as mxNDArraySyncCopyFromCPU_
     {
         `NDArrayHandle',
         id `Ptr ()',
@@ -80,8 +101,12 @@ fun MXNDArraySyncCopyFromCPU as mxNDArraySyncCopyFromCPU
     } -> `CInt'
 #}
 
+mxNDArraySyncCopyFromCPU :: NDArrayHandle -> Ptr () -> Int -> IO ()
+mxNDArraySyncCopyFromCPU array ptr size =
+    checked $ mxNDArraySyncCopyFromCPU_ array ptr (fromIntegral size)
+
 {#
-fun MXNDArraySyncCopyToCPU as mxNDArraySyncCopyToCPU
+fun MXNDArraySyncCopyToCPU as mxNDArraySyncCopyToCPU_
     {
         `NDArrayHandle',
         id `Ptr ()',
@@ -89,8 +114,12 @@ fun MXNDArraySyncCopyToCPU as mxNDArraySyncCopyToCPU
     } -> `CInt'
 #}
 
+mxNDArraySyncCopyToCPU :: NDArrayHandle -> Ptr () -> Int -> IO ()
+mxNDArraySyncCopyToCPU array ptr size =
+    checked $ mxNDArraySyncCopyToCPU_ array ptr (fromIntegral size)
+
 {#
-fun MXNDArraySyncCopyFromNDArray as mxNDArraySyncCopyFromNDArray
+fun MXNDArraySyncCopyFromNDArray as mxNDArraySyncCopyFromNDArray_
     {
         `NDArrayHandle',
         `NDArrayHandle',
@@ -98,28 +127,41 @@ fun MXNDArraySyncCopyFromNDArray as mxNDArraySyncCopyFromNDArray
     } -> `CInt'
 #}
 
+mxNDArraySyncCopyFromNDArray :: NDArrayHandle -> NDArrayHandle -> Int -> IO ()
+mxNDArraySyncCopyFromNDArray array_dst array_src blob =
+    checked $ mxNDArraySyncCopyFromNDArray_ array_dst array_src (fromIntegral blob)
+
 {#
-fun MXNDArrayWaitToRead as mxNDArrayWaitToRead
+fun MXNDArrayWaitToRead as mxNDArrayWaitToRead_
     {
         `NDArrayHandle'
     } -> `CInt'
 #}
 
+mxNDArrayWaitToRead :: NDArrayHandle -> IO ()
+mxNDArrayWaitToRead = checked . mxNDArrayWaitToRead_
+
 {#
-fun MXNDArrayWaitToWrite as mxNDArrayWaitToWrite
+fun MXNDArrayWaitToWrite as mxNDArrayWaitToWrite_
     {
         `NDArrayHandle'
     } -> `CInt'
 #}
 
+mxNDArrayWaitToWrite :: NDArrayHandle -> IO ()
+mxNDArrayWaitToWrite = checked . mxNDArrayWaitToWrite_
+
 {#
-fun MXNDArrayWaitAll as mxNDArrayWaitAll
+fun MXNDArrayWaitAll as mxNDArrayWaitAll_
     {
     } -> `CInt'
 #}
 
+mxNDArrayWaitAll :: IO ()
+mxNDArrayWaitAll = checked mxNDArrayWaitAll_
+
 {#
-fun MXNDArraySlice as mxNDArraySlice
+fun MXNDArraySlice as mxNDArraySlice_
     {
         `NDArrayHandle',
         `MX_UINT',
@@ -128,8 +170,14 @@ fun MXNDArraySlice as mxNDArraySlice
     } -> `CInt'
 #}
 
+mxNDArraySlice :: NDArrayHandle -> Int -> Int -> IO NDArrayHandle
+mxNDArraySlice array begin end = do
+    let begin_ = fromIntegral begin
+        end_   = fromIntegral end
+    checked $ mxNDArraySlice_ array begin_ end_
+
 {#
-fun MXNDArrayAt as mxNDArrayAt
+fun MXNDArrayAt as mxNDArrayAt_
     {
         `NDArrayHandle',
         `MX_UINT',
@@ -137,16 +185,25 @@ fun MXNDArrayAt as mxNDArrayAt
     } -> `CInt'
 #}
 
+mxNDArrayAt :: NDArrayHandle -> Int -> IO NDArrayHandle
+mxNDArrayAt array index = do
+    checked $ mxNDArrayAt_ array (fromIntegral index)
+
 {#
-fun MXNDArrayGetStorageType as mxNDArrayGetStorageType
+fun MXNDArrayGetStorageType as mxNDArrayGetStorageType_
     {
         `NDArrayHandle',
         alloca- `CInt' peek*
     } -> `CInt'
 #}
 
+mxNDArrayGetStorageType :: NDArrayHandle -> IO Int
+mxNDArrayGetStorageType array = do
+    storageType <- checked $ mxNDArrayGetStorageType_ array
+    return $ fromIntegral storageType
+
 {#
-fun MXNDArrayReshape as mxNDArrayReshape
+fun MXNDArrayReshape as mxNDArrayReshape_
     {
         `NDArrayHandle',
         `CInt',
@@ -154,6 +211,12 @@ fun MXNDArrayReshape as mxNDArrayReshape
         alloca- `NDArrayHandle' peekNDArrayHandle*
     } -> `CInt'
 #}
+
+mxNDArrayReshape :: NDArrayHandle -> [Int] -> IO NDArrayHandle
+mxNDArrayReshape array shape = do
+    let shape_ = fromIntegral <$> shape
+        num_   = fromIntegral $ length shape_
+    checked $ mxNDArrayReshape_ array num_ shape_
 
 {#
 fun MXNDArrayGetShape as mxNDArrayGetShape_
@@ -163,6 +226,12 @@ fun MXNDArrayGetShape as mxNDArrayGetShape_
         alloca- `Ptr MX_UINT' peek*
     } -> `CInt'
 #}
+
+mxNDArrayGetShape :: NDArrayHandle -> IO [Int]
+mxNDArrayGetShape array = do
+    (size, ptr) <- checked $ mxNDArrayGetShape_ array
+    shape <- peekArray (fromIntegral size) ptr
+    return $ fromIntegral <$> shape
 
 -- MXImperativeInvoke is hacky.
 -- num-outputs 
