@@ -19,7 +19,6 @@ import Unsafe.Coerce (unsafeCoerce)
 class Pair (p :: Symbol -> * -> *) where
     key   :: p k v -> Proxy k
     value :: p k v -> v
-    type MatchHead p (k :: Symbol) v (kvs :: [*]) :: Bool
 
 data HMap (p :: Symbol -> * -> *) (kvs :: [*]) where
   Nil  :: Pair p => HMap p '[]
@@ -37,8 +36,8 @@ instance Access True p k v (p k v ': kvs) where
 instance Access (MatchHead p k v kvs) p k v kvs => Access False p k v (kv ': kvs) where
   get' _ (Cons _ n) k = get' (Proxy :: Proxy (MatchHead p k v kvs)) n k  
 
-(!) :: forall p k v kvs. Access (MatchHead p k v kvs) p k v kvs => HMap p kvs -> Proxy k -> v
-(!) = get' (Proxy :: Proxy (MatchHead p k v kvs))
+get :: forall p k v kvs. Access (MatchHead p k v kvs) p k v kvs => HMap p kvs -> Proxy k -> v
+get = get' (Proxy :: Proxy (MatchHead p k v kvs))
 
 ----
 type family InHMap p k kvs :: Bool where
@@ -46,17 +45,33 @@ type family InHMap p k kvs :: Bool where
     InHMap p k (p k v ': _) = True
     InHMap p k (_ ': kvs) = InHMap p k kvs
 
+type family MatchHead p k v kvs where
+  MatchHead p k v (p k v ': kvs) = True
+  MatchHead p k v (_ ': kvs) = False
+
+-- class Query (b :: Bool) p k v kvs where
+--     query' :: Proxy b -> HMap p kvs -> Proxy k -> Maybe v
+
+-- instance Access (MatchHead p k v kvs) p k v kvs => Query True p k v kvs where
+--     query' _ hmap key = Just $ hmap ! key
+
+-- instance Query False p k v kvs where
+--     query' _ hmap key = Nothing
+
 class Query (b :: Bool) p k v kvs where
     query' :: Proxy b -> HMap p kvs -> Proxy k -> Maybe v
 
-instance Access (MatchHead p k v kvs) p k v kvs => Query True p k v kvs where
-    query' _ hmap key = Just $ hmap ! key
+instance Query True p k v (p k v ': kvs) where
+    query' _ (Cons pair _) key = Just (value pair)
 
-instance Query False p k v kvs where
-    query' _ hmap key = Nothing
+instance Query False p k v '[] where
+    query' _ Nil key = Nothing
 
-(!?) :: forall p k v kvs. Query (InHMap p k kvs) p k v kvs => HMap p kvs -> Proxy k -> Maybe v
-(!?) = query' (Proxy :: Proxy (InHMap p k kvs))
+instance Query (MatchHead p k v kvs) p k v kvs => Query False p k v (kv ': kvs) where
+    query' _ (Cons _ n) key = query' (Proxy :: Proxy (MatchHead p k v kvs)) n key
+
+query :: forall p k v kvs. Query (MatchHead p k v kvs) p k v kvs => HMap p kvs -> Proxy k -> Maybe v
+query = query' (Proxy :: Proxy (MatchHead p k v kvs))
 
 -- note this definition 'isJust (hmap !? key)' wouldn't work, because the result type cannot
 -- be inferenced.

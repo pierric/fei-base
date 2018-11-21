@@ -6,6 +6,7 @@
 {-# LANGUAGE PartialTypeSignatures #-}
 {-# LANGUAGE ConstraintKinds #-}
 {-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE TypeApplications #-}
 module MXNet.Base.Spec.Operator where
 
 import GHC.OverloadedLabels
@@ -13,6 +14,7 @@ import GHC.TypeLits
 import GHC.Exts (Constraint)
 import Data.Proxy
 import Data.List (intersperse)
+import Data.Constraint
 import MXNet.Base.Spec.HMap
 
 instance a ~ b => IsLabel a (Proxy b) where
@@ -39,9 +41,9 @@ data Attr where
   AttrReq :: (a :: *) -> Attr
   AttrOpt :: (a :: *) -> Attr
 
-type family ParameterType (a :: Attr) (t :: *) :: Constraint where
-  ParameterType (AttrReq a) t = a ~ t
-  ParameterType (AttrOpt a) t = a ~ t
+type family ParameterType (a :: Attr) :: * where
+  ParameterType (AttrReq a) = a
+  ParameterType (AttrOpt a) = a
 
 type family ResolveParameter (s :: Symbol) (k :: Symbol) :: Attr where
   ResolveParameter s k = FindKey k (ParameterList s) (Text "Parameter '" :<>: 
@@ -56,16 +58,21 @@ type family FindKey (s :: Symbol) (l :: [(Symbol, k)]) (e :: ErrorMessage) :: k 
 ----
 
 data ArgOf s k v where
-  (:=) :: (info ~ ResolveParameter s k, ParameterType info v) => Proxy k -> v -> ArgOf s k v
-
-type family MatchHeadArgOf s k v kvs where
-  MatchHeadArgOf s k v (ArgOf s k v ': kvs) = True
-  MatchHeadArgOf s k v (_ ': kvs) = False
+  (:=) :: (info ~ ResolveParameter s k) => Proxy k -> ParameterType info -> ArgOf s k (ParameterType info)
 
 instance Pair (ArgOf s) where
   key   (k := v) = k
   value (k := v) = v
-  type MatchHead (ArgOf s) k v kvs = MatchHeadArgOf s k v kvs
+
+infix 4 !, !?
+
+(!) :: Access (MatchHead (ArgOf s) k v kvs) (ArgOf s) k v kvs 
+  => ArgsHMap s kvs -> Proxy k -> v
+(!) = get
+
+(!?) :: (ParameterType (ResolveParameter s k) ~ v, Query (MatchHead (ArgOf s) k v kvs) (ArgOf s) k v kvs) 
+  => ArgsHMap s kvs -> Proxy k -> Maybe v
+(!?) = query
 
 type ArgsHMap s kvs = HMap (ArgOf s) kvs
 ----
@@ -131,11 +138,11 @@ type family AsKVs (a :: [*]) :: [(Symbol, *)] where
 
 type family GenAccess s kvs (req :: [(Symbol, *)]) :: Constraint where
   GenAccess s kvs '[] = ()
-  GenAccess s kvs ('(k, v) ': req) = (Access (MatchHeadArgOf s k v kvs) (ArgOf s) k v kvs, GenAccess s kvs req)
+  GenAccess s kvs ('(k, v) ': req) = (Access (MatchHead (ArgOf s) k v kvs) (ArgOf s) k v kvs, GenAccess s kvs req)
 
 type family GenQuery  s kvs (req :: [(Symbol, *)]) :: Constraint where
   GenQuery  s kvs '[]  = ()
-  GenQuery  s kvs ('(k, v) ': req) = (Query  (InHMap (ArgOf s) k kvs)   (ArgOf s) k v kvs, GenQuery  s kvs req)
+  GenQuery  s kvs ('(k, v) ': req) = (Query  (MatchHead (ArgOf s) k v kvs) (ArgOf s) k v kvs, GenQuery  s kvs req)
 
 
 type family FilterRequired (pl :: [(k, Attr)]) :: [(k, *)] where
@@ -154,6 +161,25 @@ type family Fullfilled (s :: Symbol) (args :: [*]) :: Constraint where
                       , GenAccess s args (FilterRequired (ParameterList s))
                       , GenQuery  s args (AllArgs (ParameterList s)))
 
+type family HasOptArg (s :: Symbol) (args :: [*]) (k :: [Symbol]) :: Constraint where
+  HasOptArg s args '[] = ()
+  HasOptArg s args (k0 ': ks) = ( Query (MatchHead (ArgOf s) k0 (ParameterType (ResolveParameter s k0)) args) 
+                                        (ArgOf s) 
+                                        k0 
+                                        (ParameterType (ResolveParameter s k0)) 
+                                        args
+                                , HasOptArg s args ks)
+
+type family HasReqArg (s :: Symbol) (args :: [*]) (k :: [Symbol]) :: Constraint where
+  HasReqArg s args '[] = ()
+  HasReqArg s args (k0 ': ks) = ( Access (MatchHead (ArgOf s) k0 (ParameterType (ResolveParameter s k0)) args) 
+                                        (ArgOf s) 
+                                        k0 
+                                        (ParameterType (ResolveParameter s k0)) 
+                                        args
+                                , HasElement '(k0, ParameterType (ResolveParameter s k0)) (AsKVs args) ~ True
+                                , HasReqArg s args ks)
+
 ----
 type family HasElement (s :: k) (l :: [k]) :: Bool where
   HasElement s (s ': _) = True
@@ -168,7 +194,7 @@ type family IfThenElse (b :: Bool) (t :: k) (f :: k) :: k where
 
 type instance ParameterList "fn" = [
   '("a", AttrReq Int), 
-  '("b", AttrOpt String), 
+  '("b", AttrOpt String),
   '("c", AttrReq (EnumType '["c1","c2"])),
   '("d", AttrOpt (Maybe (EnumType '["c1","c2"])))
   ]
@@ -187,5 +213,12 @@ args4 = #a := 3 .& #c := #c1 .& Nil
 args5 :: ArgsHMap "fn" _
 args5 = #a := 3 .& #c := #c1 .& #d := Just #c2 .& Nil
 
-fn :: Fullfilled "fn" args => ArgsHMap "fn" args -> _
-fn args = args ! #a
+fn1 :: Fullfilled "fn" args => ArgsHMap "fn" args -> _
+fn1 args = args !? #b
+
+fn2 :: GenQuery "fn" args '[ '("b", String), '("d", (Maybe (EnumType '["c1","c2"])))]
+    => ArgsHMap "fn" args -> _
+fn2 args = fn1 (#a := 3 .& #c := #c1 .& args)
+
+fn3 :: (HasOptArg "fn" args '["b", "c", "d"], HasReqArg "fn" args '["c"]) => ArgsHMap "fn" args -> _
+fn3 args = fn1 (#a := 3 .& args)
