@@ -6,7 +6,7 @@ import Language.Haskell.Exts
 import qualified Data.Text as T
 import System.Log.Logger
 import Control.Monad
-import Control.Monad.Writer
+import Control.Monad.Writer (Writer, execWriter, tell)
 import Data.Either
 import Data.Char (toLower, isUpper, isSpace, isAlphaNum)
 import Text.Printf (printf)
