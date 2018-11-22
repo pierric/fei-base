@@ -10,6 +10,11 @@ import MXNet.Base.Types (Device(..), DType)
 
 newtype NDArray a = NDArray { unNDArray :: I.NDArrayHandle}
 
+makeEmptyNDArray :: DType a => [Int] -> Device -> IO (NDArray a)
+makeEmptyNDArray shape ctx = do
+    array <- I.mxNDArrayCreate shape (_device_type ctx) (_device_id ctx) False
+    return $ NDArray array
+
 makeNDArray :: DType a => [Int] -> Device -> Vector a -> IO (NDArray a)
 makeNDArray shape ctx vec = do
     array <- I.mxNDArrayCreate shape (_device_type ctx) (_device_id ctx) False
