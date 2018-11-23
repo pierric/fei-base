@@ -62,18 +62,20 @@ makeParamInst symname typs symbolapi =
     symname_with_appendix = symname ++ (if symbolapi then "(symbol)" else "(ndarray)")
     paramList = map (\(name, typ1, typ2) -> tyPromotedTuple [tyPromotedStr name, tyApp typ1 typ2]) typs
 
-makeSignature :: String -> Bool -> Decl ()
-makeSignature symname symbolapi = 
-    let (appendix, rettype, maketype) = 
-            if symbolapi then
-                ("(symbol)", tyCon $ unQual $ name "SymbolHandle", tyFun (tyCon $ unQual $ name "String"))
-            else
-                ("(ndarray)", tyList $ tyCon $ unQual $ name "NDArrayHandle", id)
+data GenFlag = GenSymbolOp | GenNDArrayReturn | GenNDArrayUpdate
+
+makeSignature :: String -> GenFlag -> Decl ()
+makeSignature symname flag = 
+    let (funname, appendix, rettype, maketype) = 
+            case flag of
+              GenSymbolOp      -> (symname, "(symbol)", tyCon $ unQual $ name "SymbolHandle", tyFun (tyCon $ unQual $ name "String"))
+              GenNDArrayReturn -> (symname, "(ndarray)", tyList $ tyCon $ unQual $ name "NDArrayHandle", id)
+              GenNDArrayUpdate -> (symname ++ "_upd", "(ndarray)", unit_tycon (), tyFun (tyList $ tyCon $ unQual $ name "NDArrayHandle"))
         symname_with_appendix = symname ++ appendix
         cxfullfill = appA (name "Fullfilled") [tyPromotedStr symname_with_appendix, tyVarIdent "args"]
         fun = tyFun (tyApp (tyApp (tyCon $ unQual $ name "ArgsHMap") (tyPromotedStr symname_with_appendix)) (tyVarIdent "args")) 
                     (tyApp (tyCon $ unQual $ name "IO") rettype)
-    in tySig [name symname] $ tyForall [unkindedVar (name "args")] (cxSingle cxfullfill) $ (maketype fun)
+    in tySig [name funname] $ tyForall [unkindedVar (name "args")] (cxSingle cxfullfill) $ (maketype fun)
 
 genSymOp :: AtomicSymbolCreator -> IO [Decl ()]
 genSymOp sc = do
@@ -99,7 +101,7 @@ genSymOp sc = do
             return []
         else do
             let paramListInst = makeParamInst symname_ (scalarTypes ++ tensorTypes ++ arrayTypes) True
-                sig = makeSignature symname_ True
+                sig = makeSignature symname_ GenSymbolOp
             let fun = sfun (name symname_) [name "name", name "args"] (UnGuardedRhs () body) Nothing
                 body =  letE ([
                           patBind (pvar $ name "scalarArgs") (function "catMaybes" 
@@ -175,9 +177,16 @@ genArrOp sc = do
             return []
         else do
             let paramListInst = makeParamInst symname_ (scalarTypes ++ tensorTypes ++ arrayTypes) False
-                sig = makeSignature symname_ False
-            let fun = sfun (name symname_) [name "args"] (UnGuardedRhs () body) Nothing
-                body =  letE ([
+                sig1 = makeSignature symname_ GenNDArrayReturn
+                sig2 = makeSignature symname_ GenNDArrayUpdate
+            let fun1 = sfun (name symname_) [name "args"] 
+                        (UnGuardedRhs () (body (lastArgOfInvoke GenNDArrayReturn) True)) Nothing
+                fun2 = sfun (name $ symname_ ++ "_upd") [name "outputs", name "args"] 
+                        (UnGuardedRhs () (body (lastArgOfInvoke GenNDArrayUpdate) False)) Nothing
+                lastArgOfInvoke GenNDArrayReturn = con $ unQual $ name "Nothing"
+                lastArgOfInvoke GenNDArrayUpdate = (con $ unQual $ name "Just") `app` (var $ name "outputs")
+                body lastarg retval =  
+                    letE ([
                           patBind (pvar $ name "scalarArgs") (function "catMaybes" 
                             `app` listE [
                                 infixApp (infixApp (tupleSection [Just $ strE argkey, Nothing]) (op $ sym ".") (function "showValue")) (op $ sym "<$>") $ 
@@ -203,7 +212,8 @@ genArrOp sc = do
                                       `app` (function "fromOpHandle" `app` (var $ name "op"))
                                       `app` (var $ name "tensorvals")
                                       `app` (var $ name $ "scalarArgs")
-                                      `app` (con $ unQual $ name "Nothing") ]
+                                      `app` lastarg 
+                                  ]
                               else 
                                   [ letStmt [
                                         patBind (pvar $ name "scalarArgs'") (
@@ -214,14 +224,14 @@ genArrOp sc = do
                                                                 `app` (function "showValue" `app` (function "length" `app` (var $ name "array")))
                                                 in infixApp key_var (QConOp () $ Special () $ Cons ()) (var $ name $ "scalarArgs"))
                                         )]
-                                  , genStmt (pvar $ name "listndarr") $ (function "mxImperativeInvoke"
+                                  , genStmt (pvar $ name "listndarr") $ function "mxImperativeInvoke"
                                                   `app` (function "fromOpHandle" `app` (var $ name "op"))
                                                   `app` (var $ name "array")
                                                   `app` (var $ name $ "scalarArgs'")
-                                                  `app` (con $ unQual $ name "Nothing"))
+                                                  `app` lastarg
                                   ]) ++
-                            [ qualStmt $ function "return" `app` (var $ name "listndarr") ])
-            return [paramListInst, sig, fun]
+                            [ qualStmt $ function "return" `app` (if retval then var $ name "listndarr" else unit_con ()) ])
+            return [paramListInst, sig1, fun1, sig2, fun2]
 
 normalizeName :: String -> String
 normalizeName name@(c:cs) 

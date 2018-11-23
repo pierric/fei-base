@@ -47,3 +47,8 @@ toVector arr = do
     mvec <- VMut.new nlen
     VMut.unsafeWith mvec $ \p -> I.mxNDArraySyncCopyToCPU (unNDArray arr) (castPtr p) nlen
     V.unsafeFreeze mvec
+
+device :: DType a => NDArray a -> IO Device
+device (NDArray handle) = do
+    cxt <- I.mxNDArrayGetContext handle
+    return $ uncurry Device cxt

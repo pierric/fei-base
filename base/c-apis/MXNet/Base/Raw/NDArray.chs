@@ -282,3 +282,17 @@ mxImperativeInvoke creator inputs params outputs = do
                     checked $ mxImperativeInvoke_ creator ninput inputs pn pp nparam keys values
                     peek pn
                 return $ take (fromIntegral n') out
+
+{#
+fun MXNDArrayGetContext as mxNDArrayGetContext_
+    {
+        `NDArrayHandle',
+        alloca- `CInt' peek*,
+        alloca- `CInt' peek*
+    } -> `CInt'
+#}
+
+mxNDArrayGetContext :: NDArrayHandle -> IO (Int, Int)
+mxNDArrayGetContext handle = do
+    (devtyp, devidx) <- checked $ mxNDArrayGetContext_ handle
+    return (fromIntegral devtyp, fromIntegral devidx)
