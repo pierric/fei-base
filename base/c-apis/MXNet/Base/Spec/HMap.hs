@@ -48,6 +48,7 @@ type family InHMap p k kvs :: Bool where
 type family MatchHead p k v kvs where
   MatchHead p k v (p k v ': kvs) = True
   MatchHead p k v (_ ': kvs) = False
+  MatchHead p k v '[] = False
 
 -- class Query (b :: Bool) p k v kvs where
 --     query' :: Proxy b -> HMap p kvs -> Proxy k -> Maybe v
