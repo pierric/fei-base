@@ -27,7 +27,8 @@ library
                        StandaloneDeriving,
                        DeriveGeneric,
                        GeneralizedNewtypeDeriving
-  exposed-modules:     MXNet.Base.Raw,
+  exposed-modules:     MXNet.Base,
+                       MXNet.Base.Raw,
                        MXNet.Base.Types,
                        MXNet.Base.Symbol,
                        MXNet.Base.NDArray,
