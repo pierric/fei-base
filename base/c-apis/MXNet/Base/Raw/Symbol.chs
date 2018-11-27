@@ -322,7 +322,7 @@ mxSymbolInferShape :: SymbolHandle
                    -> [String]
                    -> [Int]
                    -> [Int]
-                   -> IO (Maybe ([[Int]], [[Int]], [[Int]]))
+                   -> IO ([[Int]], [[Int]], [[Int]], Bool)
 mxSymbolInferShape symbol keys arg_ind arg_shape = do
     let num_args' = fromIntegral (length keys)
         arg_ind'  = map fromIntegral arg_ind
@@ -330,23 +330,20 @@ mxSymbolInferShape symbol keys arg_ind arg_shape = do
     (inshape_size , inshape_ndim , inshape_data ,
      outshape_size, outshape_ndim, outshape_data,
      auxshape_size, auxshape_ndim, auxshape_data,
-     succ) <- checked $ mxSymbolInferShape_ symbol num_args' keys arg_ind' arg_shape'
-    if succ == 0 then do
-        let inshape_size' = fromIntegral inshape_size
-        inshape_ndim'    <- peekArray inshape_size' inshape_ndim
-        inshape_data'    <- peekArray inshape_size' inshape_data
-        inshape_data_ret <- mapM (uncurry peekArrayOfUInt) (zip inshape_ndim' inshape_data')
-        let outshape_size'= fromIntegral outshape_size
-        outshape_ndim'   <- peekArray outshape_size' outshape_ndim
-        outshape_data'   <- peekArray outshape_size' outshape_data
-        outshape_data_ret<- mapM (uncurry peekArrayOfUInt) (zip outshape_ndim' outshape_data')
-        let auxshape_size'= fromIntegral auxshape_size
-        auxshape_ndim'   <- peekArray auxshape_size' auxshape_ndim
-        auxshape_data'   <- peekArray auxshape_size' auxshape_data
-        auxshape_data_ret<- mapM (uncurry peekArrayOfUInt) (zip auxshape_ndim' auxshape_data')
-        return . Just $ (inshape_data_ret, outshape_data_ret, auxshape_data_ret)
-    else 
-        return Nothing
+     complete) <- checked $ mxSymbolInferShape_ symbol num_args' keys arg_ind' arg_shape'
+    let inshape_size' = fromIntegral inshape_size
+    inshape_ndim'    <- peekArray inshape_size' inshape_ndim
+    inshape_data'    <- peekArray inshape_size' inshape_data
+    inshape_data_ret <- mapM (uncurry peekArrayOfUInt) (zip inshape_ndim' inshape_data')
+    let outshape_size'= fromIntegral outshape_size
+    outshape_ndim'   <- peekArray outshape_size' outshape_ndim
+    outshape_data'   <- peekArray outshape_size' outshape_data
+    outshape_data_ret<- mapM (uncurry peekArrayOfUInt) (zip outshape_ndim' outshape_data')
+    let auxshape_size'= fromIntegral auxshape_size
+    auxshape_ndim'   <- peekArray auxshape_size' auxshape_ndim
+    auxshape_data'   <- peekArray auxshape_size' auxshape_data
+    auxshape_data_ret<- mapM (uncurry peekArrayOfUInt) (zip auxshape_ndim' auxshape_data')
+    return (inshape_data_ret, outshape_data_ret, auxshape_data_ret, complete == 1)
 
 {#
 fun MXSymbolInferShapePartial as mxSymbolInferShapePartial_ 
@@ -373,7 +370,7 @@ mxSymbolInferShapePartial :: SymbolHandle
                    -> [String]
                    -> [Int]
                    -> [Int]
-                   -> IO (Maybe ([[Int]], [[Int]], [[Int]]))
+                   -> IO ([[Int]], [[Int]], [[Int]], Bool)
 mxSymbolInferShapePartial symbol keys arg_ind arg_shape = do
     let num_args' = fromIntegral (length keys)
         arg_ind'  = map fromIntegral arg_ind
@@ -381,24 +378,20 @@ mxSymbolInferShapePartial symbol keys arg_ind arg_shape = do
     (inshape_size , inshape_ndim , inshape_data ,
      outshape_size, outshape_ndim, outshape_data,
      auxshape_size, auxshape_ndim, auxshape_data,
-     succ) <- checked $ mxSymbolInferShapePartial_ symbol num_args' keys arg_ind' arg_shape'
-    if succ == 0 then do
-        -- let inshape_size' = fromIntegral inshape_size
-        -- inshape_ndim'    <- peekArray inshape_size' inshape_ndim
-        -- inshape_data'    <- peekArray inshape_size' inshape_data
-        -- inshape_data_ret <- mapM (uncurry peekArrayOfUInt) (zip inshape_ndim' inshape_data')
-        -- let outshape_size'= fromIntegral outshape_size
-        -- outshape_ndim'   <- peekArray outshape_size' outshape_ndim
-        -- outshape_data'   <- peekArray outshape_size' outshape_data
-        -- outshape_data_ret<- mapM (uncurry peekArrayOfUInt) (zip outshape_ndim' outshape_data')
-        -- let auxshape_size'= fromIntegral auxshape_size
-        -- auxshape_ndim'   <- peekArray auxshape_size' auxshape_ndim
-        -- auxshape_data'   <- peekArray auxshape_size' auxshape_data
-        -- auxshape_data_ret<- mapM (uncurry peekArrayOfUInt) (zip auxshape_ndim' auxshape_data')
-        -- return . Just $ (inshape_data_ret, outshape_data_ret, auxshape_data_ret)
-        return . Just $ (undefined, undefined, undefined)
-    else 
-        return Nothing
+     complete) <- checked $ mxSymbolInferShapePartial_ symbol num_args' keys arg_ind' arg_shape'
+    let inshape_size' = fromIntegral inshape_size
+    inshape_ndim'    <- peekArray inshape_size' inshape_ndim
+    inshape_data'    <- peekArray inshape_size' inshape_data
+    inshape_data_ret <- mapM (uncurry peekArrayOfUInt) (zip inshape_ndim' inshape_data')
+    let outshape_size'= fromIntegral outshape_size
+    outshape_ndim'   <- peekArray outshape_size' outshape_ndim
+    outshape_data'   <- peekArray outshape_size' outshape_data
+    outshape_data_ret<- mapM (uncurry peekArrayOfUInt) (zip outshape_ndim' outshape_data')
+    let auxshape_size'= fromIntegral auxshape_size
+    auxshape_ndim'   <- peekArray auxshape_size' auxshape_ndim
+    auxshape_data'   <- peekArray auxshape_size' auxshape_data
+    auxshape_data_ret<- mapM (uncurry peekArrayOfUInt) (zip auxshape_ndim' auxshape_data')
+    return (inshape_data_ret, outshape_data_ret, auxshape_data_ret, complete == 1)
 
 peekArrayOfUInt cnt ptr = peekIntegralArray (fromIntegral cnt)  ptr
 

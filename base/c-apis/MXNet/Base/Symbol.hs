@@ -2,7 +2,7 @@ module MXNet.Base.Symbol where
 
 import qualified MXNet.Base.Raw as I
 
-newtype Symbol a = Symbol I.SymbolHandle
+newtype Symbol a = Symbol { unSymbol :: I.SymbolHandle }
 
 listArguments :: Symbol a -> IO [String]
 listArguments (Symbol sym) = I.mxSymbolListArguments sym

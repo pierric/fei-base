@@ -64,7 +64,8 @@ instance Pair (ArgOf s) where
   key   (k := v) = k
   value (k := v) = v
 
-infix 4 !, !?
+infix 5 !, !?
+infix 1 :=
 
 (!) :: Access (MatchHead (ArgOf s) k v kvs) (ArgOf s) k v kvs 
   => ArgsHMap s kvs -> Proxy k -> v
@@ -178,6 +179,11 @@ type family HasReqArg (s :: Symbol) (args :: [*]) (k :: [Symbol]) :: Constraint 
                                         (ParameterType (ResolveParameter s k0)) 
                                         args
                                 , HasElement '(k0, ParameterType (ResolveParameter s k0)) (AsKVs args) ~ True
+                                , Query  (MatchHead (ArgOf s) k0 (ParameterType (ResolveParameter s k0)) args) 
+                                        (ArgOf s) 
+                                        k0 
+                                        (ParameterType (ResolveParameter s k0)) 
+                                        args
                                 , HasReqArg s args ks)
 
 ----

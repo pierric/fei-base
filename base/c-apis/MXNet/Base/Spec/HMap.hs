@@ -24,7 +24,7 @@ data HMap (p :: Symbol -> * -> *) (kvs :: [*]) where
   Nil  :: Pair p => HMap p '[]
   Cons :: Pair p => p k v -> HMap p kvs -> HMap p (p k v ': kvs)
 
-infixr 8 .& 
+infixr 0 .& 
 kv .& other = Cons kv other
 
 class Access (b :: Bool) p k v kvs | k kvs -> v where

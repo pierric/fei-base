@@ -3,11 +3,12 @@ module MXNet.Base.Raw.Executor where
 
 import Foreign.Marshal (alloca, withArray, peekArray)
 import Foreign.Storable (Storable(..))
-import Foreign.ForeignPtr (newForeignPtr, touchForeignPtr)
+import Foreign.ForeignPtr (newForeignPtr, newForeignPtr_, touchForeignPtr)
 import Foreign.ForeignPtr.Unsafe (unsafeForeignPtrToPtr)
 import C2HS.C.Extra.Marshal (withIntegralArray, peekIntegralArray, withStringArray, peekString, peekStringArray)
 import GHC.Generics (Generic)
 import Control.Monad ((>=>))
+import Data.Maybe (fromMaybe)
 
 {# import MXNet.Base.Raw.Common #}
 {# import MXNet.Base.Raw.NDArray #}
@@ -126,16 +127,20 @@ fun MXExecutorBind as mxExecutorBind_
     } -> `CInt'
 #}
 
+makeNullNDArrayHandle = NDArrayHandle <$> newForeignPtr_ C2HSImp.nullPtr
+
 mxExecutorBind :: SymbolHandle
                -> Int 
                -> Int
                -> [NDArrayHandle]
-               -> [NDArrayHandle]
+               -> [Maybe NDArrayHandle]
                -> [Int]
                -> [NDArrayHandle]
                -> IO ExecutorHandle
-mxExecutorBind symbol devtype devid in_args arg_grad_store grad_req_type aux_states =
-    checked $ mxExecutorBind_ symbol devtype_ devid_ cnt_args in_args arg_grad_store grad_req_type_ cnt_auxs aux_states
+mxExecutorBind symbol devtype devid in_args arg_grad_store grad_req_type aux_states = do
+    nullNDArrayHandle <- makeNullNDArrayHandle
+    let arg_grad_store_ = map (fromMaybe nullNDArrayHandle) arg_grad_store
+    checked $ mxExecutorBind_ symbol devtype_ devid_ cnt_args in_args arg_grad_store_ grad_req_type_ cnt_auxs aux_states
   where
     devtype_ = fromIntegral devtype
     devid_   = fromIntegral devid
@@ -170,12 +175,14 @@ mxExecutorBindX :: SymbolHandle
                 -> [Int]
                 -> [Int]
                 -> [NDArrayHandle]
-                -> [NDArrayHandle]
+                -> [Maybe NDArrayHandle]
                 -> [Int]
                 -> [NDArrayHandle]
                 -> IO ExecutorHandle
-mxExecutorBindX symbol devtype devid map_keys map_dev_types map_dev_ids in_args arg_grad_store grad_req_type aux_states =
-    checked $ mxExecutorBindX_ symbol devtype_ devid_ cnt_maps map_keys map_dev_types_ map_dev_ids_ cnt_args in_args arg_grad_store grad_req_type_ cnt_auxs aux_states
+mxExecutorBindX symbol devtype devid map_keys map_dev_types map_dev_ids in_args arg_grad_store grad_req_type aux_states = do
+    nullNDArrayHandle <- makeNullNDArrayHandle
+    let arg_grad_store_ = map (fromMaybe nullNDArrayHandle) arg_grad_store
+    checked $ mxExecutorBindX_ symbol devtype_ devid_ cnt_maps map_keys map_dev_types_ map_dev_ids_ cnt_args in_args arg_grad_store_ grad_req_type_ cnt_auxs aux_states
   where
     devtype_ = fromIntegral devtype
     devid_   = fromIntegral devid
@@ -214,13 +221,15 @@ mxExecutorBindEX :: SymbolHandle
                  -> [Int]
                  -> [Int]
                  -> [NDArrayHandle]
-                 -> [NDArrayHandle]
+                 -> [Maybe NDArrayHandle]
                  -> [Int]
                  -> [NDArrayHandle]
                  -> ExecutorHandle
                  -> IO ExecutorHandle
-mxExecutorBindEX symbol devtype devid map_keys map_dev_types map_dev_ids in_args arg_grad_store grad_req_type aux_states shared_exec =
-    checked $ mxExecutorBindEX_ symbol devtype_ devid_ cnt_maps map_keys map_dev_types_ map_dev_ids_ cnt_args in_args arg_grad_store grad_req_type_ cnt_auxs aux_states shared_exec
+mxExecutorBindEX symbol devtype devid map_keys map_dev_types map_dev_ids in_args arg_grad_store grad_req_type aux_states shared_exec = do
+    nullNDArrayHandle <- makeNullNDArrayHandle
+    let arg_grad_store_ = map (fromMaybe nullNDArrayHandle) arg_grad_store
+    checked $ mxExecutorBindEX_ symbol devtype_ devid_ cnt_maps map_keys map_dev_types_ map_dev_ids_ cnt_args in_args arg_grad_store_ grad_req_type_ cnt_auxs aux_states shared_exec
   where
     devtype_ = fromIntegral devtype
     devid_   = fromIntegral devid
