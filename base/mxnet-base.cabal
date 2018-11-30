@@ -38,7 +38,8 @@ library
   other-modules:       MXNet.Base.Raw.Common,
                        MXNet.Base.Raw.NDArray,
                        MXNet.Base.Raw.Symbol,
-                       MXNet.Base.Raw.Executor
+                       MXNet.Base.Raw.Executor,
+                       MXNet.Base.Raw.DataIter
   extra-libraries:     mxnet
 
 executable mxnet-op-gen
