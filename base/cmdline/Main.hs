@@ -281,9 +281,10 @@ resolveHaskellType asSymbol symname desc =
                     other -> error ("cannot parse type description: " ++ str)
 
     fields = runP desc
-    optional = ParamDescItem "optional" `elem` fields
+    -- optional = ParamDescItem "optional" `elem` fields
+    required = ParamDescItem "required" `elem` fields
     symname_ = normalizeName symname
-    attr = tyCon $ unQual $ name $ if optional then "AttrOpt" else "AttrReq"
+    attr = tyCon $ unQual $ name $ if required then "AttrReq" else "AttrOpt"
     scalar hstyp = tell ([], [(symname_, attr, hstyp)], [], [])
     symbol hstyp = tell ([], [], [(symname_, attr, hstyp)], [])
     array  hstyp = tell ([], [], [], [(symname_, attr, hstyp)])

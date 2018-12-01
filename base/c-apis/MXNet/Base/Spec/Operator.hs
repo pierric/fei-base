@@ -162,30 +162,47 @@ type family Fullfilled (s :: Symbol) (args :: [*]) :: Constraint where
                       , GenAccess s args (FilterRequired (ParameterList s))
                       , GenQuery  s args (AllArgs (ParameterList s)))
 
-type family HasOptArg (s :: Symbol) (args :: [*]) (k :: [Symbol]) :: Constraint where
-  HasOptArg s args '[] = ()
-  HasOptArg s args (k0 ': ks) = ( Query (MatchHead (ArgOf s) k0 (ParameterType (ResolveParameter s k0)) args) 
-                                        (ArgOf s) 
-                                        k0 
-                                        (ParameterType (ResolveParameter s k0)) 
-                                        args
-                                , HasOptArg s args ks)
+-- type family HasOptArg (s :: Symbol) (args :: [*]) (k :: [Symbol]) :: Constraint where
+--   HasOptArg s args '[] = ()
+--   HasOptArg s args (k0 ': ks) = ( Query (MatchHead (ArgOf s) k0 (ParameterType (ResolveParameter s k0)) args) 
+--                                         (ArgOf s) 
+--                                         k0 
+--                                         (ParameterType (ResolveParameter s k0)) 
+--                                         args
+--                                 , HasOptArg s args ks)
 
-type family HasReqArg (s :: Symbol) (args :: [*]) (k :: [Symbol]) :: Constraint where
-  HasReqArg s args '[] = ()
-  HasReqArg s args (k0 ': ks) = ( Access (MatchHead (ArgOf s) k0 (ParameterType (ResolveParameter s k0)) args) 
-                                        (ArgOf s) 
-                                        k0 
-                                        (ParameterType (ResolveParameter s k0)) 
-                                        args
-                                , HasElement '(k0, ParameterType (ResolveParameter s k0)) (AsKVs args) ~ True
-                                , Query  (MatchHead (ArgOf s) k0 (ParameterType (ResolveParameter s k0)) args) 
-                                        (ArgOf s) 
-                                        k0 
-                                        (ParameterType (ResolveParameter s k0)) 
-                                        args
-                                , HasReqArg s args ks)
+-- type family HasReqArg (s :: Symbol) (args :: [*]) (k :: [Symbol]) :: Constraint where
+--   HasReqArg s args '[] = ()
+--   HasReqArg s args (k0 ': ks) = ( Access (MatchHead (ArgOf s) k0 (ParameterType (ResolveParameter s k0)) args) 
+--                                         (ArgOf s) 
+--                                         k0 
+--                                         (ParameterType (ResolveParameter s k0)) 
+--                                         args
+--                                 , HasElement '(k0, ParameterType (ResolveParameter s k0)) (AsKVs args) ~ True
+--                                 , Query  (MatchHead (ArgOf s) k0 (ParameterType (ResolveParameter s k0)) args) 
+--                                         (ArgOf s) 
+--                                         k0 
+--                                         (ParameterType (ResolveParameter s k0)) 
+--                                         args
+--                                 , HasReqArg s args ks)
 
+type family HasArgsGen p i k args :: Constraint where
+  HasArgsGen p (AttrOpt t) k args = Query (MatchHead p k t args) p k t args
+  HasArgsGen p (AttrReq t) k args = (Access (MatchHead p k t args) p k t args
+                                    ,HasElement '(k, t) (AsKVs args) ~ True
+                                    ,Query (MatchHead p k t args) p k t args)
+
+type family HasArgs (s :: Symbol) (args :: [*]) (k :: [Symbol]) :: Constraint where
+  HasArgs s args '[] = ()
+  HasArgs s args (k0 ': ks) = (HasArgsGen (ArgOf s) (ResolveParameter s k0) k0 args, HasArgs s args ks)
+
+type family WithoutArgsGen p t k args :: Constraint where
+  WithoutArgsGen p t k args = (Query (MatchHead p k t args) p k t args
+                              ,HasElement '(k, t) (AsKVs args) ~ False)
+
+type family WithoutArgs (s :: Symbol) (args :: [*]) (k :: [Symbol]) :: Constraint where
+  WithoutArgs s args '[] = ()
+  WithoutArgs s args (k0 ': ks) = (WithoutArgsGen (ArgOf s) (ParameterType (ResolveParameter s k0)) k0 args, WithoutArgs s args ks)
 ----
 type family HasElement (s :: k) (l :: [k]) :: Bool where
   HasElement s (s ': _) = True
@@ -226,5 +243,8 @@ fn2 :: GenQuery "fn" args '[ '("b", String), '("d", (Maybe (EnumType '["c1","c2"
     => ArgsHMap "fn" args -> _
 fn2 args = fn1 (#a := 3 .& #c := #c1 .& args)
 
-fn3 :: (HasOptArg "fn" args '["b", "c", "d"], HasReqArg "fn" args '["c"]) => ArgsHMap "fn" args -> _
+fn3 :: (HasArgs "fn" args '["b", "c", "d"]) => ArgsHMap "fn" args -> _
 fn3 args = fn1 (#a := 3 .& args)
+
+fn4 :: (HasArgs "fn" args '["c", "b", "d"], WithoutArgs "fn" args '["a"]) => ArgsHMap "fn" args -> _
+fn4 args = fn1 (#a := 3 .& args)
