@@ -3,8 +3,9 @@ module MXNet.Base.Raw.Common where
 import Control.Exception.Base (Exception, throwIO)
 import Data.Typeable (Typeable)
 import Data.Tuple.Ops (Unconsable, uncons)
-import Foreign.Marshal (alloca, peekArray)
+import Foreign.Marshal (alloca, peekArray, withArray)
 import Foreign.Storable (Storable(..))
+import Foreign.C (withCString)
 import C2HS.C.Extra.Marshal (peekString, peekStringArray)
 import GHC.Generics (Generic)
 import Data.Word (Word64)
@@ -30,6 +31,12 @@ checked call = do
       then do err <- mxGetLastError
               throwIO $ MXNetError err
       else return ret
+
+withStringArray :: [String] -> (Ptr (Ptr CChar) -> IO a) -> IO a
+withStringArray strs act = go strs []
+  where
+    go [] all = withArray (reverse all) act
+    go (s:ss) all = withCString s (go ss . (:all))
 
 #include <mxnet/c_api.h>
 #include <nnvm/c_api.h>

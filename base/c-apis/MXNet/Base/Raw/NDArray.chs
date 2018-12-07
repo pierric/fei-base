@@ -5,7 +5,7 @@ import Foreign.Marshal (alloca, withArray, peekArray)
 import Foreign.Storable (Storable(..))
 import Foreign.ForeignPtr (newForeignPtr, touchForeignPtr)
 import Foreign.ForeignPtr.Unsafe (unsafeForeignPtrToPtr)
-import C2HS.C.Extra.Marshal (withIntegralArray, withStringArray)
+import C2HS.C.Extra.Marshal (withIntegralArray)
 import GHC.Generics (Generic)
 import Control.Monad ((>=>))
 
