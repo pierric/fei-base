@@ -4,7 +4,7 @@ import Data.Typeable (Typeable)
 import Foreign.Marshal (alloca, peekArray)
 import Foreign.Storable (Storable(..))
 import Foreign.ForeignPtr (newForeignPtr, finalizeForeignPtr)
-import C2HS.C.Extra.Marshal (peekString, peekStringArray, peekIntegralArray, withStringArray)
+import C2HS.C.Extra.Marshal (peekString, peekStringArray, peekIntegralArray)
 import GHC.Generics (Generic)
 import Control.Monad ((>=>))
 
