@@ -1,6 +1,6 @@
 module Main where
 
-import Options.Applicative
+import Options.Applicative hiding (optional)
 import Data.Semigroup ((<>))
 import Language.Haskell.Exts
 import qualified Data.Text as T
@@ -243,78 +243,81 @@ data ParamDesc = ParamDescItem String | ParamDescList Bool [String] deriving (Eq
 
 type ResolvedType = (String, Type (), Type ())
 resolveHaskellType :: Bool -> String -> String -> Writer ([(String, String)], [ResolvedType], [ResolvedType], [ResolvedType]) ()
-resolveHaskellType asSymbol symname desc =
-    case head fields of 
-        ParamDescItem "Shape(tuple)"        -> scalar $ tyList $ tyCon $ unQual $ name "Int"
-        ParamDescItem "int"                 -> scalar $ tyCon $ unQual $ name "Int"
-        ParamDescItem "int (non-negative)"  -> scalar $ tyCon $ unQual $ name "Int"
-        ParamDescItem "long (non-negative)" -> scalar $ tyCon $ unQual $ name "Int"
-        ParamDescItem "boolean"             -> scalar $ tyCon $ unQual $ name "Bool"
-        ParamDescItem "float"               -> scalar $ tyCon $ unQual $ name "Float"
-        ParamDescItem "double"              -> scalar $ tyCon $ unQual $ name "Double"
-        ParamDescItem "float32"             -> scalar $ tyCon $ unQual $ name "Float"
-        -- real_t (from mshadow) is by default float.
-        ParamDescItem "real_t"              -> scalar $ tyCon $ unQual $ name "Float"
-        ParamDescItem "string"              -> scalar $ tyCon $ unQual $ name "String"
-        ParamDescItem "int or None"         -> scalar $ tyApp (tyCon $ unQual $ name "Maybe") (tyCon $ unQual $ name "Int")
-        ParamDescItem "double or None"      -> scalar $ tyApp (tyCon $ unQual $ name "Maybe") (tyCon $ unQual $ name "Double")
-        ParamDescItem "tuple of <float>"    -> scalar $ tyList $ tyCon $ unQual $ name "Float"
-        ParamDescItem "tuple of <double>"   -> scalar $ tyList $ tyCon $ unQual $ name "Double"
-        ParamDescList hasnone vs -> do
-            let vsprom = map tyPromotedStr vs
-                typ1 = tyApp (tyCon $ unQual $ name "EnumType") (tyPromotedList vsprom)
-                typ2 = tyApp (tyCon $ unQual $ name "Maybe") typ1
-            scalar $ if hasnone then typ2 else typ1
+resolveHaskellType asSymbol symname desc = do
+    let fail   msg   = tell ([(symname, msg)], [], [], [])
+    case readP_to_S typedesc desc of 
+        [(fields, "")] -> do
+            let required = ParamDescItem "required" `elem` fields
+                attr = tyCon $ unQual $ name $ if required then "AttrReq" else "AttrOpt"
+                scalar hstyp = tell ([], [(symname_, attr, hstyp)], [], [])
+                symbol hstyp = tell ([], [], [(symname_, attr, hstyp)], [])
+                array  hstyp = tell ([], [], [], [(symname_, attr, hstyp)])
+                symname_ = normalizeName symname
+                --
+                -- symbol operators
+                --
+                -- operator can have only one argument of the type symbol or ndarray array
+                -- and not having any other argument of symbol or ndarray
+                -- besides the operator's info must definitely have a key_var_num_args, which
+                -- indicates an (might be additional) argument which should be passed to mxSymbolCreateAtomicSymbol.
+                handleSymbol (ParamDescItem "Symbol")              = symbol $ tyCon $ unQual $ name "SymbolHandle"
+                handleSymbol (ParamDescItem "NDArray-or-Symbol")   = symbol $ tyCon $ unQual $ name "SymbolHandle"
+                handleSymbol (ParamDescItem "Symbol[]")            = array $ tyList $ tyCon $ unQual $ name "SymbolHandle"
+                handleSymbol (ParamDescItem "NDArray-or-Symbol[]") = array $ tyList $ tyCon $ unQual $ name "SymbolHandle"
+                handleSymbol (ParamDescItem "Symbol or Symbol[]")  = array $ tyList $ tyCon $ unQual $ name "SymbolHandle"
+                handleSymbol (ParamDescItem "NDArray")             = fail $ printf "NDArrayHandle arg: %s" symname
+                handleSymbol t = fallThrough t
+                --
+                -- ndarray operators
+                --
+                handleNDArray (ParamDescItem "NDArray-or-Symbol")   = symbol $ tyCon $ unQual $ name "NDArrayHandle"
+                handleNDArray (ParamDescItem "NDArray-or-Symbol[]") = array $ tyList $ tyCon $ unQual $ name "NDArrayHandle"
+                handleNDArray (ParamDescItem "Symbol or Symbol[]")  = array $ tyList $ tyCon $ unQual $ name "NDArrayHandle"
+                handleNDArray (ParamDescItem "NDArray")             = symbol $ tyCon $ unQual $ name "NDArrayHandle"
+                handleNDArray (ParamDescItem "Symbol")              = fail $ printf "SymbolHandle arg: %s" symname
+                handleNDArray (ParamDescItem "Symbol[]")            = fail $ printf "SymbolHandle[] arg: %s" symname
+                handleNDArray t = fallThrough t
+        
+                fallThrough t = fail $ printf "Unknown type: arg %s(%s)." symname desc
+        
+            case head fields of 
+                ParamDescItem "Shape(tuple)"        -> scalar $ tyList $ tyCon $ unQual $ name "Int"
+                ParamDescItem "int"                 -> scalar $ tyCon $ unQual $ name "Int"
+                ParamDescItem "int (non-negative)"  -> scalar $ tyCon $ unQual $ name "Int"
+                ParamDescItem "long (non-negative)" -> scalar $ tyCon $ unQual $ name "Int"
+                ParamDescItem "boolean"             -> scalar $ tyCon $ unQual $ name "Bool"
+                ParamDescItem "float"               -> scalar $ tyCon $ unQual $ name "Float"
+                ParamDescItem "double"              -> scalar $ tyCon $ unQual $ name "Double"
+                ParamDescItem "float32"             -> scalar $ tyCon $ unQual $ name "Float"
+                -- real_t (from mshadow) is by default float.
+                ParamDescItem "real_t"              -> scalar $ tyCon $ unQual $ name "Float"
+                ParamDescItem "string"              -> scalar $ tyCon $ unQual $ name "String"
+                ParamDescItem "int or None"         -> scalar $ tyApp (tyCon $ unQual $ name "Maybe") (tyCon $ unQual $ name "Int")
+                ParamDescItem "float or None"       -> scalar $ tyApp (tyCon $ unQual $ name "Maybe") (tyCon $ unQual $ name "Float")
+                ParamDescItem "double or None"      -> scalar $ tyApp (tyCon $ unQual $ name "Maybe") (tyCon $ unQual $ name "Double")
+                ParamDescItem "boolean or None"     -> scalar $ tyApp (tyCon $ unQual $ name "Maybe") (tyCon $ unQual $ name "Bool")
+                ParamDescItem "Shape or None"       -> scalar $ tyApp (tyCon $ unQual $ name "Maybe") (tyList $ tyCon $ unQual $ name "Int")
+                ParamDescItem "tuple of <float>"    -> scalar $ tyList $ tyCon $ unQual $ name "Float"
+                ParamDescItem "tuple of <double>"   -> scalar $ tyList $ tyCon $ unQual $ name "Double"
+                ParamDescList hasnone vs -> do
+                    let vsprom = map tyPromotedStr vs
+                        typ1 = tyApp (tyCon $ unQual $ name "EnumType") (tyPromotedList vsprom)
+                        typ2 = tyApp (tyCon $ unQual $ name "Maybe") typ1
+                    scalar $ if hasnone then typ2 else typ1
+                t -> (if asSymbol then handleSymbol else handleNDArray) t
+        other -> fail (printf "cannot parse type description: %s" desc)
 
-        t -> (if asSymbol then handleSymbol else handleNDArray) t
+typedesc = do
+    -- since 1.3, there are types starting with ',', and it implies 'int' type.
+    def <- (char ',' >> return [ParamDescItem "int"]) <++ return []
+    ds <- sepBy (skipSpaces >> (list1 +++ list2 +++ item)) (char ',')
+    eof
+    return $ def ++ ds
   where
-    typedesc = do
-        ds <- sepBy (skipSpaces >> (list1 +++ list2 +++ item)) (char ',')
-        eof
-        return ds
     list1 = ParamDescList True  <$> between (string "{None,") (char '}') (sepBy (skipSpaces >> listItem) (char ','))
     list2 = ParamDescList False <$> between (string "{") (char '}') (sepBy (skipSpaces >> listItem) (char ','))
     listItem = between (char '\'') (char '\'') (munch1 (\c -> isAlphaNum c || c `elem` "_"))
     item = ParamDescItem <$> munch1 (\c -> isAlphaNum c || c `elem` " _-()=[]<>'.")
-    runP str = case readP_to_S typedesc str of 
-                    [(xs, "")] -> xs
-                    other -> error ("cannot parse type description: " ++ str)
-
-    fields = runP desc
-    -- optional = ParamDescItem "optional" `elem` fields
-    required = ParamDescItem "required" `elem` fields
-    symname_ = normalizeName symname
-    attr = tyCon $ unQual $ name $ if required then "AttrReq" else "AttrOpt"
-    scalar hstyp = tell ([], [(symname_, attr, hstyp)], [], [])
-    symbol hstyp = tell ([], [], [(symname_, attr, hstyp)], [])
-    array  hstyp = tell ([], [], [], [(symname_, attr, hstyp)])
-    fail   msg   = tell ([(symname, msg)], [], [], [])
-    --
-    -- symbol operators
-    --
-    -- operator can have only one argument of the type symbol or ndarray array
-    -- and not having any other argument of symbol or ndarray
-    -- besides the operator's info must definitely have a key_var_num_args, which
-    -- indicates an (might be additional) argument which should be passed to mxSymbolCreateAtomicSymbol.
-    handleSymbol (ParamDescItem "Symbol")              = symbol $ tyCon $ unQual $ name "SymbolHandle"
-    handleSymbol (ParamDescItem "NDArray-or-Symbol")   = symbol $ tyCon $ unQual $ name "SymbolHandle"
-    handleSymbol (ParamDescItem "Symbol[]")            = array $ tyList $ tyCon $ unQual $ name "SymbolHandle"
-    handleSymbol (ParamDescItem "NDArray-or-Symbol[]") = array $ tyList $ tyCon $ unQual $ name "SymbolHandle"
-    handleSymbol (ParamDescItem "Symbol or Symbol[]")  = array $ tyList $ tyCon $ unQual $ name "SymbolHandle"
-    handleSymbol (ParamDescItem "NDArray")             = fail $ printf "NDArrayHandle arg: %s" symname
-    handleSymbol t = fallThrough t
-    --
-    -- ndarray operators
-    --
-    handleNDArray (ParamDescItem "NDArray-or-Symbol")   = symbol $ tyCon $ unQual $ name "NDArrayHandle"
-    handleNDArray (ParamDescItem "NDArray-or-Symbol[]") = array $ tyList $ tyCon $ unQual $ name "NDArrayHandle"
-    handleNDArray (ParamDescItem "Symbol or Symbol[]")  = array $ tyList $ tyCon $ unQual $ name "NDArrayHandle"
-    handleNDArray (ParamDescItem "NDArray")             = symbol $ tyCon $ unQual $ name "NDArrayHandle"
-    handleNDArray (ParamDescItem "Symbol")              = fail $ printf "SymbolHandle arg: %s" symname
-    handleNDArray (ParamDescItem "Symbol[]")            = fail $ printf "SymbolHandle[] arg: %s" symname
-    handleNDArray t = fallThrough t
-
-    fallThrough t = fail $ printf "Unknown type: arg %s(%s)." symname desc
 
 unQual = UnQual ()
 unkindedVar = UnkindedVar ()
