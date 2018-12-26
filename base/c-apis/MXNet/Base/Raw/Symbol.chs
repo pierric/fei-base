@@ -431,6 +431,18 @@ mxSymbolInferType symbol keys arg_type = do
     else
         return Nothing
 
+{#
+fun MXSymbolSaveToFile as mxSymbolSaveToFile_
+    {
+        `SymbolHandle',
+        `String'
+    } -> `CInt'
+#}
+
+mxSymbolSaveToFile :: String -> SymbolHandle -> IO ()
+mxSymbolSaveToFile filename sym = do
+    checked $ mxSymbolSaveToFile_ sym filename
+
 -- {#
 -- fun as 
 --     {
