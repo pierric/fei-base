@@ -296,3 +296,20 @@ mxNDArrayGetContext :: NDArrayHandle -> IO (Int, Int)
 mxNDArrayGetContext handle = do
     (devtyp, devidx) <- checked $ mxNDArrayGetContext_ handle
     return (fromIntegral devtyp, fromIntegral devidx)
+
+
+{#
+fun MXNDArraySave as mxNDArraySave_ 
+    {
+        `String',
+        `MX_UINT',
+        withNDArrayHandleArray* `[NDArrayHandle]',
+        withStringArray* `[String]'
+    } -> `CInt'
+#}
+
+mxNDArraySave ::  String -> [(String, NDArrayHandle)] -> IO ()
+mxNDArraySave filename keyvals = do
+    let num = length keyvals
+        (keys, vals) = unzip keyvals
+    checked $ mxNDArraySave_ filename (fromIntegral num) vals keys
