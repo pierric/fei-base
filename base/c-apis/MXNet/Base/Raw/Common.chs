@@ -6,17 +6,14 @@ import Data.Tuple.Ops (Unconsable, uncons)
 import Foreign.Marshal (alloca, peekArray, withArray)
 import Foreign.Storable (Storable(..))
 import Foreign.C (withCString)
+import Foreign.C.Types
+import Foreign.Ptr
 import C2HS.C.Extra.Marshal (peekString, peekStringArray)
 import GHC.Generics (Generic)
 import Data.Word (Word64)
 
 type MX_UINT  = C2HSImp.CUInt
 type MX_CCHAR = C2HSImp.CChar
-type Ptr      = C2HSImp.Ptr
-type CSize    = C2HSImp.CSize
-type CInt     = C2HSImp.CInt
-type CChar    = C2HSImp.CChar
-type UINT64   = Word64
 
 data MXNetError = MXNetError String
     deriving (Typeable, Show)
