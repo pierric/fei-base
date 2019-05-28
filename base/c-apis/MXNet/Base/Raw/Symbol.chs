@@ -1,8 +1,12 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 module MXNet.Base.Raw.Symbol where
 
-import Foreign.Marshal (alloca, withArray, peekArray)
+import Foreign.Marshal (alloca, withArray, peekArray, allocaBytesAligned)
 import Foreign.Storable (Storable(..))
+import Foreign.Ptr (FunPtr)
+import Foreign.C.Types
+import Foreign.C.String
+import Foreign.Ptr
 import Foreign.ForeignPtr (newForeignPtr, touchForeignPtr)
 import Foreign.ForeignPtr.Unsafe (unsafeForeignPtrToPtr)
 import C2HS.C.Extra.Marshal (withIntegralArray, peekIntegralArray, peekString, peekStringArray)
@@ -442,6 +446,58 @@ fun MXSymbolSaveToFile as mxSymbolSaveToFile_
 mxSymbolSaveToFile :: String -> SymbolHandle -> IO ()
 mxSymbolSaveToFile filename sym = do
     checked $ mxSymbolSaveToFile_ sym filename
+
+data MXCallbackList = MXCallbackList Int (Ptr (FunPtr (IO CInt))) (Ptr (Ptr ()))
+
+instance Storable MXCallbackList where
+    sizeOf _ = {#sizeof MXCallbackList#}
+    alignment _ = {#alignof MXCallbackList#}
+    peek ptr = do
+        n <- {#get MXCallbackList.num_callbacks#} ptr
+        callbacks <- {#get MXCallbackList.callbacks#} ptr
+        contexts  <- {#get MXCallbackList.contexts#} ptr
+        return (MXCallbackList (fromIntegral n) callbacks contexts)
+    poke ptr (MXCallbackList n callbacks contexts) = do
+        {#set MXCallbackList.num_callbacks#} ptr (fromIntegral n)
+        {#set MXCallbackList.callbacks#} ptr callbacks
+        {#set MXCallbackList.contexts#}  ptr contexts
+
+type CustomOpPropCreator          = CString -> CInt -> Ptr CString -> Ptr CString -> Ptr () -> IO CInt
+type CustomOpFBFunc               = CInt -> Ptr (Ptr ()) -> Ptr CInt -> Ptr CInt -> CInt -> Ptr () -> IO CInt
+type CustomOpDelFunc              = Ptr () -> IO CInt
+type CustomOpListFunc             = Ptr (Ptr CString) -> Ptr () -> IO CInt
+type CustomOpInferShapeFunc       = CInt -> Ptr CInt -> Ptr (Ptr CInt) -> Ptr () -> IO CInt
+type CustomOpInferStorageTypeFunc = CInt -> Ptr CInt -> Ptr () -> IO CInt
+type CustomOpBackwardInferStorageTypeFunc = CInt -> Ptr CInt -> Ptr CInt -> Ptr () -> IO CInt
+type CustomOpInferTypeFunc        = CInt -> Ptr CInt -> Ptr () -> IO CInt
+type CustomOpBwdDepFunc           = Ptr CInt -> Ptr CInt -> Ptr CInt -> Ptr CInt -> Ptr (Ptr CInt) -> Ptr () -> IO CInt
+type CustomOpCreateFunc           = CString -> CInt -> Ptr (Ptr CUInt) -> Ptr CInt -> Ptr CInt -> Ptr MXCallbackList -> Ptr () -> IO CInt
+type CustomFunctionBwdFunc        = CInt -> CInt -> Ptr (Ptr ()) -> Ptr CInt -> CInt -> Ptr () -> IO CInt
+type CustomFunctionDelFunc        = Ptr () -> IO CInt
+
+foreign import ccall "wrapper" mkCustomOpPropCreator    :: CustomOpPropCreator -> IO (FunPtr CustomOpPropCreator)
+foreign import ccall "wrapper" mkCustomOpFBFunc         :: CustomOpFBFunc -> IO (FunPtr CustomOpFBFunc)
+foreign import ccall "wrapper" mkCustomOpDelFunc        :: CustomOpDelFunc -> IO (FunPtr CustomOpDelFunc)
+foreign import ccall "wrapper" mkCustomOpListFunc       :: CustomOpListFunc -> IO (FunPtr CustomOpListFunc)
+foreign import ccall "wrapper" mkCustomOpInferShapeFunc :: CustomOpInferShapeFunc -> IO (FunPtr CustomOpInferShapeFunc)
+foreign import ccall "wrapper" mkCustomOpInferStorageTypeFunc :: CustomOpInferStorageTypeFunc -> IO (FunPtr CustomOpInferStorageTypeFunc)
+foreign import ccall "wrapper" mkCustomOpBackwardInferStorageTypeFunc :: CustomOpBackwardInferStorageTypeFunc -> IO (FunPtr CustomOpBackwardInferStorageTypeFunc)
+foreign import ccall "wrapper" mkCustomOpInferTypeFunc  :: CustomOpInferTypeFunc -> IO (FunPtr CustomOpInferTypeFunc)
+foreign import ccall "wrapper" mkCustomOpBwdDepFunc     :: CustomOpBwdDepFunc -> IO (FunPtr CustomOpBwdDepFunc)
+foreign import ccall "wrapper" mkCustomOpCreateFunc     :: CustomOpCreateFunc -> IO (FunPtr CustomOpCreateFunc)
+foreign import ccall "wrapper" mkCustomFunctionBwdFunc  :: CustomFunctionBwdFunc -> IO (FunPtr CustomFunctionBwdFunc)
+foreign import ccall "wrapper" mkCustomFunctionDelFunc  :: CustomFunctionDelFunc -> IO (FunPtr CustomFunctionDelFunc)
+
+{#
+fun MXCustomOpRegister as mxCustomOpRegister_
+    {
+        `String',
+        id `FunPtr CustomOpPropCreator'
+    } -> `CInt'
+#}
+
+mxCustomOpRegister :: String -> FunPtr CustomOpPropCreator -> IO ()
+mxCustomOpRegister op cr = checked $ mxCustomOpRegister_ op cr
 
 -- {#
 -- fun as 

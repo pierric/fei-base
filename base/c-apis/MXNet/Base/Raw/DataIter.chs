@@ -4,6 +4,9 @@ import Data.Typeable (Typeable)
 import Foreign.Marshal (alloca, peekArray)
 import Foreign.Storable (Storable(..))
 import Foreign.ForeignPtr (newForeignPtr, finalizeForeignPtr)
+import Foreign.C.Types
+import Foreign.Ptr
+import Data.Word (Word64)
 import C2HS.C.Extra.Marshal (peekString, peekStringArray, peekIntegralArray)
 import GHC.Generics (Generic)
 import Control.Monad ((>=>))
@@ -17,8 +20,8 @@ import Control.Monad ((>=>))
 {# typedef mx_uint MX_UINT#}
 {# default in `MX_UINT' [mx_uint] id #}
 
-{# typedef uint64_t UINT64#}
-{# default in `UINT64' [uint64_t] id #}
+{# typedef uint64_t Word64#}
+{# default in `Word64' [uint64_t] id #}
 
 {#
 pointer DataIterCreator newtype
@@ -132,8 +135,8 @@ mxDataIterGetData = checked . mxDataIterGetData_
 fun MXDataIterGetIndex as mxDataIterGetIndex_
     { 
         `DataIterHandle',
-        alloca- `Ptr UINT64' peek*,
-        alloca- `UINT64' peek*
+        alloca- `Ptr Word64' peek*,
+        alloca- `Word64' peek*
     } -> `CInt'
 #}
 
