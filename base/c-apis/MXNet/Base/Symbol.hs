@@ -1,3 +1,4 @@
+{-# LANGUAGE TypeFamilies #-}
 module MXNet.Base.Symbol where
 
 import Foreign.Marshal.Array
@@ -55,7 +56,7 @@ toMXDType = toEnum . (+1) . fromIntegral
 fromMXDType :: Integral a => MXDType -> a
 fromMXDType = fromIntegral . (subtract 1) . fromEnum
 
-class CustomOperationProp prop where
+class CustomOperation (Operation prop) => CustomOperationProp prop where
     prop_list_arguments        :: prop -> [String]
     prop_list_outputs          :: prop -> [String]
     prop_list_auxiliary_states :: prop -> [String]
@@ -90,6 +91,14 @@ class CustomOperationProp prop where
             aux_type = replicate (length (prop_list_auxiliary_states prop)) t0
         in (in_type, out_type, aux_type)
 
+    data Operation prop :: *
+    prop_create_operator :: prop -> [[Int]] -> [MXDType] -> IO (Operation prop)
+
+class CustomOperation op where
+    forward  :: op -> IO ()
+    backward :: op -> IO ()
+
+
 registerCustomOperator :: CustomOperationProp op => (String, [(String, String)] -> IO op) -> IO ()
 registerCustomOperator (op_type, op_ctor) = do
     ptr_creator <- I.mkCustomOpPropCreator creator
@@ -115,7 +124,7 @@ registerCustomOperator (op_type, op_ctor) = do
         ptr_list_auxiliary_states_entry <- I.mkCustomOpListFunc (list_entry ptr_auxs)
         ptr_infer_shape_entry           <- I.mkCustomOpInferShapeFunc (infer_shape_entry prop)
         ptr_declare_backward_dependency_entry <- I.mkCustomOpBwdDepFunc (declare_backward_dependency_entry prop)
-        ptr_create_operator_entry       <- I.mkCustomOpCreateFunc create_operator_entry
+        ptr_create_operator_entry       <- I.mkCustomOpCreateFunc (create_operator_entry prop)
         ptr_infer_type_entry            <- I.mkCustomOpInferTypeFunc (infer_type_entry prop)
         ptr_infer_storage_type_entry    <- I.mkCustomOpInferStorageTypeFunc (infer_storage_type_entry prop)
         ptr_infer_storage_type_backward_entry <- I.mkCustomOpBackwardInferStorageTypeFunc (infer_storage_type_backward_entry prop)
@@ -228,14 +237,22 @@ registerCustomOperator (op_type, op_ctor) = do
         pokeArray tensor_stypes all_stypes
         return 0
 
-    create_operator_entry ctx num_inputs shapes ndims dtypes ret _ = do
+    create_operator_entry prop ctx num_inputs shapes ndims dtypes ret _ = do
+        let num_inputs_ = fromIntegral num_inputs
+        ndims  <- map fromIntegral <$> peekArray num_inputs_ ndims
+        dtypes <- map toMXDType    <$> peekArray num_inputs_ dtypes
+        ptrs   <- peekArray num_inputs_ shapes
+        shapes <- mapM ((map fromIntegral <$>) . uncurry peekArray) (zip ndims ptrs)
+
+        op <- prop_create_operator prop shapes dtypes
+
         let size = 3
         ptr_callbacks <- mallocArray size
         ptr_contexts  <- newArray (replicate size nullPtr)
 
         ptr_delete_entry        <- I.mkCustomFunctionDelFunc (func_delete_entry ptr_callbacks)
-        ptr_func_forward_entry  <- I.mkCustomFunctionBwdFunc func_forward_entry
-        ptr_func_backward_entry <- I.mkCustomFunctionBwdFunc func_backward_entry
+        ptr_func_forward_entry  <- I.mkCustomFunctionBwdFunc (func_forward_entry  op)
+        ptr_func_backward_entry <- I.mkCustomFunctionBwdFunc (func_backward_entry op)
         pokeArray ptr_callbacks [
             castFunPtr ptr_delete_entry,
             castFunPtr ptr_func_forward_entry,
@@ -244,9 +261,9 @@ registerCustomOperator (op_type, op_ctor) = do
         poke ret (I.MXCallbackList size ptr_callbacks ptr_contexts)
         return 0
 
-    func_forward_entry num_ndarray ndarraies tags reqs is_train _ = return 0
+    func_forward_entry op num_ndarray ndarraies tags reqs is_train _ = return 0
 
-    func_backward_entry num_ndarray ndarraies tags reqs is_train _ = return 0
+    func_backward_entry op num_ndarray ndarraies tags reqs is_train _ = return 0
 
     func_delete_entry p1 _ = do
         free p1
