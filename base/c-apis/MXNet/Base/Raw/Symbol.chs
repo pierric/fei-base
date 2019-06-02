@@ -24,7 +24,7 @@ import Control.Monad ((>=>))
 {# default in `MX_UINT' [mx_uint] id #}
 
 {#
-pointer SymbolHandle foreign finalizer MXSymbolFree as mxSymbolFree newtype 
+pointer SymbolHandle foreign finalizer MXSymbolFree as mxSymbolFree newtype
 #}
 
 deriving instance Generic SymbolHandle
@@ -128,11 +128,11 @@ fun MXSymbolGetName as mxSymbolGetName_
 #}
 
 mxSymbolGetName :: SymbolHandle -> IO (Maybe String)
-mxSymbolGetName symbol = do 
+mxSymbolGetName symbol = do
     (out, succ) <- checked $ mxSymbolGetName_ symbol
     if succ == 0 then
         Just <$> peekString out
-    else 
+    else
         return Nothing
 
 {#
@@ -145,8 +145,8 @@ fun MXSymbolGetAttr as mxSymbolGetAttr_
     } -> `CInt'
 #}
 
-mxSymbolGetAttr :: SymbolHandle 
-                -> String 
+mxSymbolGetAttr :: SymbolHandle
+                -> String
                 -> IO (Maybe String)
 mxSymbolGetAttr symbol key = do
     (pstr, succ) <- checked $ mxSymbolGetAttr_ symbol key
@@ -260,8 +260,8 @@ fun MXSymbolGetOutput as mxSymbolGetOutput_
         alloca- `SymbolHandle' peekSymbolHandle*
     } -> `CInt'
 #}
-mxXSymbolGetOutput :: SymbolHandle 
-                   -> Int 
+mxXSymbolGetOutput :: SymbolHandle
+                   -> Int
                    -> IO SymbolHandle
 mxXSymbolGetOutput symbol ind =
     checked $ mxSymbolGetOutput_ symbol (fromIntegral ind)
@@ -280,7 +280,7 @@ mxSymbolListAuxiliaryStates symbol = do
     peekStringArray (fromIntegral cnt) ptr
 
 {#
-fun MXSymbolCompose as mxSymbolCompose_ 
+fun MXSymbolCompose as mxSymbolCompose_
     {
         `SymbolHandle',
         `String',
@@ -290,19 +290,19 @@ fun MXSymbolCompose as mxSymbolCompose_
     } -> `CInt'
 #}
 
-mxSymbolCompose :: SymbolHandle 
-                -> String 
-                -> Maybe [String] 
-                -> [SymbolHandle] 
+mxSymbolCompose :: SymbolHandle
+                -> String
+                -> Maybe [String]
+                -> [SymbolHandle]
                 -> IO ()
 mxSymbolCompose symbol name maybekeys args = do
     let len = fromIntegral $ length args
-    case maybekeys of 
+    case maybekeys of
       Nothing -> checked $ mxSymbolCompose_ symbol name len C2HSImp.nullPtr args
       Just keys -> withStringArray keys $ \pkeys -> checked $ mxSymbolCompose_ symbol name len pkeys args
- 
+
 {#
-fun MXSymbolInferShape as mxSymbolInferShape_ 
+fun MXSymbolInferShape as mxSymbolInferShape_
     {
         `SymbolHandle',
         `MX_UINT',
@@ -322,7 +322,7 @@ fun MXSymbolInferShape as mxSymbolInferShape_
     } -> `CInt'
 #}
 
-mxSymbolInferShape :: SymbolHandle 
+mxSymbolInferShape :: SymbolHandle
                    -> [String]
                    -> [Int]
                    -> [Int]
@@ -350,7 +350,7 @@ mxSymbolInferShape symbol keys arg_ind arg_shape = do
     return (inshape_data_ret, outshape_data_ret, auxshape_data_ret, complete == 1)
 
 {#
-fun MXSymbolInferShapePartial as mxSymbolInferShapePartial_ 
+fun MXSymbolInferShapePartial as mxSymbolInferShapePartial_
     {
         `SymbolHandle',
         `MX_UINT',
@@ -370,7 +370,7 @@ fun MXSymbolInferShapePartial as mxSymbolInferShapePartial_
     } -> `CInt'
 #}
 
-mxSymbolInferShapePartial :: SymbolHandle 
+mxSymbolInferShapePartial :: SymbolHandle
                    -> [String]
                    -> [Int]
                    -> [Int]
@@ -472,7 +472,7 @@ type CustomOpBackwardInferStorageTypeFunc = CInt -> Ptr CInt -> Ptr CInt -> Ptr 
 type CustomOpInferTypeFunc        = CInt -> Ptr CInt -> Ptr () -> IO CInt
 type CustomOpBwdDepFunc           = Ptr CInt -> Ptr CInt -> Ptr CInt -> Ptr CInt -> Ptr (Ptr CInt) -> Ptr () -> IO CInt
 type CustomOpCreateFunc           = CString -> CInt -> Ptr (Ptr CUInt) -> Ptr CInt -> Ptr CInt -> Ptr MXCallbackList -> Ptr () -> IO CInt
-type CustomFunctionBwdFunc        = CInt -> CInt -> Ptr (Ptr ()) -> Ptr CInt -> CInt -> Ptr () -> IO CInt
+type CustomFunctionBwdFunc        = CInt -> Ptr (Ptr NDArrayHandle) -> Ptr CInt -> Ptr CInt -> CInt -> Ptr () -> IO CInt
 type CustomFunctionDelFunc        = Ptr () -> IO CInt
 
 foreign import ccall "wrapper" mkCustomOpPropCreator    :: CustomOpPropCreator -> IO (FunPtr CustomOpPropCreator)
@@ -500,9 +500,9 @@ mxCustomOpRegister :: String -> FunPtr CustomOpPropCreator -> IO ()
 mxCustomOpRegister op cr = checked $ mxCustomOpRegister_ op cr
 
 -- {#
--- fun as 
+-- fun as
 --     {
--- 
+--
 --     } -> `CInt'
 -- #}
 
@@ -514,7 +514,7 @@ mxCustomOpRegister op cr = checked $ mxCustomOpRegister_ op cr
 --         alloca- `CInt' peek*
 --     } -> `CInt'
 -- #}
--- 
+--
 -- {#
 -- fun MXSymbolGetNumOutputs as mxSymbolGetNumOutputs_
 --     {
@@ -522,12 +522,12 @@ mxCustomOpRegister op cr = checked $ mxCustomOpRegister_ op cr
 --         alloca- `MX_UINT' peek*
 --     } -> `CInt'
 -- #}
--- 
+--
 -- mxSymbolGetNumOutputs :: SymbolHandle -> IO Int
 -- mxSymbolGetNumOutputs symbol = do
 --     cnt <- checked $ mxSymbolGetNumOutputs_ symbol
 --     return $ fromIntegral cnt
--- 
+--
 -- {#
 -- fun MXQuantizeSymbol as mxQuantizeSymbol_
 --     {
