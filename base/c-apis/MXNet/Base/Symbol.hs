@@ -226,7 +226,6 @@ registerCustomOperator (op_type, op_ctor) = do
                         (map fromIntegral data_in_inds)
                         (map fromIntegral data_out_inds)
         poke out_num_dep (fromIntegral $ length deps)
-        -- TODO: free ptr
         ptr_deps <- newArray (map fromIntegral deps)
         modifyMVar_ allocList (return . (castPtr ptr_deps :))
 
