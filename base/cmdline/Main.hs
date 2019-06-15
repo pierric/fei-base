@@ -96,12 +96,6 @@ genSymOp sc = do
         else if (not (null tensorTypes) && not (null arrayTypes)) then do
             errorM _module_ (printf "Function: %s is varadic, but it also has Symbol argument." symname)
             return []
-        else if (not (null arrayTypes) && null key_var_num_args) then do
-            errorM _module_ (printf "Function: %s is varadic, but the variable name for num_arrr is not specified." symname)
-            errorM _module_ (printf " key_arg: %s" key_var_num_args)
-            forM_ (zip argname argtype) $ \(ag, ty) -> do
-                errorM _module_ (printf "     arg: %s %s" ag ty)
-            return []
         else do
             let paramListInst = makeParamInst symname_ (scalarTypes ++ tensorTypes ++ arrayTypes) True
                 sig = makeSignature symname_ GenSymbolOp
@@ -127,7 +121,7 @@ genSymOp sc = do
                           _ -> [])
                         (doE $
                             [ genStmt (pvar $ name "op") $ function "nnGetOpHandle"`app` strE symname ] ++
-                            ( if null arrayTypes then
+                            ( if null key_var_num_args then
                                   [ genStmt (pvar $ name "sym") $ function "mxSymbolCreateAtomicSymbol"
                                       `app` (function "fromOpHandle" `app` (var $ name "op"))
                                       `app` (var $ name "scalarkeys")
@@ -175,9 +169,6 @@ genArrOp sc = do
         else if (not (null tensorTypes) && not (null arrayTypes)) then do
             errorM _module_ (printf "Function: %s is varadic, but it also has Symbol argument." symname)
             return []
-        else if (not (null arrayTypes) && null key_var_num_args) then do
-            errorM _module_ (printf "Function: %s is varadic, but the variable name for num_args is not specified." symname_)
-            return []
         else do
             let paramListInst = makeParamInst symname_ (scalarTypes ++ tensorTypes ++ arrayTypes) False
                 sig1 = makeSignature symname_ GenNDArrayReturn
@@ -210,7 +201,7 @@ genArrOp sc = do
                           _ -> [])
                         (doE $
                             [ genStmt (pvar $ name "op") $ function "nnGetOpHandle"`app` strE symname ] ++
-                            ( if null arrayTypes then
+                            ( if null key_var_num_args then
                                   [ genStmt (pvar $ name "listndarr") $ function "mxImperativeInvoke"
                                       `app` (function "fromOpHandle" `app` (var $ name "op"))
                                       `app` (var $ name "tensorvals")
