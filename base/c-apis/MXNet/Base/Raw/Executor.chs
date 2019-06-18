@@ -3,7 +3,8 @@ module MXNet.Base.Raw.Executor where
 
 import Foreign.Marshal (alloca, withArray, peekArray)
 import Foreign.Storable (Storable(..))
-import Foreign.ForeignPtr (newForeignPtr, newForeignPtr_, touchForeignPtr)
+import Foreign.Concurrent (newForeignPtr)
+import Foreign.ForeignPtr (newForeignPtr_, touchForeignPtr)
 import Foreign.ForeignPtr.Unsafe (unsafeForeignPtrToPtr)
 import Foreign.Ptr
 import Foreign.C.Types
@@ -24,7 +25,7 @@ import Data.Maybe (fromMaybe)
 {# default in `MX_UINT' [mx_uint] id #}
 
 {#
-pointer ExecutorHandle foreign finalizer MXExecutorFree as mxExecutorFree newtype 
+pointer ExecutorHandle foreign newtype 
 #}
 
 deriving instance Generic ExecutorHandle
@@ -32,7 +33,7 @@ deriving instance Generic ExecutorHandle
 type ExecutorHandlePtr = Ptr ExecutorHandle
 
 newExecutorHandle :: ExecutorHandlePtr -> IO ExecutorHandle
-newExecutorHandle = newForeignPtr mxExecutorFree >=> return . ExecutorHandle
+newExecutorHandle ptr = newForeignPtr ptr (mxExecutorFree ptr) >>= return . ExecutorHandle
 
 peekExecutorHandle :: Ptr ExecutorHandlePtr -> IO ExecutorHandle
 peekExecutorHandle = peek >=> newExecutorHandle
@@ -43,6 +44,16 @@ withExecutorHandleArray array io = do
     r <- withArray (map (unsafeForeignPtrToPtr . unExecutorHandle) array) io
     mapM_ (touchForeignPtr . unExecutorHandle) array
     return r
+
+{#
+fun MXExecutorFree as mxExecutorFree_
+    {
+        id `ExecutorHandlePtr'
+    } -> `CInt'
+#}
+
+mxExecutorFree :: ExecutorHandlePtr -> IO ()
+mxExecutorFree = checked . mxExecutorFree_
 
 {#
 fun MXExecutorPrint as mxExecutorPrint_

@@ -121,7 +121,7 @@ genSymOp sc = do
                           _ -> [])
                         (doE $
                             [ genStmt (pvar $ name "op") $ function "nnGetOpHandle"`app` strE symname ] ++
-                            ( if null key_var_num_args then
+                            ( if null arrayTypes then
                                   [ genStmt (pvar $ name "sym") $ function "mxSymbolCreateAtomicSymbol"
                                       `app` (function "fromOpHandle" `app` (var $ name "op"))
                                       `app` (var $ name "scalarkeys")
@@ -131,7 +131,21 @@ genSymOp sc = do
                                       `app` (var $ name "name")
                                       `app` ((con $ unQual $ name "Just") `app` (var $ name "tensorkeys"))
                                       `app` (var $ name "tensorvals") ]
+                              else if null key_var_num_args then
+                                  -- the size of array are determined pragmatically (e.g. Custom)
+                                  [ genStmt (pvar $ name "sym") $ function "mxSymbolCreateAtomicSymbol"
+                                      `app` (function "fromOpHandle" `app` (var $ name "op"))
+                                      `app` (var $ name "scalarkeys")
+                                      `app` (var $ name "scalarvals")
+                                  , qualStmt $ function "mxSymbolCompose"
+                                      `app` (var $ name "sym")
+                                      `app` (var $ name "name")
+                                      `app` (con $ unQual $ name "Nothing")
+                                      `app` (var $ name "array") ]
                               else
+                                  -- the size of array should be provided in the arg named `key_var_num_args`
+                                  -- but it is sometimes optional when calling the symbol. If it is not given
+                                  -- explicitly, calculate its length.
                                   [ genStmt (pvar $ name "sym") $
                                       If () (function "hasKey" `app` (var $ name "args") `app` (OverloadedLabel () key_var_num_args))
                                           (function "mxSymbolCreateAtomicSymbol"

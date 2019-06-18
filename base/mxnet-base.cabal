@@ -2,7 +2,7 @@ name:                mxnet-base
 version:             0.1.0.0
 -- synopsis:
 -- description:
-homepage:            
+homepage:
 license:             BSD3
 license-file:        LICENSE
 author:              Jiasen Wu

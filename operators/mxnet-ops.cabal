@@ -2,7 +2,7 @@ name:                mxnet-ops
 version:             0.1.0.0
 -- synopsis:
 -- description:
-homepage:            
+homepage:
 license:             BSD3
 license-file:        LICENSE
 author:              Jiasen Wu
@@ -23,9 +23,9 @@ library
                        TypeFamilies,
                        OverloadedLabels,
                        TupleSections
-  exposed-modules:     MXNet.Base.Operators.Symbol, 
+  exposed-modules:     MXNet.Base.Operators.Symbol,
                        MXNet.Base.Operators.NDArray
-  other-modules:       
+  other-modules:
 
 source-repository head
   type:     git

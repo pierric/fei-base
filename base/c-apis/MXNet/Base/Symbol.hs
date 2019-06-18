@@ -122,19 +122,21 @@ registerCustomOperator (op_type, op_ctor) = do
   where
     creator name argc keys values ret = do
 
+        putStrLn "creator"
+
         let argc' = fromIntegral argc
         keys_ <- peekArray argc' keys   >>= mapM peekCString
         vals_ <- peekArray argc' values >>= mapM peekCString
         prop <- op_ctor $ zip keys_ vals_
 
         args <- mapM newCString (prop_list_arguments prop)
-        ptr_args <- newArray args
+        ptr_args <- newArray $ args ++ [nullPtr]
 
         outs <- mapM newCString (prop_list_outputs prop)
-        ptr_outs <- newArray outs
+        ptr_outs <- newArray $ outs ++ [nullPtr]
 
         auxs <- mapM newCString (prop_list_auxiliary_states prop)
-        ptr_auxs <- newArray auxs
+        ptr_auxs <- newArray $ auxs ++ [nullPtr]
 
         let size = 10
         ptr_callbacks <- mallocArray size
@@ -160,6 +162,7 @@ registerCustomOperator (op_type, op_ctor) = do
         ptr_infer_storage_type_entry    <- I.mkCustomOpInferStorageTypeFunc (infer_storage_type_entry prop)
         ptr_infer_storage_type_backward_entry <- I.mkCustomOpBackwardInferStorageTypeFunc (infer_storage_type_backward_entry prop)
 
+
         pokeArray ptr_callbacks [
             castFunPtr ptr_delete_entry,
             castFunPtr ptr_list_arguments_entry,
@@ -173,14 +176,15 @@ registerCustomOperator (op_type, op_ctor) = do
             castFunPtr ptr_infer_storage_type_backward_entry]
 
         poke (castPtr ret) (I.MXCallbackList size ptr_callbacks ptr_contexts)
-        return 0
+        return 1
 
     delete_entry allocList _ = do
         list <- takeMVar allocList
         mapM_ free list
-        return 0
+        return 1
 
-    list_entry cstr out_cstr _ = poke out_cstr cstr >> return 0
+    list_entry cstr out_cstr x = do
+        poke out_cstr cstr >> return 1
 
     infer_shape_entry allocList prop num_tensor in_out_dim_tensor in_out_shapes_tensor _ = do
         let num_inp = length (prop_list_arguments prop)
@@ -190,6 +194,8 @@ registerCustomOperator (op_type, op_ctor) = do
 
         assert (num_inp + num_out + num_aux == num_tensor') (return ())
 
+        print ("INFER", num_tensor)
+
         -- read dimensions of inputs
         inp_dim_0 <- peekArray num_inp in_out_dim_tensor
         -- read each shape of each input
@@ -198,9 +204,14 @@ registerCustomOperator (op_type, op_ctor) = do
                                             return $ map fromIntegral arr)
                                 [0..] (map fromIntegral inp_dim_0)
 
+        print (inp_dim_0, inp_shape_0)
+
         let (inp_shape, out_shape, aux_shape) = prop_infer_shape prop inp_shape_0
             all_shape = inp_shape ++ out_shape ++ aux_shape
             all_shape_sizes = map length all_shape
+
+
+        print (inp_shape, out_shape, aux_shape)
 
         assert (length all_shape == num_tensor') (return ())
 
@@ -213,9 +224,10 @@ registerCustomOperator (op_type, op_ctor) = do
         let offsets = scanl (+) 0 all_shape_sizes
             ptrs = map (plusPtr ptr_0) offsets
         pokeArray in_out_shapes_tensor ptrs
-        return 0
+        return 1
 
     declare_backward_dependency_entry allocList prop grad_out data_in data_out out_num_dep out_deps _ = do
+        print "backward_dep"
         let num_inp = length (prop_list_arguments prop)
             num_out = length (prop_list_outputs   prop)
         grad_out_inds <- peekArray num_out grad_out
@@ -225,12 +237,13 @@ registerCustomOperator (op_type, op_ctor) = do
                         (map fromIntegral grad_out_inds)
                         (map fromIntegral data_in_inds)
                         (map fromIntegral data_out_inds)
+        print deps
         poke out_num_dep (fromIntegral $ length deps)
         ptr_deps <- newArray (map fromIntegral deps)
         modifyMVar_ allocList (return . (castPtr ptr_deps :))
 
         poke out_deps ptr_deps
-        return 0
+        return 1
 
     infer_type_entry prop num_tensor tensor_types _ = do
         let num_inp = length (prop_list_arguments prop)
@@ -243,7 +256,7 @@ registerCustomOperator (op_type, op_ctor) = do
         let (inp_types, out_types, aux_types) = prop_infer_type prop inp_types0
             all_types = map fromMXDType $ inp_types ++ out_types ++ aux_types
         pokeArray tensor_types all_types
-        return 0
+        return 1
 
     infer_storage_type_entry prop num_tensor tensor_stypes _ = do
         let num_inp = length (prop_list_arguments prop)
@@ -256,7 +269,7 @@ registerCustomOperator (op_type, op_ctor) = do
         let (inp_stypes, out_stypes, aux_stypes) = prop_infer_storage_type prop inp_stypes0
             all_stypes = map fromStorageType $ inp_stypes ++ out_stypes ++ aux_stypes
         pokeArray tensor_stypes all_stypes
-        return 0
+        return 1
 
     infer_storage_type_backward_entry prop num_tensor tensor_stypes tags _ = do
         let num_inp = length (prop_list_arguments prop)
@@ -273,14 +286,16 @@ registerCustomOperator (op_type, op_ctor) = do
 
         assert (length tensors == 5) (return ())
         pokeArray tensor_stypes all_stypes
-        return 0
+        return 1
 
     create_operator_entry prop ctx num_inputs shapes ndims dtypes ret _ = do
+        print "create_operator"
         let num_inputs_ = fromIntegral num_inputs
         ndims  <- map fromIntegral <$> peekArray num_inputs_ ndims
         dtypes <- map toMXDType    <$> peekArray num_inputs_ dtypes
         ptrs   <- peekArray num_inputs_ shapes
         shapes <- mapM ((map fromIntegral <$>) . uncurry peekArray) (zip ndims ptrs)
+        print (ndims, ptrs, shapes)
 
         op <- prop_create_operator prop shapes dtypes
 
@@ -299,7 +314,7 @@ registerCustomOperator (op_type, op_ctor) = do
             castFunPtr ptr_func_backward_entry]
 
         poke ret (I.MXCallbackList size ptr_callbacks ptr_contexts)
-        return 0
+        return 1
 
     func_forward_entry op num_ndarray ndarrays tags reqs is_train _ = do
         let num_ndarray_ = fromIntegral num_ndarray
@@ -321,7 +336,7 @@ registerCustomOperator (op_type, op_ctor) = do
         reqs <- map (toEnum . fromIntegral) <$> peekArray (length out_data) reqs
         forward op reqs in_data out_data aux (is_train == 1)
 
-        return 0
+        return 1
 
     func_backward_entry op num_ndarray ndarrays tags reqs is_train _ = do
         let num_ndarray_ = fromIntegral num_ndarray
@@ -344,6 +359,6 @@ registerCustomOperator (op_type, op_ctor) = do
 
         reqs <- map (toEnum . fromIntegral) <$> peekArray (length out_data) reqs
         backward op reqs in_data out_data in_grad out_grad aux
-        return 0
+        return 1
 
     (!) = (V.!)

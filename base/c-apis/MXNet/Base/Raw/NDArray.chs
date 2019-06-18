@@ -3,7 +3,8 @@ module MXNet.Base.Raw.NDArray where
 
 import Foreign.Marshal (alloca, withArray, peekArray)
 import Foreign.Storable (Storable(..))
-import Foreign.ForeignPtr (newForeignPtr, touchForeignPtr)
+import Foreign.Concurrent (newForeignPtr)
+import Foreign.ForeignPtr (touchForeignPtr)
 import Foreign.ForeignPtr.Unsafe (unsafeForeignPtrToPtr)
 import Foreign.C.Types
 import Foreign.Ptr
@@ -22,14 +23,14 @@ import Control.Monad ((>=>))
 
 -- NDArray
 {#
-pointer NDArrayHandle foreign finalizer MXNDArrayFree as mxNDArrayFree newtype 
+pointer NDArrayHandle foreign newtype 
 #}
 
 deriving instance Generic NDArrayHandle
 type NDArrayHandlePtr = Ptr NDArrayHandle
 
 newNDArrayHandle :: NDArrayHandlePtr -> IO NDArrayHandle
-newNDArrayHandle = newForeignPtr mxNDArrayFree >=> return . NDArrayHandle
+newNDArrayHandle ptr = newForeignPtr ptr (mxNDArrayFree ptr) >>= return . NDArrayHandle
 
 peekNDArrayHandle :: Ptr NDArrayHandlePtr -> IO NDArrayHandle
 peekNDArrayHandle = peek >=> newNDArrayHandle
@@ -40,6 +41,16 @@ withNDArrayHandleArray array io = do
     r <- withArray (map (unsafeForeignPtrToPtr . unNDArrayHandle) array) io
     mapM_ (touchForeignPtr . unNDArrayHandle) array
     return r
+
+{#
+fun MXNDArrayFree as mxNDArrayFree_
+    {
+        id `NDArrayHandlePtr'
+    } -> `CInt'
+#}
+
+mxNDArrayFree :: NDArrayHandlePtr -> IO ()
+mxNDArrayFree = checked . mxNDArrayFree_
 
 {#
 fun MXNDArrayCreateNone as mxNDArrayCreateNone_

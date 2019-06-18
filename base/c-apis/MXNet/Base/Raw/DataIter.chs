@@ -3,7 +3,8 @@ module MXNet.Base.Raw.DataIter where
 import Data.Typeable (Typeable)
 import Foreign.Marshal (alloca, peekArray)
 import Foreign.Storable (Storable(..))
-import Foreign.ForeignPtr (newForeignPtr, finalizeForeignPtr)
+import Foreign.Concurrent (newForeignPtr)
+import Foreign.ForeignPtr (finalizeForeignPtr)
 import Foreign.C.Types
 import Foreign.Ptr
 import Data.Word (Word64)
@@ -15,7 +16,6 @@ import Control.Monad ((>=>))
 {# import MXNet.Base.Raw.NDArray #}
 
 #include <mxnet/c_api.h>
-#include <nnvm/c_api.h>
 
 {# typedef mx_uint MX_UINT#}
 {# default in `MX_UINT' [mx_uint] id #}
@@ -30,7 +30,7 @@ pointer DataIterCreator newtype
 deriving instance Storable DataIterCreator
 
 {#
-pointer DataIterHandle foreign finalizer MXDataIterFree as mxDataIterFree newtype 
+pointer DataIterHandle foreign newtype 
 #}
 
 deriving instance Generic DataIterHandle
@@ -38,13 +38,24 @@ deriving instance Generic DataIterHandle
 type DataIterHandlePtr = Ptr DataIterHandle
 
 newDataIterHandle :: DataIterHandlePtr -> IO DataIterHandle
-newDataIterHandle = newForeignPtr mxDataIterFree >=> return . DataIterHandle
+newDataIterHandle ptr = newForeignPtr ptr (mxDataIterFree ptr) >>= return . DataIterHandle
 
 peekDataIterHandle :: Ptr DataIterHandlePtr -> IO DataIterHandle
 peekDataIterHandle = peek >=> newDataIterHandle
 
 finalizeDataIterHandle :: DataIterHandle -> IO ()
 finalizeDataIterHandle (DataIterHandle fptr) = finalizeForeignPtr fptr
+
+{#
+fun MXDataIterFree as mxDataIterFree_
+    {
+        id `DataIterHandlePtr'
+    } -> `CInt'
+#}
+
+mxDataIterFree :: DataIterHandlePtr -> IO ()
+mxDataIterFree = checked . mxDataIterFree_
+
 
 {#
 fun MXListDataIters as mxListDataIters_

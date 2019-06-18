@@ -7,7 +7,8 @@ import Foreign.Ptr (FunPtr)
 import Foreign.C.Types
 import Foreign.C.String
 import Foreign.Ptr
-import Foreign.ForeignPtr (newForeignPtr, touchForeignPtr)
+import Foreign.Concurrent (newForeignPtr)
+import Foreign.ForeignPtr (touchForeignPtr)
 import Foreign.ForeignPtr.Unsafe (unsafeForeignPtrToPtr)
 import C2HS.C.Extra.Marshal (withIntegralArray, peekIntegralArray, peekString, peekStringArray)
 import GHC.Generics (Generic)
@@ -24,7 +25,7 @@ import Control.Monad ((>=>))
 {# default in `MX_UINT' [mx_uint] id #}
 
 {#
-pointer SymbolHandle foreign finalizer MXSymbolFree as mxSymbolFree newtype
+pointer SymbolHandle foreign newtype
 #}
 
 deriving instance Generic SymbolHandle
@@ -32,7 +33,7 @@ deriving instance Generic SymbolHandle
 type SymbolHandlePtr = Ptr SymbolHandle
 
 newSymbolHandle :: SymbolHandlePtr -> IO SymbolHandle
-newSymbolHandle = newForeignPtr mxSymbolFree >=> return . SymbolHandle
+newSymbolHandle ptr = newForeignPtr ptr (mxSymbolFree ptr) >>= return . SymbolHandle
 
 peekSymbolHandle :: Ptr SymbolHandlePtr -> IO SymbolHandle
 peekSymbolHandle = peek >=> newSymbolHandle
@@ -43,6 +44,16 @@ withSymbolHandleArray array io = do
     r <- withArray (map (unsafeForeignPtrToPtr . unSymbolHandle) array) io
     mapM_ (touchForeignPtr . unSymbolHandle) array
     return r
+
+{#
+fun MXSymbolFree as mxSymbolFree_
+    {
+        id `SymbolHandlePtr'
+    } -> `CInt'
+#}
+
+mxSymbolFree :: SymbolHandlePtr -> IO ()
+mxSymbolFree = checked . mxSymbolFree_
 
 {#
 fun MXSymbolCreateAtomicSymbol as mxSymbolCreateAtomicSymbol_
