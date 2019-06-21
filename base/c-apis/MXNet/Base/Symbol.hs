@@ -17,6 +17,7 @@ import qualified Data.Vector as V
 import qualified Data.Vector.Mutable as VM
 
 import qualified MXNet.Base.Raw as I
+import Debug.Trace
 
 newtype Symbol a = Symbol { unSymbol :: I.SymbolHandle }
 
@@ -35,7 +36,7 @@ data StorageType = StorageTypeUndefined -- -1
                  | StorageTypeDefault   --  0
                  | StorageTypeRowSparse --  1
                  | StorageTypeCSR       --  2
-  deriving (Eq, Bounded, Enum)
+  deriving (Eq, Bounded, Enum, Show)
 
 toStorageType :: Integral a => a -> StorageType
 toStorageType = toEnum . (+1) . fromIntegral
@@ -51,7 +52,7 @@ data MXDType = TyNone       -- -1
              | TyInt32      --  4
              | TyInt8       --  5
              | TyInt64      --  6
-  deriving (Eq, Bounded, Enum)
+  deriving (Eq, Bounded, Enum, Show)
 
 toMXDType :: Integral a => a -> MXDType
 toMXDType = toEnum . (+1) . fromIntegral
@@ -121,9 +122,6 @@ registerCustomOperator (op_type, op_ctor) = do
     I.mxCustomOpRegister op_type ptr_creator
   where
     creator name argc keys values ret = do
-
-        putStrLn "creator"
-
         let argc' = fromIntegral argc
         keys_ <- peekArray argc' keys   >>= mapM peekCString
         vals_ <- peekArray argc' values >>= mapM peekCString
@@ -194,8 +192,6 @@ registerCustomOperator (op_type, op_ctor) = do
 
         assert (num_inp + num_out + num_aux == num_tensor') (return ())
 
-        print ("INFER", num_tensor)
-
         -- read dimensions of inputs
         inp_dim_0 <- peekArray num_inp in_out_dim_tensor
         -- read each shape of each input
@@ -204,14 +200,9 @@ registerCustomOperator (op_type, op_ctor) = do
                                             return $ map fromIntegral arr)
                                 [0..] (map fromIntegral inp_dim_0)
 
-        print (inp_dim_0, inp_shape_0)
-
         let (inp_shape, out_shape, aux_shape) = prop_infer_shape prop inp_shape_0
             all_shape = inp_shape ++ out_shape ++ aux_shape
             all_shape_sizes = map length all_shape
-
-
-        print (inp_shape, out_shape, aux_shape)
 
         assert (length all_shape == num_tensor') (return ())
 
@@ -221,13 +212,13 @@ registerCustomOperator (op_type, op_ctor) = do
         ptr_0 <- newArray (map fromIntegral (concat all_shape) :: [CInt])
         modifyMVar_ allocList (return . (castPtr ptr_0 :))
 
-        let offsets = scanl (+) 0 all_shape_sizes
+        let size_UINT = sizeOf (undefined :: I.MX_UINT)
+            offsets = scanl (+) 0 $ map (size_UINT *) all_shape_sizes
             ptrs = map (plusPtr ptr_0) offsets
         pokeArray in_out_shapes_tensor ptrs
         return 1
 
     declare_backward_dependency_entry allocList prop grad_out data_in data_out out_num_dep out_deps _ = do
-        print "backward_dep"
         let num_inp = length (prop_list_arguments prop)
             num_out = length (prop_list_outputs   prop)
         grad_out_inds <- peekArray num_out grad_out
@@ -237,7 +228,6 @@ registerCustomOperator (op_type, op_ctor) = do
                         (map fromIntegral grad_out_inds)
                         (map fromIntegral data_in_inds)
                         (map fromIntegral data_out_inds)
-        print deps
         poke out_num_dep (fromIntegral $ length deps)
         ptr_deps <- newArray (map fromIntegral deps)
         modifyMVar_ allocList (return . (castPtr ptr_deps :))
@@ -280,7 +270,7 @@ registerCustomOperator (op_type, op_ctor) = do
         tensor_types' <- peekArray num_tensor' tensor_stypes
         let tensors = groupBy ((==) `on` fst) (zip tags' tensor_types')
             tensors_table = map (\t -> (fst (head t), map (toStorageType . snd) t)) tensors
-            [ograd0, input0, output0, igrad0, aux0] = map (fromJust . flip lookup tensors_table) [3, 0, 1, 2, 4]
+            [ograd0, input0, output0, igrad0, aux0] = map (fromMaybe [] . flip lookup tensors_table) [3, 0, 1, 2, 4]
             (ograd, input, output, igrad, aux) = prop_infer_storage_type_backward prop ograd0 input0 output0 igrad0 aux0
             all_stypes = map fromStorageType $ ograd ++ input ++ output ++ igrad ++ aux
 
@@ -289,14 +279,11 @@ registerCustomOperator (op_type, op_ctor) = do
         return 1
 
     create_operator_entry prop ctx num_inputs shapes ndims dtypes ret _ = do
-        print "create_operator"
         let num_inputs_ = fromIntegral num_inputs
         ndims  <- map fromIntegral <$> peekArray num_inputs_ ndims
         dtypes <- map toMXDType    <$> peekArray num_inputs_ dtypes
         ptrs   <- peekArray num_inputs_ shapes
         shapes <- mapM ((map fromIntegral <$>) . uncurry peekArray) (zip ndims ptrs)
-        print (ndims, ptrs, shapes)
-
         op <- prop_create_operator prop shapes dtypes
 
         let size = 3
@@ -333,9 +320,8 @@ registerCustomOperator (op_type, op_ctor) = do
             out_data = tensors ! 1
             aux      = tensors ! 4
 
-        reqs <- map (toEnum . fromIntegral) <$> peekArray (length out_data) reqs
+        reqs <- map (toEnum . fromIntegral) <$> peekArray (length out_data) reqs :: IO [ReqEnum]
         forward op reqs in_data out_data aux (is_train == 1)
-
         return 1
 
     func_backward_entry op num_ndarray ndarrays tags reqs is_train _ = do

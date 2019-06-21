@@ -40,6 +40,15 @@ zeros = full 1
 fromVector :: DType a => [Int] -> Vector a -> IO (NDArray a)
 fromVector shape = makeNDArray shape contextCPU
 
+copyFromVector :: DType a => NDArray a -> Vector a -> IO ()
+copyFromVector arr vec = do
+    sz <- ndsize arr
+    if (sz /= V.length vec) 
+      then error ""
+      else do
+        V.unsafeWith vec $ \p -> do
+            I.mxNDArraySyncCopyFromCPU (unNDArray arr) (castPtr p) sz
+
 toVector :: DType a => NDArray a -> IO (Vector a)
 toVector arr = do
     nlen <- ndsize arr
