@@ -271,10 +271,10 @@ fun MXSymbolGetOutput as mxSymbolGetOutput_
         alloca- `SymbolHandle' peekSymbolHandle*
     } -> `CInt'
 #}
-mxXSymbolGetOutput :: SymbolHandle
+mxSymbolGetOutput :: SymbolHandle
                    -> Int
                    -> IO SymbolHandle
-mxXSymbolGetOutput symbol ind =
+mxSymbolGetOutput symbol ind =
     checked $ mxSymbolGetOutput_ symbol (fromIntegral ind)
 
 {#
@@ -511,13 +511,6 @@ mxCustomOpRegister :: String -> FunPtr CustomOpPropCreator -> IO ()
 mxCustomOpRegister op cr = checked $ mxCustomOpRegister_ op cr
 
 -- {#
--- fun as
---     {
---
---     } -> `CInt'
--- #}
-
--- {#
 -- fun MXSymbolGetInputSymbols as mxSymbolGetInputSymbols_
 --     {
 --         `SymbolHandle',
@@ -526,18 +519,18 @@ mxCustomOpRegister op cr = checked $ mxCustomOpRegister_ op cr
 --     } -> `CInt'
 -- #}
 --
--- {#
--- fun MXSymbolGetNumOutputs as mxSymbolGetNumOutputs_
---     {
---         `SymbolHandle',
---         alloca- `MX_UINT' peek*
---     } -> `CInt'
--- #}
---
--- mxSymbolGetNumOutputs :: SymbolHandle -> IO Int
--- mxSymbolGetNumOutputs symbol = do
---     cnt <- checked $ mxSymbolGetNumOutputs_ symbol
---     return $ fromIntegral cnt
+{#
+fun MXSymbolGetNumOutputs as mxSymbolGetNumOutputs_
+    {
+        `SymbolHandle',
+        alloca- `MX_UINT' peek*
+    } -> `CInt'
+#}
+
+mxSymbolGetNumOutputs :: SymbolHandle -> IO Int
+mxSymbolGetNumOutputs symbol = do
+    cnt <- checked $ mxSymbolGetNumOutputs_ symbol
+    return $ fromIntegral (cnt :: MX_UINT)
 --
 -- {#
 -- fun MXQuantizeSymbol as mxQuantizeSymbol_
