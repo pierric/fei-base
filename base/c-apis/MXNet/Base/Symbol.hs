@@ -15,22 +15,44 @@ import Data.Maybe
 import Control.Concurrent.MVar
 import qualified Data.Vector as V
 import qualified Data.Vector.Mutable as VM
+import Data.Typeable (Typeable)
+import Control.Exception.Base (Exception, throwIO)
 
 import qualified MXNet.Base.Raw as I
 import Debug.Trace
 
 newtype Symbol a = Symbol { unSymbol :: I.SymbolHandle }
 
-listArguments :: Symbol a -> IO [String]
-listArguments (Symbol sym) = I.mxSymbolListArguments sym
+data SymbolException = SymbolIndexOutOfBound Int Int
+    deriving (Typeable, Show)
+instance Exception SymbolException
 
-listOutputs :: Symbol a -> IO [String]
-listOutputs (Symbol sym) = I.mxSymbolListOutputs sym
+class SymbolClass s where
+    listArguments       :: s -> IO [String]
+    listOutputs         :: s -> IO [String]
+    listAuxiliaryStates :: s -> IO [String]
+    numOutputs          :: s -> IO Int
+    at                  :: s -> Int -> IO s
 
-listAuxiliaryStates :: Symbol a -> IO [String]
-listAuxiliaryStates (Symbol sym) = I.mxSymbolListAuxiliaryStates sym
+instance SymbolClass I.SymbolHandle where
+    listArguments       sym = I.mxSymbolListArguments sym
+    listOutputs         sym = I.mxSymbolListOutputs sym
+    listAuxiliaryStates sym = I.mxSymbolListAuxiliaryStates sym
+    numOutputs          sym = I.mxSymbolGetNumOutputs sym
+    at sym index = do
+        max <- numOutputs sym
+        if index < 0 || index >= max then
+            throwIO (SymbolIndexOutOfBound index max)
+        else
+            I.mxSymbolGetOutput sym index
 
-data CustomOperationException = Invalid
+instance SymbolClass (Symbol a) where
+    listArguments       (Symbol s) = listArguments s
+    listOutputs         (Symbol s) = listOutputs   s
+    listAuxiliaryStates (Symbol s) = listAuxiliaryStates s
+    numOutputs          (Symbol s) = numOutputs s
+    at                  (Symbol s) = (Symbol <$>) . at s
+
 
 data StorageType = StorageTypeUndefined -- -1
                  | StorageTypeDefault   --  0

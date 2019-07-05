@@ -20,11 +20,12 @@ data MXNetError = MXNetError String
 instance Exception MXNetError
 
 deriving instance Generic C2HSImp.CInt
+deriving instance Generic C2HSImp.CUInt
 
 checked :: Unconsable t CInt r => IO t -> IO r
 checked call = do
     (res, ret) <- uncons <$> call
-    if res < 0 
+    if res < 0
       then do err <- mxGetLastError
               throwIO $ MXNetError err
       else return ret
@@ -50,10 +51,10 @@ mxGetVersion = fromIntegral <$> checked mxGetVersion_
 
 {#
 fun MXListAllOpNames as mxListAllOpNames_
-    { 
-        alloca- `MX_UINT' peek*, 
+    {
+        alloca- `MX_UINT' peek*,
         alloca- `Ptr (Ptr MX_CCHAR)' peek*
-    } -> `CInt' 
+    } -> `CInt'
 #}
 
 mxListAllOpNames :: IO [String]
@@ -63,8 +64,8 @@ mxListAllOpNames = do
 
 {#
 fun MXGetLastError as mxGetLastError
-    { 
-    } -> `String' 
+    {
+    } -> `String'
 #}
 
 {#
@@ -121,8 +122,8 @@ fun MXSymbolGetAtomicSymbolInfo as mxSymbolGetAtomicSymbolInfo_
 #}
 
 mxSymbolGetAtomicSymbolInfo :: AtomicSymbolCreator
-                            -> IO (String, 
-                                   String, 
+                            -> IO (String,
+                                   String,
                                    [String],
                                    [String],
                                    [String],
@@ -149,10 +150,10 @@ deriving instance Generic  GraphHandle
 
 {#
 fun NNListAllOpNames as nnListAllOpNames_
-    { 
-        alloca- `NN_UINT' peek*, 
+    {
+        alloca- `NN_UINT' peek*,
         alloca- `Ptr (Ptr MX_CCHAR)' peek*
-    } -> `CInt' 
+    } -> `CInt'
 #}
 
 nnListAllOpNames :: IO [String]
@@ -162,10 +163,10 @@ nnListAllOpNames = do
 
 {#
 fun NNListUniqueOps as nnListUniqueOps_
-    { 
-        alloca- `NN_UINT' peek*, 
+    {
+        alloca- `NN_UINT' peek*,
         alloca- `Ptr OpHandle' peek*
-    } -> `CInt' 
+    } -> `CInt'
 #}
 
 nnListUniqueOps :: IO [OpHandle]
@@ -209,6 +210,6 @@ nnGetOpInfo op = do
 
 {#
 fun NNGetLastError as nnGetLastError
-    { 
-    } -> `String' 
+    {
+    } -> `String'
 #}
