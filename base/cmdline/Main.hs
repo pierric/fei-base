@@ -64,8 +64,8 @@ makeParamInst symname typs symbolapi =
 
 data GenFlag = GenSymbolOp | GenNDArrayReturn | GenNDArrayUpdate
 
-makeSignature :: String -> GenFlag -> Decl ()
-makeSignature symname flag =
+makeSignature :: String -> GenFlag -> [Asst ()]-> Decl ()
+makeSignature symname flag extra_constraints =
     let (funname, appendix, rettype, maketype) =
             case flag of
               GenSymbolOp      -> (symname, "(symbol)", tyCon $ unQual $ name "SymbolHandle", tyFun (tyCon $ unQual $ name "String"))
@@ -73,9 +73,10 @@ makeSignature symname flag =
               GenNDArrayUpdate -> (symname ++ "_upd", "(ndarray)", unit_tycon (), tyFun (tyList $ tyCon $ unQual $ name "NDArrayHandle"))
         symname_with_appendix = symname ++ appendix
         cxfullfill = appA (name "Fullfilled") [tyPromotedStr symname_with_appendix, tyVarIdent "args"]
+        cx_all = if null extra_constraints then cxSingle cxfullfill else cxTuple (cxfullfill : extra_constraints)
         fun = tyFun (tyApp (tyApp (tyCon $ unQual $ name "ArgsHMap") (tyPromotedStr symname_with_appendix)) (tyVarIdent "args"))
                     (tyApp (tyCon $ unQual $ name "IO") rettype)
-    in tySig [name funname] $ tyForall [unkindedVar (name "args")] (cxSingle cxfullfill) $ (maketype fun)
+    in tySig [name funname] $ tyForall [unkindedVar (name "args")] cx_all $ (maketype fun)
 
 genSymOp :: AtomicSymbolCreator -> IO [Decl ()]
 genSymOp sc = do
@@ -98,13 +99,40 @@ genSymOp sc = do
             return []
         else do
             let paramListInst = makeParamInst symname_ (scalarTypes ++ tensorTypes ++ arrayTypes) True
-                sig = makeSignature symname_ GenSymbolOp
+                sig = makeSignature symname_ GenSymbolOp $ 
+                        -- the "Custom" is a little special, because it allow extra arguments
+                        if symname == "Custom" 
+                            --    PopKey (ArgOf "_Custom(symbol)") args "data",
+                            --    Dump (PopResult (ArgOf "_Custom(symbol)") args "data"))
+                            then let argOfCustom = tyParen $ tyApp (tyCon $ unQual $ name "ArgOf") (tyPromotedStr "_Custom(symbol)")
+                                 in [appA (name "PopKey") [argOfCustom, tyVarIdent "args", tyPromotedStr "data"],
+                                     appA (name "Dump") [ tyParen $
+                                        (tyCon $ unQual $ name "PopResult") `tyApp` 
+                                        argOfCustom `tyApp` 
+                                        tyVarIdent "args" `tyApp` 
+                                        tyPromotedStr "data"]]
+                            else []
             let fun = sfun (name symname_) [name "name", name "args"] (UnGuardedRhs () body) Nothing
+                make_scalar_values = 
+                    if symname == "Custom" 
+                        -- dump (pop args #data)
+                        then function "dump" `app` (
+                                function "pop" `app` (var $ name "args") `app` (OverloadedLabel () "data"))
+                        -- catMaybes
+                        --    [("KEY",) . showValue <$> (args !? #KEY :: Maybe VALUE_TYPE),
+                        --     ... ]
+                        else function "catMaybes" `app` listE 
+                                [ infixApp (infixApp (tupleSection [Just $ strE argkey, Nothing]) 
+                                                     (op $ sym ".") 
+                                                     (function "showValue"))
+                                           (op $ sym "<$>") $
+                                           ExpTypeSig () (infixApp (var $ name "args") 
+                                                                   (op $ sym "!?") 
+                                                                   (OverloadedLabel () argkey)) 
+                                                      (tyApp (tyCon $ unQual $ name "Maybe") typ) 
+                                | (argkey, _, typ) <- scalarTypes]
                 body =  letE ([
-                          patBind (pvar $ name "scalarArgs") (function "catMaybes"
-                            `app` listE [
-                                infixApp (infixApp (tupleSection [Just $ strE argkey, Nothing]) (op $ sym ".") (function "showValue")) (op $ sym "<$>") $
-                                ExpTypeSig () (infixApp (var $ name "args") (op $ sym "!?") (OverloadedLabel () argkey)) (tyApp (tyCon $ unQual $ name "Maybe") typ) | (argkey, _, typ) <- scalarTypes])
+                          patBind (pvar $ name "scalarArgs") make_scalar_values
                         , patBind (pTuple [pvar $ name "scalarkeys", pvar $ name "scalarvals"]) (app (function "unzip") $ var $ name "scalarArgs")
                         , patBind (pvar $ name "tensorArgs") (function "catMaybes"
                             `app` listE [
@@ -185,8 +213,8 @@ genArrOp sc = do
             return []
         else do
             let paramListInst = makeParamInst symname_ (scalarTypes ++ tensorTypes ++ arrayTypes) False
-                sig1 = makeSignature symname_ GenNDArrayReturn
-                sig2 = makeSignature symname_ GenNDArrayUpdate
+                sig1 = makeSignature symname_ GenNDArrayReturn []
+                sig2 = makeSignature symname_ GenNDArrayUpdate []
             let fun1 = sfun (name symname_) [name "args"]
                         (UnGuardedRhs () (body (lastArgOfInvoke GenNDArrayReturn) True)) Nothing
                 fun2 = sfun (name $ symname_ ++ "_upd") [name "outputs", name "args"]
@@ -338,6 +366,7 @@ tyFun = TyFun ()
 tySig names types = TypeSig () names types
 tyList = TyList ()
 tyVar = TyVar ()
+tyParen = TyParen ()
 
 tyPromotedInteger s = TyPromoted () (PromotedInteger () s (show s))
 tyPromotedStr s     = TyPromoted () (PromotedString () s s)
