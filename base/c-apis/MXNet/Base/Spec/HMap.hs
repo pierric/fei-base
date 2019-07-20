@@ -5,7 +5,6 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE UndecidableInstances #-}
 {-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE TypeApplications #-}
 module MXNet.Base.Spec.HMap where
 
 import GHC.TypeLits
@@ -46,9 +45,14 @@ type family InHMap p k kvs :: Bool where
     InHMap p k (_ ': kvs) = InHMap p k kvs
 
 type family MatchHead p k v kvs where
-  MatchHead p k v (p k v ': kvs) = True
-  MatchHead p k v (_ ': kvs) = False
-  MatchHead p k v '[] = False
+    MatchHead p k v (p k v ': kvs) = True
+    MatchHead p k v (_ ': kvs) = False
+    MatchHead p k v '[] = False
+
+type family MatchHeadKey p k kvs where
+    MatchHeadKey p k (p k v ': kvs) = True
+    MatchHeadKey p k (_ ': kvs) = False
+    MatchHeadKey p k '[] = False
 
 -- class Query (b :: Bool) p k v kvs where
 --     query' :: Proxy b -> HMap p kvs -> Proxy k -> Maybe v
@@ -79,6 +83,27 @@ query = query' (Proxy :: Proxy (MatchHead p k v kvs))
 hasKey :: forall p (k :: Symbol) kvs. KnownSymbol k => HMap p kvs -> Proxy k -> Bool
 hasKey hmap key = case axiomInHMapTypeable hmap key of
                     Dict -> someTypeRep (Proxy :: Proxy (InHMap p k kvs)) == someTypeRep (Proxy :: Proxy True)
+
+-- pop one key from the HMap
+class PopKey (b :: Bool) p k (kvs :: [*]) where
+    type PopResult b k kvs :: [*]
+    pop' :: Proxy b -> HMap p kvs -> Proxy k -> HMap p (PopResult b k kvs)
+
+instance PopKey False p k '[] where
+    type PopResult False k '[] = '[]
+    pop' _ Nil _ = Nil
+
+instance PopKey True p k (p k v ': kvs) where
+    type PopResult True k (p k v ': kvs) = kvs
+    pop' _ (Cons _ rest) _ = rest
+
+instance PopKey (MatchHeadKey p k kvs) p k kvs => PopKey False p k (p k' v' ': kvs) where
+    type PopResult False k (p k' v' ': kvs) = p k' v' ': PopResult (MatchHeadKey p k kvs) k kvs
+    pop' _ (Cons pair rest) key = Cons pair (pop' (Proxy :: Proxy (MatchHeadKey p k kvs)) rest key)
+
+pop :: forall p (k :: Symbol) kvs. PopKey (MatchHeadKey p k kvs) p k kvs 
+    => HMap p kvs -> Proxy k -> HMap p (PopResult (MatchHeadKey p k kvs) k kvs)
+pop = pop' (Proxy :: Proxy (MatchHeadKey p k kvs))
 
 axiomInHMapTypeable :: KnownSymbol k => HMap p kvs -> Proxy k -> Dict (Typeable (InHMap p k kvs))
 axiomInHMapTypeable _ _ = unsafeCoerce (Dict :: Dict ())
