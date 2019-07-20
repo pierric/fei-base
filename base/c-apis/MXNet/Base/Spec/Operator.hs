@@ -6,7 +6,6 @@
 {-# LANGUAGE PartialTypeSignatures #-}
 {-# LANGUAGE ConstraintKinds #-}
 {-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE TypeApplications #-}
 module MXNet.Base.Spec.Operator where
 
 import GHC.OverloadedLabels
@@ -59,13 +58,16 @@ type family FindKey (s :: Symbol) (l :: [(Symbol, k)]) (e :: ErrorMessage) :: k 
 
 data ArgOf s k v where
   (:=) :: (info ~ ResolveParameter s k) => Proxy k -> ParameterType info -> ArgOf s k (ParameterType info)
+  (:≅) :: Proxy k -> a -> ArgOf s k a
 
 instance Pair (ArgOf s) where
   key   (k := v) = k
+  key   (k :≅ v) = k
   value (k := v) = v
+  value (k :≅ v) = v
 
 infix 5 !, !?
-infix 1 :=
+infix 1 :=, :≅
 
 (!) :: Access (MatchHead (ArgOf s) k v kvs) (ArgOf s) k v kvs 
   => ArgsHMap s kvs -> Proxy k -> v
@@ -123,6 +125,7 @@ instance Dump (ArgsHMap s '[]) where
 
 instance (Dump (ArgsHMap s kvs), KnownSymbol k, Value v) => Dump (ArgsHMap s (ArgOf s k v ': kvs)) where
   dump (Cons (k := v) kvs) = (symbolVal k, showValue v) : dump kvs
+  dump (Cons (k :≅ v) kvs) = (symbolVal k, showValue v) : dump kvs
 
 ----
 type family Subset (s1 :: [(Symbol, *)]) (s2 :: [(Symbol, *)]) :: Constraint where

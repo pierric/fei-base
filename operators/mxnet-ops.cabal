@@ -22,7 +22,8 @@ library
                        DataKinds,
                        TypeFamilies,
                        OverloadedLabels,
-                       TupleSections
+                       TupleSections,
+                       FlexibleContexts
   exposed-modules:     MXNet.Base.Operators.Symbol,
                        MXNet.Base.Operators.NDArray
   other-modules:
