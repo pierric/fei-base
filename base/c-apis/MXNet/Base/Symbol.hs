@@ -8,8 +8,8 @@ import Foreign.Ptr
 import Foreign.C.String
 import Foreign.C.Types
 import Control.Monad
-import Control.Exception.Base
-import Data.List
+import Control.Exception.Base (assert, Exception, throwIO)
+import Data.List (groupBy)
 import Data.Function
 import Data.Maybe
 import Control.Concurrent.MVar
@@ -33,25 +33,45 @@ class SymbolClass s where
     listAuxiliaryStates :: s -> IO [String]
     numOutputs          :: s -> IO Int
     at                  :: s -> Int -> IO s
+    group               :: [s] -> IO s
+    internals           :: s -> IO s
+    inferShape          :: s -> [(String, [Int])] ->IO ([(String, [Int])], [(String, [Int])], [(String, [Int])], Bool)
 
 instance SymbolClass I.SymbolHandle where
-    listArguments       sym = I.mxSymbolListArguments sym
-    listOutputs         sym = I.mxSymbolListOutputs sym
-    listAuxiliaryStates sym = I.mxSymbolListAuxiliaryStates sym
-    numOutputs          sym = I.mxSymbolGetNumOutputs sym
+    listArguments       = I.mxSymbolListArguments
+    listOutputs         = I.mxSymbolListOutputs
+    listAuxiliaryStates = I.mxSymbolListAuxiliaryStates
+    numOutputs          = I.mxSymbolGetNumOutputs
     at sym index = do
         max <- numOutputs sym
         if index < 0 || index >= max then
             throwIO (SymbolIndexOutOfBound index max)
         else
             I.mxSymbolGetOutput sym index
+    group = I.mxSymbolCreateGroup
+    internals = I.mxSymbolGetInternals
+
+    inferShape sym known = do
+        let (names, shapes) = unzip known
+            arg_ind = scanl (+) 0 $ map length shapes
+            arg_shp = concat shapes
+        (inp_shp, out_shp, aux_shp, complete) <- I.mxSymbolInferShape sym names arg_ind arg_shp
+        inps <- listArguments sym
+        outs <- listOutputs sym
+        auxs <- listAuxiliaryStates sym
+        return (pair inps inp_shp, pair outs out_shp, pair auxs aux_shp, complete)
+      where
+        pair names shapes = filter (not . null . snd) $ zip names shapes
 
 instance SymbolClass (Symbol a) where
-    listArguments       (Symbol s) = listArguments s
-    listOutputs         (Symbol s) = listOutputs   s
-    listAuxiliaryStates (Symbol s) = listAuxiliaryStates s
-    numOutputs          (Symbol s) = numOutputs s
-    at                  (Symbol s) = (Symbol <$>) . at s
+    listArguments       = listArguments . unSymbol
+    listOutputs         = listOutputs . unSymbol
+    listAuxiliaryStates = listAuxiliaryStates . unSymbol
+    numOutputs          = numOutputs . unSymbol
+    at (Symbol s)       = (Symbol <$>) . at s
+    group = (Symbol <$>) . group . map unSymbol
+    internals           = (Symbol <$>) . internals . unSymbol 
+    inferShape          = inferShape  . unSymbol
 
 
 data StorageType = StorageTypeUndefined -- -1
@@ -83,10 +103,19 @@ fromMXDType :: Integral a => MXDType -> a
 fromMXDType = fromIntegral . (subtract 1) . fromEnum
 
 class CustomOperation (Operation prop) => CustomOperationProp prop where
+    -- list the names of inputs
     prop_list_arguments        :: prop -> [String]
+    -- list the names of outputs
     prop_list_outputs          :: prop -> [String]
+    -- list the names of axiliary states
     prop_list_auxiliary_states :: prop -> [String]
+    -- infer the shape.
+    -- params: shapes of each inputs
+    -- return: shapes of inputs, outputs, auxiliary states
     prop_infer_shape :: prop -> [[Int]] -> ([[Int]], [[Int]], [[Int]])
+    -- declare the dependency of symbols
+    -- params: unique indices of inputs, outputs, auxiliary states
+    -- return: dependant indices.
     prop_declare_backward_dependency :: prop -> [Int] -> [Int] -> [Int] -> [Int]
     prop_infer_storage_type          :: prop -> [StorageType] -> ([StorageType], [StorageType], [StorageType])
     prop_infer_storage_type prop in_stype =
@@ -182,7 +211,6 @@ registerCustomOperator (op_type, op_ctor) = do
         ptr_infer_storage_type_entry    <- I.mkCustomOpInferStorageTypeFunc (infer_storage_type_entry prop)
         ptr_infer_storage_type_backward_entry <- I.mkCustomOpBackwardInferStorageTypeFunc (infer_storage_type_backward_entry prop)
 
-
         pokeArray ptr_callbacks [
             castFunPtr ptr_delete_entry,
             castFunPtr ptr_list_arguments_entry,
@@ -204,7 +232,8 @@ registerCustomOperator (op_type, op_ctor) = do
         return 1
 
     list_entry cstr out_cstr x = do
-        poke out_cstr cstr >> return 1
+        poke out_cstr cstr
+        return 1
 
     infer_shape_entry allocList prop num_tensor in_out_dim_tensor in_out_shapes_tensor _ = do
         let num_inp = length (prop_list_arguments prop)
@@ -235,7 +264,9 @@ registerCustomOperator (op_type, op_ctor) = do
         modifyMVar_ allocList (return . (castPtr ptr_0 :))
 
         let size_UINT = sizeOf (undefined :: I.MX_UINT)
-            offsets = scanl (+) 0 $ map (size_UINT *) all_shape_sizes
+            -- all the first num_tensor' ptr refers to the shape.
+            -- the last one is the end marker.
+            offsets = take num_tensor' $ scanl (+) 0 $ map (size_UINT *) all_shape_sizes
             ptrs = map (plusPtr ptr_0) offsets
         pokeArray in_out_shapes_tensor ptrs
         return 1
