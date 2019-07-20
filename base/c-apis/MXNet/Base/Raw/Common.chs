@@ -137,6 +137,15 @@ mxSymbolGetAtomicSymbolInfo creator = do
     argdesc <- peekStringArray n argdesc
     return (name, desc, argname, argtype, argdesc, key_var_num_args, rettyp)
 
+{#
+fun MXNotifyShutdown as mxNotifyShutdown_
+    {
+    } -> `CInt'
+#}
+
+mxNotifyShutdown :: IO ()
+mxNotifyShutdown = checked mxNotifyShutdown_
+
 ---------------------------------------------------
 type NN_UINT  = C2HSImp.CUInt
 

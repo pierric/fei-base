@@ -86,6 +86,18 @@ mxSymbolCreateVariable :: String -> IO SymbolHandle
 mxSymbolCreateVariable = checked . mxSymbolCreateVariable_
 
 {#
+fun MXSymbolCreateGroup as mxSymbolCreateGroup_
+    {
+        `MX_UINT',
+        withSymbolHandleArray* `[SymbolHandle]',
+        alloca- `SymbolHandle' peekSymbolHandle*
+    } -> `CInt'
+#}
+
+mxSymbolCreateGroup :: [SymbolHandle] -> IO SymbolHandle
+mxSymbolCreateGroup syms = checked $ mxSymbolCreateGroup_ (fromIntegral $ length syms) syms
+
+{#
 fun MXSymbolCreateFromJSON as mxSymbolCreateFromJSON_
     {
         `String',
