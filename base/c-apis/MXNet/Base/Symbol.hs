@@ -24,6 +24,7 @@ import Debug.Trace
 newtype Symbol a = Symbol { unSymbol :: I.SymbolHandle }
 
 data SymbolException = SymbolIndexOutOfBound Int Int
+                     | SymbolNameNotFound String
     deriving (Typeable, Show)
 instance Exception SymbolException
 
@@ -36,6 +37,13 @@ class SymbolClass s where
     group               :: [s] -> IO s
     internals           :: s -> IO s
     inferShape          :: s -> [(String, [Int])] ->IO ([(String, [Int])], [(String, [Int])], [(String, [Int])], Bool)
+
+    at'                 :: s -> String -> IO s
+    at' sym name = do
+        all_names <- listOutputs sym
+        case V.findIndex (== name) $ V.fromList all_names of
+            Just idx -> at sym idx
+            Nothing -> throwIO (SymbolNameNotFound name)
 
 instance SymbolClass I.SymbolHandle where
     listArguments       = I.mxSymbolListArguments
@@ -55,7 +63,7 @@ instance SymbolClass I.SymbolHandle where
         let (names, shapes) = unzip known
             arg_ind = scanl (+) 0 $ map length shapes
             arg_shp = concat shapes
-        (inp_shp, out_shp, aux_shp, complete) <- I.mxSymbolInferShape sym names arg_ind arg_shp
+        (inp_shp, out_shp, aux_shp, complete) <- I.mxSymbolInferShapePartial sym names arg_ind arg_shp
         inps <- listArguments sym
         outs <- listOutputs sym
         auxs <- listAuxiliaryStates sym
