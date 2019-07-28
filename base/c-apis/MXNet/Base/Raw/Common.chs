@@ -16,8 +16,11 @@ type MX_UINT  = C2HSImp.CUInt
 type MX_CCHAR = C2HSImp.CChar
 
 data MXNetError = MXNetError String
-    deriving (Typeable, Show)
+    deriving Typeable
 instance Exception MXNetError
+
+instance Show MXNetError where
+    show (MXNetError msg) = "an error occurred in MXNet.\n" ++ msg
 
 deriving instance Generic C2HSImp.CInt
 deriving instance Generic C2HSImp.CUInt
