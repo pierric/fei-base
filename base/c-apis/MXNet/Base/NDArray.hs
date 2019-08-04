@@ -5,6 +5,9 @@ import Foreign.Storable (Storable(..))
 import Data.Vector.Storable (Vector)
 import qualified Data.Vector.Storable as V
 import qualified Data.Vector.Storable.Mutable as VMut
+import qualified Data.Vector.Unboxed as UV
+import qualified Data.Array.Repa as Repa
+
 import qualified MXNet.Base.Raw as I
 import MXNet.Base.Types (Context(..), contextCPU, DType)
 
@@ -55,6 +58,12 @@ toVector arr = do
     mvec <- VMut.new nlen
     VMut.unsafeWith mvec $ \p -> I.mxNDArraySyncCopyToCPU (unNDArray arr) (castPtr p) nlen
     V.unsafeFreeze mvec
+
+toRepa :: (Repa.Shape sh, DType a, UV.Unbox a) => NDArray a -> IO (Repa.Array Repa.U sh a)
+toRepa arr = do
+    shp <- ndshape arr
+    vec <- toVector arr
+    return $ Repa.fromUnboxed (Repa.shapeOfList (reverse shp)) (UV.convert vec)
 
 context :: DType a => NDArray a -> IO Context
 context (NDArray handle) = do

@@ -8,7 +8,7 @@ import Foreign.ForeignPtr (touchForeignPtr)
 import Foreign.ForeignPtr.Unsafe (unsafeForeignPtrToPtr)
 import Foreign.C.Types
 import Foreign.Ptr
-import C2HS.C.Extra.Marshal (withIntegralArray)
+import C2HS.C.Extra.Marshal (withIntegralArray, peekStringArray)
 import GHC.Generics (Generic)
 import Control.Monad ((>=>))
 
@@ -326,3 +326,22 @@ mxNDArraySave filename keyvals = do
     let num = length keyvals
         (keys, vals) = unzip keyvals
     checked $ mxNDArraySave_ filename (fromIntegral num) vals keys
+
+{#
+fun MXNDArrayLoad as mxNDArrayLoad_
+    {
+        `String',
+        alloca- `MX_UINT' peek*,
+        alloca- `Ptr NDArrayHandlePtr' peek*,
+        alloca- `MX_UINT' peek*,
+        alloca- `Ptr (Ptr CChar)' peek*
+    } -> `CInt'
+#}
+
+mxNDArrayLoad :: String -> IO [(String, NDArrayHandle)]
+mxNDArrayLoad path = do
+    (numArrays, ptrArrays, numNames, ptrNames) <- checked $ mxNDArrayLoad_ path
+    pa <- peekArray (fromIntegral numArrays) ptrArrays
+    arrays <- mapM newNDArrayHandle pa
+    names <- peekStringArray numNames ptrNames
+    return $ zip names arrays
