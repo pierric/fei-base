@@ -7,6 +7,7 @@ import qualified Data.Vector.Storable as V
 import qualified Data.Vector.Storable.Mutable as VMut
 import qualified Data.Vector.Unboxed as UV
 import qualified Data.Array.Repa as Repa
+import qualified Data.Array.Repa.Eval as Repa
 
 import qualified MXNet.Base.Raw as I
 import MXNet.Base.Types (Context(..), contextCPU, DType)
@@ -51,6 +52,11 @@ copyFromVector arr vec = do
       else do
         V.unsafeWith vec $ \p -> do
             I.mxNDArraySyncCopyFromCPU (unNDArray arr) (castPtr p) sz
+
+copyFromRepa :: (Repa.Shape sh, DType a, UV.Unbox a, Repa.Load r sh a) => NDArray a -> Repa.Array r sh a -> IO ()
+copyFromRepa arr repa = do
+    let vec = UV.convert $ Repa.toUnboxed $ Repa.computeS repa
+    copyFromVector arr vec
 
 toVector :: DType a => NDArray a -> IO (Vector a)
 toVector arr = do
