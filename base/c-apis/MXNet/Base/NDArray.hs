@@ -26,6 +26,11 @@ makeNDArray shape ctx vec = do
         I.mxNDArraySyncCopyFromCPU array (castPtr p) (V.length vec)
         return $ NDArray array
 
+makeNDArrayLike :: DType a => NDArray a -> Context -> IO (NDArray a)
+makeNDArrayLike src cxt = do
+    shape <- ndshape src
+    makeEmptyNDArray shape cxt
+        
 ndshape :: NDArray a -> IO [Int]
 ndshape = I.mxNDArrayGetShape . unNDArray
 
@@ -75,3 +80,11 @@ context :: DType a => NDArray a -> IO Context
 context (NDArray handle) = do
     cxt <- I.mxNDArrayGetContext handle
     return $ uncurry Context cxt
+
+waitToRead :: DType a => NDArray a -> IO ()
+waitToRead (NDArray hdl) = mxNDArrayWaitToRead hdl
+
+waitToWrite :: DType a => NDArray a -> IO ()
+waitToWrite (NDArray hdl) = mxNDArrayWaitToWrite hdl
+
+waitAll = mxNDArrayWaitAll
