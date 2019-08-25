@@ -1,3 +1,4 @@
+{-# LANGUAGE ScopedTypeVariables #-}
 module MXNet.Base.NDArray where
 
 import Foreign.Ptr (castPtr)
@@ -10,18 +11,18 @@ import qualified Data.Array.Repa as Repa
 import qualified Data.Array.Repa.Eval as Repa
 
 import qualified MXNet.Base.Raw as I
-import MXNet.Base.Types (Context(..), contextCPU, DType)
+import MXNet.Base.Types (Context(..), contextCPU, DType(..))
 
 newtype NDArray a = NDArray { unNDArray :: I.NDArrayHandle}
 
-makeEmptyNDArray :: DType a => [Int] -> Context -> IO (NDArray a)
+makeEmptyNDArray :: forall a. DType a => [Int] -> Context -> IO (NDArray a)
 makeEmptyNDArray shape ctx = do
-    array <- I.mxNDArrayCreate shape (_device_type ctx) (_device_id ctx) False
+    array <- I.mxNDArrayCreateEx shape (_device_type ctx) (_device_id ctx) False (flag (undefined :: a))
     return $ NDArray array
 
-makeNDArray :: DType a => [Int] -> Context -> Vector a -> IO (NDArray a)
+makeNDArray :: forall a. DType a => [Int] -> Context -> Vector a -> IO (NDArray a)
 makeNDArray shape ctx vec = do
-    array <- I.mxNDArrayCreate shape (_device_type ctx) (_device_id ctx) False
+    array <- I.mxNDArrayCreateEx shape (_device_type ctx) (_device_id ctx) False (flag (undefined :: a))
     V.unsafeWith vec $ \p -> do
         I.mxNDArraySyncCopyFromCPU array (castPtr p) (V.length vec)
         return $ NDArray array
@@ -31,10 +32,10 @@ makeNDArrayLike src cxt = do
     shape <- ndshape src
     makeEmptyNDArray shape cxt
         
-ndshape :: NDArray a -> IO [Int]
+ndshape :: DType a => NDArray a -> IO [Int]
 ndshape = I.mxNDArrayGetShape . unNDArray
 
-ndsize :: NDArray a -> IO Int
+ndsize :: DType a => NDArray a -> IO Int
 ndsize arr = product <$> ndshape arr
 
 full :: DType a => a -> [Int] -> IO (NDArray a)
@@ -82,9 +83,9 @@ context (NDArray handle) = do
     return $ uncurry Context cxt
 
 waitToRead :: DType a => NDArray a -> IO ()
-waitToRead (NDArray hdl) = mxNDArrayWaitToRead hdl
+waitToRead (NDArray hdl) = I.mxNDArrayWaitToRead hdl
 
 waitToWrite :: DType a => NDArray a -> IO ()
-waitToWrite (NDArray hdl) = mxNDArrayWaitToWrite hdl
+waitToWrite (NDArray hdl) = I.mxNDArrayWaitToWrite hdl
 
-waitAll = mxNDArrayWaitAll
+waitAll = I.mxNDArrayWaitAll
