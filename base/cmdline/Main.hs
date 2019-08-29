@@ -194,7 +194,14 @@ genSymOp sc = do
 
 genArrOp :: AtomicSymbolCreator -> IO [Decl ()]
 genArrOp sc = do
-    (symname, desc, argname, argtype, argdesc, key_var_num_args, rettyp) <- mxSymbolGetAtomicSymbolInfo sc
+    (symname, desc, argname0, argtype0, argdesc, key_var_num_args, rettyp) <- mxSymbolGetAtomicSymbolInfo sc
+
+    -- some ops (names like *_mkl_*) are malformed. They declare zero args, but actually has the "data" and "num_args"
+    let (argname, argtype) = if not (null key_var_num_args) && null argname0 then
+                                (["data","num_args"], ["NDArray-or-Symbol[]","int, required"])
+                             else
+                                (argname0, argtype0)
+
     if symname `elem` ["_Native", "_NDArray", "Custom"] then
         return []
     else do
