@@ -12,6 +12,7 @@ import Control.Exception.Base (assert, Exception, throwIO)
 import Data.List (groupBy)
 import Data.Function
 import Data.Maybe
+import Text.Printf (printf)
 import Control.Concurrent.MVar
 import qualified Data.Vector as V
 import qualified Data.Vector.Mutable as VM
@@ -19,9 +20,13 @@ import Data.Typeable (Typeable)
 import Control.Exception.Base (Exception, throwIO)
 
 import qualified MXNet.Base.Raw as I
+import MXNet.Base.Types (ForeignData(..))
 import Debug.Trace
 
 newtype Symbol a = Symbol { unSymbol :: I.SymbolHandle }
+
+instance ForeignData (Symbol a) where
+    touch = I.touchSymbolHandle . unSymbol
 
 data SymbolException = SymbolIndexOutOfBound Int Int
                      | SymbolNameNotFound String
@@ -29,6 +34,7 @@ data SymbolException = SymbolIndexOutOfBound Int Int
 instance Exception SymbolException
 
 class SymbolClass s where
+    getName             :: s -> IO (Maybe String)
     listArguments       :: s -> IO [String]
     listOutputs         :: s -> IO [String]
     listAuxiliaryStates :: s -> IO [String]
@@ -46,6 +52,7 @@ class SymbolClass s where
             Nothing -> throwIO (SymbolNameNotFound name)
 
 instance SymbolClass I.SymbolHandle where
+    getName = I.mxSymbolGetName
     listArguments       = I.mxSymbolListArguments
     listOutputs         = I.mxSymbolListOutputs
     listAuxiliaryStates = I.mxSymbolListAuxiliaryStates
@@ -72,6 +79,7 @@ instance SymbolClass I.SymbolHandle where
         pair names shapes = filter (not . null . snd) $ zip names shapes
 
 instance SymbolClass (Symbol a) where
+    getName             = getName . unSymbol
     listArguments       = listArguments . unSymbol
     listOutputs         = listOutputs . unSymbol
     listAuxiliaryStates = listAuxiliaryStates . unSymbol
@@ -348,7 +356,6 @@ registerCustomOperator (op_type, op_ctor) = do
         op <- prop_create_operator prop shapes dtypes
 
         let size = 3
-        -- TODO: free ptrs
         ptr_callbacks <- mallocArray size
         ptr_contexts  <- newArray (replicate size nullPtr)
         allocList <- newMVar $ [castPtr ptr_callbacks, castPtr ptr_contexts]

@@ -29,8 +29,11 @@ pointer SymbolHandle foreign newtype
 #}
 
 deriving instance Generic SymbolHandle
-
+deriving instance Show SymbolHandle
 type SymbolHandlePtr = Ptr SymbolHandle
+
+touchSymbolHandle :: SymbolHandle -> IO ()
+touchSymbolHandle (SymbolHandle fptr) = touchForeignPtr fptr
 
 newSymbolHandle :: SymbolHandlePtr -> IO SymbolHandle
 newSymbolHandle ptr = newForeignPtr ptr (mxSymbolFree ptr) >>= return . SymbolHandle

@@ -32,6 +32,9 @@ deriving instance Generic ExecutorHandle
 
 type ExecutorHandlePtr = Ptr ExecutorHandle
 
+touchExecutorHandle :: ExecutorHandle -> IO ()
+touchExecutorHandle (ExecutorHandle fptr) = touchForeignPtr fptr
+
 newExecutorHandle :: ExecutorHandlePtr -> IO ExecutorHandle
 newExecutorHandle ptr = newForeignPtr ptr (mxExecutorFree ptr) >>= return . ExecutorHandle
 
