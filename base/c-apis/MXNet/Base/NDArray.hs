@@ -11,9 +11,12 @@ import qualified Data.Array.Repa as Repa
 import qualified Data.Array.Repa.Eval as Repa
 
 import qualified MXNet.Base.Raw as I
-import MXNet.Base.Types (Context(..), contextCPU, DType(..))
+import MXNet.Base.Types (Context(..), contextCPU, DType(..), ForeignData(..))
 
 newtype NDArray a = NDArray { unNDArray :: I.NDArrayHandle}
+
+instance ForeignData (NDArray a) where
+    touch = I.touchNDArrayHandle . unNDArray
 
 makeEmptyNDArray :: forall a. DType a => [Int] -> Context -> IO (NDArray a)
 makeEmptyNDArray shape ctx = do

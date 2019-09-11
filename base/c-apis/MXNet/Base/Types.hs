@@ -30,3 +30,6 @@ contextCPU = Context 1 0
 
 contextGPU0 :: Context
 contextGPU0 = Context 2 0
+
+class ForeignData a where
+    touch :: a -> IO ()

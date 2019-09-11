@@ -27,10 +27,16 @@ pointer NDArrayHandle foreign newtype
 #}
 
 deriving instance Generic NDArrayHandle
+deriving instance Show NDArrayHandle
 type NDArrayHandlePtr = Ptr NDArrayHandle
 
+touchNDArrayHandle :: NDArrayHandle -> IO ()
+touchNDArrayHandle (NDArrayHandle fptr) = touchForeignPtr fptr
+
 newNDArrayHandle :: NDArrayHandlePtr -> IO NDArrayHandle
-newNDArrayHandle ptr = newForeignPtr ptr (mxNDArrayFree ptr) >>= return . NDArrayHandle
+newNDArrayHandle ptr = do
+    hdl <- newForeignPtr ptr (mxNDArrayFree ptr)
+    return $ NDArrayHandle hdl
 
 peekNDArrayHandle :: Ptr NDArrayHandlePtr -> IO NDArrayHandle
 peekNDArrayHandle = peek >=> newNDArrayHandle
