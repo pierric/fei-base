@@ -5,7 +5,8 @@ import MXNet.Base.Spec.HMap
 import Data.Maybe (catMaybes, fromMaybe)
 
 type instance ParameterList "broadcast_power(ndarray)" =
-     '[ '("lhs", AttrOpt NDArrayHandle), '("rhs", AttrOpt NDArrayHandle)]
+     '[ '("lhs", AttrOpt NDArrayHandle),
+        '("rhs", AttrOpt NDArrayHandle)]
 
 broadcast_power ::
                 forall args . Fullfilled "broadcast_power(ndarray)" args =>
@@ -78,7 +79,8 @@ _backward_broadcast_power_upd outputs args
          return ()
 
 type instance ParameterList "broadcast_maximum(ndarray)" =
-     '[ '("lhs", AttrOpt NDArrayHandle), '("rhs", AttrOpt NDArrayHandle)]
+     '[ '("lhs", AttrOpt NDArrayHandle),
+        '("rhs", AttrOpt NDArrayHandle)]
 
 broadcast_maximum ::
                   forall args . Fullfilled "broadcast_maximum(ndarray)" args =>
@@ -151,7 +153,8 @@ _backward_broadcast_maximum_upd outputs args
          return ()
 
 type instance ParameterList "broadcast_minimum(ndarray)" =
-     '[ '("lhs", AttrOpt NDArrayHandle), '("rhs", AttrOpt NDArrayHandle)]
+     '[ '("lhs", AttrOpt NDArrayHandle),
+        '("rhs", AttrOpt NDArrayHandle)]
 
 broadcast_minimum ::
                   forall args . Fullfilled "broadcast_minimum(ndarray)" args =>
@@ -224,7 +227,8 @@ _backward_broadcast_minimum_upd outputs args
          return ()
 
 type instance ParameterList "broadcast_hypot(ndarray)" =
-     '[ '("lhs", AttrOpt NDArrayHandle), '("rhs", AttrOpt NDArrayHandle)]
+     '[ '("lhs", AttrOpt NDArrayHandle),
+        '("rhs", AttrOpt NDArrayHandle)]
 
 broadcast_hypot ::
                 forall args . Fullfilled "broadcast_hypot(ndarray)" args =>
@@ -297,7 +301,8 @@ _backward_broadcast_hypot_upd outputs args
          return ()
 
 type instance ParameterList "_equal(ndarray)" =
-     '[ '("lhs", AttrOpt NDArrayHandle), '("rhs", AttrOpt NDArrayHandle)]
+     '[ '("lhs", AttrOpt NDArrayHandle),
+        '("rhs", AttrOpt NDArrayHandle)]
 
 _equal ::
        forall args . Fullfilled "_equal(ndarray)" args =>
@@ -334,7 +339,8 @@ _equal_upd outputs args
          return ()
 
 type instance ParameterList "_not_equal(ndarray)" =
-     '[ '("lhs", AttrOpt NDArrayHandle), '("rhs", AttrOpt NDArrayHandle)]
+     '[ '("lhs", AttrOpt NDArrayHandle),
+        '("rhs", AttrOpt NDArrayHandle)]
 
 _not_equal ::
            forall args . Fullfilled "_not_equal(ndarray)" args =>
@@ -371,7 +377,8 @@ _not_equal_upd outputs args
          return ()
 
 type instance ParameterList "_greater(ndarray)" =
-     '[ '("lhs", AttrOpt NDArrayHandle), '("rhs", AttrOpt NDArrayHandle)]
+     '[ '("lhs", AttrOpt NDArrayHandle),
+        '("rhs", AttrOpt NDArrayHandle)]
 
 _greater ::
          forall args . Fullfilled "_greater(ndarray)" args =>
@@ -408,7 +415,8 @@ _greater_upd outputs args
          return ()
 
 type instance ParameterList "_greater_equal(ndarray)" =
-     '[ '("lhs", AttrOpt NDArrayHandle), '("rhs", AttrOpt NDArrayHandle)]
+     '[ '("lhs", AttrOpt NDArrayHandle),
+        '("rhs", AttrOpt NDArrayHandle)]
 
 _greater_equal ::
                forall args . Fullfilled "_greater_equal(ndarray)" args =>
@@ -445,7 +453,8 @@ _greater_equal_upd outputs args
          return ()
 
 type instance ParameterList "_lesser(ndarray)" =
-     '[ '("lhs", AttrOpt NDArrayHandle), '("rhs", AttrOpt NDArrayHandle)]
+     '[ '("lhs", AttrOpt NDArrayHandle),
+        '("rhs", AttrOpt NDArrayHandle)]
 
 _lesser ::
         forall args . Fullfilled "_lesser(ndarray)" args =>
@@ -482,7 +491,8 @@ _lesser_upd outputs args
          return ()
 
 type instance ParameterList "_lesser_equal(ndarray)" =
-     '[ '("lhs", AttrOpt NDArrayHandle), '("rhs", AttrOpt NDArrayHandle)]
+     '[ '("lhs", AttrOpt NDArrayHandle),
+        '("rhs", AttrOpt NDArrayHandle)]
 
 _lesser_equal ::
               forall args . Fullfilled "_lesser_equal(ndarray)" args =>
@@ -519,7 +529,8 @@ _lesser_equal_upd outputs args
          return ()
 
 type instance ParameterList "_power(ndarray)" =
-     '[ '("lhs", AttrOpt NDArrayHandle), '("rhs", AttrOpt NDArrayHandle)]
+     '[ '("lhs", AttrOpt NDArrayHandle),
+        '("rhs", AttrOpt NDArrayHandle)]
 
 _power ::
        forall args . Fullfilled "_power(ndarray)" args =>
@@ -587,7 +598,8 @@ _backward_power_upd outputs args
          return ()
 
 type instance ParameterList "_maximum(ndarray)" =
-     '[ '("lhs", AttrOpt NDArrayHandle), '("rhs", AttrOpt NDArrayHandle)]
+     '[ '("lhs", AttrOpt NDArrayHandle),
+        '("rhs", AttrOpt NDArrayHandle)]
 
 _maximum ::
          forall args . Fullfilled "_maximum(ndarray)" args =>
@@ -655,7 +667,8 @@ _backward_maximum_upd outputs args
          return ()
 
 type instance ParameterList "_minimum(ndarray)" =
-     '[ '("lhs", AttrOpt NDArrayHandle), '("rhs", AttrOpt NDArrayHandle)]
+     '[ '("lhs", AttrOpt NDArrayHandle),
+        '("rhs", AttrOpt NDArrayHandle)]
 
 _minimum ::
          forall args . Fullfilled "_minimum(ndarray)" args =>
@@ -723,7 +736,8 @@ _backward_minimum_upd outputs args
          return ()
 
 type instance ParameterList "_hypot(ndarray)" =
-     '[ '("lhs", AttrOpt NDArrayHandle), '("rhs", AttrOpt NDArrayHandle)]
+     '[ '("lhs", AttrOpt NDArrayHandle),
+        '("rhs", AttrOpt NDArrayHandle)]
 
 _hypot ::
        forall args . Fullfilled "_hypot(ndarray)" args =>
@@ -792,7 +806,7 @@ _backward_hypot_upd outputs args
 
 type instance ParameterList "_square_sum(ndarray)" =
      '[ '("axis", AttrOpt [Int]), '("keepdims", AttrOpt Bool),
-       '("exclude", AttrOpt Bool), '("data", AttrOpt NDArrayHandle)]
+        '("exclude", AttrOpt Bool), '("data", AttrOpt NDArrayHandle)]
 
 _square_sum ::
             forall args . Fullfilled "_square_sum(ndarray)" args =>
@@ -902,9 +916,9 @@ add_n_upd outputs args
 
 type instance ParameterList "_zeros(ndarray)" =
      '[ '("shape", AttrOpt [Int]), '("ctx", AttrOpt String),
-       '("dtype",
-         AttrOpt
-           (EnumType '["float16", "float32", "float64", "int32", "uint8"]))]
+        '("dtype",
+          AttrOpt
+            (EnumType '["float16", "float32", "float64", "int32", "uint8"]))]
 
 _zeros ::
        forall args . Fullfilled "_zeros(ndarray)" args =>
@@ -950,9 +964,9 @@ _zeros_upd outputs args
 
 type instance ParameterList "_ones(ndarray)" =
      '[ '("shape", AttrOpt [Int]), '("ctx", AttrOpt String),
-       '("dtype",
-         AttrOpt
-           (EnumType '["float16", "float32", "float64", "int32", "uint8"]))]
+        '("dtype",
+          AttrOpt
+            (EnumType '["float16", "float32", "float64", "int32", "uint8"]))]
 
 _ones ::
       forall args . Fullfilled "_ones(ndarray)" args =>
@@ -998,10 +1012,10 @@ _ones_upd outputs args
 
 type instance ParameterList "_full(ndarray)" =
      '[ '("shape", AttrOpt [Int]), '("ctx", AttrOpt String),
-       '("dtype",
-         AttrOpt
-           (EnumType '["float16", "float32", "float64", "int32", "uint8"])),
-       '("value", AttrReq Double)]
+        '("dtype",
+          AttrOpt
+            (EnumType '["float16", "float32", "float64", "int32", "uint8"])),
+        '("value", AttrReq Double)]
 
 _full ::
       forall args . Fullfilled "_full(ndarray)" args =>
@@ -1049,12 +1063,12 @@ _full_upd outputs args
 
 type instance ParameterList "_arange(ndarray)" =
      '[ '("start", AttrReq Double), '("stop", AttrOpt (Maybe Double)),
-       '("step", AttrOpt Double), '("repeat", AttrOpt Int),
-       '("ctx", AttrOpt String),
-       '("dtype",
-         AttrOpt
-           (EnumType
-              '["float16", "float32", "float64", "int32", "int64", "uint8"]))]
+        '("step", AttrOpt Double), '("repeat", AttrOpt Int),
+        '("ctx", AttrOpt String),
+        '("dtype",
+          AttrOpt
+            (EnumType
+               '["float16", "float32", "float64", "int32", "int64", "uint8"]))]
 
 _arange ::
         forall args . Fullfilled "_arange(ndarray)" args =>
@@ -1173,7 +1187,8 @@ ones_like_upd outputs args
          return ()
 
 type instance ParameterList "broadcast_add(ndarray)" =
-     '[ '("lhs", AttrOpt NDArrayHandle), '("rhs", AttrOpt NDArrayHandle)]
+     '[ '("lhs", AttrOpt NDArrayHandle),
+        '("rhs", AttrOpt NDArrayHandle)]
 
 broadcast_add ::
               forall args . Fullfilled "broadcast_add(ndarray)" args =>
@@ -1243,7 +1258,8 @@ _backward_broadcast_add_upd outputs args
          return ()
 
 type instance ParameterList "broadcast_sub(ndarray)" =
-     '[ '("lhs", AttrOpt NDArrayHandle), '("rhs", AttrOpt NDArrayHandle)]
+     '[ '("lhs", AttrOpt NDArrayHandle),
+        '("rhs", AttrOpt NDArrayHandle)]
 
 broadcast_sub ::
               forall args . Fullfilled "broadcast_sub(ndarray)" args =>
@@ -1313,7 +1329,8 @@ _backward_broadcast_sub_upd outputs args
          return ()
 
 type instance ParameterList "broadcast_mul(ndarray)" =
-     '[ '("lhs", AttrOpt NDArrayHandle), '("rhs", AttrOpt NDArrayHandle)]
+     '[ '("lhs", AttrOpt NDArrayHandle),
+        '("rhs", AttrOpt NDArrayHandle)]
 
 broadcast_mul ::
               forall args . Fullfilled "broadcast_mul(ndarray)" args =>
@@ -1383,7 +1400,8 @@ _backward_broadcast_mul_upd outputs args
          return ()
 
 type instance ParameterList "broadcast_div(ndarray)" =
-     '[ '("lhs", AttrOpt NDArrayHandle), '("rhs", AttrOpt NDArrayHandle)]
+     '[ '("lhs", AttrOpt NDArrayHandle),
+        '("rhs", AttrOpt NDArrayHandle)]
 
 broadcast_div ::
               forall args . Fullfilled "broadcast_div(ndarray)" args =>
@@ -1453,7 +1471,8 @@ _backward_broadcast_div_upd outputs args
          return ()
 
 type instance ParameterList "broadcast_mod(ndarray)" =
-     '[ '("lhs", AttrOpt NDArrayHandle), '("rhs", AttrOpt NDArrayHandle)]
+     '[ '("lhs", AttrOpt NDArrayHandle),
+        '("rhs", AttrOpt NDArrayHandle)]
 
 broadcast_mod ::
               forall args . Fullfilled "broadcast_mod(ndarray)" args =>
@@ -1524,9 +1543,9 @@ _backward_broadcast_mod_upd outputs args
 
 type instance ParameterList "_linalg_gemm(ndarray)" =
      '[ '("transpose_a", AttrOpt Bool), '("transpose_b", AttrOpt Bool),
-       '("alpha", AttrOpt Double), '("beta", AttrOpt Double),
-       '("_A", AttrOpt NDArrayHandle), '("_B", AttrOpt NDArrayHandle),
-       '("_C", AttrOpt NDArrayHandle)]
+        '("alpha", AttrOpt Double), '("beta", AttrOpt Double),
+        '("_A", AttrOpt NDArrayHandle), '("_B", AttrOpt NDArrayHandle),
+        '("_C", AttrOpt NDArrayHandle)]
 
 _linalg_gemm ::
              forall args . Fullfilled "_linalg_gemm(ndarray)" args =>
@@ -1612,8 +1631,8 @@ _backward_linalg_gemm_upd outputs args
 
 type instance ParameterList "_linalg_gemm2(ndarray)" =
      '[ '("transpose_a", AttrOpt Bool), '("transpose_b", AttrOpt Bool),
-       '("alpha", AttrOpt Double), '("_A", AttrOpt NDArrayHandle),
-       '("_B", AttrOpt NDArrayHandle)]
+        '("alpha", AttrOpt Double), '("_A", AttrOpt NDArrayHandle),
+        '("_B", AttrOpt NDArrayHandle)]
 
 _linalg_gemm2 ::
               forall args . Fullfilled "_linalg_gemm2(ndarray)" args =>
@@ -1825,8 +1844,8 @@ _backward_linalg_potri_upd outputs args
 
 type instance ParameterList "_linalg_trmm(ndarray)" =
      '[ '("transpose", AttrOpt Bool), '("rightside", AttrOpt Bool),
-       '("alpha", AttrOpt Double), '("_A", AttrOpt NDArrayHandle),
-       '("_B", AttrOpt NDArrayHandle)]
+        '("alpha", AttrOpt Double), '("_A", AttrOpt NDArrayHandle),
+        '("_B", AttrOpt NDArrayHandle)]
 
 _linalg_trmm ::
              forall args . Fullfilled "_linalg_trmm(ndarray)" args =>
@@ -1904,8 +1923,8 @@ _backward_linalg_trmm_upd outputs args
 
 type instance ParameterList "_linalg_trsm(ndarray)" =
      '[ '("transpose", AttrOpt Bool), '("rightside", AttrOpt Bool),
-       '("alpha", AttrOpt Double), '("_A", AttrOpt NDArrayHandle),
-       '("_B", AttrOpt NDArrayHandle)]
+        '("alpha", AttrOpt Double), '("_A", AttrOpt NDArrayHandle),
+        '("_B", AttrOpt NDArrayHandle)]
 
 _linalg_trsm ::
              forall args . Fullfilled "_linalg_trsm(ndarray)" args =>
@@ -2052,7 +2071,7 @@ _backward_linalg_sumlogdiag_upd outputs args
 
 type instance ParameterList "_linalg_syrk(ndarray)" =
      '[ '("transpose", AttrOpt Bool), '("alpha", AttrOpt Double),
-       '("_A", AttrOpt NDArrayHandle)]
+        '("_A", AttrOpt NDArrayHandle)]
 
 _linalg_syrk ::
              forall args . Fullfilled "_linalg_syrk(ndarray)" args =>
@@ -2253,8 +2272,9 @@ _backward_linalg_syevd_upd outputs args
          return ()
 
 type instance ParameterList "cast_storage(ndarray)" =
-     '[ '("stype", AttrReq (EnumType '["csr", "default", "row_sparse"])),
-       '("data", AttrOpt NDArrayHandle)]
+     '[ '("stype",
+          AttrReq (EnumType '["csr", "default", "row_sparse"])),
+        '("data", AttrOpt NDArrayHandle)]
 
 cast_storage ::
              forall args . Fullfilled "cast_storage(ndarray)" args =>
@@ -2555,7 +2575,8 @@ relu_upd outputs args
          return ()
 
 type instance ParameterList "_backward_relu(ndarray)" =
-     '[ '("lhs", AttrOpt NDArrayHandle), '("rhs", AttrOpt NDArrayHandle)]
+     '[ '("lhs", AttrOpt NDArrayHandle),
+        '("rhs", AttrOpt NDArrayHandle)]
 
 _backward_relu ::
                forall args . Fullfilled "_backward_relu(ndarray)" args =>
@@ -2625,7 +2646,8 @@ sigmoid_upd outputs args
          return ()
 
 type instance ParameterList "_backward_sigmoid(ndarray)" =
-     '[ '("lhs", AttrOpt NDArrayHandle), '("rhs", AttrOpt NDArrayHandle)]
+     '[ '("lhs", AttrOpt NDArrayHandle),
+        '("rhs", AttrOpt NDArrayHandle)]
 
 _backward_sigmoid ::
                   forall args . Fullfilled "_backward_sigmoid(ndarray)" args =>
@@ -2793,7 +2815,8 @@ make_loss_upd outputs args
 
 type instance ParameterList "_identity_with_attr_like_rhs(ndarray)"
      =
-     '[ '("lhs", AttrOpt NDArrayHandle), '("rhs", AttrOpt NDArrayHandle)]
+     '[ '("lhs", AttrOpt NDArrayHandle),
+        '("rhs", AttrOpt NDArrayHandle)]
 
 _identity_with_attr_like_rhs ::
                              forall args .
@@ -2834,7 +2857,8 @@ _identity_with_attr_like_rhs_upd outputs args
          return ()
 
 type instance ParameterList "reshape_like(ndarray)" =
-     '[ '("lhs", AttrOpt NDArrayHandle), '("rhs", AttrOpt NDArrayHandle)]
+     '[ '("lhs", AttrOpt NDArrayHandle),
+        '("rhs", AttrOpt NDArrayHandle)]
 
 reshape_like ::
              forall args . Fullfilled "reshape_like(ndarray)" args =>
@@ -2872,9 +2896,9 @@ reshape_like_upd outputs args
 
 type instance ParameterList "_Cast(ndarray)" =
      '[ '("dtype",
-         AttrReq
-           (EnumType '["float16", "float32", "float64", "int32", "uint8"])),
-       '("data", AttrOpt NDArrayHandle)]
+          AttrReq
+            (EnumType '["float16", "float32", "float64", "int32", "uint8"])),
+        '("data", AttrOpt NDArrayHandle)]
 
 _Cast ::
       forall args . Fullfilled "_Cast(ndarray)" args =>
@@ -3013,7 +3037,8 @@ reciprocal_upd outputs args
          return ()
 
 type instance ParameterList "_backward_reciprocal(ndarray)" =
-     '[ '("lhs", AttrOpt NDArrayHandle), '("rhs", AttrOpt NDArrayHandle)]
+     '[ '("lhs", AttrOpt NDArrayHandle),
+        '("rhs", AttrOpt NDArrayHandle)]
 
 _backward_reciprocal ::
                      forall args . Fullfilled "_backward_reciprocal(ndarray)" args =>
@@ -3084,7 +3109,8 @@ abs_upd outputs args
          return ()
 
 type instance ParameterList "_backward_abs(ndarray)" =
-     '[ '("lhs", AttrOpt NDArrayHandle), '("rhs", AttrOpt NDArrayHandle)]
+     '[ '("lhs", AttrOpt NDArrayHandle),
+        '("rhs", AttrOpt NDArrayHandle)]
 
 _backward_abs ::
               forall args . Fullfilled "_backward_abs(ndarray)" args =>
@@ -3154,7 +3180,8 @@ sign_upd outputs args
          return ()
 
 type instance ParameterList "_backward_sign(ndarray)" =
-     '[ '("lhs", AttrOpt NDArrayHandle), '("rhs", AttrOpt NDArrayHandle)]
+     '[ '("lhs", AttrOpt NDArrayHandle),
+        '("rhs", AttrOpt NDArrayHandle)]
 
 _backward_sign ::
                forall args . Fullfilled "_backward_sign(ndarray)" args =>
@@ -3422,7 +3449,8 @@ square_upd outputs args
          return ()
 
 type instance ParameterList "_backward_square(ndarray)" =
-     '[ '("lhs", AttrOpt NDArrayHandle), '("rhs", AttrOpt NDArrayHandle)]
+     '[ '("lhs", AttrOpt NDArrayHandle),
+        '("rhs", AttrOpt NDArrayHandle)]
 
 _backward_square ::
                  forall args . Fullfilled "_backward_square(ndarray)" args =>
@@ -3493,7 +3521,8 @@ sqrt_upd outputs args
          return ()
 
 type instance ParameterList "_backward_sqrt(ndarray)" =
-     '[ '("lhs", AttrOpt NDArrayHandle), '("rhs", AttrOpt NDArrayHandle)]
+     '[ '("lhs", AttrOpt NDArrayHandle),
+        '("rhs", AttrOpt NDArrayHandle)]
 
 _backward_sqrt ::
                forall args . Fullfilled "_backward_sqrt(ndarray)" args =>
@@ -3563,7 +3592,8 @@ rsqrt_upd outputs args
          return ()
 
 type instance ParameterList "_backward_rsqrt(ndarray)" =
-     '[ '("lhs", AttrOpt NDArrayHandle), '("rhs", AttrOpt NDArrayHandle)]
+     '[ '("lhs", AttrOpt NDArrayHandle),
+        '("rhs", AttrOpt NDArrayHandle)]
 
 _backward_rsqrt ::
                 forall args . Fullfilled "_backward_rsqrt(ndarray)" args =>
@@ -3634,7 +3664,8 @@ cbrt_upd outputs args
          return ()
 
 type instance ParameterList "_backward_cbrt(ndarray)" =
-     '[ '("lhs", AttrOpt NDArrayHandle), '("rhs", AttrOpt NDArrayHandle)]
+     '[ '("lhs", AttrOpt NDArrayHandle),
+        '("rhs", AttrOpt NDArrayHandle)]
 
 _backward_cbrt ::
                forall args . Fullfilled "_backward_cbrt(ndarray)" args =>
@@ -3704,7 +3735,8 @@ rcbrt_upd outputs args
          return ()
 
 type instance ParameterList "_backward_rcbrt(ndarray)" =
-     '[ '("lhs", AttrOpt NDArrayHandle), '("rhs", AttrOpt NDArrayHandle)]
+     '[ '("lhs", AttrOpt NDArrayHandle),
+        '("rhs", AttrOpt NDArrayHandle)]
 
 _backward_rcbrt ::
                 forall args . Fullfilled "_backward_rcbrt(ndarray)" args =>
@@ -3874,7 +3906,8 @@ log2_upd outputs args
          return ()
 
 type instance ParameterList "_backward_log(ndarray)" =
-     '[ '("lhs", AttrOpt NDArrayHandle), '("rhs", AttrOpt NDArrayHandle)]
+     '[ '("lhs", AttrOpt NDArrayHandle),
+        '("rhs", AttrOpt NDArrayHandle)]
 
 _backward_log ::
               forall args . Fullfilled "_backward_log(ndarray)" args =>
@@ -3911,7 +3944,8 @@ _backward_log_upd outputs args
          return ()
 
 type instance ParameterList "_backward_log10(ndarray)" =
-     '[ '("lhs", AttrOpt NDArrayHandle), '("rhs", AttrOpt NDArrayHandle)]
+     '[ '("lhs", AttrOpt NDArrayHandle),
+        '("rhs", AttrOpt NDArrayHandle)]
 
 _backward_log10 ::
                 forall args . Fullfilled "_backward_log10(ndarray)" args =>
@@ -3949,7 +3983,8 @@ _backward_log10_upd outputs args
          return ()
 
 type instance ParameterList "_backward_log2(ndarray)" =
-     '[ '("lhs", AttrOpt NDArrayHandle), '("rhs", AttrOpt NDArrayHandle)]
+     '[ '("lhs", AttrOpt NDArrayHandle),
+        '("rhs", AttrOpt NDArrayHandle)]
 
 _backward_log2 ::
                forall args . Fullfilled "_backward_log2(ndarray)" args =>
@@ -4019,7 +4054,8 @@ log1p_upd outputs args
          return ()
 
 type instance ParameterList "_backward_log1p(ndarray)" =
-     '[ '("lhs", AttrOpt NDArrayHandle), '("rhs", AttrOpt NDArrayHandle)]
+     '[ '("lhs", AttrOpt NDArrayHandle),
+        '("rhs", AttrOpt NDArrayHandle)]
 
 _backward_log1p ::
                 forall args . Fullfilled "_backward_log1p(ndarray)" args =>
@@ -4090,7 +4126,8 @@ expm1_upd outputs args
          return ()
 
 type instance ParameterList "_backward_expm1(ndarray)" =
-     '[ '("lhs", AttrOpt NDArrayHandle), '("rhs", AttrOpt NDArrayHandle)]
+     '[ '("lhs", AttrOpt NDArrayHandle),
+        '("rhs", AttrOpt NDArrayHandle)]
 
 _backward_expm1 ::
                 forall args . Fullfilled "_backward_expm1(ndarray)" args =>
@@ -4161,7 +4198,8 @@ gamma_upd outputs args
          return ()
 
 type instance ParameterList "_backward_gamma(ndarray)" =
-     '[ '("lhs", AttrOpt NDArrayHandle), '("rhs", AttrOpt NDArrayHandle)]
+     '[ '("lhs", AttrOpt NDArrayHandle),
+        '("rhs", AttrOpt NDArrayHandle)]
 
 _backward_gamma ::
                 forall args . Fullfilled "_backward_gamma(ndarray)" args =>
@@ -4232,7 +4270,8 @@ gammaln_upd outputs args
          return ()
 
 type instance ParameterList "_backward_gammaln(ndarray)" =
-     '[ '("lhs", AttrOpt NDArrayHandle), '("rhs", AttrOpt NDArrayHandle)]
+     '[ '("lhs", AttrOpt NDArrayHandle),
+        '("rhs", AttrOpt NDArrayHandle)]
 
 _backward_gammaln ::
                   forall args . Fullfilled "_backward_gammaln(ndarray)" args =>
@@ -4271,7 +4310,7 @@ _backward_gammaln_upd outputs args
 
 type instance ParameterList "sum(ndarray)" =
      '[ '("axis", AttrOpt [Int]), '("keepdims", AttrOpt Bool),
-       '("exclude", AttrOpt Bool), '("data", AttrOpt NDArrayHandle)]
+        '("exclude", AttrOpt Bool), '("data", AttrOpt NDArrayHandle)]
 
 sum ::
     forall args . Fullfilled "sum(ndarray)" args =>
@@ -4343,7 +4382,7 @@ _backward_sum_upd outputs args
 
 type instance ParameterList "mean(ndarray)" =
      '[ '("axis", AttrOpt [Int]), '("keepdims", AttrOpt Bool),
-       '("exclude", AttrOpt Bool), '("data", AttrOpt NDArrayHandle)]
+        '("exclude", AttrOpt Bool), '("data", AttrOpt NDArrayHandle)]
 
 mean ::
      forall args . Fullfilled "mean(ndarray)" args =>
@@ -4415,7 +4454,7 @@ _backward_mean_upd outputs args
 
 type instance ParameterList "prod(ndarray)" =
      '[ '("axis", AttrOpt [Int]), '("keepdims", AttrOpt Bool),
-       '("exclude", AttrOpt Bool), '("data", AttrOpt NDArrayHandle)]
+        '("exclude", AttrOpt Bool), '("data", AttrOpt NDArrayHandle)]
 
 prod ::
      forall args . Fullfilled "prod(ndarray)" args =>
@@ -4487,7 +4526,7 @@ _backward_prod_upd outputs args
 
 type instance ParameterList "nansum(ndarray)" =
      '[ '("axis", AttrOpt [Int]), '("keepdims", AttrOpt Bool),
-       '("exclude", AttrOpt Bool), '("data", AttrOpt NDArrayHandle)]
+        '("exclude", AttrOpt Bool), '("data", AttrOpt NDArrayHandle)]
 
 nansum ::
        forall args . Fullfilled "nansum(ndarray)" args =>
@@ -4560,7 +4599,7 @@ _backward_nansum_upd outputs args
 
 type instance ParameterList "nanprod(ndarray)" =
      '[ '("axis", AttrOpt [Int]), '("keepdims", AttrOpt Bool),
-       '("exclude", AttrOpt Bool), '("data", AttrOpt NDArrayHandle)]
+        '("exclude", AttrOpt Bool), '("data", AttrOpt NDArrayHandle)]
 
 nanprod ::
         forall args . Fullfilled "nanprod(ndarray)" args =>
@@ -4633,7 +4672,7 @@ _backward_nanprod_upd outputs args
 
 type instance ParameterList "max(ndarray)" =
      '[ '("axis", AttrOpt [Int]), '("keepdims", AttrOpt Bool),
-       '("exclude", AttrOpt Bool), '("data", AttrOpt NDArrayHandle)]
+        '("exclude", AttrOpt Bool), '("data", AttrOpt NDArrayHandle)]
 
 max ::
     forall args . Fullfilled "max(ndarray)" args =>
@@ -4705,7 +4744,7 @@ _backward_max_upd outputs args
 
 type instance ParameterList "min(ndarray)" =
      '[ '("axis", AttrOpt [Int]), '("keepdims", AttrOpt Bool),
-       '("exclude", AttrOpt Bool), '("data", AttrOpt NDArrayHandle)]
+        '("exclude", AttrOpt Bool), '("data", AttrOpt NDArrayHandle)]
 
 min ::
     forall args . Fullfilled "min(ndarray)" args =>
@@ -4777,7 +4816,7 @@ _backward_min_upd outputs args
 
 type instance ParameterList "broadcast_axis(ndarray)" =
      '[ '("axis", AttrOpt [Int]), '("size", AttrOpt [Int]),
-       '("data", AttrOpt NDArrayHandle)]
+        '("data", AttrOpt NDArrayHandle)]
 
 broadcast_axis ::
                forall args . Fullfilled "broadcast_axis(ndarray)" args =>
@@ -4917,7 +4956,8 @@ norm_upd outputs args
          return ()
 
 type instance ParameterList "elemwise_add(ndarray)" =
-     '[ '("lhs", AttrOpt NDArrayHandle), '("rhs", AttrOpt NDArrayHandle)]
+     '[ '("lhs", AttrOpt NDArrayHandle),
+        '("rhs", AttrOpt NDArrayHandle)]
 
 elemwise_add ::
              forall args . Fullfilled "elemwise_add(ndarray)" args =>
@@ -4954,7 +4994,8 @@ elemwise_add_upd outputs args
          return ()
 
 type instance ParameterList "_grad_add(ndarray)" =
-     '[ '("lhs", AttrOpt NDArrayHandle), '("rhs", AttrOpt NDArrayHandle)]
+     '[ '("lhs", AttrOpt NDArrayHandle),
+        '("rhs", AttrOpt NDArrayHandle)]
 
 _grad_add ::
           forall args . Fullfilled "_grad_add(ndarray)" args =>
@@ -5021,7 +5062,8 @@ _backward_add_upd outputs args
          return ()
 
 type instance ParameterList "elemwise_sub(ndarray)" =
-     '[ '("lhs", AttrOpt NDArrayHandle), '("rhs", AttrOpt NDArrayHandle)]
+     '[ '("lhs", AttrOpt NDArrayHandle),
+        '("rhs", AttrOpt NDArrayHandle)]
 
 elemwise_sub ::
              forall args . Fullfilled "elemwise_sub(ndarray)" args =>
@@ -5088,7 +5130,8 @@ _backward_sub_upd outputs args
          return ()
 
 type instance ParameterList "elemwise_mul(ndarray)" =
-     '[ '("lhs", AttrOpt NDArrayHandle), '("rhs", AttrOpt NDArrayHandle)]
+     '[ '("lhs", AttrOpt NDArrayHandle),
+        '("rhs", AttrOpt NDArrayHandle)]
 
 elemwise_mul ::
              forall args . Fullfilled "elemwise_mul(ndarray)" args =>
@@ -5155,7 +5198,8 @@ _backward_mul_upd outputs args
          return ()
 
 type instance ParameterList "elemwise_div(ndarray)" =
-     '[ '("lhs", AttrOpt NDArrayHandle), '("rhs", AttrOpt NDArrayHandle)]
+     '[ '("lhs", AttrOpt NDArrayHandle),
+        '("rhs", AttrOpt NDArrayHandle)]
 
 elemwise_div ::
              forall args . Fullfilled "elemwise_div(ndarray)" args =>
@@ -5222,7 +5266,8 @@ _backward_div_upd outputs args
          return ()
 
 type instance ParameterList "_mod(ndarray)" =
-     '[ '("lhs", AttrOpt NDArrayHandle), '("rhs", AttrOpt NDArrayHandle)]
+     '[ '("lhs", AttrOpt NDArrayHandle),
+        '("rhs", AttrOpt NDArrayHandle)]
 
 _mod ::
      forall args . Fullfilled "_mod(ndarray)" args =>
@@ -5588,7 +5633,7 @@ _rdiv_scalar_upd outputs args
 
 type instance ParameterList "_backward_rdiv_scalar(ndarray)" =
      '[ '("scalar", AttrOpt Float), '("lhs", AttrOpt NDArrayHandle),
-       '("rhs", AttrOpt NDArrayHandle)]
+        '("rhs", AttrOpt NDArrayHandle)]
 
 _backward_rdiv_scalar ::
                       forall args . Fullfilled "_backward_rdiv_scalar(ndarray)" args =>
@@ -5669,7 +5714,7 @@ _mod_scalar_upd outputs args
 
 type instance ParameterList "_backward_mod_scalar(ndarray)" =
      '[ '("scalar", AttrOpt Float), '("lhs", AttrOpt NDArrayHandle),
-       '("rhs", AttrOpt NDArrayHandle)]
+        '("rhs", AttrOpt NDArrayHandle)]
 
 _backward_mod_scalar ::
                      forall args . Fullfilled "_backward_mod_scalar(ndarray)" args =>
@@ -5749,7 +5794,7 @@ _rmod_scalar_upd outputs args
 
 type instance ParameterList "_backward_rmod_scalar(ndarray)" =
      '[ '("scalar", AttrOpt Float), '("lhs", AttrOpt NDArrayHandle),
-       '("rhs", AttrOpt NDArrayHandle)]
+        '("rhs", AttrOpt NDArrayHandle)]
 
 _backward_rmod_scalar ::
                       forall args . Fullfilled "_backward_rmod_scalar(ndarray)" args =>
@@ -5792,7 +5837,8 @@ _backward_rmod_scalar_upd outputs args
          return ()
 
 type instance ParameterList "_scatter_elemwise_div(ndarray)" =
-     '[ '("lhs", AttrOpt NDArrayHandle), '("rhs", AttrOpt NDArrayHandle)]
+     '[ '("lhs", AttrOpt NDArrayHandle),
+        '("rhs", AttrOpt NDArrayHandle)]
 
 _scatter_elemwise_div ::
                       forall args . Fullfilled "_scatter_elemwise_div(ndarray)" args =>
@@ -5909,11 +5955,11 @@ _scatter_minus_scalar_upd outputs args
 
 type instance ParameterList "_Embedding(ndarray)" =
      '[ '("input_dim", AttrReq Int), '("output_dim", AttrReq Int),
-       '("dtype",
-         AttrOpt
-           (EnumType '["float16", "float32", "float64", "int32", "uint8"])),
-       '("data", AttrOpt NDArrayHandle),
-       '("weight", AttrOpt NDArrayHandle)]
+        '("dtype",
+          AttrOpt
+            (EnumType '["float16", "float32", "float64", "int32", "uint8"])),
+        '("data", AttrOpt NDArrayHandle),
+        '("weight", AttrOpt NDArrayHandle)]
 
 _Embedding ::
            forall args . Fullfilled "_Embedding(ndarray)" args =>
@@ -5965,11 +6011,11 @@ _Embedding_upd outputs args
 
 type instance ParameterList "_contrib_SparseEmbedding(ndarray)" =
      '[ '("input_dim", AttrReq Int), '("output_dim", AttrReq Int),
-       '("dtype",
-         AttrOpt
-           (EnumType '["float16", "float32", "float64", "int32", "uint8"])),
-       '("data", AttrOpt NDArrayHandle),
-       '("weight", AttrOpt NDArrayHandle)]
+        '("dtype",
+          AttrOpt
+            (EnumType '["float16", "float32", "float64", "int32", "uint8"])),
+        '("data", AttrOpt NDArrayHandle),
+        '("weight", AttrOpt NDArrayHandle)]
 
 _contrib_SparseEmbedding ::
                          forall args .
@@ -6091,8 +6137,8 @@ _backward_SparseEmbedding_upd outputs args
 
 type instance ParameterList "take(ndarray)" =
      '[ '("axis", AttrOpt Int),
-       '("mode", AttrOpt (EnumType '["clip", "raise", "wrap"])),
-       '("a", AttrOpt NDArrayHandle), '("indices", AttrOpt NDArrayHandle)]
+        '("mode", AttrOpt (EnumType '["clip", "raise", "wrap"])),
+        '("a", AttrOpt NDArrayHandle), '("indices", AttrOpt NDArrayHandle)]
 
 take ::
      forall args . Fullfilled "take(ndarray)" args =>
@@ -6168,7 +6214,7 @@ _backward_take_upd outputs args
 
 type instance ParameterList "batch_take(ndarray)" =
      '[ '("a", AttrOpt NDArrayHandle),
-       '("indices", AttrOpt NDArrayHandle)]
+        '("indices", AttrOpt NDArrayHandle)]
 
 batch_take ::
            forall args . Fullfilled "batch_take(ndarray)" args =>
@@ -6206,11 +6252,11 @@ batch_take_upd outputs args
 
 type instance ParameterList "one_hot(ndarray)" =
      '[ '("depth", AttrReq Int), '("on_value", AttrOpt Double),
-       '("off_value", AttrOpt Double),
-       '("dtype",
-         AttrOpt
-           (EnumType '["float16", "float32", "float64", "int32", "uint8"])),
-       '("indices", AttrOpt NDArrayHandle)]
+        '("off_value", AttrOpt Double),
+        '("dtype",
+          AttrOpt
+            (EnumType '["float16", "float32", "float64", "int32", "uint8"])),
+        '("indices", AttrOpt NDArrayHandle)]
 
 one_hot ::
         forall args . Fullfilled "one_hot(ndarray)" args =>
@@ -6264,7 +6310,7 @@ one_hot_upd outputs args
 
 type instance ParameterList "gather_nd(ndarray)" =
      '[ '("data", AttrOpt NDArrayHandle),
-       '("indices", AttrOpt NDArrayHandle)]
+        '("indices", AttrOpt NDArrayHandle)]
 
 gather_nd ::
           forall args . Fullfilled "gather_nd(ndarray)" args =>
@@ -6302,7 +6348,7 @@ gather_nd_upd outputs args
 
 type instance ParameterList "scatter_nd(ndarray)" =
      '[ '("shape", AttrReq [Int]), '("data", AttrOpt NDArrayHandle),
-       '("indices", AttrOpt NDArrayHandle)]
+        '("indices", AttrOpt NDArrayHandle)]
 
 scatter_nd ::
            forall args . Fullfilled "scatter_nd(ndarray)" args =>
@@ -6344,7 +6390,7 @@ scatter_nd_upd outputs args
 
 type instance ParameterList "_scatter_set_nd(ndarray)" =
      '[ '("shape", AttrReq [Int]), '("data", AttrOpt NDArrayHandle),
-       '("indices", AttrOpt NDArrayHandle)]
+        '("indices", AttrOpt NDArrayHandle)]
 
 _scatter_set_nd ::
                 forall args . Fullfilled "_scatter_set_nd(ndarray)" args =>
@@ -6386,7 +6432,8 @@ _scatter_set_nd_upd outputs args
          return ()
 
 type instance ParameterList "broadcast_equal(ndarray)" =
-     '[ '("lhs", AttrOpt NDArrayHandle), '("rhs", AttrOpt NDArrayHandle)]
+     '[ '("lhs", AttrOpt NDArrayHandle),
+        '("rhs", AttrOpt NDArrayHandle)]
 
 broadcast_equal ::
                 forall args . Fullfilled "broadcast_equal(ndarray)" args =>
@@ -6424,7 +6471,8 @@ broadcast_equal_upd outputs args
          return ()
 
 type instance ParameterList "broadcast_not_equal(ndarray)" =
-     '[ '("lhs", AttrOpt NDArrayHandle), '("rhs", AttrOpt NDArrayHandle)]
+     '[ '("lhs", AttrOpt NDArrayHandle),
+        '("rhs", AttrOpt NDArrayHandle)]
 
 broadcast_not_equal ::
                     forall args . Fullfilled "broadcast_not_equal(ndarray)" args =>
@@ -6462,7 +6510,8 @@ broadcast_not_equal_upd outputs args
          return ()
 
 type instance ParameterList "broadcast_greater(ndarray)" =
-     '[ '("lhs", AttrOpt NDArrayHandle), '("rhs", AttrOpt NDArrayHandle)]
+     '[ '("lhs", AttrOpt NDArrayHandle),
+        '("rhs", AttrOpt NDArrayHandle)]
 
 broadcast_greater ::
                   forall args . Fullfilled "broadcast_greater(ndarray)" args =>
@@ -6500,7 +6549,8 @@ broadcast_greater_upd outputs args
          return ()
 
 type instance ParameterList "broadcast_greater_equal(ndarray)" =
-     '[ '("lhs", AttrOpt NDArrayHandle), '("rhs", AttrOpt NDArrayHandle)]
+     '[ '("lhs", AttrOpt NDArrayHandle),
+        '("rhs", AttrOpt NDArrayHandle)]
 
 broadcast_greater_equal ::
                         forall args . Fullfilled "broadcast_greater_equal(ndarray)" args =>
@@ -6539,7 +6589,8 @@ broadcast_greater_equal_upd outputs args
          return ()
 
 type instance ParameterList "broadcast_lesser(ndarray)" =
-     '[ '("lhs", AttrOpt NDArrayHandle), '("rhs", AttrOpt NDArrayHandle)]
+     '[ '("lhs", AttrOpt NDArrayHandle),
+        '("rhs", AttrOpt NDArrayHandle)]
 
 broadcast_lesser ::
                  forall args . Fullfilled "broadcast_lesser(ndarray)" args =>
@@ -6577,7 +6628,8 @@ broadcast_lesser_upd outputs args
          return ()
 
 type instance ParameterList "broadcast_lesser_equal(ndarray)" =
-     '[ '("lhs", AttrOpt NDArrayHandle), '("rhs", AttrOpt NDArrayHandle)]
+     '[ '("lhs", AttrOpt NDArrayHandle),
+        '("rhs", AttrOpt NDArrayHandle)]
 
 broadcast_lesser_equal ::
                        forall args . Fullfilled "broadcast_lesser_equal(ndarray)" args =>
@@ -6617,7 +6669,7 @@ broadcast_lesser_equal_upd outputs args
 
 type instance ParameterList "argmax(ndarray)" =
      '[ '("axis", AttrOpt (Maybe Int)), '("keepdims", AttrOpt Bool),
-       '("data", AttrOpt NDArrayHandle)]
+        '("data", AttrOpt NDArrayHandle)]
 
 argmax ::
        forall args . Fullfilled "argmax(ndarray)" args =>
@@ -6657,7 +6709,7 @@ argmax_upd outputs args
 
 type instance ParameterList "argmin(ndarray)" =
      '[ '("axis", AttrOpt (Maybe Int)), '("keepdims", AttrOpt Bool),
-       '("data", AttrOpt NDArrayHandle)]
+        '("data", AttrOpt NDArrayHandle)]
 
 argmin ::
        forall args . Fullfilled "argmin(ndarray)" args =>
@@ -6730,8 +6782,8 @@ argmax_channel_upd outputs args
 
 type instance ParameterList "pick(ndarray)" =
      '[ '("axis", AttrOpt (Maybe Int)), '("keepdims", AttrOpt Bool),
-       '("data", AttrOpt NDArrayHandle),
-       '("index", AttrOpt NDArrayHandle)]
+        '("data", AttrOpt NDArrayHandle),
+        '("index", AttrOpt NDArrayHandle)]
 
 pick ::
      forall args . Fullfilled "pick(ndarray)" args =>
@@ -6805,7 +6857,7 @@ _backward_pick_upd outputs args
 
 type instance ParameterList "_sparse_retain(ndarray)" =
      '[ '("data", AttrOpt NDArrayHandle),
-       '("indices", AttrOpt NDArrayHandle)]
+        '("indices", AttrOpt NDArrayHandle)]
 
 _sparse_retain ::
                forall args . Fullfilled "_sparse_retain(ndarray)" args =>
@@ -6876,7 +6928,7 @@ _backward_sparse_retain_upd outputs args
 
 type instance ParameterList "_where(ndarray)" =
      '[ '("condition", AttrOpt NDArrayHandle),
-       '("x", AttrOpt NDArrayHandle), '("y", AttrOpt NDArrayHandle)]
+        '("x", AttrOpt NDArrayHandle), '("y", AttrOpt NDArrayHandle)]
 
 _where ::
        forall args . Fullfilled "_where(ndarray)" args =>
@@ -6985,7 +7037,7 @@ _maximum_scalar_upd outputs args
 
 type instance ParameterList "_backward_maximum_scalar(ndarray)" =
      '[ '("scalar", AttrOpt Float), '("lhs", AttrOpt NDArrayHandle),
-       '("rhs", AttrOpt NDArrayHandle)]
+        '("rhs", AttrOpt NDArrayHandle)]
 
 _backward_maximum_scalar ::
                          forall args .
@@ -7069,7 +7121,7 @@ _minimum_scalar_upd outputs args
 
 type instance ParameterList "_backward_minimum_scalar(ndarray)" =
      '[ '("scalar", AttrOpt Float), '("lhs", AttrOpt NDArrayHandle),
-       '("rhs", AttrOpt NDArrayHandle)]
+        '("rhs", AttrOpt NDArrayHandle)]
 
 _backward_minimum_scalar ::
                          forall args .
@@ -7152,7 +7204,7 @@ _power_scalar_upd outputs args
 
 type instance ParameterList "_backward_power_scalar(ndarray)" =
      '[ '("scalar", AttrOpt Float), '("lhs", AttrOpt NDArrayHandle),
-       '("rhs", AttrOpt NDArrayHandle)]
+        '("rhs", AttrOpt NDArrayHandle)]
 
 _backward_power_scalar ::
                        forall args . Fullfilled "_backward_power_scalar(ndarray)" args =>
@@ -7233,7 +7285,7 @@ _rpower_scalar_upd outputs args
 
 type instance ParameterList "_backward_rpower_scalar(ndarray)" =
      '[ '("scalar", AttrOpt Float), '("lhs", AttrOpt NDArrayHandle),
-       '("rhs", AttrOpt NDArrayHandle)]
+        '("rhs", AttrOpt NDArrayHandle)]
 
 _backward_rpower_scalar ::
                         forall args . Fullfilled "_backward_rpower_scalar(ndarray)" args =>
@@ -7314,7 +7366,7 @@ _hypot_scalar_upd outputs args
 
 type instance ParameterList "_backward_hypot_scalar(ndarray)" =
      '[ '("scalar", AttrOpt Float), '("lhs", AttrOpt NDArrayHandle),
-       '("rhs", AttrOpt NDArrayHandle)]
+        '("rhs", AttrOpt NDArrayHandle)]
 
 _backward_hypot_scalar ::
                        forall args . Fullfilled "_backward_hypot_scalar(ndarray)" args =>
@@ -7394,7 +7446,8 @@ smooth_l1_upd outputs args
          return ()
 
 type instance ParameterList "_backward_smooth_l1(ndarray)" =
-     '[ '("lhs", AttrOpt NDArrayHandle), '("rhs", AttrOpt NDArrayHandle)]
+     '[ '("lhs", AttrOpt NDArrayHandle),
+        '("rhs", AttrOpt NDArrayHandle)]
 
 _backward_smooth_l1 ::
                     forall args . Fullfilled "_backward_smooth_l1(ndarray)" args =>
@@ -7433,9 +7486,9 @@ _backward_smooth_l1_upd outputs args
 
 type instance ParameterList "topk(ndarray)" =
      '[ '("axis", AttrOpt (Maybe Int)), '("k", AttrOpt Int),
-       '("ret_typ",
-         AttrOpt (EnumType '["both", "indices", "mask", "value"])),
-       '("is_ascend", AttrOpt Bool), '("data", AttrOpt NDArrayHandle)]
+        '("ret_typ",
+          AttrOpt (EnumType '["both", "indices", "mask", "value"])),
+        '("is_ascend", AttrOpt Bool), '("data", AttrOpt NDArrayHandle)]
 
 topk ::
      forall args . Fullfilled "topk(ndarray)" args =>
@@ -7513,7 +7566,7 @@ _backward_topk_upd outputs args
 
 type instance ParameterList "sort(ndarray)" =
      '[ '("axis", AttrOpt (Maybe Int)), '("is_ascend", AttrOpt Bool),
-       '("data", AttrOpt NDArrayHandle)]
+        '("data", AttrOpt NDArrayHandle)]
 
 sort ::
      forall args . Fullfilled "sort(ndarray)" args =>
@@ -7553,7 +7606,7 @@ sort_upd outputs args
 
 type instance ParameterList "argsort(ndarray)" =
      '[ '("axis", AttrOpt (Maybe Int)), '("is_ascend", AttrOpt Bool),
-       '("data", AttrOpt NDArrayHandle)]
+        '("data", AttrOpt NDArrayHandle)]
 
 argsort ::
         forall args . Fullfilled "argsort(ndarray)" args =>
@@ -7593,8 +7646,8 @@ argsort_upd outputs args
 
 type instance ParameterList "_Reshape(ndarray)" =
      '[ '("shape", AttrOpt [Int]), '("reverse", AttrOpt Bool),
-       '("target_shape", AttrOpt [Int]), '("keep_highest", AttrOpt Bool),
-       '("data", AttrOpt NDArrayHandle)]
+        '("target_shape", AttrOpt [Int]), '("keep_highest", AttrOpt Bool),
+        '("data", AttrOpt NDArrayHandle)]
 
 _Reshape ::
          forall args . Fullfilled "_Reshape(ndarray)" args =>
@@ -7749,7 +7802,7 @@ expand_dims_upd outputs args
 
 type instance ParameterList "slice(ndarray)" =
      '[ '("begin", AttrReq [Int]), '("end", AttrReq [Int]),
-       '("step", AttrOpt [Int]), '("data", AttrOpt NDArrayHandle)]
+        '("step", AttrOpt [Int]), '("data", AttrOpt NDArrayHandle)]
 
 slice ::
       forall args . Fullfilled "slice(ndarray)" args =>
@@ -7822,8 +7875,8 @@ _backward_slice_upd outputs args
 
 type instance ParameterList "_slice_assign(ndarray)" =
      '[ '("begin", AttrReq [Int]), '("end", AttrReq [Int]),
-       '("step", AttrOpt [Int]), '("lhs", AttrOpt NDArrayHandle),
-       '("rhs", AttrOpt NDArrayHandle)]
+        '("step", AttrOpt [Int]), '("lhs", AttrOpt NDArrayHandle),
+        '("rhs", AttrOpt NDArrayHandle)]
 
 _slice_assign ::
               forall args . Fullfilled "_slice_assign(ndarray)" args =>
@@ -7869,8 +7922,8 @@ _slice_assign_upd outputs args
 
 type instance ParameterList "_slice_assign_scalar(ndarray)" =
      '[ '("scalar", AttrOpt Float), '("begin", AttrReq [Int]),
-       '("end", AttrReq [Int]), '("step", AttrOpt [Int]),
-       '("data", AttrOpt NDArrayHandle)]
+        '("end", AttrReq [Int]), '("step", AttrOpt [Int]),
+        '("data", AttrOpt NDArrayHandle)]
 
 _slice_assign_scalar ::
                      forall args . Fullfilled "_slice_assign_scalar(ndarray)" args =>
@@ -7915,7 +7968,7 @@ _slice_assign_scalar_upd outputs args
 
 type instance ParameterList "slice_axis(ndarray)" =
      '[ '("axis", AttrReq Int), '("begin", AttrReq Int),
-       '("end", AttrReq (Maybe Int)), '("data", AttrOpt NDArrayHandle)]
+        '("end", AttrReq (Maybe Int)), '("data", AttrOpt NDArrayHandle)]
 
 slice_axis ::
            forall args . Fullfilled "slice_axis(ndarray)" args =>
@@ -7988,7 +8041,7 @@ _backward_slice_axis_upd outputs args
 
 type instance ParameterList "clip(ndarray)" =
      '[ '("a_min", AttrReq Float), '("a_max", AttrReq Float),
-       '("data", AttrOpt NDArrayHandle)]
+        '("data", AttrOpt NDArrayHandle)]
 
 clip ::
      forall args . Fullfilled "clip(ndarray)" args =>
@@ -8058,7 +8111,7 @@ _backward_clip_upd outputs args
 
 type instance ParameterList "repeat(ndarray)" =
      '[ '("repeats", AttrReq Int), '("axis", AttrOpt (Maybe Int)),
-       '("data", AttrOpt NDArrayHandle)]
+        '("data", AttrOpt NDArrayHandle)]
 
 repeat ::
        forall args . Fullfilled "repeat(ndarray)" args =>
@@ -8264,7 +8317,7 @@ _backward_reverse_upd outputs args
 
 type instance ParameterList "stack(ndarray)" =
      '[ '("axis", AttrOpt Int), '("num_args", AttrReq Int),
-       '("data", AttrOpt [NDArrayHandle])]
+        '("data", AttrOpt [NDArrayHandle])]
 
 stack ::
       forall args . Fullfilled "stack(ndarray)" args =>
@@ -8339,7 +8392,7 @@ _backward_stack_upd outputs args
 
 type instance ParameterList "dot(ndarray)" =
      '[ '("transpose_a", AttrOpt Bool), '("transpose_b", AttrOpt Bool),
-       '("lhs", AttrOpt NDArrayHandle), '("rhs", AttrOpt NDArrayHandle)]
+        '("lhs", AttrOpt NDArrayHandle), '("rhs", AttrOpt NDArrayHandle)]
 
 dot ::
     forall args . Fullfilled "dot(ndarray)" args =>
@@ -8428,7 +8481,7 @@ _backward_dot_upd outputs args
 
 type instance ParameterList "batch_dot(ndarray)" =
      '[ '("transpose_a", AttrOpt Bool), '("transpose_b", AttrOpt Bool),
-       '("lhs", AttrOpt NDArrayHandle), '("rhs", AttrOpt NDArrayHandle)]
+        '("lhs", AttrOpt NDArrayHandle), '("rhs", AttrOpt NDArrayHandle)]
 
 batch_dot ::
           forall args . Fullfilled "batch_dot(ndarray)" args =>
@@ -8539,7 +8592,8 @@ sin_upd outputs args
          return ()
 
 type instance ParameterList "_backward_sin(ndarray)" =
-     '[ '("lhs", AttrOpt NDArrayHandle), '("rhs", AttrOpt NDArrayHandle)]
+     '[ '("lhs", AttrOpt NDArrayHandle),
+        '("rhs", AttrOpt NDArrayHandle)]
 
 _backward_sin ::
               forall args . Fullfilled "_backward_sin(ndarray)" args =>
@@ -8609,7 +8663,8 @@ cos_upd outputs args
          return ()
 
 type instance ParameterList "_backward_cos(ndarray)" =
-     '[ '("lhs", AttrOpt NDArrayHandle), '("rhs", AttrOpt NDArrayHandle)]
+     '[ '("lhs", AttrOpt NDArrayHandle),
+        '("rhs", AttrOpt NDArrayHandle)]
 
 _backward_cos ::
               forall args . Fullfilled "_backward_cos(ndarray)" args =>
@@ -8679,7 +8734,8 @@ tan_upd outputs args
          return ()
 
 type instance ParameterList "_backward_tan(ndarray)" =
-     '[ '("lhs", AttrOpt NDArrayHandle), '("rhs", AttrOpt NDArrayHandle)]
+     '[ '("lhs", AttrOpt NDArrayHandle),
+        '("rhs", AttrOpt NDArrayHandle)]
 
 _backward_tan ::
               forall args . Fullfilled "_backward_tan(ndarray)" args =>
@@ -8749,7 +8805,8 @@ arcsin_upd outputs args
          return ()
 
 type instance ParameterList "_backward_arcsin(ndarray)" =
-     '[ '("lhs", AttrOpt NDArrayHandle), '("rhs", AttrOpt NDArrayHandle)]
+     '[ '("lhs", AttrOpt NDArrayHandle),
+        '("rhs", AttrOpt NDArrayHandle)]
 
 _backward_arcsin ::
                  forall args . Fullfilled "_backward_arcsin(ndarray)" args =>
@@ -8820,7 +8877,8 @@ arccos_upd outputs args
          return ()
 
 type instance ParameterList "_backward_arccos(ndarray)" =
-     '[ '("lhs", AttrOpt NDArrayHandle), '("rhs", AttrOpt NDArrayHandle)]
+     '[ '("lhs", AttrOpt NDArrayHandle),
+        '("rhs", AttrOpt NDArrayHandle)]
 
 _backward_arccos ::
                  forall args . Fullfilled "_backward_arccos(ndarray)" args =>
@@ -8891,7 +8949,8 @@ arctan_upd outputs args
          return ()
 
 type instance ParameterList "_backward_arctan(ndarray)" =
-     '[ '("lhs", AttrOpt NDArrayHandle), '("rhs", AttrOpt NDArrayHandle)]
+     '[ '("lhs", AttrOpt NDArrayHandle),
+        '("rhs", AttrOpt NDArrayHandle)]
 
 _backward_arctan ::
                  forall args . Fullfilled "_backward_arctan(ndarray)" args =>
@@ -8962,7 +9021,8 @@ degrees_upd outputs args
          return ()
 
 type instance ParameterList "_backward_degrees(ndarray)" =
-     '[ '("lhs", AttrOpt NDArrayHandle), '("rhs", AttrOpt NDArrayHandle)]
+     '[ '("lhs", AttrOpt NDArrayHandle),
+        '("rhs", AttrOpt NDArrayHandle)]
 
 _backward_degrees ::
                   forall args . Fullfilled "_backward_degrees(ndarray)" args =>
@@ -9033,7 +9093,8 @@ radians_upd outputs args
          return ()
 
 type instance ParameterList "_backward_radians(ndarray)" =
-     '[ '("lhs", AttrOpt NDArrayHandle), '("rhs", AttrOpt NDArrayHandle)]
+     '[ '("lhs", AttrOpt NDArrayHandle),
+        '("rhs", AttrOpt NDArrayHandle)]
 
 _backward_radians ::
                   forall args . Fullfilled "_backward_radians(ndarray)" args =>
@@ -9104,7 +9165,8 @@ sinh_upd outputs args
          return ()
 
 type instance ParameterList "_backward_sinh(ndarray)" =
-     '[ '("lhs", AttrOpt NDArrayHandle), '("rhs", AttrOpt NDArrayHandle)]
+     '[ '("lhs", AttrOpt NDArrayHandle),
+        '("rhs", AttrOpt NDArrayHandle)]
 
 _backward_sinh ::
                forall args . Fullfilled "_backward_sinh(ndarray)" args =>
@@ -9174,7 +9236,8 @@ cosh_upd outputs args
          return ()
 
 type instance ParameterList "_backward_cosh(ndarray)" =
-     '[ '("lhs", AttrOpt NDArrayHandle), '("rhs", AttrOpt NDArrayHandle)]
+     '[ '("lhs", AttrOpt NDArrayHandle),
+        '("rhs", AttrOpt NDArrayHandle)]
 
 _backward_cosh ::
                forall args . Fullfilled "_backward_cosh(ndarray)" args =>
@@ -9244,7 +9307,8 @@ tanh_upd outputs args
          return ()
 
 type instance ParameterList "_backward_tanh(ndarray)" =
-     '[ '("lhs", AttrOpt NDArrayHandle), '("rhs", AttrOpt NDArrayHandle)]
+     '[ '("lhs", AttrOpt NDArrayHandle),
+        '("rhs", AttrOpt NDArrayHandle)]
 
 _backward_tanh ::
                forall args . Fullfilled "_backward_tanh(ndarray)" args =>
@@ -9314,7 +9378,8 @@ arcsinh_upd outputs args
          return ()
 
 type instance ParameterList "_backward_arcsinh(ndarray)" =
-     '[ '("lhs", AttrOpt NDArrayHandle), '("rhs", AttrOpt NDArrayHandle)]
+     '[ '("lhs", AttrOpt NDArrayHandle),
+        '("rhs", AttrOpt NDArrayHandle)]
 
 _backward_arcsinh ::
                   forall args . Fullfilled "_backward_arcsinh(ndarray)" args =>
@@ -9385,7 +9450,8 @@ arccosh_upd outputs args
          return ()
 
 type instance ParameterList "_backward_arccosh(ndarray)" =
-     '[ '("lhs", AttrOpt NDArrayHandle), '("rhs", AttrOpt NDArrayHandle)]
+     '[ '("lhs", AttrOpt NDArrayHandle),
+        '("rhs", AttrOpt NDArrayHandle)]
 
 _backward_arccosh ::
                   forall args . Fullfilled "_backward_arccosh(ndarray)" args =>
@@ -9456,7 +9522,8 @@ arctanh_upd outputs args
          return ()
 
 type instance ParameterList "_backward_arctanh(ndarray)" =
-     '[ '("lhs", AttrOpt NDArrayHandle), '("rhs", AttrOpt NDArrayHandle)]
+     '[ '("lhs", AttrOpt NDArrayHandle),
+        '("rhs", AttrOpt NDArrayHandle)]
 
 _backward_arctanh ::
                   forall args . Fullfilled "_backward_arctanh(ndarray)" args =>
@@ -9495,9 +9562,9 @@ _backward_arctanh_upd outputs args
 
 type instance ParameterList "_contrib_dequantize(ndarray)" =
      '[ '("out_type", AttrReq (EnumType '["float32"])),
-       '("input", AttrOpt NDArrayHandle),
-       '("min_range", AttrOpt NDArrayHandle),
-       '("max_range", AttrOpt NDArrayHandle)]
+        '("input", AttrOpt NDArrayHandle),
+        '("min_range", AttrOpt NDArrayHandle),
+        '("max_range", AttrOpt NDArrayHandle)]
 
 _contrib_dequantize ::
                     forall args . Fullfilled "_contrib_dequantize(ndarray)" args =>
@@ -9544,12 +9611,12 @@ _contrib_dequantize_upd outputs args
 
 type instance ParameterList "_contrib_CTCLoss(ndarray)" =
      '[ '("use_data_lengths", AttrOpt Bool),
-       '("use_label_lengths", AttrOpt Bool),
-       '("blank_label", AttrOpt (EnumType '["first", "last"])),
-       '("data", AttrOpt NDArrayHandle),
-       '("label", AttrOpt NDArrayHandle),
-       '("data_lengths", AttrOpt NDArrayHandle),
-       '("label_lengths", AttrOpt NDArrayHandle)]
+        '("use_label_lengths", AttrOpt Bool),
+        '("blank_label", AttrOpt (EnumType '["first", "last"])),
+        '("data", AttrOpt NDArrayHandle),
+        '("label", AttrOpt NDArrayHandle),
+        '("data_lengths", AttrOpt NDArrayHandle),
+        '("label_lengths", AttrOpt NDArrayHandle)]
 
 _contrib_CTCLoss ::
                  forall args . Fullfilled "_contrib_CTCLoss(ndarray)" args =>
@@ -9610,9 +9677,9 @@ _contrib_CTCLoss_upd outputs args
 
 type instance ParameterList "_contrib_quantize(ndarray)" =
      '[ '("out_type", AttrOpt (EnumType '["uint8"])),
-       '("input", AttrOpt NDArrayHandle),
-       '("min_range", AttrOpt NDArrayHandle),
-       '("max_range", AttrOpt NDArrayHandle)]
+        '("input", AttrOpt NDArrayHandle),
+        '("min_range", AttrOpt NDArrayHandle),
+        '("max_range", AttrOpt NDArrayHandle)]
 
 _contrib_quantize ::
                   forall args . Fullfilled "_contrib_quantize(ndarray)" args =>
@@ -9690,8 +9757,8 @@ _backward_Custom_upd outputs args
 
 type instance ParameterList "_sample_multinomial(ndarray)" =
      '[ '("shape", AttrOpt [Int]), '("get_prob", AttrOpt Bool),
-       '("dtype", AttrOpt (EnumType '["int32"])),
-       '("data", AttrOpt NDArrayHandle)]
+        '("dtype", AttrOpt (EnumType '["int32"])),
+        '("data", AttrOpt NDArrayHandle)]
 
 _sample_multinomial ::
                     forall args . Fullfilled "_sample_multinomial(ndarray)" args =>
@@ -9771,9 +9838,9 @@ _backward_sample_multinomial_upd outputs args
 
 type instance ParameterList "_sample_uniform(ndarray)" =
      '[ '("shape", AttrOpt [Int]),
-       '("dtype",
-         AttrOpt (EnumType '["None", "float16", "float32", "float64"])),
-       '("low", AttrOpt NDArrayHandle), '("high", AttrOpt NDArrayHandle)]
+        '("dtype",
+          AttrOpt (EnumType '["None", "float16", "float32", "float64"])),
+        '("low", AttrOpt NDArrayHandle), '("high", AttrOpt NDArrayHandle)]
 
 _sample_uniform ::
                 forall args . Fullfilled "_sample_uniform(ndarray)" args =>
@@ -9822,9 +9889,9 @@ _sample_uniform_upd outputs args
 
 type instance ParameterList "_sample_normal(ndarray)" =
      '[ '("shape", AttrOpt [Int]),
-       '("dtype",
-         AttrOpt (EnumType '["None", "float16", "float32", "float64"])),
-       '("mu", AttrOpt NDArrayHandle), '("sigma", AttrOpt NDArrayHandle)]
+        '("dtype",
+          AttrOpt (EnumType '["None", "float16", "float32", "float64"])),
+        '("mu", AttrOpt NDArrayHandle), '("sigma", AttrOpt NDArrayHandle)]
 
 _sample_normal ::
                forall args . Fullfilled "_sample_normal(ndarray)" args =>
@@ -9872,10 +9939,10 @@ _sample_normal_upd outputs args
 
 type instance ParameterList "_sample_gamma(ndarray)" =
      '[ '("shape", AttrOpt [Int]),
-       '("dtype",
-         AttrOpt (EnumType '["None", "float16", "float32", "float64"])),
-       '("alpha", AttrOpt NDArrayHandle),
-       '("beta", AttrOpt NDArrayHandle)]
+        '("dtype",
+          AttrOpt (EnumType '["None", "float16", "float32", "float64"])),
+        '("alpha", AttrOpt NDArrayHandle),
+        '("beta", AttrOpt NDArrayHandle)]
 
 _sample_gamma ::
               forall args . Fullfilled "_sample_gamma(ndarray)" args =>
@@ -9923,9 +9990,9 @@ _sample_gamma_upd outputs args
 
 type instance ParameterList "_sample_exponential(ndarray)" =
      '[ '("shape", AttrOpt [Int]),
-       '("dtype",
-         AttrOpt (EnumType '["None", "float16", "float32", "float64"])),
-       '("lam", AttrOpt NDArrayHandle)]
+        '("dtype",
+          AttrOpt (EnumType '["None", "float16", "float32", "float64"])),
+        '("lam", AttrOpt NDArrayHandle)]
 
 _sample_exponential ::
                     forall args . Fullfilled "_sample_exponential(ndarray)" args =>
@@ -9970,9 +10037,9 @@ _sample_exponential_upd outputs args
 
 type instance ParameterList "_sample_poisson(ndarray)" =
      '[ '("shape", AttrOpt [Int]),
-       '("dtype",
-         AttrOpt (EnumType '["None", "float16", "float32", "float64"])),
-       '("lam", AttrOpt NDArrayHandle)]
+        '("dtype",
+          AttrOpt (EnumType '["None", "float16", "float32", "float64"])),
+        '("lam", AttrOpt NDArrayHandle)]
 
 _sample_poisson ::
                 forall args . Fullfilled "_sample_poisson(ndarray)" args =>
@@ -10017,9 +10084,9 @@ _sample_poisson_upd outputs args
 
 type instance ParameterList "_sample_negative_binomial(ndarray)" =
      '[ '("shape", AttrOpt [Int]),
-       '("dtype",
-         AttrOpt (EnumType '["None", "float16", "float32", "float64"])),
-       '("k", AttrOpt NDArrayHandle), '("p", AttrOpt NDArrayHandle)]
+        '("dtype",
+          AttrOpt (EnumType '["None", "float16", "float32", "float64"])),
+        '("k", AttrOpt NDArrayHandle), '("p", AttrOpt NDArrayHandle)]
 
 _sample_negative_binomial ::
                           forall args .
@@ -10072,9 +10139,9 @@ _sample_negative_binomial_upd outputs args
 type instance
      ParameterList "_sample_generalized_negative_binomial(ndarray)" =
      '[ '("shape", AttrOpt [Int]),
-       '("dtype",
-         AttrOpt (EnumType '["None", "float16", "float32", "float64"])),
-       '("mu", AttrOpt NDArrayHandle), '("alpha", AttrOpt NDArrayHandle)]
+        '("dtype",
+          AttrOpt (EnumType '["None", "float16", "float32", "float64"])),
+        '("mu", AttrOpt NDArrayHandle), '("alpha", AttrOpt NDArrayHandle)]
 
 _sample_generalized_negative_binomial ::
                                       forall args .
@@ -10133,9 +10200,9 @@ _sample_generalized_negative_binomial_upd outputs args
 
 type instance ParameterList "_random_uniform(ndarray)" =
      '[ '("low", AttrOpt Float), '("high", AttrOpt Float),
-       '("shape", AttrOpt [Int]), '("ctx", AttrOpt String),
-       '("dtype",
-         AttrOpt (EnumType '["None", "float16", "float32", "float64"]))]
+        '("shape", AttrOpt [Int]), '("ctx", AttrOpt String),
+        '("dtype",
+          AttrOpt (EnumType '["None", "float16", "float32", "float64"]))]
 
 _random_uniform ::
                 forall args . Fullfilled "_random_uniform(ndarray)" args =>
@@ -10184,9 +10251,9 @@ _random_uniform_upd outputs args
 
 type instance ParameterList "_random_normal(ndarray)" =
      '[ '("loc", AttrOpt Float), '("scale", AttrOpt Float),
-       '("shape", AttrOpt [Int]), '("ctx", AttrOpt String),
-       '("dtype",
-         AttrOpt (EnumType '["None", "float16", "float32", "float64"]))]
+        '("shape", AttrOpt [Int]), '("ctx", AttrOpt String),
+        '("dtype",
+          AttrOpt (EnumType '["None", "float16", "float32", "float64"]))]
 
 _random_normal ::
                forall args . Fullfilled "_random_normal(ndarray)" args =>
@@ -10234,9 +10301,9 @@ _random_normal_upd outputs args
 
 type instance ParameterList "_random_gamma(ndarray)" =
      '[ '("alpha", AttrOpt Float), '("beta", AttrOpt Float),
-       '("shape", AttrOpt [Int]), '("ctx", AttrOpt String),
-       '("dtype",
-         AttrOpt (EnumType '["None", "float16", "float32", "float64"]))]
+        '("shape", AttrOpt [Int]), '("ctx", AttrOpt String),
+        '("dtype",
+          AttrOpt (EnumType '["None", "float16", "float32", "float64"]))]
 
 _random_gamma ::
               forall args . Fullfilled "_random_gamma(ndarray)" args =>
@@ -10284,9 +10351,9 @@ _random_gamma_upd outputs args
 
 type instance ParameterList "_random_exponential(ndarray)" =
      '[ '("lam", AttrOpt Float), '("shape", AttrOpt [Int]),
-       '("ctx", AttrOpt String),
-       '("dtype",
-         AttrOpt (EnumType '["None", "float16", "float32", "float64"]))]
+        '("ctx", AttrOpt String),
+        '("dtype",
+          AttrOpt (EnumType '["None", "float16", "float32", "float64"]))]
 
 _random_exponential ::
                     forall args . Fullfilled "_random_exponential(ndarray)" args =>
@@ -10333,9 +10400,9 @@ _random_exponential_upd outputs args
 
 type instance ParameterList "_random_poisson(ndarray)" =
      '[ '("lam", AttrOpt Float), '("shape", AttrOpt [Int]),
-       '("ctx", AttrOpt String),
-       '("dtype",
-         AttrOpt (EnumType '["None", "float16", "float32", "float64"]))]
+        '("ctx", AttrOpt String),
+        '("dtype",
+          AttrOpt (EnumType '["None", "float16", "float32", "float64"]))]
 
 _random_poisson ::
                 forall args . Fullfilled "_random_poisson(ndarray)" args =>
@@ -10382,9 +10449,9 @@ _random_poisson_upd outputs args
 
 type instance ParameterList "_random_negative_binomial(ndarray)" =
      '[ '("k", AttrOpt Int), '("p", AttrOpt Float),
-       '("shape", AttrOpt [Int]), '("ctx", AttrOpt String),
-       '("dtype",
-         AttrOpt (EnumType '["None", "float16", "float32", "float64"]))]
+        '("shape", AttrOpt [Int]), '("ctx", AttrOpt String),
+        '("dtype",
+          AttrOpt (EnumType '["None", "float16", "float32", "float64"]))]
 
 _random_negative_binomial ::
                           forall args .
@@ -10437,9 +10504,9 @@ _random_negative_binomial_upd outputs args
 type instance
      ParameterList "_random_generalized_negative_binomial(ndarray)" =
      '[ '("mu", AttrOpt Float), '("alpha", AttrOpt Float),
-       '("shape", AttrOpt [Int]), '("ctx", AttrOpt String),
-       '("dtype",
-         AttrOpt (EnumType '["None", "float16", "float32", "float64"]))]
+        '("shape", AttrOpt [Int]), '("ctx", AttrOpt String),
+        '("dtype",
+          AttrOpt (EnumType '["None", "float16", "float32", "float64"]))]
 
 _random_generalized_negative_binomial ::
                                       forall args .
@@ -10534,7 +10601,8 @@ softmax_upd outputs args
          return ()
 
 type instance ParameterList "_backward_softmax(ndarray)" =
-     '[ '("lhs", AttrOpt NDArrayHandle), '("rhs", AttrOpt NDArrayHandle)]
+     '[ '("lhs", AttrOpt NDArrayHandle),
+        '("rhs", AttrOpt NDArrayHandle)]
 
 _backward_softmax ::
                   forall args . Fullfilled "_backward_softmax(ndarray)" args =>
@@ -10609,7 +10677,8 @@ log_softmax_upd outputs args
          return ()
 
 type instance ParameterList "_backward_log_softmax(ndarray)" =
-     '[ '("lhs", AttrOpt NDArrayHandle), '("rhs", AttrOpt NDArrayHandle)]
+     '[ '("lhs", AttrOpt NDArrayHandle),
+        '("rhs", AttrOpt NDArrayHandle)]
 
 _backward_log_softmax ::
                       forall args . Fullfilled "_backward_log_softmax(ndarray)" args =>
@@ -10649,7 +10718,7 @@ _backward_log_softmax_upd outputs args
 
 type instance ParameterList "_cvimdecode(ndarray)" =
      '[ '("flag", AttrOpt Int), '("to_rgb", AttrOpt Bool),
-       '("buf", AttrOpt NDArrayHandle)]
+        '("buf", AttrOpt NDArrayHandle)]
 
 _cvimdecode ::
             forall args . Fullfilled "_cvimdecode(ndarray)" args =>
@@ -10689,7 +10758,7 @@ _cvimdecode_upd outputs args
 
 type instance ParameterList "_cvimread(ndarray)" =
      '[ '("filename", AttrReq String), '("flag", AttrOpt Int),
-       '("to_rgb", AttrOpt Bool)]
+        '("to_rgb", AttrOpt Bool)]
 
 _cvimread ::
           forall args . Fullfilled "_cvimread(ndarray)" args =>
@@ -10729,7 +10798,7 @@ _cvimread_upd outputs args
 
 type instance ParameterList "_cvimresize(ndarray)" =
      '[ '("w", AttrReq Int), '("h", AttrReq Int),
-       '("interp", AttrOpt Int), '("src", AttrOpt NDArrayHandle)]
+        '("interp", AttrOpt Int), '("src", AttrOpt NDArrayHandle)]
 
 _cvimresize ::
             forall args . Fullfilled "_cvimresize(ndarray)" args =>
@@ -10771,9 +10840,9 @@ _cvimresize_upd outputs args
 
 type instance ParameterList "_cvcopyMakeBorder(ndarray)" =
      '[ '("top", AttrReq Int), '("bot", AttrReq Int),
-       '("left", AttrReq Int), '("right", AttrReq Int),
-       '("type", AttrOpt Int), '("value", AttrOpt Double),
-       '("values", AttrOpt [Double]), '("src", AttrOpt NDArrayHandle)]
+        '("left", AttrReq Int), '("right", AttrReq Int),
+        '("type", AttrOpt Int), '("value", AttrOpt Double),
+        '("values", AttrOpt [Double]), '("src", AttrOpt NDArrayHandle)]
 
 _cvcopyMakeBorder ::
                   forall args . Fullfilled "_cvcopyMakeBorder(ndarray)" args =>
@@ -10948,7 +11017,7 @@ _copyto_upd outputs args
 
 type instance ParameterList "_SwapAxis(ndarray)" =
      '[ '("dim1", AttrOpt Int), '("dim2", AttrOpt Int),
-       '("data", AttrOpt NDArrayHandle)]
+        '("data", AttrOpt NDArrayHandle)]
 
 _SwapAxis ::
           forall args . Fullfilled "_SwapAxis(ndarray)" args =>
@@ -10988,8 +11057,8 @@ _SwapAxis_upd outputs args
 
 type instance ParameterList "_Pad(ndarray)" =
      '[ '("mode", AttrReq (EnumType '["constant", "edge", "reflect"])),
-       '("pad_width", AttrReq [Int]), '("constant_value", AttrOpt Double),
-       '("data", AttrOpt NDArrayHandle)]
+        '("pad_width", AttrReq [Int]), '("constant_value", AttrOpt Double),
+        '("data", AttrOpt NDArrayHandle)]
 
 _Pad ::
      forall args . Fullfilled "_Pad(ndarray)" args =>
@@ -11037,11 +11106,11 @@ _Pad_upd outputs args
 
 type instance ParameterList "_BatchNorm_v1(ndarray)" =
      '[ '("eps", AttrOpt Float), '("momentum", AttrOpt Float),
-       '("fix_gamma", AttrOpt Bool), '("use_global_stats", AttrOpt Bool),
-       '("output_mean_var", AttrOpt Bool),
-       '("data", AttrOpt NDArrayHandle),
-       '("gamma", AttrOpt NDArrayHandle),
-       '("beta", AttrOpt NDArrayHandle)]
+        '("fix_gamma", AttrOpt Bool), '("use_global_stats", AttrOpt Bool),
+        '("output_mean_var", AttrOpt Bool),
+        '("data", AttrOpt NDArrayHandle),
+        '("gamma", AttrOpt NDArrayHandle),
+        '("beta", AttrOpt NDArrayHandle)]
 
 _BatchNorm_v1 ::
               forall args . Fullfilled "_BatchNorm_v1(ndarray)" args =>
@@ -11097,10 +11166,10 @@ _BatchNorm_v1_upd outputs args
 
 type instance ParameterList "sgd_update(ndarray)" =
      '[ '("lr", AttrReq Float), '("wd", AttrOpt Float),
-       '("rescale_grad", AttrOpt Float),
-       '("clip_gradient", AttrOpt Float),
-       '("weight", AttrOpt NDArrayHandle),
-       '("grad", AttrOpt NDArrayHandle)]
+        '("rescale_grad", AttrOpt Float),
+        '("clip_gradient", AttrOpt Float),
+        '("weight", AttrOpt NDArrayHandle),
+        '("grad", AttrOpt NDArrayHandle)]
 
 sgd_update ::
            forall args . Fullfilled "sgd_update(ndarray)" args =>
@@ -11152,10 +11221,10 @@ sgd_update_upd outputs args
 
 type instance ParameterList "sgd_mom_update(ndarray)" =
      '[ '("lr", AttrReq Float), '("momentum", AttrOpt Float),
-       '("wd", AttrOpt Float), '("rescale_grad", AttrOpt Float),
-       '("clip_gradient", AttrOpt Float),
-       '("weight", AttrOpt NDArrayHandle),
-       '("grad", AttrOpt NDArrayHandle), '("mom", AttrOpt NDArrayHandle)]
+        '("wd", AttrOpt Float), '("rescale_grad", AttrOpt Float),
+        '("clip_gradient", AttrOpt Float),
+        '("weight", AttrOpt NDArrayHandle),
+        '("grad", AttrOpt NDArrayHandle), '("mom", AttrOpt NDArrayHandle)]
 
 sgd_mom_update ::
                forall args . Fullfilled "sgd_mom_update(ndarray)" args =>
@@ -11211,11 +11280,11 @@ sgd_mom_update_upd outputs args
 
 type instance ParameterList "mp_sgd_update(ndarray)" =
      '[ '("lr", AttrReq Float), '("wd", AttrOpt Float),
-       '("rescale_grad", AttrOpt Float),
-       '("clip_gradient", AttrOpt Float),
-       '("weight", AttrOpt NDArrayHandle),
-       '("grad", AttrOpt NDArrayHandle),
-       '("weight32", AttrOpt NDArrayHandle)]
+        '("rescale_grad", AttrOpt Float),
+        '("clip_gradient", AttrOpt Float),
+        '("weight", AttrOpt NDArrayHandle),
+        '("grad", AttrOpt NDArrayHandle),
+        '("weight32", AttrOpt NDArrayHandle)]
 
 mp_sgd_update ::
               forall args . Fullfilled "mp_sgd_update(ndarray)" args =>
@@ -11269,11 +11338,11 @@ mp_sgd_update_upd outputs args
 
 type instance ParameterList "mp_sgd_mom_update(ndarray)" =
      '[ '("lr", AttrReq Float), '("momentum", AttrOpt Float),
-       '("wd", AttrOpt Float), '("rescale_grad", AttrOpt Float),
-       '("clip_gradient", AttrOpt Float),
-       '("weight", AttrOpt NDArrayHandle),
-       '("grad", AttrOpt NDArrayHandle), '("mom", AttrOpt NDArrayHandle),
-       '("weight32", AttrOpt NDArrayHandle)]
+        '("wd", AttrOpt Float), '("rescale_grad", AttrOpt Float),
+        '("clip_gradient", AttrOpt Float),
+        '("weight", AttrOpt NDArrayHandle),
+        '("grad", AttrOpt NDArrayHandle), '("mom", AttrOpt NDArrayHandle),
+        '("weight32", AttrOpt NDArrayHandle)]
 
 mp_sgd_mom_update ::
                   forall args . Fullfilled "mp_sgd_mom_update(ndarray)" args =>
@@ -11332,12 +11401,12 @@ mp_sgd_mom_update_upd outputs args
 
 type instance ParameterList "adam_update(ndarray)" =
      '[ '("lr", AttrReq Float), '("beta1", AttrOpt Float),
-       '("beta2", AttrOpt Float), '("epsilon", AttrOpt Float),
-       '("wd", AttrOpt Float), '("rescale_grad", AttrOpt Float),
-       '("clip_gradient", AttrOpt Float),
-       '("weight", AttrOpt NDArrayHandle),
-       '("grad", AttrOpt NDArrayHandle), '("mean", AttrOpt NDArrayHandle),
-       '("var", AttrOpt NDArrayHandle)]
+        '("beta2", AttrOpt Float), '("epsilon", AttrOpt Float),
+        '("wd", AttrOpt Float), '("rescale_grad", AttrOpt Float),
+        '("clip_gradient", AttrOpt Float),
+        '("weight", AttrOpt NDArrayHandle),
+        '("grad", AttrOpt NDArrayHandle), '("mean", AttrOpt NDArrayHandle),
+        '("var", AttrOpt NDArrayHandle)]
 
 adam_update ::
             forall args . Fullfilled "adam_update(ndarray)" args =>
@@ -11399,12 +11468,12 @@ adam_update_upd outputs args
 
 type instance ParameterList "rmsprop_update(ndarray)" =
      '[ '("lr", AttrReq Float), '("gamma1", AttrOpt Float),
-       '("epsilon", AttrOpt Float), '("wd", AttrOpt Float),
-       '("rescale_grad", AttrOpt Float),
-       '("clip_gradient", AttrOpt Float),
-       '("clip_weights", AttrOpt Float),
-       '("weight", AttrOpt NDArrayHandle),
-       '("grad", AttrOpt NDArrayHandle), '("n", AttrOpt NDArrayHandle)]
+        '("epsilon", AttrOpt Float), '("wd", AttrOpt Float),
+        '("rescale_grad", AttrOpt Float),
+        '("clip_gradient", AttrOpt Float),
+        '("clip_weights", AttrOpt Float),
+        '("weight", AttrOpt NDArrayHandle),
+        '("grad", AttrOpt NDArrayHandle), '("n", AttrOpt NDArrayHandle)]
 
 rmsprop_update ::
                forall args . Fullfilled "rmsprop_update(ndarray)" args =>
@@ -11466,13 +11535,13 @@ rmsprop_update_upd outputs args
 
 type instance ParameterList "rmspropalex_update(ndarray)" =
      '[ '("lr", AttrReq Float), '("gamma1", AttrOpt Float),
-       '("gamma2", AttrOpt Float), '("epsilon", AttrOpt Float),
-       '("wd", AttrOpt Float), '("rescale_grad", AttrOpt Float),
-       '("clip_gradient", AttrOpt Float),
-       '("clip_weights", AttrOpt Float),
-       '("weight", AttrOpt NDArrayHandle),
-       '("grad", AttrOpt NDArrayHandle), '("n", AttrOpt NDArrayHandle),
-       '("g", AttrOpt NDArrayHandle), '("delta", AttrOpt NDArrayHandle)]
+        '("gamma2", AttrOpt Float), '("epsilon", AttrOpt Float),
+        '("wd", AttrOpt Float), '("rescale_grad", AttrOpt Float),
+        '("clip_gradient", AttrOpt Float),
+        '("clip_weights", AttrOpt Float),
+        '("weight", AttrOpt NDArrayHandle),
+        '("grad", AttrOpt NDArrayHandle), '("n", AttrOpt NDArrayHandle),
+        '("g", AttrOpt NDArrayHandle), '("delta", AttrOpt NDArrayHandle)]
 
 rmspropalex_update ::
                    forall args . Fullfilled "rmspropalex_update(ndarray)" args =>
@@ -11541,12 +11610,12 @@ rmspropalex_update_upd outputs args
 
 type instance ParameterList "ftrl_update(ndarray)" =
      '[ '("lr", AttrReq Float), '("lamda1", AttrOpt Float),
-       '("beta", AttrOpt Float), '("wd", AttrOpt Float),
-       '("rescale_grad", AttrOpt Float),
-       '("clip_gradient", AttrOpt Float),
-       '("weight", AttrOpt NDArrayHandle),
-       '("grad", AttrOpt NDArrayHandle), '("z", AttrOpt NDArrayHandle),
-       '("n", AttrOpt NDArrayHandle)]
+        '("beta", AttrOpt Float), '("wd", AttrOpt Float),
+        '("rescale_grad", AttrOpt Float),
+        '("clip_gradient", AttrOpt Float),
+        '("weight", AttrOpt NDArrayHandle),
+        '("grad", AttrOpt NDArrayHandle), '("z", AttrOpt NDArrayHandle),
+        '("n", AttrOpt NDArrayHandle)]
 
 ftrl_update ::
             forall args . Fullfilled "ftrl_update(ndarray)" args =>
@@ -11606,9 +11675,9 @@ ftrl_update_upd outputs args
 
 type instance ParameterList "_LeakyReLU(ndarray)" =
      '[ '("act_type",
-         AttrOpt (EnumType '["elu", "leaky", "prelu", "rrelu"])),
-       '("slope", AttrOpt Float), '("lower_bound", AttrOpt Float),
-       '("upper_bound", AttrOpt Float), '("data", AttrOpt NDArrayHandle)]
+          AttrOpt (EnumType '["elu", "leaky", "prelu", "rrelu"])),
+        '("slope", AttrOpt Float), '("lower_bound", AttrOpt Float),
+        '("upper_bound", AttrOpt Float), '("data", AttrOpt NDArrayHandle)]
 
 _LeakyReLU ::
            forall args . Fullfilled "_LeakyReLU(ndarray)" args =>
@@ -11660,8 +11729,8 @@ _LeakyReLU_upd outputs args
 
 type instance ParameterList "_IdentityAttachKLSparseReg(ndarray)" =
      '[ '("sparseness_target", AttrOpt Float),
-       '("penalty", AttrOpt Float), '("momentum", AttrOpt Float),
-       '("data", AttrOpt NDArrayHandle)]
+        '("penalty", AttrOpt Float), '("momentum", AttrOpt Float),
+        '("data", AttrOpt NDArrayHandle)]
 
 _IdentityAttachKLSparseReg ::
                            forall args .
@@ -11709,10 +11778,10 @@ _IdentityAttachKLSparseReg_upd outputs args
 
 type instance ParameterList "_UpSampling(ndarray)" =
      '[ '("scale", AttrReq Int), '("num_filter", AttrOpt Int),
-       '("sample_type", AttrReq (EnumType '["bilinear", "nearest"])),
-       '("multi_input_mode", AttrOpt (EnumType '["concat", "sum"])),
-       '("num_args", AttrReq Int), '("workspace", AttrOpt Int),
-       '("data", AttrOpt [NDArrayHandle])]
+        '("sample_type", AttrReq (EnumType '["bilinear", "nearest"])),
+        '("multi_input_mode", AttrOpt (EnumType '["concat", "sum"])),
+        '("num_args", AttrReq Int), '("workspace", AttrOpt Int),
+        '("data", AttrOpt [NDArrayHandle])]
 
 _UpSampling ::
             forall args . Fullfilled "_UpSampling(ndarray)" args =>
@@ -11770,7 +11839,7 @@ _UpSampling_upd outputs args
 
 type instance ParameterList "_SliceChannel(ndarray)" =
      '[ '("num_outputs", AttrReq Int), '("axis", AttrOpt Int),
-       '("squeeze_axis", AttrOpt Bool), '("data", AttrOpt NDArrayHandle)]
+        '("squeeze_axis", AttrOpt Bool), '("data", AttrOpt NDArrayHandle)]
 
 _SliceChannel ::
               forall args . Fullfilled "_SliceChannel(ndarray)" args =>
@@ -11816,9 +11885,9 @@ _SliceChannel_upd outputs args
 
 type instance ParameterList "_CuDNNBatchNorm(ndarray)" =
      '[ '("eps", AttrOpt Double), '("momentum", AttrOpt Float),
-       '("fix_gamma", AttrOpt Bool), '("use_global_stats", AttrOpt Bool),
-       '("output_mean_var", AttrOpt Bool), '("axis", AttrOpt Int),
-       '("cudnn_off", AttrOpt Bool), '("data", AttrOpt NDArrayHandle)]
+        '("fix_gamma", AttrOpt Bool), '("use_global_stats", AttrOpt Bool),
+        '("output_mean_var", AttrOpt Bool), '("axis", AttrOpt Int),
+        '("cudnn_off", AttrOpt Bool), '("data", AttrOpt NDArrayHandle)]
 
 _CuDNNBatchNorm ::
                 forall args . Fullfilled "_CuDNNBatchNorm(ndarray)" args =>
@@ -11873,7 +11942,7 @@ _CuDNNBatchNorm_upd outputs args
 
 type instance ParameterList "softmax_cross_entropy(ndarray)" =
      '[ '("data", AttrOpt NDArrayHandle),
-       '("label", AttrOpt NDArrayHandle)]
+        '("label", AttrOpt NDArrayHandle)]
 
 softmax_cross_entropy ::
                       forall args . Fullfilled "softmax_cross_entropy(ndarray)" args =>
@@ -11949,7 +12018,7 @@ _backward_softmax_cross_entropy_upd outputs args
 
 type instance ParameterList "_Concat(ndarray)" =
      '[ '("num_args", AttrReq Int), '("dim", AttrOpt Int),
-       '("data", AttrOpt [NDArrayHandle])]
+        '("data", AttrOpt [NDArrayHandle])]
 
 _Concat ::
         forall args . Fullfilled "_Concat(ndarray)" args =>
@@ -11993,13 +12062,13 @@ _Concat_upd outputs args
 
 type instance ParameterList "_BatchNorm(ndarray)" =
      '[ '("eps", AttrOpt Double), '("momentum", AttrOpt Float),
-       '("fix_gamma", AttrOpt Bool), '("use_global_stats", AttrOpt Bool),
-       '("output_mean_var", AttrOpt Bool), '("axis", AttrOpt Int),
-       '("cudnn_off", AttrOpt Bool), '("data", AttrOpt NDArrayHandle),
-       '("gamma", AttrOpt NDArrayHandle),
-       '("beta", AttrOpt NDArrayHandle),
-       '("moving_mean", AttrOpt NDArrayHandle),
-       '("moving_var", AttrOpt NDArrayHandle)]
+        '("fix_gamma", AttrOpt Bool), '("use_global_stats", AttrOpt Bool),
+        '("output_mean_var", AttrOpt Bool), '("axis", AttrOpt Int),
+        '("cudnn_off", AttrOpt Bool), '("data", AttrOpt NDArrayHandle),
+        '("gamma", AttrOpt NDArrayHandle),
+        '("beta", AttrOpt NDArrayHandle),
+        '("moving_mean", AttrOpt NDArrayHandle),
+        '("moving_var", AttrOpt NDArrayHandle)]
 
 _BatchNorm ::
            forall args . Fullfilled "_BatchNorm(ndarray)" args =>
@@ -12129,14 +12198,14 @@ _backward_CustomFunction_upd outputs args
 
 type instance ParameterList "_contrib_MultiBoxTarget(ndarray)" =
      '[ '("overlap_threshold", AttrOpt Float),
-       '("ignore_label", AttrOpt Float),
-       '("negative_mining_ratio", AttrOpt Float),
-       '("negative_mining_thresh", AttrOpt Float),
-       '("minimum_negative_samples", AttrOpt Int),
-       '("variances", AttrOpt [Float]),
-       '("anchor", AttrOpt NDArrayHandle),
-       '("label", AttrOpt NDArrayHandle),
-       '("cls_pred", AttrOpt NDArrayHandle)]
+        '("ignore_label", AttrOpt Float),
+        '("negative_mining_ratio", AttrOpt Float),
+        '("negative_mining_thresh", AttrOpt Float),
+        '("minimum_negative_samples", AttrOpt Int),
+        '("variances", AttrOpt [Float]),
+        '("anchor", AttrOpt NDArrayHandle),
+        '("label", AttrOpt NDArrayHandle),
+        '("cls_pred", AttrOpt NDArrayHandle)]
 
 _contrib_MultiBoxTarget ::
                         forall args . Fullfilled "_contrib_MultiBoxTarget(ndarray)" args =>
@@ -12241,13 +12310,13 @@ _backward__contrib_MultiBoxTarget_upd outputs args
 
 type instance ParameterList "_contrib_Proposal(ndarray)" =
      '[ '("rpn_pre_nms_top_n", AttrOpt Int),
-       '("rpn_post_nms_top_n", AttrOpt Int),
-       '("threshold", AttrOpt Float), '("rpn_min_size", AttrOpt Int),
-       '("scales", AttrOpt [Float]), '("ratios", AttrOpt [Float]),
-       '("feature_stride", AttrOpt Int), '("output_score", AttrOpt Bool),
-       '("iou_loss", AttrOpt Bool), '("cls_score", AttrOpt NDArrayHandle),
-       '("bbox_pred", AttrOpt NDArrayHandle),
-       '("im_info", AttrOpt NDArrayHandle)]
+        '("rpn_post_nms_top_n", AttrOpt Int),
+        '("threshold", AttrOpt Float), '("rpn_min_size", AttrOpt Int),
+        '("scales", AttrOpt [Float]), '("ratios", AttrOpt [Float]),
+        '("feature_stride", AttrOpt Int), '("output_score", AttrOpt Bool),
+        '("iou_loss", AttrOpt Bool), '("cls_score", AttrOpt NDArrayHandle),
+        '("bbox_pred", AttrOpt NDArrayHandle),
+        '("im_info", AttrOpt NDArrayHandle)]
 
 _contrib_Proposal ::
                   forall args . Fullfilled "_contrib_Proposal(ndarray)" args =>
@@ -12353,9 +12422,9 @@ _backward__contrib_Proposal_upd outputs args
 
 type instance ParameterList "_contrib_count_sketch(ndarray)" =
      '[ '("out_dim", AttrReq Int),
-       '("processing_batch_size", AttrOpt Int),
-       '("data", AttrOpt NDArrayHandle), '("h", AttrOpt NDArrayHandle),
-       '("s", AttrOpt NDArrayHandle)]
+        '("processing_batch_size", AttrOpt Int),
+        '("data", AttrOpt NDArrayHandle), '("h", AttrOpt NDArrayHandle),
+        '("s", AttrOpt NDArrayHandle)]
 
 _contrib_count_sketch ::
                       forall args . Fullfilled "_contrib_count_sketch(ndarray)" args =>
@@ -12441,11 +12510,11 @@ _backward__contrib_count_sketch_upd outputs args
 
 type instance ParameterList "_contrib_MultiBoxDetection(ndarray)" =
      '[ '("clip", AttrOpt Bool), '("threshold", AttrOpt Float),
-       '("background_id", AttrOpt Int), '("nms_threshold", AttrOpt Float),
-       '("force_suppress", AttrOpt Bool), '("variances", AttrOpt [Float]),
-       '("nms_topk", AttrOpt Int), '("cls_prob", AttrOpt NDArrayHandle),
-       '("loc_pred", AttrOpt NDArrayHandle),
-       '("anchor", AttrOpt NDArrayHandle)]
+        '("background_id", AttrOpt Int), '("nms_threshold", AttrOpt Float),
+        '("force_suppress", AttrOpt Bool), '("variances", AttrOpt [Float]),
+        '("nms_topk", AttrOpt Int), '("cls_prob", AttrOpt NDArrayHandle),
+        '("loc_pred", AttrOpt NDArrayHandle),
+        '("anchor", AttrOpt NDArrayHandle)]
 
 _contrib_MultiBoxDetection ::
                            forall args .
@@ -12669,13 +12738,13 @@ _backward__contrib_CTCLoss_upd outputs args
 
 type instance ParameterList "_contrib_MultiProposal(ndarray)" =
      '[ '("rpn_pre_nms_top_n", AttrOpt Int),
-       '("rpn_post_nms_top_n", AttrOpt Int),
-       '("threshold", AttrOpt Float), '("rpn_min_size", AttrOpt Int),
-       '("scales", AttrOpt [Float]), '("ratios", AttrOpt [Float]),
-       '("feature_stride", AttrOpt Int), '("output_score", AttrOpt Bool),
-       '("iou_loss", AttrOpt Bool), '("cls_score", AttrOpt NDArrayHandle),
-       '("bbox_pred", AttrOpt NDArrayHandle),
-       '("im_info", AttrOpt NDArrayHandle)]
+        '("rpn_post_nms_top_n", AttrOpt Int),
+        '("threshold", AttrOpt Float), '("rpn_min_size", AttrOpt Int),
+        '("scales", AttrOpt [Float]), '("ratios", AttrOpt [Float]),
+        '("feature_stride", AttrOpt Int), '("output_score", AttrOpt Bool),
+        '("iou_loss", AttrOpt Bool), '("cls_score", AttrOpt NDArrayHandle),
+        '("bbox_pred", AttrOpt NDArrayHandle),
+        '("im_info", AttrOpt NDArrayHandle)]
 
 _contrib_MultiProposal ::
                        forall args . Fullfilled "_contrib_MultiProposal(ndarray)" args =>
@@ -12784,8 +12853,8 @@ _backward__contrib_MultiProposal_upd outputs args
 
 type instance ParameterList "_contrib_MultiBoxPrior(ndarray)" =
      '[ '("sizes", AttrOpt [Float]), '("ratios", AttrOpt [Float]),
-       '("clip", AttrOpt Bool), '("steps", AttrOpt [Float]),
-       '("offsets", AttrOpt [Float]), '("data", AttrOpt NDArrayHandle)]
+        '("clip", AttrOpt Bool), '("steps", AttrOpt [Float]),
+        '("offsets", AttrOpt [Float]), '("data", AttrOpt NDArrayHandle)]
 
 _contrib_MultiBoxPrior ::
                        forall args . Fullfilled "_contrib_MultiBoxPrior(ndarray)" args =>
@@ -12869,7 +12938,8 @@ _backward__contrib_MultiBoxPrior_upd outputs args
          return ()
 
 type instance ParameterList "_contrib_fft(ndarray)" =
-     '[ '("compute_size", AttrOpt Int), '("data", AttrOpt NDArrayHandle)]
+     '[ '("compute_size", AttrOpt Int),
+        '("data", AttrOpt NDArrayHandle)]
 
 _contrib_fft ::
              forall args . Fullfilled "_contrib_fft(ndarray)" args =>
@@ -12942,15 +13012,15 @@ _backward__contrib_fft_upd outputs args
 type instance
      ParameterList "_contrib_DeformableConvolution(ndarray)" =
      '[ '("kernel", AttrReq [Int]), '("stride", AttrOpt [Int]),
-       '("dilate", AttrOpt [Int]), '("pad", AttrOpt [Int]),
-       '("num_filter", AttrReq Int), '("num_group", AttrOpt Int),
-       '("num_deformable_group", AttrOpt Int),
-       '("workspace", AttrOpt Int), '("no_bias", AttrOpt Bool),
-       '("layout", AttrOpt (Maybe (EnumType '["NCDHW", "NCHW", "NCW"]))),
-       '("data", AttrOpt NDArrayHandle),
-       '("offset", AttrOpt NDArrayHandle),
-       '("weight", AttrOpt NDArrayHandle),
-       '("bias", AttrOpt NDArrayHandle)]
+        '("dilate", AttrOpt [Int]), '("pad", AttrOpt [Int]),
+        '("num_filter", AttrReq Int), '("num_group", AttrOpt Int),
+        '("num_deformable_group", AttrOpt Int),
+        '("workspace", AttrOpt Int), '("no_bias", AttrOpt Bool),
+        '("layout", AttrOpt (Maybe (EnumType '["NCDHW", "NCHW", "NCW"]))),
+        '("data", AttrOpt NDArrayHandle),
+        '("offset", AttrOpt NDArrayHandle),
+        '("weight", AttrOpt NDArrayHandle),
+        '("bias", AttrOpt NDArrayHandle)]
 
 _contrib_DeformableConvolution ::
                                forall args .
@@ -13069,7 +13139,8 @@ _backward__contrib_DeformableConvolution_upd outputs args
          return ()
 
 type instance ParameterList "_contrib_ifft(ndarray)" =
-     '[ '("compute_size", AttrOpt Int), '("data", AttrOpt NDArrayHandle)]
+     '[ '("compute_size", AttrOpt Int),
+        '("data", AttrOpt NDArrayHandle)]
 
 _contrib_ifft ::
               forall args . Fullfilled "_contrib_ifft(ndarray)" args =>
@@ -13204,8 +13275,8 @@ _backward__NDArray_upd outputs args
 
 type instance ParameterList "_InstanceNorm(ndarray)" =
      '[ '("eps", AttrOpt Float), '("data", AttrOpt NDArrayHandle),
-       '("gamma", AttrOpt NDArrayHandle),
-       '("beta", AttrOpt NDArrayHandle)]
+        '("gamma", AttrOpt NDArrayHandle),
+        '("beta", AttrOpt NDArrayHandle)]
 
 _InstanceNorm ::
               forall args . Fullfilled "_InstanceNorm(ndarray)" args =>
@@ -13281,9 +13352,9 @@ _backward_InstanceNorm_upd outputs args
 
 type instance ParameterList "_SVMOutput(ndarray)" =
      '[ '("margin", AttrOpt Float),
-       '("regularization_coefficient", AttrOpt Float),
-       '("use_linear", AttrOpt Bool), '("data", AttrOpt NDArrayHandle),
-       '("label", AttrOpt NDArrayHandle)]
+        '("regularization_coefficient", AttrOpt Float),
+        '("use_linear", AttrOpt Bool), '("data", AttrOpt NDArrayHandle),
+        '("label", AttrOpt NDArrayHandle)]
 
 _SVMOutput ::
            forall args . Fullfilled "_SVMOutput(ndarray)" args =>
@@ -13364,11 +13435,11 @@ _backward_SVMOutput_upd outputs args
 
 type instance ParameterList "_Pooling(ndarray)" =
      '[ '("global_pool", AttrOpt Bool), '("cudnn_off", AttrOpt Bool),
-       '("kernel", AttrReq [Int]),
-       '("pool_type", AttrReq (EnumType '["avg", "max", "sum"])),
-       '("pooling_convention", AttrOpt (EnumType '["full", "valid"])),
-       '("stride", AttrOpt [Int]), '("pad", AttrOpt [Int]),
-       '("data", AttrOpt NDArrayHandle)]
+        '("kernel", AttrReq [Int]),
+        '("pool_type", AttrReq (EnumType '["avg", "max", "sum"])),
+        '("pooling_convention", AttrOpt (EnumType '["full", "valid"])),
+        '("stride", AttrOpt [Int]), '("pad", AttrOpt [Int]),
+        '("data", AttrOpt NDArrayHandle)]
 
 _Pooling ::
          forall args . Fullfilled "_Pooling(ndarray)" args =>
@@ -13457,18 +13528,18 @@ _backward_Pooling_upd outputs args
 
 type instance ParameterList "_Convolution_v1(ndarray)" =
      '[ '("kernel", AttrReq [Int]), '("stride", AttrOpt [Int]),
-       '("dilate", AttrOpt [Int]), '("pad", AttrOpt [Int]),
-       '("num_filter", AttrReq Int), '("num_group", AttrOpt Int),
-       '("workspace", AttrOpt Int), '("no_bias", AttrOpt Bool),
-       '("cudnn_tune",
-         AttrOpt
-           (Maybe (EnumType '["fastest", "limited_workspace", "off"]))),
-       '("cudnn_off", AttrOpt Bool),
-       '("layout",
-         AttrOpt (Maybe (EnumType '["NCDHW", "NCHW", "NDHWC", "NHWC"]))),
-       '("data", AttrOpt NDArrayHandle),
-       '("weight", AttrOpt NDArrayHandle),
-       '("bias", AttrOpt NDArrayHandle)]
+        '("dilate", AttrOpt [Int]), '("pad", AttrOpt [Int]),
+        '("num_filter", AttrReq Int), '("num_group", AttrOpt Int),
+        '("workspace", AttrOpt Int), '("no_bias", AttrOpt Bool),
+        '("cudnn_tune",
+          AttrOpt
+            (Maybe (EnumType '["fastest", "limited_workspace", "off"]))),
+        '("cudnn_off", AttrOpt Bool),
+        '("layout",
+          AttrOpt (Maybe (EnumType '["NCDHW", "NCHW", "NDHWC", "NHWC"]))),
+        '("data", AttrOpt NDArrayHandle),
+        '("weight", AttrOpt NDArrayHandle),
+        '("bias", AttrOpt NDArrayHandle)]
 
 _Convolution_v1 ::
                 forall args . Fullfilled "_Convolution_v1(ndarray)" args =>
@@ -13576,8 +13647,8 @@ _backward_Convolution_v1_upd outputs args
 
 type instance ParameterList "_Crop(ndarray)" =
      '[ '("num_args", AttrReq Int), '("offset", AttrOpt [Int]),
-       '("h_w", AttrOpt [Int]), '("center_crop", AttrOpt Bool),
-       '("data", AttrOpt [NDArrayHandle])]
+        '("h_w", AttrOpt [Int]), '("center_crop", AttrOpt Bool),
+        '("data", AttrOpt [NDArrayHandle])]
 
 _Crop ::
       forall args . Fullfilled "_Crop(ndarray)" args =>
@@ -13657,9 +13728,9 @@ _backward_Crop_upd outputs args
 
 type instance ParameterList "_SpatialTransformer(ndarray)" =
      '[ '("target_shape", AttrOpt [Int]),
-       '("transform_type", AttrReq (EnumType '["affine"])),
-       '("sampler_type", AttrReq (EnumType '["bilinear"])),
-       '("data", AttrOpt NDArrayHandle), '("loc", AttrOpt NDArrayHandle)]
+        '("transform_type", AttrReq (EnumType '["affine"])),
+        '("sampler_type", AttrReq (EnumType '["bilinear"])),
+        '("data", AttrOpt NDArrayHandle), '("loc", AttrOpt NDArrayHandle)]
 
 _SpatialTransformer ::
                     forall args . Fullfilled "_SpatialTransformer(ndarray)" args =>
@@ -13777,8 +13848,9 @@ _backward_SwapAxis_upd outputs args
          return ()
 
 type instance ParameterList "_LinearRegressionOutput(ndarray)" =
-     '[ '("grad_scale", AttrOpt Float), '("data", AttrOpt NDArrayHandle),
-       '("label", AttrOpt NDArrayHandle)]
+     '[ '("grad_scale", AttrOpt Float),
+        '("data", AttrOpt NDArrayHandle),
+        '("label", AttrOpt NDArrayHandle)]
 
 _LinearRegressionOutput ::
                         forall args . Fullfilled "_LinearRegressionOutput(ndarray)" args =>
@@ -13860,8 +13932,9 @@ _backward_LinearRegressionOutput_upd outputs args
          return ()
 
 type instance ParameterList "_MAERegressionOutput(ndarray)" =
-     '[ '("grad_scale", AttrOpt Float), '("data", AttrOpt NDArrayHandle),
-       '("label", AttrOpt NDArrayHandle)]
+     '[ '("grad_scale", AttrOpt Float),
+        '("data", AttrOpt NDArrayHandle),
+        '("label", AttrOpt NDArrayHandle)]
 
 _MAERegressionOutput ::
                      forall args . Fullfilled "_MAERegressionOutput(ndarray)" args =>
@@ -13941,8 +14014,9 @@ _backward_MAERegressionOutput_upd outputs args
          return ()
 
 type instance ParameterList "_LogisticRegressionOutput(ndarray)" =
-     '[ '("grad_scale", AttrOpt Float), '("data", AttrOpt NDArrayHandle),
-       '("label", AttrOpt NDArrayHandle)]
+     '[ '("grad_scale", AttrOpt Float),
+        '("data", AttrOpt NDArrayHandle),
+        '("label", AttrOpt NDArrayHandle)]
 
 _LogisticRegressionOutput ::
                           forall args .
@@ -14058,13 +14132,13 @@ _backward_Pad_upd outputs args
          return ()
 
 type instance ParameterList "_SoftmaxOutput(ndarray)" =
-     '[ '("grad_scale", AttrOpt Float), '("ignore_label", AttrOpt Float),
-       '("multi_output", AttrOpt Bool), '("use_ignore", AttrOpt Bool),
-       '("preserve_shape", AttrOpt Bool),
-       '("normalization", AttrOpt (EnumType '["batch", "null", "valid"])),
-       '("out_grad", AttrOpt Bool), '("smooth_alpha", AttrOpt Float),
-       '("data", AttrOpt NDArrayHandle),
-       '("label", AttrOpt NDArrayHandle)]
+     '[ '("grad_scale", AttrOpt Float),
+        '("ignore_label", AttrOpt Float), '("multi_output", AttrOpt Bool),
+        '("use_ignore", AttrOpt Bool), '("preserve_shape", AttrOpt Bool),
+        '("normalization", AttrOpt (EnumType '["batch", "null", "valid"])),
+        '("out_grad", AttrOpt Bool), '("smooth_alpha", AttrOpt Float),
+        '("data", AttrOpt NDArrayHandle),
+        '("label", AttrOpt NDArrayHandle)]
 
 _SoftmaxOutput ::
                forall args . Fullfilled "_SoftmaxOutput(ndarray)" args =>
@@ -14168,12 +14242,12 @@ _backward_SoftmaxOutput_upd outputs args
          return ()
 
 type instance ParameterList "_Softmax(ndarray)" =
-     '[ '("grad_scale", AttrOpt Float), '("ignore_label", AttrOpt Float),
-       '("multi_output", AttrOpt Bool), '("use_ignore", AttrOpt Bool),
-       '("preserve_shape", AttrOpt Bool),
-       '("normalization", AttrOpt (EnumType '["batch", "null", "valid"])),
-       '("out_grad", AttrOpt Bool), '("smooth_alpha", AttrOpt Float),
-       '("data", AttrOpt NDArrayHandle)]
+     '[ '("grad_scale", AttrOpt Float),
+        '("ignore_label", AttrOpt Float), '("multi_output", AttrOpt Bool),
+        '("use_ignore", AttrOpt Bool), '("preserve_shape", AttrOpt Bool),
+        '("normalization", AttrOpt (EnumType '["batch", "null", "valid"])),
+        '("out_grad", AttrOpt Bool), '("smooth_alpha", AttrOpt Float),
+        '("data", AttrOpt NDArrayHandle)]
 
 _Softmax ::
          forall args . Fullfilled "_Softmax(ndarray)" args =>
@@ -14272,8 +14346,8 @@ _backward_Softmax_upd outputs args
 
 type instance ParameterList "_SequenceReverse(ndarray)" =
      '[ '("use_sequence_length", AttrOpt Bool),
-       '("data", AttrOpt NDArrayHandle),
-       '("sequence_length", AttrOpt NDArrayHandle)]
+        '("data", AttrOpt NDArrayHandle),
+        '("sequence_length", AttrOpt NDArrayHandle)]
 
 _SequenceReverse ::
                  forall args . Fullfilled "_SequenceReverse(ndarray)" args =>
@@ -14387,8 +14461,8 @@ _backward_BatchNorm_v1_upd outputs args
 
 type instance ParameterList "_SequenceLast(ndarray)" =
      '[ '("use_sequence_length", AttrOpt Bool),
-       '("data", AttrOpt NDArrayHandle),
-       '("sequence_length", AttrOpt NDArrayHandle)]
+        '("data", AttrOpt NDArrayHandle),
+        '("sequence_length", AttrOpt NDArrayHandle)]
 
 _SequenceLast ::
               forall args . Fullfilled "_SequenceLast(ndarray)" args =>
@@ -14466,10 +14540,10 @@ _backward_SequenceLast_upd outputs args
 
 type instance ParameterList "_Correlation(ndarray)" =
      '[ '("kernel_size", AttrOpt Int),
-       '("max_displacement", AttrOpt Int), '("stride1", AttrOpt Int),
-       '("stride2", AttrOpt Int), '("pad_size", AttrOpt Int),
-       '("is_multiply", AttrOpt Bool), '("data1", AttrOpt NDArrayHandle),
-       '("data2", AttrOpt NDArrayHandle)]
+        '("max_displacement", AttrOpt Int), '("stride1", AttrOpt Int),
+        '("stride2", AttrOpt Int), '("pad_size", AttrOpt Int),
+        '("is_multiply", AttrOpt Bool), '("data1", AttrOpt NDArrayHandle),
+        '("data2", AttrOpt NDArrayHandle)]
 
 _Correlation ::
              forall args . Fullfilled "_Correlation(ndarray)" args =>
@@ -14558,9 +14632,10 @@ _backward_Correlation_upd outputs args
          return ()
 
 type instance ParameterList "_MakeLoss(ndarray)" =
-     '[ '("grad_scale", AttrOpt Float), '("valid_thresh", AttrOpt Float),
-       '("normalization", AttrOpt (EnumType '["batch", "null", "valid"])),
-       '("data", AttrOpt NDArrayHandle)]
+     '[ '("grad_scale", AttrOpt Float),
+        '("valid_thresh", AttrOpt Float),
+        '("normalization", AttrOpt (EnumType '["batch", "null", "valid"])),
+        '("data", AttrOpt NDArrayHandle)]
 
 _MakeLoss ::
           forall args . Fullfilled "_MakeLoss(ndarray)" args =>
@@ -14641,8 +14716,8 @@ _backward_MakeLoss_upd outputs args
 
 type instance ParameterList "_LRN(ndarray)" =
      '[ '("alpha", AttrOpt Float), '("beta", AttrOpt Float),
-       '("knorm", AttrOpt Float), '("nsize", AttrReq Int),
-       '("data", AttrOpt NDArrayHandle)]
+        '("knorm", AttrOpt Float), '("nsize", AttrReq Int),
+        '("data", AttrOpt NDArrayHandle)]
 
 _LRN ::
      forall args . Fullfilled "_LRN(ndarray)" args =>
@@ -14716,8 +14791,8 @@ _backward_LRN_upd outputs args
 
 type instance ParameterList "_SequenceMask(ndarray)" =
      '[ '("use_sequence_length", AttrOpt Bool),
-       '("value", AttrOpt Float), '("data", AttrOpt NDArrayHandle),
-       '("sequence_length", AttrOpt NDArrayHandle)]
+        '("value", AttrOpt Float), '("data", AttrOpt NDArrayHandle),
+        '("sequence_length", AttrOpt NDArrayHandle)]
 
 _SequenceMask ::
               forall args . Fullfilled "_SequenceMask(ndarray)" args =>
@@ -14797,7 +14872,7 @@ _backward_SequenceMask_upd outputs args
 
 type instance ParameterList "_GridGenerator(ndarray)" =
      '[ '("transform_type", AttrReq (EnumType '["affine", "warp"])),
-       '("target_shape", AttrOpt [Int]), '("data", AttrOpt NDArrayHandle)]
+        '("target_shape", AttrOpt [Int]), '("data", AttrOpt NDArrayHandle)]
 
 _GridGenerator ::
                forall args . Fullfilled "_GridGenerator(ndarray)" args =>
@@ -14874,10 +14949,10 @@ _backward_GridGenerator_upd outputs args
 
 type instance ParameterList "_Pooling_v1(ndarray)" =
      '[ '("global_pool", AttrOpt Bool), '("kernel", AttrReq [Int]),
-       '("pool_type", AttrReq (EnumType '["avg", "max", "sum"])),
-       '("pooling_convention", AttrOpt (EnumType '["full", "valid"])),
-       '("stride", AttrOpt [Int]), '("pad", AttrOpt [Int]),
-       '("data", AttrOpt NDArrayHandle)]
+        '("pool_type", AttrReq (EnumType '["avg", "max", "sum"])),
+        '("pooling_convention", AttrOpt (EnumType '["full", "valid"])),
+        '("stride", AttrOpt [Int]), '("pad", AttrOpt [Int]),
+        '("data", AttrOpt NDArrayHandle)]
 
 _Pooling_v1 ::
             forall args . Fullfilled "_Pooling_v1(ndarray)" args =>
@@ -15034,8 +15109,8 @@ _backward_IdentityAttachKLSparseReg_upd outputs args
 
 type instance ParameterList "_Activation(ndarray)" =
      '[ '("act_type",
-         AttrReq (EnumType '["relu", "sigmoid", "softrelu", "tanh"])),
-       '("data", AttrOpt NDArrayHandle)]
+          AttrReq (EnumType '["relu", "sigmoid", "softrelu", "tanh"])),
+        '("data", AttrOpt NDArrayHandle)]
 
 _Activation ::
             forall args . Fullfilled "_Activation(ndarray)" args =>
@@ -15139,20 +15214,20 @@ _backward_UpSampling_upd outputs args
 
 type instance ParameterList "_Deconvolution(ndarray)" =
      '[ '("kernel", AttrReq [Int]), '("stride", AttrOpt [Int]),
-       '("dilate", AttrOpt [Int]), '("pad", AttrOpt [Int]),
-       '("adj", AttrOpt [Int]), '("target_shape", AttrOpt [Int]),
-       '("num_filter", AttrReq Int), '("num_group", AttrOpt Int),
-       '("workspace", AttrOpt Int), '("no_bias", AttrOpt Bool),
-       '("cudnn_tune",
-         AttrOpt
-           (Maybe (EnumType '["fastest", "limited_workspace", "off"]))),
-       '("cudnn_off", AttrOpt Bool),
-       '("layout",
-         AttrOpt
-           (Maybe (EnumType '["NCDHW", "NCHW", "NCW", "NDHWC", "NHWC"]))),
-       '("data", AttrOpt NDArrayHandle),
-       '("weight", AttrOpt NDArrayHandle),
-       '("bias", AttrOpt NDArrayHandle)]
+        '("dilate", AttrOpt [Int]), '("pad", AttrOpt [Int]),
+        '("adj", AttrOpt [Int]), '("target_shape", AttrOpt [Int]),
+        '("num_filter", AttrReq Int), '("num_group", AttrOpt Int),
+        '("workspace", AttrOpt Int), '("no_bias", AttrOpt Bool),
+        '("cudnn_tune",
+          AttrOpt
+            (Maybe (EnumType '["fastest", "limited_workspace", "off"]))),
+        '("cudnn_off", AttrOpt Bool),
+        '("layout",
+          AttrOpt
+            (Maybe (EnumType '["NCDHW", "NCHW", "NCW", "NDHWC", "NHWC"]))),
+        '("data", AttrOpt NDArrayHandle),
+        '("weight", AttrOpt NDArrayHandle),
+        '("bias", AttrOpt NDArrayHandle)]
 
 _Deconvolution ::
                forall args . Fullfilled "_Deconvolution(ndarray)" args =>
@@ -15265,7 +15340,7 @@ _backward_Deconvolution_upd outputs args
 
 type instance ParameterList "_BilinearSampler(ndarray)" =
      '[ '("data", AttrOpt NDArrayHandle),
-       '("grid", AttrOpt NDArrayHandle)]
+        '("grid", AttrOpt NDArrayHandle)]
 
 _BilinearSampler ::
                  forall args . Fullfilled "_BilinearSampler(ndarray)" args =>
@@ -15339,8 +15414,8 @@ _backward_BilinearSampler_upd outputs args
 
 type instance ParameterList "_ROIPooling(ndarray)" =
      '[ '("pooled_size", AttrReq [Int]),
-       '("spatial_scale", AttrReq Float),
-       '("data", AttrOpt NDArrayHandle), '("rois", AttrOpt NDArrayHandle)]
+        '("spatial_scale", AttrReq Float),
+        '("data", AttrOpt NDArrayHandle), '("rois", AttrOpt NDArrayHandle)]
 
 _ROIPooling ::
             forall args . Fullfilled "_ROIPooling(ndarray)" args =>
@@ -15486,9 +15561,9 @@ _backward_CuDNNBatchNorm_upd outputs args
 
 type instance ParameterList "_FullyConnected(ndarray)" =
      '[ '("num_hidden", AttrReq Int), '("no_bias", AttrOpt Bool),
-       '("flatten", AttrOpt Bool), '("data", AttrOpt NDArrayHandle),
-       '("weight", AttrOpt NDArrayHandle),
-       '("bias", AttrOpt NDArrayHandle)]
+        '("flatten", AttrOpt Bool), '("data", AttrOpt NDArrayHandle),
+        '("weight", AttrOpt NDArrayHandle),
+        '("bias", AttrOpt NDArrayHandle)]
 
 _FullyConnected ::
                 forall args . Fullfilled "_FullyConnected(ndarray)" args =>
@@ -15574,19 +15649,19 @@ _backward_FullyConnected_upd outputs args
 
 type instance ParameterList "_Convolution(ndarray)" =
      '[ '("kernel", AttrReq [Int]), '("stride", AttrOpt [Int]),
-       '("dilate", AttrOpt [Int]), '("pad", AttrOpt [Int]),
-       '("num_filter", AttrReq Int), '("num_group", AttrOpt Int),
-       '("workspace", AttrOpt Int), '("no_bias", AttrOpt Bool),
-       '("cudnn_tune",
-         AttrOpt
-           (Maybe (EnumType '["fastest", "limited_workspace", "off"]))),
-       '("cudnn_off", AttrOpt Bool),
-       '("layout",
-         AttrOpt
-           (Maybe (EnumType '["NCDHW", "NCHW", "NCW", "NDHWC", "NHWC"]))),
-       '("data", AttrOpt NDArrayHandle),
-       '("weight", AttrOpt NDArrayHandle),
-       '("bias", AttrOpt NDArrayHandle)]
+        '("dilate", AttrOpt [Int]), '("pad", AttrOpt [Int]),
+        '("num_filter", AttrReq Int), '("num_group", AttrOpt Int),
+        '("workspace", AttrOpt Int), '("no_bias", AttrOpt Bool),
+        '("cudnn_tune",
+          AttrOpt
+            (Maybe (EnumType '["fastest", "limited_workspace", "off"]))),
+        '("cudnn_off", AttrOpt Bool),
+        '("layout",
+          AttrOpt
+            (Maybe (EnumType '["NCDHW", "NCHW", "NCW", "NDHWC", "NHWC"]))),
+        '("data", AttrOpt NDArrayHandle),
+        '("weight", AttrOpt NDArrayHandle),
+        '("bias", AttrOpt NDArrayHandle)]
 
 _Convolution ::
              forall args . Fullfilled "_Convolution(ndarray)" args =>
@@ -15692,8 +15767,8 @@ _backward_Convolution_upd outputs args
 
 type instance ParameterList "_L2Normalization(ndarray)" =
      '[ '("eps", AttrOpt Float),
-       '("mode", AttrOpt (EnumType '["channel", "instance", "spatial"])),
-       '("data", AttrOpt NDArrayHandle)]
+        '("mode", AttrOpt (EnumType '["channel", "instance", "spatial"])),
+        '("data", AttrOpt NDArrayHandle)]
 
 _L2Normalization ::
                  forall args . Fullfilled "_L2Normalization(ndarray)" args =>
@@ -15804,14 +15879,14 @@ _backward_Concat_upd outputs args
 
 type instance ParameterList "_RNN(ndarray)" =
      '[ '("state_size", AttrReq Int), '("num_layers", AttrReq Int),
-       '("bidirectional", AttrOpt Bool),
-       '("mode",
-         AttrReq (EnumType '["gru", "lstm", "rnn_relu", "rnn_tanh"])),
-       '("p", AttrOpt Float), '("state_outputs", AttrOpt Bool),
-       '("data", AttrOpt NDArrayHandle),
-       '("parameters", AttrOpt NDArrayHandle),
-       '("state", AttrOpt NDArrayHandle),
-       '("state_cell", AttrOpt NDArrayHandle)]
+        '("bidirectional", AttrOpt Bool),
+        '("mode",
+          AttrReq (EnumType '["gru", "lstm", "rnn_relu", "rnn_tanh"])),
+        '("p", AttrOpt Float), '("state_outputs", AttrOpt Bool),
+        '("data", AttrOpt NDArrayHandle),
+        '("parameters", AttrOpt NDArrayHandle),
+        '("state", AttrOpt NDArrayHandle),
+        '("state_cell", AttrOpt NDArrayHandle)]
 
 _RNN ::
      forall args . Fullfilled "_RNN(ndarray)" args =>
@@ -15938,8 +16013,8 @@ _backward_BatchNorm_upd outputs args
 
 type instance ParameterList "_Dropout(ndarray)" =
      '[ '("p", AttrOpt Float),
-       '("mode", AttrOpt (EnumType '["always", "training"])),
-       '("data", AttrOpt NDArrayHandle)]
+        '("mode", AttrOpt (EnumType '["always", "training"])),
+        '("data", AttrOpt NDArrayHandle)]
 
 _Dropout ::
          forall args . Fullfilled "_Dropout(ndarray)" args =>
@@ -16078,7 +16153,7 @@ _backward__CrossDeviceCopy_upd outputs args
 
 type instance ParameterList "_SoftmaxActivation(ndarray)" =
      '[ '("mode", AttrOpt (EnumType '["channel", "instance"])),
-       '("data", AttrOpt NDArrayHandle)]
+        '("data", AttrOpt NDArrayHandle)]
 
 _SoftmaxActivation ::
                    forall args . Fullfilled "_SoftmaxActivation(ndarray)" args =>
@@ -16188,7 +16263,8 @@ _set_value_upd outputs args
          return ()
 
 type instance ParameterList "_onehot_encode(ndarray)" =
-     '[ '("lhs", AttrOpt NDArrayHandle), '("rhs", AttrOpt NDArrayHandle)]
+     '[ '("lhs", AttrOpt NDArrayHandle),
+        '("rhs", AttrOpt NDArrayHandle)]
 
 _onehot_encode ::
                forall args . Fullfilled "_onehot_encode(ndarray)" args =>
@@ -16225,7 +16301,8 @@ _onehot_encode_upd outputs args
          return ()
 
 type instance ParameterList "choose_element_0index(ndarray)" =
-     '[ '("lhs", AttrOpt NDArrayHandle), '("rhs", AttrOpt NDArrayHandle)]
+     '[ '("lhs", AttrOpt NDArrayHandle),
+        '("rhs", AttrOpt NDArrayHandle)]
 
 choose_element_0index ::
                       forall args . Fullfilled "choose_element_0index(ndarray)" args =>
@@ -16264,8 +16341,8 @@ choose_element_0index_upd outputs args
          return ()
 
 type instance ParameterList "fill_element_0index(ndarray)" =
-     '[ '("lhs", AttrOpt NDArrayHandle), '("mhs", AttrOpt NDArrayHandle),
-       '("rhs", AttrOpt NDArrayHandle)]
+     '[ '("lhs", AttrOpt NDArrayHandle),
+        '("mhs", AttrOpt NDArrayHandle), '("rhs", AttrOpt NDArrayHandle)]
 
 fill_element_0index ::
                     forall args . Fullfilled "fill_element_0index(ndarray)" args =>
@@ -16306,9 +16383,9 @@ fill_element_0index_upd outputs args
 
 type instance ParameterList "_imdecode(ndarray)" =
      '[ '("index", AttrOpt Int), '("x0", AttrOpt Int),
-       '("y0", AttrOpt Int), '("x1", AttrOpt Int), '("y1", AttrOpt Int),
-       '("c", AttrOpt Int), '("size", AttrOpt Int),
-       '("mean", AttrOpt NDArrayHandle)]
+        '("y0", AttrOpt Int), '("x1", AttrOpt Int), '("y1", AttrOpt Int),
+        '("c", AttrOpt Int), '("size", AttrOpt Int),
+        '("mean", AttrOpt NDArrayHandle)]
 
 _imdecode ::
           forall args . Fullfilled "_imdecode(ndarray)" args =>

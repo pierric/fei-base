@@ -460,7 +460,7 @@ _backward_hypot name args
 
 type instance ParameterList "_square_sum(symbol)" =
      '[ '("axis", AttrOpt [Int]), '("keepdims", AttrOpt Bool),
-       '("exclude", AttrOpt Bool), '("data", AttrOpt SymbolHandle)]
+        '("exclude", AttrOpt Bool), '("data", AttrOpt SymbolHandle)]
 
 _square_sum ::
             forall args . Fullfilled "_square_sum(symbol)" args =>
@@ -525,9 +525,9 @@ add_n name args
 
 type instance ParameterList "_zeros(symbol)" =
      '[ '("shape", AttrOpt [Int]), '("ctx", AttrOpt String),
-       '("dtype",
-         AttrOpt
-           (EnumType '["float16", "float32", "float64", "int32", "uint8"]))]
+        '("dtype",
+          AttrOpt
+            (EnumType '["float16", "float32", "float64", "int32", "uint8"]))]
 
 _zeros ::
        forall args . Fullfilled "_zeros(symbol)" args =>
@@ -553,9 +553,9 @@ _zeros name args
 
 type instance ParameterList "_ones(symbol)" =
      '[ '("shape", AttrOpt [Int]), '("ctx", AttrOpt String),
-       '("dtype",
-         AttrOpt
-           (EnumType '["float16", "float32", "float64", "int32", "uint8"]))]
+        '("dtype",
+          AttrOpt
+            (EnumType '["float16", "float32", "float64", "int32", "uint8"]))]
 
 _ones ::
       forall args . Fullfilled "_ones(symbol)" args =>
@@ -581,10 +581,10 @@ _ones name args
 
 type instance ParameterList "_full(symbol)" =
      '[ '("shape", AttrOpt [Int]), '("ctx", AttrOpt String),
-       '("dtype",
-         AttrOpt
-           (EnumType '["float16", "float32", "float64", "int32", "uint8"])),
-       '("value", AttrReq Double)]
+        '("dtype",
+          AttrOpt
+            (EnumType '["float16", "float32", "float64", "int32", "uint8"])),
+        '("value", AttrReq Double)]
 
 _full ::
       forall args . Fullfilled "_full(symbol)" args =>
@@ -611,12 +611,12 @@ _full name args
 
 type instance ParameterList "_arange(symbol)" =
      '[ '("start", AttrReq Double), '("stop", AttrOpt (Maybe Double)),
-       '("step", AttrOpt Double), '("repeat", AttrOpt Int),
-       '("ctx", AttrOpt String),
-       '("dtype",
-         AttrOpt
-           (EnumType
-              '["float16", "float32", "float64", "int32", "int64", "uint8"]))]
+        '("step", AttrOpt Double), '("repeat", AttrOpt Int),
+        '("ctx", AttrOpt String),
+        '("dtype",
+          AttrOpt
+            (EnumType
+               '["float16", "float32", "float64", "int32", "int64", "uint8"]))]
 
 _arange ::
         forall args . Fullfilled "_arange(symbol)" args =>
@@ -879,9 +879,9 @@ _backward_broadcast_mod name args
 
 type instance ParameterList "_linalg_gemm(symbol)" =
      '[ '("transpose_a", AttrOpt Bool), '("transpose_b", AttrOpt Bool),
-       '("alpha", AttrOpt Double), '("beta", AttrOpt Double),
-       '("_A", AttrOpt SymbolHandle), '("_B", AttrOpt SymbolHandle),
-       '("_C", AttrOpt SymbolHandle)]
+        '("alpha", AttrOpt Double), '("beta", AttrOpt Double),
+        '("_A", AttrOpt SymbolHandle), '("_B", AttrOpt SymbolHandle),
+        '("_C", AttrOpt SymbolHandle)]
 
 _linalg_gemm ::
              forall args . Fullfilled "_linalg_gemm(symbol)" args =>
@@ -929,8 +929,8 @@ _backward_linalg_gemm name args
 
 type instance ParameterList "_linalg_gemm2(symbol)" =
      '[ '("transpose_a", AttrOpt Bool), '("transpose_b", AttrOpt Bool),
-       '("alpha", AttrOpt Double), '("_A", AttrOpt SymbolHandle),
-       '("_B", AttrOpt SymbolHandle)]
+        '("alpha", AttrOpt Double), '("_A", AttrOpt SymbolHandle),
+        '("_B", AttrOpt SymbolHandle)]
 
 _linalg_gemm2 ::
               forall args . Fullfilled "_linalg_gemm2(symbol)" args =>
@@ -1050,8 +1050,8 @@ _backward_linalg_potri name args
 
 type instance ParameterList "_linalg_trmm(symbol)" =
      '[ '("transpose", AttrOpt Bool), '("rightside", AttrOpt Bool),
-       '("alpha", AttrOpt Double), '("_A", AttrOpt SymbolHandle),
-       '("_B", AttrOpt SymbolHandle)]
+        '("alpha", AttrOpt Double), '("_A", AttrOpt SymbolHandle),
+        '("_B", AttrOpt SymbolHandle)]
 
 _linalg_trmm ::
              forall args . Fullfilled "_linalg_trmm(symbol)" args =>
@@ -1095,8 +1095,8 @@ _backward_linalg_trmm name args
 
 type instance ParameterList "_linalg_trsm(symbol)" =
      '[ '("transpose", AttrOpt Bool), '("rightside", AttrOpt Bool),
-       '("alpha", AttrOpt Double), '("_A", AttrOpt SymbolHandle),
-       '("_B", AttrOpt SymbolHandle)]
+        '("alpha", AttrOpt Double), '("_A", AttrOpt SymbolHandle),
+        '("_B", AttrOpt SymbolHandle)]
 
 _linalg_trsm ::
              forall args . Fullfilled "_linalg_trsm(symbol)" args =>
@@ -1181,7 +1181,7 @@ _backward_linalg_sumlogdiag name args
 
 type instance ParameterList "_linalg_syrk(symbol)" =
      '[ '("transpose", AttrOpt Bool), '("alpha", AttrOpt Double),
-       '("_A", AttrOpt SymbolHandle)]
+        '("_A", AttrOpt SymbolHandle)]
 
 _linalg_syrk ::
              forall args . Fullfilled "_linalg_syrk(symbol)" args =>
@@ -1295,8 +1295,9 @@ _backward_linalg_syevd name args
          return sym
 
 type instance ParameterList "cast_storage(symbol)" =
-     '[ '("stype", AttrReq (EnumType '["csr", "default", "row_sparse"])),
-       '("data", AttrOpt SymbolHandle)]
+     '[ '("stype",
+          AttrReq (EnumType '["csr", "default", "row_sparse"])),
+        '("data", AttrOpt SymbolHandle)]
 
 cast_storage ::
              forall args . Fullfilled "cast_storage(symbol)" args =>
@@ -1604,7 +1605,8 @@ make_loss name args
          return sym
 
 type instance ParameterList "_identity_with_attr_like_rhs(symbol)"
-     = '[ '("lhs", AttrOpt SymbolHandle), '("rhs", AttrOpt SymbolHandle)]
+     =
+     '[ '("lhs", AttrOpt SymbolHandle), '("rhs", AttrOpt SymbolHandle)]
 
 _identity_with_attr_like_rhs ::
                              forall args .
@@ -1650,9 +1652,9 @@ reshape_like name args
 
 type instance ParameterList "_Cast(symbol)" =
      '[ '("dtype",
-         AttrReq
-           (EnumType '["float16", "float32", "float64", "int32", "uint8"])),
-       '("data", AttrOpt SymbolHandle)]
+          AttrReq
+            (EnumType '["float16", "float32", "float64", "int32", "uint8"])),
+        '("data", AttrOpt SymbolHandle)]
 
 _Cast ::
       forall args . Fullfilled "_Cast(symbol)" args =>
@@ -2455,7 +2457,7 @@ _backward_gammaln name args
 
 type instance ParameterList "sum(symbol)" =
      '[ '("axis", AttrOpt [Int]), '("keepdims", AttrOpt Bool),
-       '("exclude", AttrOpt Bool), '("data", AttrOpt SymbolHandle)]
+        '("exclude", AttrOpt Bool), '("data", AttrOpt SymbolHandle)]
 
 sum ::
     forall args . Fullfilled "sum(symbol)" args =>
@@ -2496,7 +2498,7 @@ _backward_sum name args
 
 type instance ParameterList "mean(symbol)" =
      '[ '("axis", AttrOpt [Int]), '("keepdims", AttrOpt Bool),
-       '("exclude", AttrOpt Bool), '("data", AttrOpt SymbolHandle)]
+        '("exclude", AttrOpt Bool), '("data", AttrOpt SymbolHandle)]
 
 mean ::
      forall args . Fullfilled "mean(symbol)" args =>
@@ -2537,7 +2539,7 @@ _backward_mean name args
 
 type instance ParameterList "prod(symbol)" =
      '[ '("axis", AttrOpt [Int]), '("keepdims", AttrOpt Bool),
-       '("exclude", AttrOpt Bool), '("data", AttrOpt SymbolHandle)]
+        '("exclude", AttrOpt Bool), '("data", AttrOpt SymbolHandle)]
 
 prod ::
      forall args . Fullfilled "prod(symbol)" args =>
@@ -2578,7 +2580,7 @@ _backward_prod name args
 
 type instance ParameterList "nansum(symbol)" =
      '[ '("axis", AttrOpt [Int]), '("keepdims", AttrOpt Bool),
-       '("exclude", AttrOpt Bool), '("data", AttrOpt SymbolHandle)]
+        '("exclude", AttrOpt Bool), '("data", AttrOpt SymbolHandle)]
 
 nansum ::
        forall args . Fullfilled "nansum(symbol)" args =>
@@ -2620,7 +2622,7 @@ _backward_nansum name args
 
 type instance ParameterList "nanprod(symbol)" =
      '[ '("axis", AttrOpt [Int]), '("keepdims", AttrOpt Bool),
-       '("exclude", AttrOpt Bool), '("data", AttrOpt SymbolHandle)]
+        '("exclude", AttrOpt Bool), '("data", AttrOpt SymbolHandle)]
 
 nanprod ::
         forall args . Fullfilled "nanprod(symbol)" args =>
@@ -2662,7 +2664,7 @@ _backward_nanprod name args
 
 type instance ParameterList "max(symbol)" =
      '[ '("axis", AttrOpt [Int]), '("keepdims", AttrOpt Bool),
-       '("exclude", AttrOpt Bool), '("data", AttrOpt SymbolHandle)]
+        '("exclude", AttrOpt Bool), '("data", AttrOpt SymbolHandle)]
 
 max ::
     forall args . Fullfilled "max(symbol)" args =>
@@ -2703,7 +2705,7 @@ _backward_max name args
 
 type instance ParameterList "min(symbol)" =
      '[ '("axis", AttrOpt [Int]), '("keepdims", AttrOpt Bool),
-       '("exclude", AttrOpt Bool), '("data", AttrOpt SymbolHandle)]
+        '("exclude", AttrOpt Bool), '("data", AttrOpt SymbolHandle)]
 
 min ::
     forall args . Fullfilled "min(symbol)" args =>
@@ -2744,7 +2746,7 @@ _backward_min name args
 
 type instance ParameterList "broadcast_axis(symbol)" =
      '[ '("axis", AttrOpt [Int]), '("size", AttrOpt [Int]),
-       '("data", AttrOpt SymbolHandle)]
+        '("data", AttrOpt SymbolHandle)]
 
 broadcast_axis ::
                forall args . Fullfilled "broadcast_axis(symbol)" args =>
@@ -3206,7 +3208,7 @@ _rdiv_scalar name args
 
 type instance ParameterList "_backward_rdiv_scalar(symbol)" =
      '[ '("scalar", AttrOpt Float), '("lhs", AttrOpt SymbolHandle),
-       '("rhs", AttrOpt SymbolHandle)]
+        '("rhs", AttrOpt SymbolHandle)]
 
 _backward_rdiv_scalar ::
                       forall args . Fullfilled "_backward_rdiv_scalar(symbol)" args =>
@@ -3252,7 +3254,7 @@ _mod_scalar name args
 
 type instance ParameterList "_backward_mod_scalar(symbol)" =
      '[ '("scalar", AttrOpt Float), '("lhs", AttrOpt SymbolHandle),
-       '("rhs", AttrOpt SymbolHandle)]
+        '("rhs", AttrOpt SymbolHandle)]
 
 _backward_mod_scalar ::
                      forall args . Fullfilled "_backward_mod_scalar(symbol)" args =>
@@ -3298,7 +3300,7 @@ _rmod_scalar name args
 
 type instance ParameterList "_backward_rmod_scalar(symbol)" =
      '[ '("scalar", AttrOpt Float), '("lhs", AttrOpt SymbolHandle),
-       '("rhs", AttrOpt SymbolHandle)]
+        '("rhs", AttrOpt SymbolHandle)]
 
 _backward_rmod_scalar ::
                       forall args . Fullfilled "_backward_rmod_scalar(symbol)" args =>
@@ -3389,10 +3391,10 @@ _scatter_minus_scalar name args
 
 type instance ParameterList "_Embedding(symbol)" =
      '[ '("input_dim", AttrReq Int), '("output_dim", AttrReq Int),
-       '("dtype",
-         AttrOpt
-           (EnumType '["float16", "float32", "float64", "int32", "uint8"])),
-       '("data", AttrOpt SymbolHandle), '("weight", AttrOpt SymbolHandle)]
+        '("dtype",
+          AttrOpt
+            (EnumType '["float16", "float32", "float64", "int32", "uint8"])),
+        '("data", AttrOpt SymbolHandle), '("weight", AttrOpt SymbolHandle)]
 
 _Embedding ::
            forall args . Fullfilled "_Embedding(symbol)" args =>
@@ -3421,10 +3423,10 @@ _Embedding name args
 
 type instance ParameterList "_contrib_SparseEmbedding(symbol)" =
      '[ '("input_dim", AttrReq Int), '("output_dim", AttrReq Int),
-       '("dtype",
-         AttrOpt
-           (EnumType '["float16", "float32", "float64", "int32", "uint8"])),
-       '("data", AttrOpt SymbolHandle), '("weight", AttrOpt SymbolHandle)]
+        '("dtype",
+          AttrOpt
+            (EnumType '["float16", "float32", "float64", "int32", "uint8"])),
+        '("data", AttrOpt SymbolHandle), '("weight", AttrOpt SymbolHandle)]
 
 _contrib_SparseEmbedding ::
                          forall args . Fullfilled "_contrib_SparseEmbedding(symbol)" args =>
@@ -3493,8 +3495,8 @@ _backward_SparseEmbedding name args
 
 type instance ParameterList "take(symbol)" =
      '[ '("axis", AttrOpt Int),
-       '("mode", AttrOpt (EnumType '["clip", "raise", "wrap"])),
-       '("a", AttrOpt SymbolHandle), '("indices", AttrOpt SymbolHandle)]
+        '("mode", AttrOpt (EnumType '["clip", "raise", "wrap"])),
+        '("a", AttrOpt SymbolHandle), '("indices", AttrOpt SymbolHandle)]
 
 take ::
      forall args . Fullfilled "take(symbol)" args =>
@@ -3536,7 +3538,8 @@ _backward_take name args
          return sym
 
 type instance ParameterList "batch_take(symbol)" =
-     '[ '("a", AttrOpt SymbolHandle), '("indices", AttrOpt SymbolHandle)]
+     '[ '("a", AttrOpt SymbolHandle),
+        '("indices", AttrOpt SymbolHandle)]
 
 batch_take ::
            forall args . Fullfilled "batch_take(symbol)" args =>
@@ -3558,11 +3561,11 @@ batch_take name args
 
 type instance ParameterList "one_hot(symbol)" =
      '[ '("depth", AttrReq Int), '("on_value", AttrOpt Double),
-       '("off_value", AttrOpt Double),
-       '("dtype",
-         AttrOpt
-           (EnumType '["float16", "float32", "float64", "int32", "uint8"])),
-       '("indices", AttrOpt SymbolHandle)]
+        '("off_value", AttrOpt Double),
+        '("dtype",
+          AttrOpt
+            (EnumType '["float16", "float32", "float64", "int32", "uint8"])),
+        '("indices", AttrOpt SymbolHandle)]
 
 one_hot ::
         forall args . Fullfilled "one_hot(symbol)" args =>
@@ -3592,7 +3595,7 @@ one_hot name args
 
 type instance ParameterList "gather_nd(symbol)" =
      '[ '("data", AttrOpt SymbolHandle),
-       '("indices", AttrOpt SymbolHandle)]
+        '("indices", AttrOpt SymbolHandle)]
 
 gather_nd ::
           forall args . Fullfilled "gather_nd(symbol)" args =>
@@ -3614,7 +3617,7 @@ gather_nd name args
 
 type instance ParameterList "scatter_nd(symbol)" =
      '[ '("shape", AttrReq [Int]), '("data", AttrOpt SymbolHandle),
-       '("indices", AttrOpt SymbolHandle)]
+        '("indices", AttrOpt SymbolHandle)]
 
 scatter_nd ::
            forall args . Fullfilled "scatter_nd(symbol)" args =>
@@ -3638,7 +3641,7 @@ scatter_nd name args
 
 type instance ParameterList "_scatter_set_nd(symbol)" =
      '[ '("shape", AttrReq [Int]), '("data", AttrOpt SymbolHandle),
-       '("indices", AttrOpt SymbolHandle)]
+        '("indices", AttrOpt SymbolHandle)]
 
 _scatter_set_nd ::
                 forall args . Fullfilled "_scatter_set_nd(symbol)" args =>
@@ -3795,7 +3798,7 @@ broadcast_lesser_equal name args
 
 type instance ParameterList "argmax(symbol)" =
      '[ '("axis", AttrOpt (Maybe Int)), '("keepdims", AttrOpt Bool),
-       '("data", AttrOpt SymbolHandle)]
+        '("data", AttrOpt SymbolHandle)]
 
 argmax ::
        forall args . Fullfilled "argmax(symbol)" args =>
@@ -3818,7 +3821,7 @@ argmax name args
 
 type instance ParameterList "argmin(symbol)" =
      '[ '("axis", AttrOpt (Maybe Int)), '("keepdims", AttrOpt Bool),
-       '("data", AttrOpt SymbolHandle)]
+        '("data", AttrOpt SymbolHandle)]
 
 argmin ::
        forall args . Fullfilled "argmin(symbol)" args =>
@@ -3860,7 +3863,7 @@ argmax_channel name args
 
 type instance ParameterList "pick(symbol)" =
      '[ '("axis", AttrOpt (Maybe Int)), '("keepdims", AttrOpt Bool),
-       '("data", AttrOpt SymbolHandle), '("index", AttrOpt SymbolHandle)]
+        '("data", AttrOpt SymbolHandle), '("index", AttrOpt SymbolHandle)]
 
 pick ::
      forall args . Fullfilled "pick(symbol)" args =>
@@ -3902,7 +3905,7 @@ _backward_pick name args
 
 type instance ParameterList "_sparse_retain(symbol)" =
      '[ '("data", AttrOpt SymbolHandle),
-       '("indices", AttrOpt SymbolHandle)]
+        '("indices", AttrOpt SymbolHandle)]
 
 _sparse_retain ::
                forall args . Fullfilled "_sparse_retain(symbol)" args =>
@@ -3942,7 +3945,7 @@ _backward_sparse_retain name args
 
 type instance ParameterList "_where(symbol)" =
      '[ '("condition", AttrOpt SymbolHandle),
-       '("x", AttrOpt SymbolHandle), '("y", AttrOpt SymbolHandle)]
+        '("x", AttrOpt SymbolHandle), '("y", AttrOpt SymbolHandle)]
 
 _where ::
        forall args . Fullfilled "_where(symbol)" args =>
@@ -4005,7 +4008,7 @@ _maximum_scalar name args
 
 type instance ParameterList "_backward_maximum_scalar(symbol)" =
      '[ '("scalar", AttrOpt Float), '("lhs", AttrOpt SymbolHandle),
-       '("rhs", AttrOpt SymbolHandle)]
+        '("rhs", AttrOpt SymbolHandle)]
 
 _backward_maximum_scalar ::
                          forall args . Fullfilled "_backward_maximum_scalar(symbol)" args =>
@@ -4052,7 +4055,7 @@ _minimum_scalar name args
 
 type instance ParameterList "_backward_minimum_scalar(symbol)" =
      '[ '("scalar", AttrOpt Float), '("lhs", AttrOpt SymbolHandle),
-       '("rhs", AttrOpt SymbolHandle)]
+        '("rhs", AttrOpt SymbolHandle)]
 
 _backward_minimum_scalar ::
                          forall args . Fullfilled "_backward_minimum_scalar(symbol)" args =>
@@ -4098,7 +4101,7 @@ _power_scalar name args
 
 type instance ParameterList "_backward_power_scalar(symbol)" =
      '[ '("scalar", AttrOpt Float), '("lhs", AttrOpt SymbolHandle),
-       '("rhs", AttrOpt SymbolHandle)]
+        '("rhs", AttrOpt SymbolHandle)]
 
 _backward_power_scalar ::
                        forall args . Fullfilled "_backward_power_scalar(symbol)" args =>
@@ -4144,7 +4147,7 @@ _rpower_scalar name args
 
 type instance ParameterList "_backward_rpower_scalar(symbol)" =
      '[ '("scalar", AttrOpt Float), '("lhs", AttrOpt SymbolHandle),
-       '("rhs", AttrOpt SymbolHandle)]
+        '("rhs", AttrOpt SymbolHandle)]
 
 _backward_rpower_scalar ::
                         forall args . Fullfilled "_backward_rpower_scalar(symbol)" args =>
@@ -4190,7 +4193,7 @@ _hypot_scalar name args
 
 type instance ParameterList "_backward_hypot_scalar(symbol)" =
      '[ '("scalar", AttrOpt Float), '("lhs", AttrOpt SymbolHandle),
-       '("rhs", AttrOpt SymbolHandle)]
+        '("rhs", AttrOpt SymbolHandle)]
 
 _backward_hypot_scalar ::
                        forall args . Fullfilled "_backward_hypot_scalar(symbol)" args =>
@@ -4258,9 +4261,9 @@ _backward_smooth_l1 name args
 
 type instance ParameterList "topk(symbol)" =
      '[ '("axis", AttrOpt (Maybe Int)), '("k", AttrOpt Int),
-       '("ret_typ",
-         AttrOpt (EnumType '["both", "indices", "mask", "value"])),
-       '("is_ascend", AttrOpt Bool), '("data", AttrOpt SymbolHandle)]
+        '("ret_typ",
+          AttrOpt (EnumType '["both", "indices", "mask", "value"])),
+        '("is_ascend", AttrOpt Bool), '("data", AttrOpt SymbolHandle)]
 
 topk ::
      forall args . Fullfilled "topk(symbol)" args =>
@@ -4304,7 +4307,7 @@ _backward_topk name args
 
 type instance ParameterList "sort(symbol)" =
      '[ '("axis", AttrOpt (Maybe Int)), '("is_ascend", AttrOpt Bool),
-       '("data", AttrOpt SymbolHandle)]
+        '("data", AttrOpt SymbolHandle)]
 
 sort ::
      forall args . Fullfilled "sort(symbol)" args =>
@@ -4327,7 +4330,7 @@ sort name args
 
 type instance ParameterList "argsort(symbol)" =
      '[ '("axis", AttrOpt (Maybe Int)), '("is_ascend", AttrOpt Bool),
-       '("data", AttrOpt SymbolHandle)]
+        '("data", AttrOpt SymbolHandle)]
 
 argsort ::
         forall args . Fullfilled "argsort(symbol)" args =>
@@ -4350,8 +4353,8 @@ argsort name args
 
 type instance ParameterList "_Reshape(symbol)" =
      '[ '("shape", AttrOpt [Int]), '("reverse", AttrOpt Bool),
-       '("target_shape", AttrOpt [Int]), '("keep_highest", AttrOpt Bool),
-       '("data", AttrOpt SymbolHandle)]
+        '("target_shape", AttrOpt [Int]), '("keep_highest", AttrOpt Bool),
+        '("data", AttrOpt SymbolHandle)]
 
 _Reshape ::
          forall args . Fullfilled "_Reshape(symbol)" args =>
@@ -4439,7 +4442,7 @@ expand_dims name args
 
 type instance ParameterList "slice(symbol)" =
      '[ '("begin", AttrReq [Int]), '("end", AttrReq [Int]),
-       '("step", AttrOpt [Int]), '("data", AttrOpt SymbolHandle)]
+        '("step", AttrOpt [Int]), '("data", AttrOpt SymbolHandle)]
 
 slice ::
       forall args . Fullfilled "slice(symbol)" args =>
@@ -4481,8 +4484,8 @@ _backward_slice name args
 
 type instance ParameterList "_slice_assign(symbol)" =
      '[ '("begin", AttrReq [Int]), '("end", AttrReq [Int]),
-       '("step", AttrOpt [Int]), '("lhs", AttrOpt SymbolHandle),
-       '("rhs", AttrOpt SymbolHandle)]
+        '("step", AttrOpt [Int]), '("lhs", AttrOpt SymbolHandle),
+        '("rhs", AttrOpt SymbolHandle)]
 
 _slice_assign ::
               forall args . Fullfilled "_slice_assign(symbol)" args =>
@@ -4508,8 +4511,8 @@ _slice_assign name args
 
 type instance ParameterList "_slice_assign_scalar(symbol)" =
      '[ '("scalar", AttrOpt Float), '("begin", AttrReq [Int]),
-       '("end", AttrReq [Int]), '("step", AttrOpt [Int]),
-       '("data", AttrOpt SymbolHandle)]
+        '("end", AttrReq [Int]), '("step", AttrOpt [Int]),
+        '("data", AttrOpt SymbolHandle)]
 
 _slice_assign_scalar ::
                      forall args . Fullfilled "_slice_assign_scalar(symbol)" args =>
@@ -4535,7 +4538,7 @@ _slice_assign_scalar name args
 
 type instance ParameterList "slice_axis(symbol)" =
      '[ '("axis", AttrReq Int), '("begin", AttrReq Int),
-       '("end", AttrReq (Maybe Int)), '("data", AttrOpt SymbolHandle)]
+        '("end", AttrReq (Maybe Int)), '("data", AttrOpt SymbolHandle)]
 
 slice_axis ::
            forall args . Fullfilled "slice_axis(symbol)" args =>
@@ -4577,7 +4580,7 @@ _backward_slice_axis name args
 
 type instance ParameterList "clip(symbol)" =
      '[ '("a_min", AttrReq Float), '("a_max", AttrReq Float),
-       '("data", AttrOpt SymbolHandle)]
+        '("data", AttrOpt SymbolHandle)]
 
 clip ::
      forall args . Fullfilled "clip(symbol)" args =>
@@ -4617,7 +4620,7 @@ _backward_clip name args
 
 type instance ParameterList "repeat(symbol)" =
      '[ '("repeats", AttrReq Int), '("axis", AttrOpt (Maybe Int)),
-       '("data", AttrOpt SymbolHandle)]
+        '("data", AttrOpt SymbolHandle)]
 
 repeat ::
        forall args . Fullfilled "repeat(symbol)" args =>
@@ -4735,7 +4738,7 @@ _backward_reverse name args
 
 type instance ParameterList "stack(symbol)" =
      '[ '("axis", AttrOpt Int), '("num_args", AttrReq Int),
-       '("data", AttrOpt [SymbolHandle])]
+        '("data", AttrOpt [SymbolHandle])]
 
 stack ::
       forall args . Fullfilled "stack(symbol)" args =>
@@ -4780,7 +4783,7 @@ _backward_stack name args
 
 type instance ParameterList "dot(symbol)" =
      '[ '("transpose_a", AttrOpt Bool), '("transpose_b", AttrOpt Bool),
-       '("lhs", AttrOpt SymbolHandle), '("rhs", AttrOpt SymbolHandle)]
+        '("lhs", AttrOpt SymbolHandle), '("rhs", AttrOpt SymbolHandle)]
 
 dot ::
     forall args . Fullfilled "dot(symbol)" args =>
@@ -4830,7 +4833,7 @@ _backward_dot name args
 
 type instance ParameterList "batch_dot(symbol)" =
      '[ '("transpose_a", AttrOpt Bool), '("transpose_b", AttrOpt Bool),
-       '("lhs", AttrOpt SymbolHandle), '("rhs", AttrOpt SymbolHandle)]
+        '("lhs", AttrOpt SymbolHandle), '("rhs", AttrOpt SymbolHandle)]
 
 batch_dot ::
           forall args . Fullfilled "batch_dot(symbol)" args =>
@@ -5443,9 +5446,9 @@ _backward_arctanh name args
 
 type instance ParameterList "_contrib_dequantize(symbol)" =
      '[ '("out_type", AttrReq (EnumType '["float32"])),
-       '("input", AttrOpt SymbolHandle),
-       '("min_range", AttrOpt SymbolHandle),
-       '("max_range", AttrOpt SymbolHandle)]
+        '("input", AttrOpt SymbolHandle),
+        '("min_range", AttrOpt SymbolHandle),
+        '("max_range", AttrOpt SymbolHandle)]
 
 _contrib_dequantize ::
                     forall args . Fullfilled "_contrib_dequantize(symbol)" args =>
@@ -5472,11 +5475,11 @@ _contrib_dequantize name args
 
 type instance ParameterList "_contrib_CTCLoss(symbol)" =
      '[ '("use_data_lengths", AttrOpt Bool),
-       '("use_label_lengths", AttrOpt Bool),
-       '("blank_label", AttrOpt (EnumType '["first", "last"])),
-       '("data", AttrOpt SymbolHandle), '("label", AttrOpt SymbolHandle),
-       '("data_lengths", AttrOpt SymbolHandle),
-       '("label_lengths", AttrOpt SymbolHandle)]
+        '("use_label_lengths", AttrOpt Bool),
+        '("blank_label", AttrOpt (EnumType '["first", "last"])),
+        '("data", AttrOpt SymbolHandle), '("label", AttrOpt SymbolHandle),
+        '("data_lengths", AttrOpt SymbolHandle),
+        '("label_lengths", AttrOpt SymbolHandle)]
 
 _contrib_CTCLoss ::
                  forall args . Fullfilled "_contrib_CTCLoss(symbol)" args =>
@@ -5510,9 +5513,9 @@ _contrib_CTCLoss name args
 
 type instance ParameterList "_contrib_quantize(symbol)" =
      '[ '("out_type", AttrOpt (EnumType '["uint8"])),
-       '("input", AttrOpt SymbolHandle),
-       '("min_range", AttrOpt SymbolHandle),
-       '("max_range", AttrOpt SymbolHandle)]
+        '("input", AttrOpt SymbolHandle),
+        '("min_range", AttrOpt SymbolHandle),
+        '("max_range", AttrOpt SymbolHandle)]
 
 _contrib_quantize ::
                   forall args . Fullfilled "_contrib_quantize(symbol)" args =>
@@ -5537,6 +5540,28 @@ _contrib_quantize name args
          mxSymbolCompose sym name (Just tensorkeys) tensorvals
          return sym
 
+type instance ParameterList "_Custom(symbol)" =
+     '[ '("op_type", AttrOpt String), '("data", AttrOpt [SymbolHandle])]
+
+_Custom ::
+        forall args .
+          (Fullfilled "_Custom(symbol)" args,
+           PopKey (ArgOf "_Custom(symbol)") args "data",
+           Dump (PopResult (ArgOf "_Custom(symbol)") args "data")) =>
+          String -> ArgsHMap "_Custom(symbol)" args -> IO SymbolHandle
+_Custom name args
+  = let scalarArgs = dump (pop args #data)
+        (scalarkeys, scalarvals) = unzip scalarArgs
+        tensorArgs = catMaybes []
+        (tensorkeys, tensorvals) = unzip tensorArgs
+        array = fromMaybe [] (args !? #data :: Maybe [SymbolHandle])
+      in
+      do op <- nnGetOpHandle "Custom"
+         sym <- mxSymbolCreateAtomicSymbol (fromOpHandle op) scalarkeys
+                  scalarvals
+         mxSymbolCompose sym name Nothing array
+         return sym
+
 type instance ParameterList "_backward_Custom(symbol)" = '[]
 
 _backward_Custom ::
@@ -5557,8 +5582,8 @@ _backward_Custom name args
 
 type instance ParameterList "_sample_multinomial(symbol)" =
      '[ '("shape", AttrOpt [Int]), '("get_prob", AttrOpt Bool),
-       '("dtype", AttrOpt (EnumType '["int32"])),
-       '("data", AttrOpt SymbolHandle)]
+        '("dtype", AttrOpt (EnumType '["int32"])),
+        '("data", AttrOpt SymbolHandle)]
 
 _sample_multinomial ::
                     forall args . Fullfilled "_sample_multinomial(symbol)" args =>
@@ -5605,9 +5630,9 @@ _backward_sample_multinomial name args
 
 type instance ParameterList "_sample_uniform(symbol)" =
      '[ '("shape", AttrOpt [Int]),
-       '("dtype",
-         AttrOpt (EnumType '["None", "float16", "float32", "float64"])),
-       '("low", AttrOpt SymbolHandle), '("high", AttrOpt SymbolHandle)]
+        '("dtype",
+          AttrOpt (EnumType '["None", "float16", "float32", "float64"])),
+        '("low", AttrOpt SymbolHandle), '("high", AttrOpt SymbolHandle)]
 
 _sample_uniform ::
                 forall args . Fullfilled "_sample_uniform(symbol)" args =>
@@ -5635,9 +5660,9 @@ _sample_uniform name args
 
 type instance ParameterList "_sample_normal(symbol)" =
      '[ '("shape", AttrOpt [Int]),
-       '("dtype",
-         AttrOpt (EnumType '["None", "float16", "float32", "float64"])),
-       '("mu", AttrOpt SymbolHandle), '("sigma", AttrOpt SymbolHandle)]
+        '("dtype",
+          AttrOpt (EnumType '["None", "float16", "float32", "float64"])),
+        '("mu", AttrOpt SymbolHandle), '("sigma", AttrOpt SymbolHandle)]
 
 _sample_normal ::
                forall args . Fullfilled "_sample_normal(symbol)" args =>
@@ -5664,9 +5689,9 @@ _sample_normal name args
 
 type instance ParameterList "_sample_gamma(symbol)" =
      '[ '("shape", AttrOpt [Int]),
-       '("dtype",
-         AttrOpt (EnumType '["None", "float16", "float32", "float64"])),
-       '("alpha", AttrOpt SymbolHandle), '("beta", AttrOpt SymbolHandle)]
+        '("dtype",
+          AttrOpt (EnumType '["None", "float16", "float32", "float64"])),
+        '("alpha", AttrOpt SymbolHandle), '("beta", AttrOpt SymbolHandle)]
 
 _sample_gamma ::
               forall args . Fullfilled "_sample_gamma(symbol)" args =>
@@ -5693,9 +5718,9 @@ _sample_gamma name args
 
 type instance ParameterList "_sample_exponential(symbol)" =
      '[ '("shape", AttrOpt [Int]),
-       '("dtype",
-         AttrOpt (EnumType '["None", "float16", "float32", "float64"])),
-       '("lam", AttrOpt SymbolHandle)]
+        '("dtype",
+          AttrOpt (EnumType '["None", "float16", "float32", "float64"])),
+        '("lam", AttrOpt SymbolHandle)]
 
 _sample_exponential ::
                     forall args . Fullfilled "_sample_exponential(symbol)" args =>
@@ -5721,9 +5746,9 @@ _sample_exponential name args
 
 type instance ParameterList "_sample_poisson(symbol)" =
      '[ '("shape", AttrOpt [Int]),
-       '("dtype",
-         AttrOpt (EnumType '["None", "float16", "float32", "float64"])),
-       '("lam", AttrOpt SymbolHandle)]
+        '("dtype",
+          AttrOpt (EnumType '["None", "float16", "float32", "float64"])),
+        '("lam", AttrOpt SymbolHandle)]
 
 _sample_poisson ::
                 forall args . Fullfilled "_sample_poisson(symbol)" args =>
@@ -5749,9 +5774,9 @@ _sample_poisson name args
 
 type instance ParameterList "_sample_negative_binomial(symbol)" =
      '[ '("shape", AttrOpt [Int]),
-       '("dtype",
-         AttrOpt (EnumType '["None", "float16", "float32", "float64"])),
-       '("k", AttrOpt SymbolHandle), '("p", AttrOpt SymbolHandle)]
+        '("dtype",
+          AttrOpt (EnumType '["None", "float16", "float32", "float64"])),
+        '("k", AttrOpt SymbolHandle), '("p", AttrOpt SymbolHandle)]
 
 _sample_negative_binomial ::
                           forall args .
@@ -5782,9 +5807,9 @@ _sample_negative_binomial name args
 type instance
      ParameterList "_sample_generalized_negative_binomial(symbol)" =
      '[ '("shape", AttrOpt [Int]),
-       '("dtype",
-         AttrOpt (EnumType '["None", "float16", "float32", "float64"])),
-       '("mu", AttrOpt SymbolHandle), '("alpha", AttrOpt SymbolHandle)]
+        '("dtype",
+          AttrOpt (EnumType '["None", "float16", "float32", "float64"])),
+        '("mu", AttrOpt SymbolHandle), '("alpha", AttrOpt SymbolHandle)]
 
 _sample_generalized_negative_binomial ::
                                       forall args .
@@ -5816,9 +5841,9 @@ _sample_generalized_negative_binomial name args
 
 type instance ParameterList "_random_uniform(symbol)" =
      '[ '("low", AttrOpt Float), '("high", AttrOpt Float),
-       '("shape", AttrOpt [Int]), '("ctx", AttrOpt String),
-       '("dtype",
-         AttrOpt (EnumType '["None", "float16", "float32", "float64"]))]
+        '("shape", AttrOpt [Int]), '("ctx", AttrOpt String),
+        '("dtype",
+          AttrOpt (EnumType '["None", "float16", "float32", "float64"]))]
 
 _random_uniform ::
                 forall args . Fullfilled "_random_uniform(symbol)" args =>
@@ -5846,9 +5871,9 @@ _random_uniform name args
 
 type instance ParameterList "_random_normal(symbol)" =
      '[ '("loc", AttrOpt Float), '("scale", AttrOpt Float),
-       '("shape", AttrOpt [Int]), '("ctx", AttrOpt String),
-       '("dtype",
-         AttrOpt (EnumType '["None", "float16", "float32", "float64"]))]
+        '("shape", AttrOpt [Int]), '("ctx", AttrOpt String),
+        '("dtype",
+          AttrOpt (EnumType '["None", "float16", "float32", "float64"]))]
 
 _random_normal ::
                forall args . Fullfilled "_random_normal(symbol)" args =>
@@ -5875,9 +5900,9 @@ _random_normal name args
 
 type instance ParameterList "_random_gamma(symbol)" =
      '[ '("alpha", AttrOpt Float), '("beta", AttrOpt Float),
-       '("shape", AttrOpt [Int]), '("ctx", AttrOpt String),
-       '("dtype",
-         AttrOpt (EnumType '["None", "float16", "float32", "float64"]))]
+        '("shape", AttrOpt [Int]), '("ctx", AttrOpt String),
+        '("dtype",
+          AttrOpt (EnumType '["None", "float16", "float32", "float64"]))]
 
 _random_gamma ::
               forall args . Fullfilled "_random_gamma(symbol)" args =>
@@ -5904,9 +5929,9 @@ _random_gamma name args
 
 type instance ParameterList "_random_exponential(symbol)" =
      '[ '("lam", AttrOpt Float), '("shape", AttrOpt [Int]),
-       '("ctx", AttrOpt String),
-       '("dtype",
-         AttrOpt (EnumType '["None", "float16", "float32", "float64"]))]
+        '("ctx", AttrOpt String),
+        '("dtype",
+          AttrOpt (EnumType '["None", "float16", "float32", "float64"]))]
 
 _random_exponential ::
                     forall args . Fullfilled "_random_exponential(symbol)" args =>
@@ -5933,9 +5958,9 @@ _random_exponential name args
 
 type instance ParameterList "_random_poisson(symbol)" =
      '[ '("lam", AttrOpt Float), '("shape", AttrOpt [Int]),
-       '("ctx", AttrOpt String),
-       '("dtype",
-         AttrOpt (EnumType '["None", "float16", "float32", "float64"]))]
+        '("ctx", AttrOpt String),
+        '("dtype",
+          AttrOpt (EnumType '["None", "float16", "float32", "float64"]))]
 
 _random_poisson ::
                 forall args . Fullfilled "_random_poisson(symbol)" args =>
@@ -5962,9 +5987,9 @@ _random_poisson name args
 
 type instance ParameterList "_random_negative_binomial(symbol)" =
      '[ '("k", AttrOpt Int), '("p", AttrOpt Float),
-       '("shape", AttrOpt [Int]), '("ctx", AttrOpt String),
-       '("dtype",
-         AttrOpt (EnumType '["None", "float16", "float32", "float64"]))]
+        '("shape", AttrOpt [Int]), '("ctx", AttrOpt String),
+        '("dtype",
+          AttrOpt (EnumType '["None", "float16", "float32", "float64"]))]
 
 _random_negative_binomial ::
                           forall args .
@@ -5995,9 +6020,9 @@ _random_negative_binomial name args
 type instance
      ParameterList "_random_generalized_negative_binomial(symbol)" =
      '[ '("mu", AttrOpt Float), '("alpha", AttrOpt Float),
-       '("shape", AttrOpt [Int]), '("ctx", AttrOpt String),
-       '("dtype",
-         AttrOpt (EnumType '["None", "float16", "float32", "float64"]))]
+        '("shape", AttrOpt [Int]), '("ctx", AttrOpt String),
+        '("dtype",
+          AttrOpt (EnumType '["None", "float16", "float32", "float64"]))]
 
 _random_generalized_negative_binomial ::
                                       forall args .
@@ -6115,7 +6140,7 @@ _backward_log_softmax name args
 
 type instance ParameterList "_cvimread(symbol)" =
      '[ '("filename", AttrReq String), '("flag", AttrOpt Int),
-       '("to_rgb", AttrOpt Bool)]
+        '("to_rgb", AttrOpt Bool)]
 
 _cvimread ::
           forall args . Fullfilled "_cvimread(symbol)" args =>
@@ -6190,7 +6215,7 @@ _backward_CachedOp name args
 
 type instance ParameterList "_SwapAxis(symbol)" =
      '[ '("dim1", AttrOpt Int), '("dim2", AttrOpt Int),
-       '("data", AttrOpt SymbolHandle)]
+        '("data", AttrOpt SymbolHandle)]
 
 _SwapAxis ::
           forall args . Fullfilled "_SwapAxis(symbol)" args =>
@@ -6213,8 +6238,8 @@ _SwapAxis name args
 
 type instance ParameterList "_Pad(symbol)" =
      '[ '("mode", AttrReq (EnumType '["constant", "edge", "reflect"])),
-       '("pad_width", AttrReq [Int]), '("constant_value", AttrOpt Double),
-       '("data", AttrOpt SymbolHandle)]
+        '("pad_width", AttrReq [Int]), '("constant_value", AttrOpt Double),
+        '("data", AttrOpt SymbolHandle)]
 
 _Pad ::
      forall args . Fullfilled "_Pad(symbol)" args =>
@@ -6241,10 +6266,10 @@ _Pad name args
 
 type instance ParameterList "_BatchNorm_v1(symbol)" =
      '[ '("eps", AttrOpt Float), '("momentum", AttrOpt Float),
-       '("fix_gamma", AttrOpt Bool), '("use_global_stats", AttrOpt Bool),
-       '("output_mean_var", AttrOpt Bool),
-       '("data", AttrOpt SymbolHandle), '("gamma", AttrOpt SymbolHandle),
-       '("beta", AttrOpt SymbolHandle)]
+        '("fix_gamma", AttrOpt Bool), '("use_global_stats", AttrOpt Bool),
+        '("output_mean_var", AttrOpt Bool),
+        '("data", AttrOpt SymbolHandle), '("gamma", AttrOpt SymbolHandle),
+        '("beta", AttrOpt SymbolHandle)]
 
 _BatchNorm_v1 ::
               forall args . Fullfilled "_BatchNorm_v1(symbol)" args =>
@@ -6275,9 +6300,9 @@ _BatchNorm_v1 name args
 
 type instance ParameterList "sgd_update(symbol)" =
      '[ '("lr", AttrReq Float), '("wd", AttrOpt Float),
-       '("rescale_grad", AttrOpt Float),
-       '("clip_gradient", AttrOpt Float),
-       '("weight", AttrOpt SymbolHandle), '("grad", AttrOpt SymbolHandle)]
+        '("rescale_grad", AttrOpt Float),
+        '("clip_gradient", AttrOpt Float),
+        '("weight", AttrOpt SymbolHandle), '("grad", AttrOpt SymbolHandle)]
 
 sgd_update ::
            forall args . Fullfilled "sgd_update(symbol)" args =>
@@ -6306,10 +6331,10 @@ sgd_update name args
 
 type instance ParameterList "sgd_mom_update(symbol)" =
      '[ '("lr", AttrReq Float), '("momentum", AttrOpt Float),
-       '("wd", AttrOpt Float), '("rescale_grad", AttrOpt Float),
-       '("clip_gradient", AttrOpt Float),
-       '("weight", AttrOpt SymbolHandle), '("grad", AttrOpt SymbolHandle),
-       '("mom", AttrOpt SymbolHandle)]
+        '("wd", AttrOpt Float), '("rescale_grad", AttrOpt Float),
+        '("clip_gradient", AttrOpt Float),
+        '("weight", AttrOpt SymbolHandle), '("grad", AttrOpt SymbolHandle),
+        '("mom", AttrOpt SymbolHandle)]
 
 sgd_mom_update ::
                forall args . Fullfilled "sgd_mom_update(symbol)" args =>
@@ -6340,10 +6365,10 @@ sgd_mom_update name args
 
 type instance ParameterList "mp_sgd_update(symbol)" =
      '[ '("lr", AttrReq Float), '("wd", AttrOpt Float),
-       '("rescale_grad", AttrOpt Float),
-       '("clip_gradient", AttrOpt Float),
-       '("weight", AttrOpt SymbolHandle), '("grad", AttrOpt SymbolHandle),
-       '("weight32", AttrOpt SymbolHandle)]
+        '("rescale_grad", AttrOpt Float),
+        '("clip_gradient", AttrOpt Float),
+        '("weight", AttrOpt SymbolHandle), '("grad", AttrOpt SymbolHandle),
+        '("weight32", AttrOpt SymbolHandle)]
 
 mp_sgd_update ::
               forall args . Fullfilled "mp_sgd_update(symbol)" args =>
@@ -6373,11 +6398,11 @@ mp_sgd_update name args
 
 type instance ParameterList "mp_sgd_mom_update(symbol)" =
      '[ '("lr", AttrReq Float), '("momentum", AttrOpt Float),
-       '("wd", AttrOpt Float), '("rescale_grad", AttrOpt Float),
-       '("clip_gradient", AttrOpt Float),
-       '("weight", AttrOpt SymbolHandle), '("grad", AttrOpt SymbolHandle),
-       '("mom", AttrOpt SymbolHandle),
-       '("weight32", AttrOpt SymbolHandle)]
+        '("wd", AttrOpt Float), '("rescale_grad", AttrOpt Float),
+        '("clip_gradient", AttrOpt Float),
+        '("weight", AttrOpt SymbolHandle), '("grad", AttrOpt SymbolHandle),
+        '("mom", AttrOpt SymbolHandle),
+        '("weight32", AttrOpt SymbolHandle)]
 
 mp_sgd_mom_update ::
                   forall args . Fullfilled "mp_sgd_mom_update(symbol)" args =>
@@ -6410,11 +6435,11 @@ mp_sgd_mom_update name args
 
 type instance ParameterList "adam_update(symbol)" =
      '[ '("lr", AttrReq Float), '("beta1", AttrOpt Float),
-       '("beta2", AttrOpt Float), '("epsilon", AttrOpt Float),
-       '("wd", AttrOpt Float), '("rescale_grad", AttrOpt Float),
-       '("clip_gradient", AttrOpt Float),
-       '("weight", AttrOpt SymbolHandle), '("grad", AttrOpt SymbolHandle),
-       '("mean", AttrOpt SymbolHandle), '("var", AttrOpt SymbolHandle)]
+        '("beta2", AttrOpt Float), '("epsilon", AttrOpt Float),
+        '("wd", AttrOpt Float), '("rescale_grad", AttrOpt Float),
+        '("clip_gradient", AttrOpt Float),
+        '("weight", AttrOpt SymbolHandle), '("grad", AttrOpt SymbolHandle),
+        '("mean", AttrOpt SymbolHandle), '("var", AttrOpt SymbolHandle)]
 
 adam_update ::
             forall args . Fullfilled "adam_update(symbol)" args =>
@@ -6448,12 +6473,12 @@ adam_update name args
 
 type instance ParameterList "rmsprop_update(symbol)" =
      '[ '("lr", AttrReq Float), '("gamma1", AttrOpt Float),
-       '("epsilon", AttrOpt Float), '("wd", AttrOpt Float),
-       '("rescale_grad", AttrOpt Float),
-       '("clip_gradient", AttrOpt Float),
-       '("clip_weights", AttrOpt Float),
-       '("weight", AttrOpt SymbolHandle), '("grad", AttrOpt SymbolHandle),
-       '("n", AttrOpt SymbolHandle)]
+        '("epsilon", AttrOpt Float), '("wd", AttrOpt Float),
+        '("rescale_grad", AttrOpt Float),
+        '("clip_gradient", AttrOpt Float),
+        '("clip_weights", AttrOpt Float),
+        '("weight", AttrOpt SymbolHandle), '("grad", AttrOpt SymbolHandle),
+        '("n", AttrOpt SymbolHandle)]
 
 rmsprop_update ::
                forall args . Fullfilled "rmsprop_update(symbol)" args =>
@@ -6487,13 +6512,13 @@ rmsprop_update name args
 
 type instance ParameterList "rmspropalex_update(symbol)" =
      '[ '("lr", AttrReq Float), '("gamma1", AttrOpt Float),
-       '("gamma2", AttrOpt Float), '("epsilon", AttrOpt Float),
-       '("wd", AttrOpt Float), '("rescale_grad", AttrOpt Float),
-       '("clip_gradient", AttrOpt Float),
-       '("clip_weights", AttrOpt Float),
-       '("weight", AttrOpt SymbolHandle), '("grad", AttrOpt SymbolHandle),
-       '("n", AttrOpt SymbolHandle), '("g", AttrOpt SymbolHandle),
-       '("delta", AttrOpt SymbolHandle)]
+        '("gamma2", AttrOpt Float), '("epsilon", AttrOpt Float),
+        '("wd", AttrOpt Float), '("rescale_grad", AttrOpt Float),
+        '("clip_gradient", AttrOpt Float),
+        '("clip_weights", AttrOpt Float),
+        '("weight", AttrOpt SymbolHandle), '("grad", AttrOpt SymbolHandle),
+        '("n", AttrOpt SymbolHandle), '("g", AttrOpt SymbolHandle),
+        '("delta", AttrOpt SymbolHandle)]
 
 rmspropalex_update ::
                    forall args . Fullfilled "rmspropalex_update(symbol)" args =>
@@ -6531,11 +6556,11 @@ rmspropalex_update name args
 
 type instance ParameterList "ftrl_update(symbol)" =
      '[ '("lr", AttrReq Float), '("lamda1", AttrOpt Float),
-       '("beta", AttrOpt Float), '("wd", AttrOpt Float),
-       '("rescale_grad", AttrOpt Float),
-       '("clip_gradient", AttrOpt Float),
-       '("weight", AttrOpt SymbolHandle), '("grad", AttrOpt SymbolHandle),
-       '("z", AttrOpt SymbolHandle), '("n", AttrOpt SymbolHandle)]
+        '("beta", AttrOpt Float), '("wd", AttrOpt Float),
+        '("rescale_grad", AttrOpt Float),
+        '("clip_gradient", AttrOpt Float),
+        '("weight", AttrOpt SymbolHandle), '("grad", AttrOpt SymbolHandle),
+        '("z", AttrOpt SymbolHandle), '("n", AttrOpt SymbolHandle)]
 
 ftrl_update ::
             forall args . Fullfilled "ftrl_update(symbol)" args =>
@@ -6568,9 +6593,9 @@ ftrl_update name args
 
 type instance ParameterList "_LeakyReLU(symbol)" =
      '[ '("act_type",
-         AttrOpt (EnumType '["elu", "leaky", "prelu", "rrelu"])),
-       '("slope", AttrOpt Float), '("lower_bound", AttrOpt Float),
-       '("upper_bound", AttrOpt Float), '("data", AttrOpt SymbolHandle)]
+          AttrOpt (EnumType '["elu", "leaky", "prelu", "rrelu"])),
+        '("slope", AttrOpt Float), '("lower_bound", AttrOpt Float),
+        '("upper_bound", AttrOpt Float), '("data", AttrOpt SymbolHandle)]
 
 _LeakyReLU ::
            forall args . Fullfilled "_LeakyReLU(symbol)" args =>
@@ -6599,8 +6624,8 @@ _LeakyReLU name args
 
 type instance ParameterList "_IdentityAttachKLSparseReg(symbol)" =
      '[ '("sparseness_target", AttrOpt Float),
-       '("penalty", AttrOpt Float), '("momentum", AttrOpt Float),
-       '("data", AttrOpt SymbolHandle)]
+        '("penalty", AttrOpt Float), '("momentum", AttrOpt Float),
+        '("data", AttrOpt SymbolHandle)]
 
 _IdentityAttachKLSparseReg ::
                            forall args .
@@ -6628,10 +6653,10 @@ _IdentityAttachKLSparseReg name args
 
 type instance ParameterList "_UpSampling(symbol)" =
      '[ '("scale", AttrReq Int), '("num_filter", AttrOpt Int),
-       '("sample_type", AttrReq (EnumType '["bilinear", "nearest"])),
-       '("multi_input_mode", AttrOpt (EnumType '["concat", "sum"])),
-       '("num_args", AttrReq Int), '("workspace", AttrOpt Int),
-       '("data", AttrOpt [SymbolHandle])]
+        '("sample_type", AttrReq (EnumType '["bilinear", "nearest"])),
+        '("multi_input_mode", AttrOpt (EnumType '["concat", "sum"])),
+        '("num_args", AttrReq Int), '("workspace", AttrOpt Int),
+        '("data", AttrOpt [SymbolHandle])]
 
 _UpSampling ::
             forall args . Fullfilled "_UpSampling(symbol)" args =>
@@ -6665,7 +6690,7 @@ _UpSampling name args
 
 type instance ParameterList "_SliceChannel(symbol)" =
      '[ '("num_outputs", AttrReq Int), '("axis", AttrOpt Int),
-       '("squeeze_axis", AttrOpt Bool), '("data", AttrOpt SymbolHandle)]
+        '("squeeze_axis", AttrOpt Bool), '("data", AttrOpt SymbolHandle)]
 
 _SliceChannel ::
               forall args . Fullfilled "_SliceChannel(symbol)" args =>
@@ -6691,9 +6716,9 @@ _SliceChannel name args
 
 type instance ParameterList "_CuDNNBatchNorm(symbol)" =
      '[ '("eps", AttrOpt Double), '("momentum", AttrOpt Float),
-       '("fix_gamma", AttrOpt Bool), '("use_global_stats", AttrOpt Bool),
-       '("output_mean_var", AttrOpt Bool), '("axis", AttrOpt Int),
-       '("cudnn_off", AttrOpt Bool), '("data", AttrOpt SymbolHandle)]
+        '("fix_gamma", AttrOpt Bool), '("use_global_stats", AttrOpt Bool),
+        '("output_mean_var", AttrOpt Bool), '("axis", AttrOpt Int),
+        '("cudnn_off", AttrOpt Bool), '("data", AttrOpt SymbolHandle)]
 
 _CuDNNBatchNorm ::
                 forall args . Fullfilled "_CuDNNBatchNorm(symbol)" args =>
@@ -6724,7 +6749,7 @@ _CuDNNBatchNorm name args
 
 type instance ParameterList "softmax_cross_entropy(symbol)" =
      '[ '("data", AttrOpt SymbolHandle),
-       '("label", AttrOpt SymbolHandle)]
+        '("label", AttrOpt SymbolHandle)]
 
 softmax_cross_entropy ::
                       forall args . Fullfilled "softmax_cross_entropy(symbol)" args =>
@@ -6768,7 +6793,7 @@ _backward_softmax_cross_entropy name args
 
 type instance ParameterList "_Concat(symbol)" =
      '[ '("num_args", AttrReq Int), '("dim", AttrOpt Int),
-       '("data", AttrOpt [SymbolHandle])]
+        '("data", AttrOpt [SymbolHandle])]
 
 _Concat ::
         forall args . Fullfilled "_Concat(symbol)" args =>
@@ -6795,12 +6820,12 @@ _Concat name args
 
 type instance ParameterList "_BatchNorm(symbol)" =
      '[ '("eps", AttrOpt Double), '("momentum", AttrOpt Float),
-       '("fix_gamma", AttrOpt Bool), '("use_global_stats", AttrOpt Bool),
-       '("output_mean_var", AttrOpt Bool), '("axis", AttrOpt Int),
-       '("cudnn_off", AttrOpt Bool), '("data", AttrOpt SymbolHandle),
-       '("gamma", AttrOpt SymbolHandle), '("beta", AttrOpt SymbolHandle),
-       '("moving_mean", AttrOpt SymbolHandle),
-       '("moving_var", AttrOpt SymbolHandle)]
+        '("fix_gamma", AttrOpt Bool), '("use_global_stats", AttrOpt Bool),
+        '("output_mean_var", AttrOpt Bool), '("axis", AttrOpt Int),
+        '("cudnn_off", AttrOpt Bool), '("data", AttrOpt SymbolHandle),
+        '("gamma", AttrOpt SymbolHandle), '("beta", AttrOpt SymbolHandle),
+        '("moving_mean", AttrOpt SymbolHandle),
+        '("moving_var", AttrOpt SymbolHandle)]
 
 _BatchNorm ::
            forall args . Fullfilled "_BatchNorm(symbol)" args =>
@@ -6872,13 +6897,13 @@ _backward_CustomFunction name args
 
 type instance ParameterList "_contrib_MultiBoxTarget(symbol)" =
      '[ '("overlap_threshold", AttrOpt Float),
-       '("ignore_label", AttrOpt Float),
-       '("negative_mining_ratio", AttrOpt Float),
-       '("negative_mining_thresh", AttrOpt Float),
-       '("minimum_negative_samples", AttrOpt Int),
-       '("variances", AttrOpt [Float]), '("anchor", AttrOpt SymbolHandle),
-       '("label", AttrOpt SymbolHandle),
-       '("cls_pred", AttrOpt SymbolHandle)]
+        '("ignore_label", AttrOpt Float),
+        '("negative_mining_ratio", AttrOpt Float),
+        '("negative_mining_thresh", AttrOpt Float),
+        '("minimum_negative_samples", AttrOpt Int),
+        '("variances", AttrOpt [Float]), '("anchor", AttrOpt SymbolHandle),
+        '("label", AttrOpt SymbolHandle),
+        '("cls_pred", AttrOpt SymbolHandle)]
 
 _contrib_MultiBoxTarget ::
                         forall args . Fullfilled "_contrib_MultiBoxTarget(symbol)" args =>
@@ -6936,13 +6961,13 @@ _backward__contrib_MultiBoxTarget name args
 
 type instance ParameterList "_contrib_Proposal(symbol)" =
      '[ '("rpn_pre_nms_top_n", AttrOpt Int),
-       '("rpn_post_nms_top_n", AttrOpt Int),
-       '("threshold", AttrOpt Float), '("rpn_min_size", AttrOpt Int),
-       '("scales", AttrOpt [Float]), '("ratios", AttrOpt [Float]),
-       '("feature_stride", AttrOpt Int), '("output_score", AttrOpt Bool),
-       '("iou_loss", AttrOpt Bool), '("cls_score", AttrOpt SymbolHandle),
-       '("bbox_pred", AttrOpt SymbolHandle),
-       '("im_info", AttrOpt SymbolHandle)]
+        '("rpn_post_nms_top_n", AttrOpt Int),
+        '("threshold", AttrOpt Float), '("rpn_min_size", AttrOpt Int),
+        '("scales", AttrOpt [Float]), '("ratios", AttrOpt [Float]),
+        '("feature_stride", AttrOpt Int), '("output_score", AttrOpt Bool),
+        '("iou_loss", AttrOpt Bool), '("cls_score", AttrOpt SymbolHandle),
+        '("bbox_pred", AttrOpt SymbolHandle),
+        '("im_info", AttrOpt SymbolHandle)]
 
 _contrib_Proposal ::
                   forall args . Fullfilled "_contrib_Proposal(symbol)" args =>
@@ -7002,9 +7027,9 @@ _backward__contrib_Proposal name args
 
 type instance ParameterList "_contrib_count_sketch(symbol)" =
      '[ '("out_dim", AttrReq Int),
-       '("processing_batch_size", AttrOpt Int),
-       '("data", AttrOpt SymbolHandle), '("h", AttrOpt SymbolHandle),
-       '("s", AttrOpt SymbolHandle)]
+        '("processing_batch_size", AttrOpt Int),
+        '("data", AttrOpt SymbolHandle), '("h", AttrOpt SymbolHandle),
+        '("s", AttrOpt SymbolHandle)]
 
 _contrib_count_sketch ::
                       forall args . Fullfilled "_contrib_count_sketch(symbol)" args =>
@@ -7053,11 +7078,11 @@ _backward__contrib_count_sketch name args
 
 type instance ParameterList "_contrib_MultiBoxDetection(symbol)" =
      '[ '("clip", AttrOpt Bool), '("threshold", AttrOpt Float),
-       '("background_id", AttrOpt Int), '("nms_threshold", AttrOpt Float),
-       '("force_suppress", AttrOpt Bool), '("variances", AttrOpt [Float]),
-       '("nms_topk", AttrOpt Int), '("cls_prob", AttrOpt SymbolHandle),
-       '("loc_pred", AttrOpt SymbolHandle),
-       '("anchor", AttrOpt SymbolHandle)]
+        '("background_id", AttrOpt Int), '("nms_threshold", AttrOpt Float),
+        '("force_suppress", AttrOpt Bool), '("variances", AttrOpt [Float]),
+        '("nms_topk", AttrOpt Int), '("cls_prob", AttrOpt SymbolHandle),
+        '("loc_pred", AttrOpt SymbolHandle),
+        '("anchor", AttrOpt SymbolHandle)]
 
 _contrib_MultiBoxDetection ::
                            forall args .
@@ -7118,8 +7143,8 @@ _backward__contrib_MultiBoxDetection name args
 
 type instance ParameterList "_contrib_PSROIPooling(symbol)" =
      '[ '("spatial_scale", AttrReq Float), '("output_dim", AttrReq Int),
-       '("pooled_size", AttrReq Int), '("group_size", AttrOpt Int),
-       '("data", AttrOpt SymbolHandle), '("rois", AttrOpt SymbolHandle)]
+        '("pooled_size", AttrReq Int), '("group_size", AttrOpt Int),
+        '("data", AttrOpt SymbolHandle), '("rois", AttrOpt SymbolHandle)]
 
 _contrib_PSROIPooling ::
                       forall args . Fullfilled "_contrib_PSROIPooling(symbol)" args =>
@@ -7171,11 +7196,11 @@ _backward__contrib_PSROIPooling name args
 type instance
      ParameterList "_contrib_DeformablePSROIPooling(symbol)" =
      '[ '("spatial_scale", AttrReq Float), '("output_dim", AttrReq Int),
-       '("group_size", AttrReq Int), '("pooled_size", AttrReq Int),
-       '("part_size", AttrOpt Int), '("sample_per_part", AttrOpt Int),
-       '("trans_std", AttrOpt Float), '("no_trans", AttrOpt Bool),
-       '("data", AttrOpt SymbolHandle), '("rois", AttrOpt SymbolHandle),
-       '("trans", AttrOpt SymbolHandle)]
+        '("group_size", AttrReq Int), '("pooled_size", AttrReq Int),
+        '("part_size", AttrOpt Int), '("sample_per_part", AttrOpt Int),
+        '("trans_std", AttrOpt Float), '("no_trans", AttrOpt Bool),
+        '("data", AttrOpt SymbolHandle), '("rois", AttrOpt SymbolHandle),
+        '("trans", AttrOpt SymbolHandle)]
 
 _contrib_DeformablePSROIPooling ::
                                 forall args .
@@ -7260,13 +7285,13 @@ _backward__contrib_CTCLoss name args
 
 type instance ParameterList "_contrib_MultiProposal(symbol)" =
      '[ '("rpn_pre_nms_top_n", AttrOpt Int),
-       '("rpn_post_nms_top_n", AttrOpt Int),
-       '("threshold", AttrOpt Float), '("rpn_min_size", AttrOpt Int),
-       '("scales", AttrOpt [Float]), '("ratios", AttrOpt [Float]),
-       '("feature_stride", AttrOpt Int), '("output_score", AttrOpt Bool),
-       '("iou_loss", AttrOpt Bool), '("cls_score", AttrOpt SymbolHandle),
-       '("bbox_pred", AttrOpt SymbolHandle),
-       '("im_info", AttrOpt SymbolHandle)]
+        '("rpn_post_nms_top_n", AttrOpt Int),
+        '("threshold", AttrOpt Float), '("rpn_min_size", AttrOpt Int),
+        '("scales", AttrOpt [Float]), '("ratios", AttrOpt [Float]),
+        '("feature_stride", AttrOpt Int), '("output_score", AttrOpt Bool),
+        '("iou_loss", AttrOpt Bool), '("cls_score", AttrOpt SymbolHandle),
+        '("bbox_pred", AttrOpt SymbolHandle),
+        '("im_info", AttrOpt SymbolHandle)]
 
 _contrib_MultiProposal ::
                        forall args . Fullfilled "_contrib_MultiProposal(symbol)" args =>
@@ -7326,8 +7351,8 @@ _backward__contrib_MultiProposal name args
 
 type instance ParameterList "_contrib_MultiBoxPrior(symbol)" =
      '[ '("sizes", AttrOpt [Float]), '("ratios", AttrOpt [Float]),
-       '("clip", AttrOpt Bool), '("steps", AttrOpt [Float]),
-       '("offsets", AttrOpt [Float]), '("data", AttrOpt SymbolHandle)]
+        '("clip", AttrOpt Bool), '("steps", AttrOpt [Float]),
+        '("offsets", AttrOpt [Float]), '("data", AttrOpt SymbolHandle)]
 
 _contrib_MultiBoxPrior ::
                        forall args . Fullfilled "_contrib_MultiBoxPrior(symbol)" args =>
@@ -7416,13 +7441,13 @@ _backward__contrib_fft name args
 type instance
      ParameterList "_contrib_DeformableConvolution(symbol)" =
      '[ '("kernel", AttrReq [Int]), '("stride", AttrOpt [Int]),
-       '("dilate", AttrOpt [Int]), '("pad", AttrOpt [Int]),
-       '("num_filter", AttrReq Int), '("num_group", AttrOpt Int),
-       '("num_deformable_group", AttrOpt Int),
-       '("workspace", AttrOpt Int), '("no_bias", AttrOpt Bool),
-       '("layout", AttrOpt (Maybe (EnumType '["NCDHW", "NCHW", "NCW"]))),
-       '("data", AttrOpt SymbolHandle), '("offset", AttrOpt SymbolHandle),
-       '("weight", AttrOpt SymbolHandle), '("bias", AttrOpt SymbolHandle)]
+        '("dilate", AttrOpt [Int]), '("pad", AttrOpt [Int]),
+        '("num_filter", AttrReq Int), '("num_group", AttrOpt Int),
+        '("num_deformable_group", AttrOpt Int),
+        '("workspace", AttrOpt Int), '("no_bias", AttrOpt Bool),
+        '("layout", AttrOpt (Maybe (EnumType '["NCDHW", "NCHW", "NCW"]))),
+        '("data", AttrOpt SymbolHandle), '("offset", AttrOpt SymbolHandle),
+        '("weight", AttrOpt SymbolHandle), '("bias", AttrOpt SymbolHandle)]
 
 _contrib_DeformableConvolution ::
                                forall args .
@@ -7565,7 +7590,7 @@ _backward__NDArray name args
 
 type instance ParameterList "_InstanceNorm(symbol)" =
      '[ '("eps", AttrOpt Float), '("data", AttrOpt SymbolHandle),
-       '("gamma", AttrOpt SymbolHandle), '("beta", AttrOpt SymbolHandle)]
+        '("gamma", AttrOpt SymbolHandle), '("beta", AttrOpt SymbolHandle)]
 
 _InstanceNorm ::
               forall args . Fullfilled "_InstanceNorm(symbol)" args =>
@@ -7608,9 +7633,9 @@ _backward_InstanceNorm name args
 
 type instance ParameterList "_SVMOutput(symbol)" =
      '[ '("margin", AttrOpt Float),
-       '("regularization_coefficient", AttrOpt Float),
-       '("use_linear", AttrOpt Bool), '("data", AttrOpt SymbolHandle),
-       '("label", AttrOpt SymbolHandle)]
+        '("regularization_coefficient", AttrOpt Float),
+        '("use_linear", AttrOpt Bool), '("data", AttrOpt SymbolHandle),
+        '("label", AttrOpt SymbolHandle)]
 
 _SVMOutput ::
            forall args . Fullfilled "_SVMOutput(symbol)" args =>
@@ -7656,11 +7681,11 @@ _backward_SVMOutput name args
 
 type instance ParameterList "_Pooling(symbol)" =
      '[ '("global_pool", AttrOpt Bool), '("cudnn_off", AttrOpt Bool),
-       '("kernel", AttrReq [Int]),
-       '("pool_type", AttrReq (EnumType '["avg", "max", "sum"])),
-       '("pooling_convention", AttrOpt (EnumType '["full", "valid"])),
-       '("stride", AttrOpt [Int]), '("pad", AttrOpt [Int]),
-       '("data", AttrOpt SymbolHandle)]
+        '("kernel", AttrReq [Int]),
+        '("pool_type", AttrReq (EnumType '["avg", "max", "sum"])),
+        '("pooling_convention", AttrOpt (EnumType '["full", "valid"])),
+        '("stride", AttrOpt [Int]), '("pad", AttrOpt [Int]),
+        '("data", AttrOpt SymbolHandle)]
 
 _Pooling ::
          forall args . Fullfilled "_Pooling(symbol)" args =>
@@ -7710,17 +7735,17 @@ _backward_Pooling name args
 
 type instance ParameterList "_Convolution_v1(symbol)" =
      '[ '("kernel", AttrReq [Int]), '("stride", AttrOpt [Int]),
-       '("dilate", AttrOpt [Int]), '("pad", AttrOpt [Int]),
-       '("num_filter", AttrReq Int), '("num_group", AttrOpt Int),
-       '("workspace", AttrOpt Int), '("no_bias", AttrOpt Bool),
-       '("cudnn_tune",
-         AttrOpt
-           (Maybe (EnumType '["fastest", "limited_workspace", "off"]))),
-       '("cudnn_off", AttrOpt Bool),
-       '("layout",
-         AttrOpt (Maybe (EnumType '["NCDHW", "NCHW", "NDHWC", "NHWC"]))),
-       '("data", AttrOpt SymbolHandle), '("weight", AttrOpt SymbolHandle),
-       '("bias", AttrOpt SymbolHandle)]
+        '("dilate", AttrOpt [Int]), '("pad", AttrOpt [Int]),
+        '("num_filter", AttrReq Int), '("num_group", AttrOpt Int),
+        '("workspace", AttrOpt Int), '("no_bias", AttrOpt Bool),
+        '("cudnn_tune",
+          AttrOpt
+            (Maybe (EnumType '["fastest", "limited_workspace", "off"]))),
+        '("cudnn_off", AttrOpt Bool),
+        '("layout",
+          AttrOpt (Maybe (EnumType '["NCDHW", "NCHW", "NDHWC", "NHWC"]))),
+        '("data", AttrOpt SymbolHandle), '("weight", AttrOpt SymbolHandle),
+        '("bias", AttrOpt SymbolHandle)]
 
 _Convolution_v1 ::
                 forall args . Fullfilled "_Convolution_v1(symbol)" args =>
@@ -7779,8 +7804,8 @@ _backward_Convolution_v1 name args
 
 type instance ParameterList "_Crop(symbol)" =
      '[ '("num_args", AttrReq Int), '("offset", AttrOpt [Int]),
-       '("h_w", AttrOpt [Int]), '("center_crop", AttrOpt Bool),
-       '("data", AttrOpt [SymbolHandle])]
+        '("h_w", AttrOpt [Int]), '("center_crop", AttrOpt Bool),
+        '("data", AttrOpt [SymbolHandle])]
 
 _Crop ::
       forall args . Fullfilled "_Crop(symbol)" args =>
@@ -7827,9 +7852,9 @@ _backward_Crop name args
 
 type instance ParameterList "_SpatialTransformer(symbol)" =
      '[ '("target_shape", AttrOpt [Int]),
-       '("transform_type", AttrReq (EnumType '["affine"])),
-       '("sampler_type", AttrReq (EnumType '["bilinear"])),
-       '("data", AttrOpt SymbolHandle), '("loc", AttrOpt SymbolHandle)]
+        '("transform_type", AttrReq (EnumType '["affine"])),
+        '("sampler_type", AttrReq (EnumType '["bilinear"])),
+        '("data", AttrOpt SymbolHandle), '("loc", AttrOpt SymbolHandle)]
 
 _SpatialTransformer ::
                     forall args . Fullfilled "_SpatialTransformer(symbol)" args =>
@@ -7898,7 +7923,7 @@ _backward_SwapAxis name args
 
 type instance ParameterList "_LinearRegressionOutput(symbol)" =
      '[ '("grad_scale", AttrOpt Float), '("data", AttrOpt SymbolHandle),
-       '("label", AttrOpt SymbolHandle)]
+        '("label", AttrOpt SymbolHandle)]
 
 _LinearRegressionOutput ::
                         forall args . Fullfilled "_LinearRegressionOutput(symbol)" args =>
@@ -7945,7 +7970,7 @@ _backward_LinearRegressionOutput name args
 
 type instance ParameterList "_MAERegressionOutput(symbol)" =
      '[ '("grad_scale", AttrOpt Float), '("data", AttrOpt SymbolHandle),
-       '("label", AttrOpt SymbolHandle)]
+        '("label", AttrOpt SymbolHandle)]
 
 _MAERegressionOutput ::
                      forall args . Fullfilled "_MAERegressionOutput(symbol)" args =>
@@ -7992,7 +8017,7 @@ _backward_MAERegressionOutput name args
 
 type instance ParameterList "_LogisticRegressionOutput(symbol)" =
      '[ '("grad_scale", AttrOpt Float), '("data", AttrOpt SymbolHandle),
-       '("label", AttrOpt SymbolHandle)]
+        '("label", AttrOpt SymbolHandle)]
 
 _LogisticRegressionOutput ::
                           forall args .
@@ -8057,12 +8082,12 @@ _backward_Pad name args
          return sym
 
 type instance ParameterList "_SoftmaxOutput(symbol)" =
-     '[ '("grad_scale", AttrOpt Float), '("ignore_label", AttrOpt Float),
-       '("multi_output", AttrOpt Bool), '("use_ignore", AttrOpt Bool),
-       '("preserve_shape", AttrOpt Bool),
-       '("normalization", AttrOpt (EnumType '["batch", "null", "valid"])),
-       '("out_grad", AttrOpt Bool), '("smooth_alpha", AttrOpt Float),
-       '("data", AttrOpt SymbolHandle), '("label", AttrOpt SymbolHandle)]
+     '[ '("grad_scale", AttrOpt Float),
+        '("ignore_label", AttrOpt Float), '("multi_output", AttrOpt Bool),
+        '("use_ignore", AttrOpt Bool), '("preserve_shape", AttrOpt Bool),
+        '("normalization", AttrOpt (EnumType '["batch", "null", "valid"])),
+        '("out_grad", AttrOpt Bool), '("smooth_alpha", AttrOpt Float),
+        '("data", AttrOpt SymbolHandle), '("label", AttrOpt SymbolHandle)]
 
 _SoftmaxOutput ::
                forall args . Fullfilled "_SoftmaxOutput(symbol)" args =>
@@ -8118,12 +8143,12 @@ _backward_SoftmaxOutput name args
          return sym
 
 type instance ParameterList "_Softmax(symbol)" =
-     '[ '("grad_scale", AttrOpt Float), '("ignore_label", AttrOpt Float),
-       '("multi_output", AttrOpt Bool), '("use_ignore", AttrOpt Bool),
-       '("preserve_shape", AttrOpt Bool),
-       '("normalization", AttrOpt (EnumType '["batch", "null", "valid"])),
-       '("out_grad", AttrOpt Bool), '("smooth_alpha", AttrOpt Float),
-       '("data", AttrOpt SymbolHandle)]
+     '[ '("grad_scale", AttrOpt Float),
+        '("ignore_label", AttrOpt Float), '("multi_output", AttrOpt Bool),
+        '("use_ignore", AttrOpt Bool), '("preserve_shape", AttrOpt Bool),
+        '("normalization", AttrOpt (EnumType '["batch", "null", "valid"])),
+        '("out_grad", AttrOpt Bool), '("smooth_alpha", AttrOpt Float),
+        '("data", AttrOpt SymbolHandle)]
 
 _Softmax ::
          forall args . Fullfilled "_Softmax(symbol)" args =>
@@ -8178,8 +8203,8 @@ _backward_Softmax name args
 
 type instance ParameterList "_SequenceReverse(symbol)" =
      '[ '("use_sequence_length", AttrOpt Bool),
-       '("data", AttrOpt SymbolHandle),
-       '("sequence_length", AttrOpt SymbolHandle)]
+        '("data", AttrOpt SymbolHandle),
+        '("sequence_length", AttrOpt SymbolHandle)]
 
 _SequenceReverse ::
                  forall args . Fullfilled "_SequenceReverse(symbol)" args =>
@@ -8245,8 +8270,8 @@ _backward_BatchNorm_v1 name args
 
 type instance ParameterList "_SequenceLast(symbol)" =
      '[ '("use_sequence_length", AttrOpt Bool),
-       '("data", AttrOpt SymbolHandle),
-       '("sequence_length", AttrOpt SymbolHandle)]
+        '("data", AttrOpt SymbolHandle),
+        '("sequence_length", AttrOpt SymbolHandle)]
 
 _SequenceLast ::
               forall args . Fullfilled "_SequenceLast(symbol)" args =>
@@ -8290,10 +8315,10 @@ _backward_SequenceLast name args
 
 type instance ParameterList "_Correlation(symbol)" =
      '[ '("kernel_size", AttrOpt Int),
-       '("max_displacement", AttrOpt Int), '("stride1", AttrOpt Int),
-       '("stride2", AttrOpt Int), '("pad_size", AttrOpt Int),
-       '("is_multiply", AttrOpt Bool), '("data1", AttrOpt SymbolHandle),
-       '("data2", AttrOpt SymbolHandle)]
+        '("max_displacement", AttrOpt Int), '("stride1", AttrOpt Int),
+        '("stride2", AttrOpt Int), '("pad_size", AttrOpt Int),
+        '("is_multiply", AttrOpt Bool), '("data1", AttrOpt SymbolHandle),
+        '("data2", AttrOpt SymbolHandle)]
 
 _Correlation ::
              forall args . Fullfilled "_Correlation(symbol)" args =>
@@ -8342,9 +8367,10 @@ _backward_Correlation name args
          return sym
 
 type instance ParameterList "_MakeLoss(symbol)" =
-     '[ '("grad_scale", AttrOpt Float), '("valid_thresh", AttrOpt Float),
-       '("normalization", AttrOpt (EnumType '["batch", "null", "valid"])),
-       '("data", AttrOpt SymbolHandle)]
+     '[ '("grad_scale", AttrOpt Float),
+        '("valid_thresh", AttrOpt Float),
+        '("normalization", AttrOpt (EnumType '["batch", "null", "valid"])),
+        '("data", AttrOpt SymbolHandle)]
 
 _MakeLoss ::
           forall args . Fullfilled "_MakeLoss(symbol)" args =>
@@ -8390,8 +8416,8 @@ _backward_MakeLoss name args
 
 type instance ParameterList "_LRN(symbol)" =
      '[ '("alpha", AttrOpt Float), '("beta", AttrOpt Float),
-       '("knorm", AttrOpt Float), '("nsize", AttrReq Int),
-       '("data", AttrOpt SymbolHandle)]
+        '("knorm", AttrOpt Float), '("nsize", AttrReq Int),
+        '("data", AttrOpt SymbolHandle)]
 
 _LRN ::
      forall args . Fullfilled "_LRN(symbol)" args =>
@@ -8433,8 +8459,8 @@ _backward_LRN name args
 
 type instance ParameterList "_SequenceMask(symbol)" =
      '[ '("use_sequence_length", AttrOpt Bool),
-       '("value", AttrOpt Float), '("data", AttrOpt SymbolHandle),
-       '("sequence_length", AttrOpt SymbolHandle)]
+        '("value", AttrOpt Float), '("data", AttrOpt SymbolHandle),
+        '("sequence_length", AttrOpt SymbolHandle)]
 
 _SequenceMask ::
               forall args . Fullfilled "_SequenceMask(symbol)" args =>
@@ -8479,7 +8505,7 @@ _backward_SequenceMask name args
 
 type instance ParameterList "_GridGenerator(symbol)" =
      '[ '("transform_type", AttrReq (EnumType '["affine", "warp"])),
-       '("target_shape", AttrOpt [Int]), '("data", AttrOpt SymbolHandle)]
+        '("target_shape", AttrOpt [Int]), '("data", AttrOpt SymbolHandle)]
 
 _GridGenerator ::
                forall args . Fullfilled "_GridGenerator(symbol)" args =>
@@ -8522,10 +8548,10 @@ _backward_GridGenerator name args
 
 type instance ParameterList "_Pooling_v1(symbol)" =
      '[ '("global_pool", AttrOpt Bool), '("kernel", AttrReq [Int]),
-       '("pool_type", AttrReq (EnumType '["avg", "max", "sum"])),
-       '("pooling_convention", AttrOpt (EnumType '["full", "valid"])),
-       '("stride", AttrOpt [Int]), '("pad", AttrOpt [Int]),
-       '("data", AttrOpt SymbolHandle)]
+        '("pool_type", AttrReq (EnumType '["avg", "max", "sum"])),
+        '("pooling_convention", AttrOpt (EnumType '["full", "valid"])),
+        '("stride", AttrOpt [Int]), '("pad", AttrOpt [Int]),
+        '("data", AttrOpt SymbolHandle)]
 
 _Pooling_v1 ::
             forall args . Fullfilled "_Pooling_v1(symbol)" args =>
@@ -8614,8 +8640,8 @@ _backward_IdentityAttachKLSparseReg name args
 
 type instance ParameterList "_Activation(symbol)" =
      '[ '("act_type",
-         AttrReq (EnumType '["relu", "sigmoid", "softrelu", "tanh"])),
-       '("data", AttrOpt SymbolHandle)]
+          AttrReq (EnumType '["relu", "sigmoid", "softrelu", "tanh"])),
+        '("data", AttrOpt SymbolHandle)]
 
 _Activation ::
             forall args . Fullfilled "_Activation(symbol)" args =>
@@ -8675,19 +8701,19 @@ _backward_UpSampling name args
 
 type instance ParameterList "_Deconvolution(symbol)" =
      '[ '("kernel", AttrReq [Int]), '("stride", AttrOpt [Int]),
-       '("dilate", AttrOpt [Int]), '("pad", AttrOpt [Int]),
-       '("adj", AttrOpt [Int]), '("target_shape", AttrOpt [Int]),
-       '("num_filter", AttrReq Int), '("num_group", AttrOpt Int),
-       '("workspace", AttrOpt Int), '("no_bias", AttrOpt Bool),
-       '("cudnn_tune",
-         AttrOpt
-           (Maybe (EnumType '["fastest", "limited_workspace", "off"]))),
-       '("cudnn_off", AttrOpt Bool),
-       '("layout",
-         AttrOpt
-           (Maybe (EnumType '["NCDHW", "NCHW", "NCW", "NDHWC", "NHWC"]))),
-       '("data", AttrOpt SymbolHandle), '("weight", AttrOpt SymbolHandle),
-       '("bias", AttrOpt SymbolHandle)]
+        '("dilate", AttrOpt [Int]), '("pad", AttrOpt [Int]),
+        '("adj", AttrOpt [Int]), '("target_shape", AttrOpt [Int]),
+        '("num_filter", AttrReq Int), '("num_group", AttrOpt Int),
+        '("workspace", AttrOpt Int), '("no_bias", AttrOpt Bool),
+        '("cudnn_tune",
+          AttrOpt
+            (Maybe (EnumType '["fastest", "limited_workspace", "off"]))),
+        '("cudnn_off", AttrOpt Bool),
+        '("layout",
+          AttrOpt
+            (Maybe (EnumType '["NCDHW", "NCHW", "NCW", "NDHWC", "NHWC"]))),
+        '("data", AttrOpt SymbolHandle), '("weight", AttrOpt SymbolHandle),
+        '("bias", AttrOpt SymbolHandle)]
 
 _Deconvolution ::
                forall args . Fullfilled "_Deconvolution(symbol)" args =>
@@ -8747,7 +8773,8 @@ _backward_Deconvolution name args
          return sym
 
 type instance ParameterList "_BilinearSampler(symbol)" =
-     '[ '("data", AttrOpt SymbolHandle), '("grid", AttrOpt SymbolHandle)]
+     '[ '("data", AttrOpt SymbolHandle),
+        '("grid", AttrOpt SymbolHandle)]
 
 _BilinearSampler ::
                  forall args . Fullfilled "_BilinearSampler(symbol)" args =>
@@ -8791,8 +8818,8 @@ _backward_BilinearSampler name args
 
 type instance ParameterList "_ROIPooling(symbol)" =
      '[ '("pooled_size", AttrReq [Int]),
-       '("spatial_scale", AttrReq Float), '("data", AttrOpt SymbolHandle),
-       '("rois", AttrOpt SymbolHandle)]
+        '("spatial_scale", AttrReq Float), '("data", AttrOpt SymbolHandle),
+        '("rois", AttrOpt SymbolHandle)]
 
 _ROIPooling ::
             forall args . Fullfilled "_ROIPooling(symbol)" args =>
@@ -8874,8 +8901,8 @@ _backward_CuDNNBatchNorm name args
 
 type instance ParameterList "_FullyConnected(symbol)" =
      '[ '("num_hidden", AttrReq Int), '("no_bias", AttrOpt Bool),
-       '("flatten", AttrOpt Bool), '("data", AttrOpt SymbolHandle),
-       '("weight", AttrOpt SymbolHandle), '("bias", AttrOpt SymbolHandle)]
+        '("flatten", AttrOpt Bool), '("data", AttrOpt SymbolHandle),
+        '("weight", AttrOpt SymbolHandle), '("bias", AttrOpt SymbolHandle)]
 
 _FullyConnected ::
                 forall args . Fullfilled "_FullyConnected(symbol)" args =>
@@ -8923,18 +8950,18 @@ _backward_FullyConnected name args
 
 type instance ParameterList "_Convolution(symbol)" =
      '[ '("kernel", AttrReq [Int]), '("stride", AttrOpt [Int]),
-       '("dilate", AttrOpt [Int]), '("pad", AttrOpt [Int]),
-       '("num_filter", AttrReq Int), '("num_group", AttrOpt Int),
-       '("workspace", AttrOpt Int), '("no_bias", AttrOpt Bool),
-       '("cudnn_tune",
-         AttrOpt
-           (Maybe (EnumType '["fastest", "limited_workspace", "off"]))),
-       '("cudnn_off", AttrOpt Bool),
-       '("layout",
-         AttrOpt
-           (Maybe (EnumType '["NCDHW", "NCHW", "NCW", "NDHWC", "NHWC"]))),
-       '("data", AttrOpt SymbolHandle), '("weight", AttrOpt SymbolHandle),
-       '("bias", AttrOpt SymbolHandle)]
+        '("dilate", AttrOpt [Int]), '("pad", AttrOpt [Int]),
+        '("num_filter", AttrReq Int), '("num_group", AttrOpt Int),
+        '("workspace", AttrOpt Int), '("no_bias", AttrOpt Bool),
+        '("cudnn_tune",
+          AttrOpt
+            (Maybe (EnumType '["fastest", "limited_workspace", "off"]))),
+        '("cudnn_off", AttrOpt Bool),
+        '("layout",
+          AttrOpt
+            (Maybe (EnumType '["NCDHW", "NCHW", "NCW", "NDHWC", "NHWC"]))),
+        '("data", AttrOpt SymbolHandle), '("weight", AttrOpt SymbolHandle),
+        '("bias", AttrOpt SymbolHandle)]
 
 _Convolution ::
              forall args . Fullfilled "_Convolution(symbol)" args =>
@@ -8967,10 +8994,8 @@ _Convolution name args
         (tensorkeys, tensorvals) = unzip tensorArgs
       in
       do op <- nnGetOpHandle "Convolution"
-         --  traceShowM (name, scalarkeys)
          sym <- mxSymbolCreateAtomicSymbol (fromOpHandle op) scalarkeys
                   scalarvals
-         --  traceShowM (name, tensorkeys)
          mxSymbolCompose sym name (Just tensorkeys) tensorvals
          return sym
 
@@ -8994,8 +9019,8 @@ _backward_Convolution name args
 
 type instance ParameterList "_L2Normalization(symbol)" =
      '[ '("eps", AttrOpt Float),
-       '("mode", AttrOpt (EnumType '["channel", "instance", "spatial"])),
-       '("data", AttrOpt SymbolHandle)]
+        '("mode", AttrOpt (EnumType '["channel", "instance", "spatial"])),
+        '("data", AttrOpt SymbolHandle)]
 
 _L2Normalization ::
                  forall args . Fullfilled "_L2Normalization(symbol)" args =>
@@ -9060,14 +9085,14 @@ _backward_Concat name args
 
 type instance ParameterList "_RNN(symbol)" =
      '[ '("state_size", AttrReq Int), '("num_layers", AttrReq Int),
-       '("bidirectional", AttrOpt Bool),
-       '("mode",
-         AttrReq (EnumType '["gru", "lstm", "rnn_relu", "rnn_tanh"])),
-       '("p", AttrOpt Float), '("state_outputs", AttrOpt Bool),
-       '("data", AttrOpt SymbolHandle),
-       '("parameters", AttrOpt SymbolHandle),
-       '("state", AttrOpt SymbolHandle),
-       '("state_cell", AttrOpt SymbolHandle)]
+        '("bidirectional", AttrOpt Bool),
+        '("mode",
+          AttrReq (EnumType '["gru", "lstm", "rnn_relu", "rnn_tanh"])),
+        '("p", AttrOpt Float), '("state_outputs", AttrOpt Bool),
+        '("data", AttrOpt SymbolHandle),
+        '("parameters", AttrOpt SymbolHandle),
+        '("state", AttrOpt SymbolHandle),
+        '("state_cell", AttrOpt SymbolHandle)]
 
 _RNN ::
      forall args . Fullfilled "_RNN(symbol)" args =>
@@ -9138,8 +9163,8 @@ _backward_BatchNorm name args
 
 type instance ParameterList "_Dropout(symbol)" =
      '[ '("p", AttrOpt Float),
-       '("mode", AttrOpt (EnumType '["always", "training"])),
-       '("data", AttrOpt SymbolHandle)]
+        '("mode", AttrOpt (EnumType '["always", "training"])),
+        '("data", AttrOpt SymbolHandle)]
 
 _Dropout ::
          forall args . Fullfilled "_Dropout(symbol)" args =>
@@ -9220,7 +9245,7 @@ _backward__CrossDeviceCopy name args
 
 type instance ParameterList "_SoftmaxActivation(symbol)" =
      '[ '("mode", AttrOpt (EnumType '["channel", "instance"])),
-       '("data", AttrOpt SymbolHandle)]
+        '("data", AttrOpt SymbolHandle)]
 
 _SoftmaxActivation ::
                    forall args . Fullfilled "_SoftmaxActivation(symbol)" args =>
@@ -9285,9 +9310,9 @@ _set_value name args
 
 type instance ParameterList "_imdecode(symbol)" =
      '[ '("index", AttrOpt Int), '("x0", AttrOpt Int),
-       '("y0", AttrOpt Int), '("x1", AttrOpt Int), '("y1", AttrOpt Int),
-       '("c", AttrOpt Int), '("size", AttrOpt Int),
-       '("mean", AttrOpt SymbolHandle)]
+        '("y0", AttrOpt Int), '("x1", AttrOpt Int), '("y1", AttrOpt Int),
+        '("c", AttrOpt Int), '("size", AttrOpt Int),
+        '("mean", AttrOpt SymbolHandle)]
 
 _imdecode ::
           forall args . Fullfilled "_imdecode(symbol)" args =>
