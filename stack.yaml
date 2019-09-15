@@ -1,7 +1,6 @@
 resolver: lts-12.16
 packages:
-- base
-- operators
+- .
 extra-deps:
 - ../tuple-ops
 - c2hs-extra-0.1.0.1
@@ -10,7 +9,10 @@ extra-deps:
 - git: https://github.com/pierric/haskell-src-exts.git
   commit: f75a5dbe2ec9fbc67df0936333e0665b033f9e22
 extra-include-dirs:
-- /home/jiasen/dschungel/incubator-mxnet/include
-- /home/jiasen/dschungel/incubator-mxnet/nnvm/include
+- /home/jiasen/dschungel/incubator-mxnet-1.5/include
+- /home/jiasen/dschungel/incubator-mxnet-1.5/nnvm/include
 extra-lib-dirs:
-- /home/jiasen/dschungel/incubator-mxnet/lib
+- /home/jiasen/dschungel/incubator-mxnet-1.5/lib
+flags:
+  mxnet-base:
+    MXNet_1_5: true

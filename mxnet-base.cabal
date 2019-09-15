@@ -1,9 +1,10 @@
+cabal-version:       2.2
 name:                mxnet-base
-version:             0.1.0.0
+version:             0.2.0.0
 -- synopsis:
 -- description:
 homepage:
-license:             BSD3
+license:             BSD-3-Clause
 license-file:        LICENSE
 author:              Jiasen Wu
 maintainer:          jiasenwu@hotmail.com
@@ -11,10 +12,41 @@ copyright:           2018 Jiasen Wu
 category:            Machine Learning, AI
 build-type:          Simple
 extra-source-files:  README.md
-cabal-version:       >=1.10
+
+Flag MXNet_1_5 {
+  Description: With MXNet 1.5.x operators
+  Default: True
+}
+
+Flag MXNet_1_4 {
+  Description: With MXNet 1.4.x operators
+  Default: False
+}
+
+Flag MXNet_1_3 {
+  Description: With MXNet 1.3.x operators
+  Default: False
+}
+
+Flag MXNet_1_0 {
+  Description: With MXNet 1.0.x operators
+  Default: False
+}
 
 library
   hs-source-dirs:      c-apis
+  if flag(MXNet_1_0) {
+      hs-source-dirs:  ops/1.0
+  }
+  elif flag(MXNet_1_3) {
+      hs-source-dirs:  ops/1.3
+  }
+  elif flag(MXNet_1_4) {
+      hs-source-dirs:  ops/1.4
+  }
+  elif flag(MXNet_1_5) {
+      hs-source-dirs:  ops/1.5
+  }
   build-depends:       base >= 4.7 && < 5,
                        c2hs-extra == 0.1.0.1,
                        tuple-ops == 0.0.0.3,
@@ -27,7 +59,12 @@ library
                        GADTs,
                        StandaloneDeriving,
                        DeriveGeneric,
-                       GeneralizedNewtypeDeriving
+                       GeneralizedNewtypeDeriving,
+                       ExplicitForAll,
+                       DataKinds,
+                       TypeFamilies,
+                       OverloadedLabels,
+                       TupleSections
   exposed-modules:     MXNet.Base,
                        MXNet.Base.Raw,
                        MXNet.Base.Types,
@@ -36,6 +73,10 @@ library
                        MXNet.Base.Executor,
                        MXNet.Base.Spec.Operator,
                        MXNet.Base.Spec.HMap
+  if flag(MXNet_1_0) || flag(MXNet_1_3) || flag(MXNet_1_4) || flag(MXnet_1_5) {
+    exposed-modules:   MXNet.Base.Operators.Symbol,
+                       MXNet.Base.Operators.NDArray
+  }
   other-modules:       MXNet.Base.Raw.Common,
                        MXNet.Base.Raw.NDArray,
                        MXNet.Base.Raw.Symbol,
@@ -58,12 +99,6 @@ executable mxnet-op-gen
   default-language:    Haskell2010
   default-extensions:  FlexibleContexts
   extra-libraries:     mxnet
--- executable haskell-mxnet
---   hs-source-dirs:      cmdline
---   main-is:             Main.hs
---   build-depends:       base >= 4.7 && < 5
---   default-language:    Haskell2010
---   extra-libraries:     mxnet
 
 source-repository head
   type:     git
