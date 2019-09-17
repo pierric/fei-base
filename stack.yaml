@@ -14,5 +14,5 @@ extra-include-dirs:
 extra-lib-dirs:
 - /home/jiasen/dschungel/incubator-mxnet-1.5/lib
 flags:
-  mxnet-base:
+  fei-base:
     MXNet_1_5: true
