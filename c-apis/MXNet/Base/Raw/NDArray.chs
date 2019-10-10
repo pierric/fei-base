@@ -10,6 +10,7 @@ import Foreign.C.Types
 import Foreign.Ptr
 import C2HS.C.Extra.Marshal (withIntegralArray, peekStringArray)
 import GHC.Generics (Generic)
+import Control.DeepSeq (NFData(..), rwhnf)
 import Control.Monad ((>=>))
 
 {# import MXNet.Base.Raw.Common #}
@@ -28,6 +29,9 @@ pointer NDArrayHandle foreign newtype
 
 deriving instance Generic NDArrayHandle
 deriving instance Show NDArrayHandle
+instance NFData NDArrayHandle where
+    rnf = rwhnf
+
 type NDArrayHandlePtr = Ptr NDArrayHandle
 
 touchNDArrayHandle :: NDArrayHandle -> IO ()
@@ -121,7 +125,7 @@ fun MXNDArraySyncCopyFromCPU as mxNDArraySyncCopyFromCPU_
 #}
 
 mxNDArraySyncCopyFromCPU :: NDArrayHandle -> Ptr () -> Int -> IO ()
-mxNDArraySyncCopyFromCPU array ptr size =
+mxNDArraySyncCopyFromCPU array ptr size = 
     checked $ mxNDArraySyncCopyFromCPU_ array ptr (fromIntegral size)
 
 {#
@@ -147,7 +151,7 @@ fun MXNDArraySyncCopyFromNDArray as mxNDArraySyncCopyFromNDArray_
 #}
 
 mxNDArraySyncCopyFromNDArray :: NDArrayHandle -> NDArrayHandle -> Int -> IO ()
-mxNDArraySyncCopyFromNDArray array_dst array_src blob =
+mxNDArraySyncCopyFromNDArray array_dst array_src blob = 
     checked $ mxNDArraySyncCopyFromNDArray_ array_dst array_src (fromIntegral blob)
 
 {#
