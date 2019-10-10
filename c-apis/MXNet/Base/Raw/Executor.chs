@@ -10,6 +10,7 @@ import Foreign.Ptr
 import Foreign.C.Types
 import C2HS.C.Extra.Marshal (withIntegralArray, peekIntegralArray, peekString, peekStringArray)
 import GHC.Generics (Generic)
+import Control.DeepSeq (NFData(..), rwhnf)
 import Control.Monad ((>=>))
 import Data.Maybe (fromMaybe)
 
@@ -29,6 +30,9 @@ pointer ExecutorHandle foreign newtype
 #}
 
 deriving instance Generic ExecutorHandle
+deriving instance Show ExecutorHandle
+instance NFData ExecutorHandle where
+    rnf = rwhnf
 
 type ExecutorHandlePtr = Ptr ExecutorHandle
 
@@ -380,30 +384,71 @@ mxExecutorSimpleBind symbol
     provided_arg_stypes_ = map fromIntegral $ provided_arg_stypes
     cnt_shared_arg_names = fromIntegral $ length shared_arg_name_list
 
--- {#
--- fun MXExecutorReshape as mxExecutorReshape_
---     {
---         `CInt',
---         `CInt',
---         `CInt',
---         `CInt',
---         `MX_UINT',
---         withStringArray* `[String]',
---         withArray* `[CInt]',
---         withArray* `[CInt]',
---         `MX_UINT',
---         withStringArray* `[String]',
---         withArray* `[MX_UINT]',
---         withArray* `[MX_UINT]',
---         alloca- `MX_UINT' peek*,
---         alloca- `Ptr NDArrayHandlePtr' peek*,
---         alloca- `Ptr NDArrayHandlePtr' peek*,
---         alloca- `MX_UINT' peek*,
---         alloca- `Ptr NDArrayHandlePtr' peek*,
---         `ExecutorHandle',
---         alloca- `ExecutorHandle' peekExecutorHandle*
---     } -> `CInt'
--- #}
+{#
+fun MXExecutorReshapeEx as mxExecutorReshapeEx_
+    {
+        `CInt',
+        `CInt',
+        `CInt',
+        `CInt',
+        `MX_UINT',
+        withStringArray* `[String]',
+        withArray* `[CInt]',
+        withArray* `[CInt]',
+        `MX_UINT',
+        withStringArray* `[String]',
+        withArray* `[CInt]',
+        withArray* `[MX_UINT]',
+        alloca- `MX_UINT' peek*,
+        alloca- `Ptr NDArrayHandlePtr' peek*,
+        alloca- `Ptr NDArrayHandlePtr' peek*,
+        alloca- `MX_UINT' peek*,
+        alloca- `Ptr NDArrayHandlePtr' peek*,
+        `ExecutorHandle',
+        alloca- `ExecutorHandle' peekExecutorHandle*
+    } -> `CInt'
+#}
+
+mxExecutorReshapeEx :: Bool -> Bool -> Int -> Int
+                    -> [String] -> [Int] -> [Int]        -- group2ctx
+                    -> [String] -> [Int] -> [Int]        -- provided_arg_shapes
+                    -> ExecutorHandle                    -- shared exec
+                    -> IO ([NDArrayHandle], [NDArrayHandle], [NDArrayHandle], ExecutorHandle)
+mxExecutorReshapeEx partial_shaping allow_up_sizing 
+                    devtype devid 
+                    g2c_keys g2c_dev_types g2c_dev_ids
+                    provided_arg_shape_names provided_arg_shape_data provided_arg_shape_idx
+                    shared_exec_handler = do
+    (num_in, arr_in, arr_grad, num_aux, arr_aux, exec_hdl) <- checked $ mxExecutorReshapeEx_ 
+                    partial_shaping_ allow_up_sizing_
+                    devtype_ devid_ 
+                    cnt_g2c g2c_keys g2c_dev_types_ g2c_dev_ids_ 
+                    cnt_provided_arg_shapes provided_arg_shape_names provided_arg_shape_data_ provided_arg_shape_idx_
+                    shared_exec_handler
+
+    handle_ptrs <- peekArray (fromIntegral num_in) arr_in
+    arr_in   <- mapM newNDArrayHandle handle_ptrs
+
+    handle_ptrs <- peekArray (fromIntegral num_in) arr_grad
+    arr_grad <- mapM newNDArrayHandle handle_ptrs
+
+    handle_ptrs <- peekArray (fromIntegral num_aux) arr_aux
+    arr_aux  <- mapM newNDArrayHandle handle_ptrs
+
+    return (arr_in, arr_grad, arr_aux, exec_hdl)
+  where
+    partial_shaping_ = if partial_shaping then 1 else 0
+    allow_up_sizing_ = if allow_up_sizing then 1 else 0
+    devtype_ = fromIntegral devtype
+    devid_ = fromIntegral devid
+
+    cnt_g2c = fromIntegral $ length g2c_keys
+    g2c_dev_types_ = map fromIntegral g2c_dev_types
+    g2c_dev_ids_ = map fromIntegral g2c_dev_ids
+
+    cnt_provided_arg_shapes = fromIntegral $ length provided_arg_shape_names
+    provided_arg_shape_data_ = map fromIntegral provided_arg_shape_data
+    provided_arg_shape_idx_  = map fromIntegral provided_arg_shape_idx
 
 -- {# 
 -- fun MXExecutorGetOptimizedSymbol as mxExecutorGetOptimizedSymbol_
