@@ -1,8 +1,8 @@
 cabal-version:       2.2
 name:                fei-base
 version:             0.2.1
--- synopsis:
--- description:
+synopsis:            FFI to MXNet
+description:         This package provides a FFI wrap of MXNet, including c-apis and symbol/array/executor operations.
 homepage:
 license:             BSD-3-Clause
 license-file:        LICENSE
