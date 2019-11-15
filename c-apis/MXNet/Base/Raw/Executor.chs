@@ -26,7 +26,7 @@ import Data.Maybe (fromMaybe)
 {# default in `MX_UINT' [mx_uint] id #}
 
 {#
-pointer ExecutorHandle foreign newtype 
+pointer ExecutorHandle foreign newtype
 #}
 
 deriving instance Generic ExecutorHandle
@@ -150,7 +150,7 @@ fun MXExecutorBind as mxExecutorBind_
 makeNullNDArrayHandle = NDArrayHandle <$> newForeignPtr_ C2HSImp.nullPtr
 
 mxExecutorBind :: SymbolHandle
-               -> Int 
+               -> Int
                -> Int
                -> [NDArrayHandle]
                -> [Maybe NDArrayHandle]
@@ -189,7 +189,7 @@ fun MXExecutorBindX as mxExecutorBindX_
 #}
 
 mxExecutorBindX :: SymbolHandle
-                -> Int 
+                -> Int
                 -> Int
                 -> [String]
                 -> [Int]
@@ -235,7 +235,7 @@ fun MXExecutorBindEX as mxExecutorBindEX_
 #}
 
 mxExecutorBindEX :: SymbolHandle
-                 -> Int 
+                 -> Int
                  -> Int
                  -> [String]
                  -> [Int]
@@ -296,7 +296,7 @@ fun MXExecutorSimpleBind as mxExecutorSimpleBind_
         alloca- `MX_UINT' peek*,
         alloca- `Ptr NDArrayHandlePtr' peek*,
         `ExecutorHandle',
-        alloca- `ExecutorHandle' peekExecutorHandle*        
+        alloca- `ExecutorHandle' peekExecutorHandle*
     } -> `CInt'
 #}
 
@@ -315,25 +315,25 @@ mxExecutorSimpleBind :: SymbolHandle
                             [NDArrayHandle],                   -- grad_array
                             [NDArrayHandle],                   -- aux_array
                             ExecutorHandle)
-mxExecutorSimpleBind symbol 
-                     devtype devid 
-                     g2c_keys g2c_dev_types g2c_dev_ids 
-                     provided_grad_req_names 
-                     provided_grad_req_types 
+mxExecutorSimpleBind symbol
+                     devtype devid
+                     g2c_keys g2c_dev_types g2c_dev_ids
+                     provided_grad_req_names
+                     provided_grad_req_types
                      provided_arg_shape_names provided_arg_shape_data provided_arg_shape_idx
-                     provided_arg_dtype_names provided_arg_dtypes 
-                     provided_arg_stype_names provided_arg_stypes 
-                     shared_arg_name_list 
-                     shared_buffer 
+                     provided_arg_dtype_names provided_arg_dtypes
+                     provided_arg_stype_names provided_arg_stypes
+                     shared_arg_name_list
+                     shared_buffer
                      shared_exec_handle =
-    case shared_buffer of 
+    case shared_buffer of
 
         Nothing -> alloca (\ptr_shared_buffer_len -> do
             poke ptr_shared_buffer_len (-1)
-            (_, _, num_in_args, in_args, arg_grads, num_aux_states, aux_states, out) <- checked $ mxExecutorSimpleBind_ 
-                        symbol devtype_ devid_ 
-                        cnt_g2c g2c_keys g2c_dev_types_ g2c_dev_ids_ 
-                        cnt_provided_grad_req_list provided_grad_req_names provided_grad_req_types 
+            (_, _, num_in_args, in_args, arg_grads, num_aux_states, aux_states, out) <- checked $ mxExecutorSimpleBind_
+                        symbol devtype_ devid_
+                        cnt_g2c g2c_keys g2c_dev_types_ g2c_dev_ids_
+                        cnt_provided_grad_req_list provided_grad_req_names provided_grad_req_types
                         cnt_provided_arg_shapes provided_arg_shape_names provided_arg_shape_data_ provided_arg_shape_idx_
                         cnt_provided_arg_dtypes provided_arg_dtype_names provided_arg_dtypes_
                         cnt_provided_arg_stypes provided_arg_stype_names provided_arg_stypes_
@@ -347,12 +347,12 @@ mxExecutorSimpleBind symbol
 
         Just (shared_buffer_name_list, shared_buffer_handle_list) -> alloca (\ptr_shared_buffer_len -> do
             poke ptr_shared_buffer_len (fromIntegral $ length shared_buffer_name_list)
-            withStringArray shared_buffer_name_list (\ptr_shared_buffer_name_list -> 
+            withStringArray shared_buffer_name_list (\ptr_shared_buffer_name_list ->
                 withNDArrayHandleArray shared_buffer_handle_list (\ptr_shared_buffer_handle_list -> do
-                    (ptr_updated_shared_buffer_name_list, ptr_updated_shared_buffer_handle_list, num_in_args, in_args, arg_grads, num_aux_states, aux_states, out) <- checked $ mxExecutorSimpleBind_ 
-                                symbol devtype_ devid_ 
-                                cnt_g2c g2c_keys g2c_dev_types_ g2c_dev_ids_ 
-                                cnt_provided_grad_req_list provided_grad_req_names provided_grad_req_types 
+                    (ptr_updated_shared_buffer_name_list, ptr_updated_shared_buffer_handle_list, num_in_args, in_args, arg_grads, num_aux_states, aux_states, out) <- checked $ mxExecutorSimpleBind_
+                                symbol devtype_ devid_
+                                cnt_g2c g2c_keys g2c_dev_types_ g2c_dev_ids_
+                                cnt_provided_grad_req_list provided_grad_req_names provided_grad_req_types
                                 cnt_provided_arg_shapes provided_arg_shape_names provided_arg_shape_data_ provided_arg_shape_idx_
                                 cnt_provided_arg_dtypes provided_arg_dtype_names provided_arg_dtypes_
                                 cnt_provided_arg_stypes provided_arg_stype_names provided_arg_stypes_
@@ -399,10 +399,10 @@ fun MXExecutorReshapeEx as mxExecutorReshapeEx_
         withStringArray* `[String]',
         withArray* `[CInt]',
         withArray* `[MX_UINT]',
-        alloca- `MX_UINT' peek*,
+        alloca0- `MX_UINT' peek*,
         alloca- `Ptr NDArrayHandlePtr' peek*,
         alloca- `Ptr NDArrayHandlePtr' peek*,
-        alloca- `MX_UINT' peek*,
+        alloca0- `MX_UINT' peek*,
         alloca- `Ptr NDArrayHandlePtr' peek*,
         `ExecutorHandle',
         alloca- `ExecutorHandle' peekExecutorHandle*
@@ -413,16 +413,16 @@ mxExecutorReshapeEx :: Bool -> Bool -> Int -> Int
                     -> [String] -> [Int] -> [Int]        -- group2ctx
                     -> [String] -> [Int] -> [Int]        -- provided_arg_shapes
                     -> ExecutorHandle                    -- shared exec
-                    -> IO ([NDArrayHandle], [NDArrayHandle], [NDArrayHandle], ExecutorHandle)
-mxExecutorReshapeEx partial_shaping allow_up_sizing 
-                    devtype devid 
+                    -> IO ([NDArrayHandle], [Maybe NDArrayHandle], [NDArrayHandle], ExecutorHandle)
+mxExecutorReshapeEx partial_shaping allow_up_sizing
+                    devtype devid
                     g2c_keys g2c_dev_types g2c_dev_ids
                     provided_arg_shape_names provided_arg_shape_data provided_arg_shape_idx
                     shared_exec_handler = do
-    (num_in, arr_in, arr_grad, num_aux, arr_aux, exec_hdl) <- checked $ mxExecutorReshapeEx_ 
+    (num_in, arr_in, arr_grad, num_aux, arr_aux, exec_hdl) <- checked $ mxExecutorReshapeEx_
                     partial_shaping_ allow_up_sizing_
-                    devtype_ devid_ 
-                    cnt_g2c g2c_keys g2c_dev_types_ g2c_dev_ids_ 
+                    devtype_ devid_
+                    cnt_g2c g2c_keys g2c_dev_types_ g2c_dev_ids_
                     cnt_provided_arg_shapes provided_arg_shape_names provided_arg_shape_data_ provided_arg_shape_idx_
                     shared_exec_handler
 
@@ -430,7 +430,10 @@ mxExecutorReshapeEx partial_shaping allow_up_sizing
     arr_in   <- mapM newNDArrayHandle handle_ptrs
 
     handle_ptrs <- peekArray (fromIntegral num_in) arr_grad
-    arr_grad <- mapM newNDArrayHandle handle_ptrs
+    arr_grad <- flip mapM handle_ptrs $ \ptr ->
+                    if ptr == nullPtr
+                    then return Nothing
+                    else Just <$> newNDArrayHandle ptr
 
     handle_ptrs <- peekArray (fromIntegral num_aux) arr_aux
     arr_aux  <- mapM newNDArrayHandle handle_ptrs
@@ -450,10 +453,13 @@ mxExecutorReshapeEx partial_shaping allow_up_sizing
     provided_arg_shape_data_ = map fromIntegral provided_arg_shape_data
     provided_arg_shape_idx_  = map fromIntegral provided_arg_shape_idx
 
--- {# 
+-- {#
 -- fun MXExecutorGetOptimizedSymbol as mxExecutorGetOptimizedSymbol_
 --     {
 --         `ExecutorHandle',
 --         alloca- `SymbolHandle' peekSymbolHandle*
 --     } -> `CInt'
 -- #}
+
+alloca0 :: (Storable a, Num a) => (Ptr a -> IO b) -> IO b
+alloca0 f = alloca (\ptr -> poke ptr 0 >> f ptr)

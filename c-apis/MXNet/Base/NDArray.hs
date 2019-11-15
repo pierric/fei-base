@@ -39,7 +39,7 @@ makeNDArrayLike :: DType a => NDArray a -> Context -> IO (NDArray a)
 makeNDArrayLike src cxt = do
     shape <- ndshape src
     makeEmptyNDArray shape cxt
-        
+
 ndshape :: DType a => NDArray a -> IO [Int]
 ndshape = I.mxNDArrayGetShape . unNDArray
 
