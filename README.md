@@ -1,6 +1,7 @@
 # mxnet-hs
 ## build
-+ LD_LIBRARY_PATH=<path-to-incubator-mxnet-lib> stack build fei-base
++ update stack.yml, pointing to the actuall MXNet dynamic library folder and include folder.
++ stack build
 
 ## generate MXNet operators
 + the repository ships pre-generated operators for various version MXNet.
