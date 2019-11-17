@@ -96,6 +96,7 @@ executable mxnet-op-gen
                        mtl,
                        filepath >= 1.4 && < 1.5,
                        directory >= 1.3 && < 1.4,
+                       tuple-ops == 0.0.0.3,
                        fei-base
   default-language:    Haskell2010
   default-extensions:  FlexibleContexts
