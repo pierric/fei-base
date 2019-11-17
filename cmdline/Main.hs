@@ -2,6 +2,8 @@ module Main where
 
 import Options.Applicative hiding (optional)
 import Data.Semigroup ((<>))
+import Data.Function (on)
+import Data.List (sortBy)
 import Language.Haskell.Exts
 import qualified Data.Text as T
 import System.Log.Logger
@@ -13,6 +15,7 @@ import Text.Printf (printf)
 import Text.ParserCombinators.ReadP
 import System.FilePath
 import System.Directory
+import Data.Tuple.Ops (uncons)
 
 import MXNet.Base.Raw
 
@@ -32,13 +35,15 @@ main = do
     createDirectoryIfMissing True base
 
     ops  <- mxSymbolListAtomicSymbolCreators
+    op_names <- mapM getOpName ops
+    let ops_sorted = map snd $ sortBy (compare `on` fst) $ zip op_names ops
 
     infoM _module_ "Generating Symbol operators..."
-    symbols <- concat <$> mapM genSymOp ops
+    symbols <- concat <$> mapM genSymOp ops_sorted
     writeFile (base </> "Symbol.hs") $ prettyPrint (modSymbol symbols)
 
     infoM _module_ "Generating NDArray operators..."
-    arrays  <- concat <$> mapM genArrOp ops
+    arrays  <- concat <$> mapM genArrOp ops_sorted
     writeFile (base </> "NDArray.hs") $ prettyPrint (modArray arrays)
 
   where
@@ -53,6 +58,9 @@ main = do
                 , simpleImport "MXNet.Base.Spec.Operator"
                 , simpleImport "MXNet.Base.Spec.HMap"
                 , simpleImportVars "Data.Maybe" ["catMaybes", "fromMaybe"]]
+
+getOpName :: AtomicSymbolCreator -> IO String
+getOpName sc = fst . uncons <$> mxSymbolGetAtomicSymbolInfo sc
 
 makeParamInst :: String -> [ResolvedType] -> Bool -> Decl ()
 makeParamInst symname typs symbolapi =
