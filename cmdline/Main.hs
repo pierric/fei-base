@@ -46,6 +46,12 @@ main = do
     arrays  <- concat <$> mapM genArrOp ops_sorted
     writeFile (base </> "NDArray.hs") $ prettyPrint (modArray arrays)
 
+    dataitercreators  <- mxListDataIters
+    infoM _module_ "Generating DataIter..."
+    dataiters <- concat <$> mapM genDataIter (zip dataitercreators [0..])
+    let base = output_dir args </> "MXNet" </> "Base"
+    writeFile (base </> "DataIter.hs") $ prettyPrint (modDataIter dataiters)
+
   where
     opts = info (args_spec <**> helper) (fullDesc <> progDesc "Generate MXNet operators")
     modSymbol = Module () (Just $ ModuleHead () (ModuleName () "MXNet.Base.Operators.Symbol") Nothing Nothing) []
@@ -58,6 +64,11 @@ main = do
                 , simpleImport "MXNet.Base.Spec.Operator"
                 , simpleImport "MXNet.Base.Spec.HMap"
                 , simpleImportVars "Data.Maybe" ["catMaybes", "fromMaybe"]]
+    modDataIter = Module () (Just $ ModuleHead () (ModuleName () "MXNet.Base.DataIter") Nothing Nothing) [] 
+                  [ simpleImport "MXNet.Base.Raw"
+                  , simpleImport "MXNet.Base.Spec.Operator"
+                  , simpleImport "MXNet.Base.Spec.HMap"
+                  , simpleImportVars "Data.Maybe" ["catMaybes", "fromMaybe"]]
 
 getOpName :: AtomicSymbolCreator -> IO String
 getOpName sc = fst . uncons <$> mxSymbolGetAtomicSymbolInfo sc
@@ -93,7 +104,7 @@ genSymOp sc = do
         return []
     else do
         let symname_ = normalizeName symname
-            (errs, scalarTypes, tensorTypes, arrayTypes) = execWriter $ zipWithM_ (resolveHaskellType True) argname argtype
+            (errs, scalarTypes, tensorTypes, arrayTypes) = execWriter $ zipWithM_ (resolveHaskellType ResolveSymbol) argname argtype
 
         if not (null errs) then do
             forM errs $ \(name, msg) ->
@@ -107,37 +118,37 @@ genSymOp sc = do
             return []
         else do
             let paramListInst = makeParamInst symname_ (scalarTypes ++ tensorTypes ++ arrayTypes) True
-                sig = makeSignature symname_ GenSymbolOp $ 
+                sig = makeSignature symname_ GenSymbolOp $
                         -- the "Custom" is a little special, because it allow extra arguments
-                        if symname == "Custom" 
+                        if symname == "Custom"
                             --    PopKey (ArgOf "_Custom(symbol)") args "data",
                             --    Dump (PopResult (ArgOf "_Custom(symbol)") args "data"))
                             then let argOfCustom = tyParen $ tyApp (tyCon $ unQual $ name "ArgOf") (tyPromotedStr "_Custom(symbol)")
                                  in [appA (name "PopKey") [argOfCustom, tyVarIdent "args", tyPromotedStr "data"],
                                      appA (name "Dump") [ tyParen $
-                                        (tyCon $ unQual $ name "PopResult") `tyApp` 
-                                        argOfCustom `tyApp` 
-                                        tyVarIdent "args" `tyApp` 
+                                        (tyCon $ unQual $ name "PopResult") `tyApp`
+                                        argOfCustom `tyApp`
+                                        tyVarIdent "args" `tyApp`
                                         tyPromotedStr "data"]]
                             else []
             let fun = sfun (name symname_) [name "name", name "args"] (UnGuardedRhs () body) Nothing
-                make_scalar_values = 
-                    if symname == "Custom" 
+                make_scalar_values =
+                    if symname == "Custom"
                         -- dump (pop args #data)
                         then function "dump" `app` (
                                 function "pop" `app` (var $ name "args") `app` (OverloadedLabel () "data"))
                         -- catMaybes
                         --    [("KEY",) . showValue <$> (args !? #KEY :: Maybe VALUE_TYPE),
                         --     ... ]
-                        else function "catMaybes" `app` listE 
-                                [ infixApp (infixApp (tupleSection [Just $ strE argkey, Nothing]) 
-                                                     (op $ sym ".") 
+                        else function "catMaybes" `app` listE
+                                [ infixApp (infixApp (tupleSection [Just $ strE argkey, Nothing])
+                                                     (op $ sym ".")
                                                      (function "showValue"))
                                            (op $ sym "<$>") $
-                                           ExpTypeSig () (infixApp (var $ name "args") 
-                                                                   (op $ sym "!?") 
-                                                                   (OverloadedLabel () argkey)) 
-                                                      (tyApp (tyCon $ unQual $ name "Maybe") typ) 
+                                           ExpTypeSig () (infixApp (var $ name "args")
+                                                                   (op $ sym "!?")
+                                                                   (OverloadedLabel () argkey))
+                                                      (tyApp (tyCon $ unQual $ name "Maybe") typ)
                                 | (argkey, _, typ) <- scalarTypes]
                 body =  letE ([
                           patBind (pvar $ name "scalarArgs") make_scalar_values
@@ -214,7 +225,7 @@ genArrOp sc = do
         return []
     else do
         let symname_ = normalizeName symname
-            (errs, scalarTypes, tensorTypes, arrayTypes) = execWriter $ zipWithM_ (resolveHaskellType False) argname argtype
+            (errs, scalarTypes, tensorTypes, arrayTypes) = execWriter $ zipWithM_ (resolveHaskellType ResolveNDArray) argname argtype
 
         if not (null errs) then do
             forM errs $ \(name, msg) ->
@@ -284,6 +295,39 @@ genArrOp sc = do
                             [ qualStmt $ function "return" `app` (if retval then var $ name "listndarr" else unit_con ()) ])
             return [paramListInst, sig1, fun1, sig2, fun2]
 
+genDataIter :: (DataIterCreator, Integer) -> IO [Decl ()]
+genDataIter (dataitercreator, index) = do
+    (diname, didesc, argnames, argtypes, argdescs) <- mxDataIterGetIterInfo dataitercreator
+    let diname_ = normalizeName diname
+        (errs, scalarTypes, _, _) = execWriter $ zipWithM_ (resolveHaskellType ResolveDataIter) argnames argtypes
+
+        -- parameter list
+        paramList = map (\(name, typ1, typ2) -> tyPromotedTuple [tyPromotedStr name, tyApp typ1 typ2]) scalarTypes
+        paramInst = TypeInsDecl () (tyApp (tyCon $ unQual $ name "ParameterList") (tyPromotedStr diname))
+                        (tyPromotedList paramList)
+
+        -- signature
+        cxfullfill = appA (name "Fullfilled") [tyPromotedStr diname, tyVarIdent "args"]
+        tyfun = tyFun (tyApp (tyApp (tyCon $ unQual $ name "ArgsHMap") (tyPromotedStr diname)) (tyVarIdent "args"))
+                    (tyApp (tyCon $ unQual $ name "IO") (tyCon $ unQual $ name "DataIterHandle"))
+        tysig = tySig [name diname_] $ tyForall [unkindedVar (name "args")] (cxSingle cxfullfill) tyfun
+
+        -- function
+        fun = sfun (name diname_) [name "args"] (UnGuardedRhs () body) Nothing
+        body = letE ([
+                patBind (pvar $ name "allargs") (function "catMaybes"
+                    `app` listE [
+                        infixApp (infixApp (tupleSection [Just $ strE argkey, Nothing]) (op $ sym ".") (function "showValue")) (op $ sym "<$>") $
+                            ExpTypeSig () (infixApp (var $ name "args") (op $ sym "!?") (OverloadedLabel () argkey)) (tyApp (tyCon $ unQual $ name "Maybe") typ) | (argkey, _, typ) <- scalarTypes])
+              , patBind (pTuple [pvar $ name "keys", pvar $ name "vals"]) (app (function "unzip") $ var $ name "allargs")
+              ]) (doE $ [
+                  genStmt (pvar $ name "dis") $ function "mxListDataIters",
+                  genStmt (pvar $ name "di") $ function "return" `app` (infixApp (var $ name "dis") (op $ sym "!!") (intE index)),
+                  qualStmt $ function "mxDataIterCreateIter" `app` (var $ name "di") `app` (var $ name "keys") `app` (var $ name "vals")
+              ])
+
+    return [paramInst, tysig, fun]
+
 normalizeName :: String -> String
 normalizeName name@(c:cs)
     | isUpper c = '_' : name
@@ -291,10 +335,11 @@ normalizeName name@(c:cs)
     | otherwise = name
 
 data ParamDesc = ParamDescItem String | ParamDescList Bool [String] deriving (Eq, Show)
+data ResolveMode = ResolveNDArray | ResolveSymbol | ResolveDataIter deriving Eq
 
 type ResolvedType = (String, Type (), Type ())
-resolveHaskellType :: Bool -> String -> String -> Writer ([(String, String)], [ResolvedType], [ResolvedType], [ResolvedType]) ()
-resolveHaskellType asSymbol symname desc = do
+resolveHaskellType :: ResolveMode -> String -> String -> Writer ([(String, String)], [ResolvedType], [ResolvedType], [ResolvedType]) ()
+resolveHaskellType mode symname desc = do
     let fail   msg   = tell ([(symname, msg)], [], [], [])
     case readP_to_S typedesc desc of
         [(fields, "")] -> do
@@ -355,7 +400,9 @@ resolveHaskellType asSymbol symname desc = do
                         typ1 = tyApp (tyCon $ unQual $ name "EnumType") (tyPromotedList vsprom)
                         typ2 = tyApp (tyCon $ unQual $ name "Maybe") typ1
                     scalar $ if hasnone then typ2 else typ1
-                t -> (if asSymbol then handleSymbol else handleNDArray) t
+                t | mode == ResolveNDArray  -> handleNDArray t
+                  | mode == ResolveSymbol   -> handleSymbol t
+                  | mode == ResolveDataIter -> fallThrough t
         other -> fail (printf "cannot parse type description: %s" desc)
 
 typedesc = do
