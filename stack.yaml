@@ -10,7 +10,6 @@ extra-deps:
   commit: f75a5dbe2ec9fbc67df0936333e0665b033f9e22
 extra-include-dirs:
 - /home/jiasen/dschungel/incubator-mxnet-1.5/include
-- /home/jiasen/dschungel/incubator-mxnet-1.5/nnvm/include
 extra-lib-dirs:
 - /home/jiasen/dschungel/incubator-mxnet-1.5/lib
 flags:
