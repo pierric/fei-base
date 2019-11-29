@@ -326,7 +326,12 @@ genDataIter (dataitercreator, index) = do
                   qualStmt $ function "mxDataIterCreateIter" `app` (var $ name "di") `app` (var $ name "keys") `app` (var $ name "vals")
               ])
 
-    return [paramInst, tysig, fun]
+    if not (null errs) then do
+       forM errs $ \(name, msg) ->
+           errorM _module_ (printf "Function: %s %s" diname msg)
+       return []
+    else
+       return [paramInst, tysig, fun]
 
 normalizeName :: String -> String
 normalizeName name@(c:cs)
@@ -403,7 +408,7 @@ resolveHaskellType mode symname desc = do
                 t | mode == ResolveNDArray  -> handleNDArray t
                   | mode == ResolveSymbol   -> handleSymbol t
                   | mode == ResolveDataIter -> fallThrough t
-        other -> fail (printf "cannot parse type description: %s" desc)
+        other -> fail (printf "cannot parse type description: %s. Result: %s" desc (show other))
 
 typedesc = do
     -- since 1.3, there are types starting with ',', and it implies 'int' type.
@@ -412,10 +417,10 @@ typedesc = do
     eof
     return $ def ++ ds
   where
-    list1 = ParamDescList True  <$> between (string "{None,") (char '}') (sepBy (skipSpaces >> listItem) (char ','))
-    list2 = ParamDescList False <$> between (string "{") (char '}') (sepBy (skipSpaces >> listItem) (char ','))
-    listItem = between (char '\'') (char '\'') (munch1 (\c -> isAlphaNum c || c `elem` "_"))
-    item = ParamDescItem <$> munch1 (\c -> isAlphaNum c || c `elem` " _-()=[]<>'.")
+    list1 = ParamDescList True  <$> between (string "{None,") (char '}') (sepBy (skipSpaces >> strItem) (char ','))
+    list2 = ParamDescList False <$> between (string "{") (char '}') (sepBy (skipSpaces >> strItem) (char ','))
+    strItem = between (char '\'') (char '\'') (munch1 (\c -> isAlphaNum c || c `elem` "_-+-./"))
+    item = ParamDescItem <$> munch1 (\c -> isAlphaNum c || c `elem` " _-+()=[]<>./'")
 
 unQual = UnQual ()
 unkindedVar = UnkindedVar ()
