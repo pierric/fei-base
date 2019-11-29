@@ -76,7 +76,8 @@ library
                        MXNet.Base.Spec.HMap
   if flag(MXNet_1_0) || flag(MXNet_1_3) || flag(MXNet_1_4) || flag(MXnet_1_5) {
     exposed-modules:   MXNet.Base.Operators.Symbol,
-                       MXNet.Base.Operators.NDArray
+                       MXNet.Base.Operators.NDArray,
+                       MXNet.Base.DataIter
   }
   other-modules:       MXNet.Base.Raw.Common,
                        MXNet.Base.Raw.NDArray,
