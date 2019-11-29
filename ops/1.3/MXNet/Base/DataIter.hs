@@ -46,7 +46,8 @@ _CSVIter args
          mxDataIterCreateIter di keys vals
 
 type instance ParameterList "ImageDetRecordIter" =
-     '[ '("path_imglist", AttrOpt String), '("aug_seq", AttrOpt String),
+     '[ '("path_imglist", AttrOpt String),
+        '("path_imgrec", AttrOpt String), '("aug_seq", AttrOpt String),
         '("label_width", AttrOpt Int), '("data_shape", AttrReq [Int]),
         '("preprocess_threads", AttrOpt Int), '("verbose", AttrOpt Bool),
         '("num_parts", AttrOpt Int), '("part_index", AttrOpt Int),
@@ -105,6 +106,8 @@ _ImageDetRecordIter args
           = catMaybes
               [("path_imglist",) . showValue <$>
                  (args !? #path_imglist :: Maybe String),
+               ("path_imgrec",) . showValue <$>
+                 (args !? #path_imgrec :: Maybe String),
                ("aug_seq",) . showValue <$> (args !? #aug_seq :: Maybe String),
                ("label_width",) . showValue <$>
                  (args !? #label_width :: Maybe Int),
@@ -245,20 +248,21 @@ type instance ParameterList "ImageRecordIter_v1" =
         '("min_random_scale", AttrOpt Float),
         '("max_random_area", AttrOpt Float),
         '("min_random_area", AttrOpt Float),
-        '("min_img_size", AttrOpt Float), '("brightness", AttrOpt Float),
-        '("contrast", AttrOpt Float), '("saturation", AttrOpt Float),
-        '("pca_noise", AttrOpt Float), '("random_h", AttrOpt Int),
-        '("random_s", AttrOpt Int), '("random_l", AttrOpt Int),
-        '("rotate", AttrOpt Int), '("fill_value", AttrOpt Int),
-        '("data_shape", AttrReq [Int]), '("inter_method", AttrOpt Int),
-        '("pad", AttrOpt Int), '("seed_aug", AttrOpt (Maybe Int)),
-        '("seed", AttrOpt Int), '("mirror", AttrOpt Bool),
-        '("rand_mirror", AttrOpt Bool), '("mean_img", AttrOpt String),
-        '("mean_r", AttrOpt Float), '("mean_g", AttrOpt Float),
-        '("mean_b", AttrOpt Float), '("mean_a", AttrOpt Float),
-        '("std_r", AttrOpt Float), '("std_g", AttrOpt Float),
-        '("std_b", AttrOpt Float), '("std_a", AttrOpt Float),
-        '("scale", AttrOpt Float), '("max_random_contrast", AttrOpt Float),
+        '("max_img_size", AttrOpt Float), '("min_img_size", AttrOpt Float),
+        '("brightness", AttrOpt Float), '("contrast", AttrOpt Float),
+        '("saturation", AttrOpt Float), '("pca_noise", AttrOpt Float),
+        '("random_h", AttrOpt Int), '("random_s", AttrOpt Int),
+        '("random_l", AttrOpt Int), '("rotate", AttrOpt Int),
+        '("fill_value", AttrOpt Int), '("data_shape", AttrReq [Int]),
+        '("inter_method", AttrOpt Int), '("pad", AttrOpt Int),
+        '("seed_aug", AttrOpt (Maybe Int)), '("seed", AttrOpt Int),
+        '("mirror", AttrOpt Bool), '("rand_mirror", AttrOpt Bool),
+        '("mean_img", AttrOpt String), '("mean_r", AttrOpt Float),
+        '("mean_g", AttrOpt Float), '("mean_b", AttrOpt Float),
+        '("mean_a", AttrOpt Float), '("std_r", AttrOpt Float),
+        '("std_g", AttrOpt Float), '("std_b", AttrOpt Float),
+        '("std_a", AttrOpt Float), '("scale", AttrOpt Float),
+        '("max_random_contrast", AttrOpt Float),
         '("max_random_illumination", AttrOpt Float),
         '("verbose", AttrOpt Bool)]
 
@@ -326,6 +330,8 @@ _ImageRecordIter_v1 args
                  (args !? #max_random_area :: Maybe Float),
                ("min_random_area",) . showValue <$>
                  (args !? #min_random_area :: Maybe Float),
+               ("max_img_size",) . showValue <$>
+                 (args !? #max_img_size :: Maybe Float),
                ("min_img_size",) . showValue <$>
                  (args !? #min_img_size :: Maybe Float),
                ("brightness",) . showValue <$>
@@ -399,13 +405,14 @@ type instance ParameterList "ImageRecordUInt8Iter_v1" =
         '("min_random_scale", AttrOpt Float),
         '("max_random_area", AttrOpt Float),
         '("min_random_area", AttrOpt Float),
-        '("min_img_size", AttrOpt Float), '("brightness", AttrOpt Float),
-        '("contrast", AttrOpt Float), '("saturation", AttrOpt Float),
-        '("pca_noise", AttrOpt Float), '("random_h", AttrOpt Int),
-        '("random_s", AttrOpt Int), '("random_l", AttrOpt Int),
-        '("rotate", AttrOpt Int), '("fill_value", AttrOpt Int),
-        '("data_shape", AttrReq [Int]), '("inter_method", AttrOpt Int),
-        '("pad", AttrOpt Int), '("seed_aug", AttrOpt (Maybe Int))]
+        '("max_img_size", AttrOpt Float), '("min_img_size", AttrOpt Float),
+        '("brightness", AttrOpt Float), '("contrast", AttrOpt Float),
+        '("saturation", AttrOpt Float), '("pca_noise", AttrOpt Float),
+        '("random_h", AttrOpt Int), '("random_s", AttrOpt Int),
+        '("random_l", AttrOpt Int), '("rotate", AttrOpt Int),
+        '("fill_value", AttrOpt Int), '("data_shape", AttrReq [Int]),
+        '("inter_method", AttrOpt Int), '("pad", AttrOpt Int),
+        '("seed_aug", AttrOpt (Maybe Int))]
 
 _ImageRecordUInt8Iter_v1 ::
                          forall args . Fullfilled "ImageRecordUInt8Iter_v1" args =>
@@ -471,6 +478,8 @@ _ImageRecordUInt8Iter_v1 args
                  (args !? #max_random_area :: Maybe Float),
                ("min_random_area",) . showValue <$>
                  (args !? #min_random_area :: Maybe Float),
+               ("max_img_size",) . showValue <$>
+                 (args !? #max_img_size :: Maybe Float),
                ("min_img_size",) . showValue <$>
                  (args !? #min_img_size :: Maybe Float),
                ("brightness",) . showValue <$>
@@ -498,7 +507,8 @@ _ImageRecordUInt8Iter_v1 args
          mxDataIterCreateIter di keys vals
 
 type instance ParameterList "MNISTIter" =
-     '[ '("batch_size", AttrOpt Int), '("shuffle", AttrOpt Bool),
+     '[ '("image", AttrOpt String), '("label", AttrOpt String),
+        '("batch_size", AttrOpt Int), '("shuffle", AttrOpt Bool),
         '("flat", AttrOpt Bool), '("seed", AttrOpt Int),
         '("silent", AttrOpt Bool), '("num_parts", AttrOpt Int),
         '("part_index", AttrOpt Int), '("prefetch_buffer", AttrOpt Int),
@@ -514,8 +524,9 @@ _MNISTIter ::
 _MNISTIter args
   = let allargs
           = catMaybes
-              [("batch_size",) . showValue <$>
-                 (args !? #batch_size :: Maybe Int),
+              [("image",) . showValue <$> (args !? #image :: Maybe String),
+               ("label",) . showValue <$> (args !? #label :: Maybe String),
+               ("batch_size",) . showValue <$> (args !? #batch_size :: Maybe Int),
                ("shuffle",) . showValue <$> (args !? #shuffle :: Maybe Bool),
                ("flat",) . showValue <$> (args !? #flat :: Maybe Bool),
                ("seed",) . showValue <$> (args !? #seed :: Maybe Int),
@@ -564,20 +575,21 @@ type instance ParameterList "ImageRecordIter" =
         '("min_random_scale", AttrOpt Float),
         '("max_random_area", AttrOpt Float),
         '("min_random_area", AttrOpt Float),
-        '("min_img_size", AttrOpt Float), '("brightness", AttrOpt Float),
-        '("contrast", AttrOpt Float), '("saturation", AttrOpt Float),
-        '("pca_noise", AttrOpt Float), '("random_h", AttrOpt Int),
-        '("random_s", AttrOpt Int), '("random_l", AttrOpt Int),
-        '("rotate", AttrOpt Int), '("fill_value", AttrOpt Int),
-        '("data_shape", AttrReq [Int]), '("inter_method", AttrOpt Int),
-        '("pad", AttrOpt Int), '("seed_aug", AttrOpt (Maybe Int)),
-        '("seed", AttrOpt Int), '("mirror", AttrOpt Bool),
-        '("rand_mirror", AttrOpt Bool), '("mean_img", AttrOpt String),
-        '("mean_r", AttrOpt Float), '("mean_g", AttrOpt Float),
-        '("mean_b", AttrOpt Float), '("mean_a", AttrOpt Float),
-        '("std_r", AttrOpt Float), '("std_g", AttrOpt Float),
-        '("std_b", AttrOpt Float), '("std_a", AttrOpt Float),
-        '("scale", AttrOpt Float), '("max_random_contrast", AttrOpt Float),
+        '("max_img_size", AttrOpt Float), '("min_img_size", AttrOpt Float),
+        '("brightness", AttrOpt Float), '("contrast", AttrOpt Float),
+        '("saturation", AttrOpt Float), '("pca_noise", AttrOpt Float),
+        '("random_h", AttrOpt Int), '("random_s", AttrOpt Int),
+        '("random_l", AttrOpt Int), '("rotate", AttrOpt Int),
+        '("fill_value", AttrOpt Int), '("data_shape", AttrReq [Int]),
+        '("inter_method", AttrOpt Int), '("pad", AttrOpt Int),
+        '("seed_aug", AttrOpt (Maybe Int)), '("seed", AttrOpt Int),
+        '("mirror", AttrOpt Bool), '("rand_mirror", AttrOpt Bool),
+        '("mean_img", AttrOpt String), '("mean_r", AttrOpt Float),
+        '("mean_g", AttrOpt Float), '("mean_b", AttrOpt Float),
+        '("mean_a", AttrOpt Float), '("std_r", AttrOpt Float),
+        '("std_g", AttrOpt Float), '("std_b", AttrOpt Float),
+        '("std_a", AttrOpt Float), '("scale", AttrOpt Float),
+        '("max_random_contrast", AttrOpt Float),
         '("max_random_illumination", AttrOpt Float),
         '("verbose", AttrOpt Bool)]
 
@@ -645,6 +657,8 @@ _ImageRecordIter args
                  (args !? #max_random_area :: Maybe Float),
                ("min_random_area",) . showValue <$>
                  (args !? #min_random_area :: Maybe Float),
+               ("max_img_size",) . showValue <$>
+                 (args !? #max_img_size :: Maybe Float),
                ("min_img_size",) . showValue <$>
                  (args !? #min_img_size :: Maybe Float),
                ("brightness",) . showValue <$>
@@ -718,13 +732,14 @@ type instance ParameterList "ImageRecordUInt8Iter" =
         '("min_random_scale", AttrOpt Float),
         '("max_random_area", AttrOpt Float),
         '("min_random_area", AttrOpt Float),
-        '("min_img_size", AttrOpt Float), '("brightness", AttrOpt Float),
-        '("contrast", AttrOpt Float), '("saturation", AttrOpt Float),
-        '("pca_noise", AttrOpt Float), '("random_h", AttrOpt Int),
-        '("random_s", AttrOpt Int), '("random_l", AttrOpt Int),
-        '("rotate", AttrOpt Int), '("fill_value", AttrOpt Int),
-        '("data_shape", AttrReq [Int]), '("inter_method", AttrOpt Int),
-        '("pad", AttrOpt Int), '("seed_aug", AttrOpt (Maybe Int))]
+        '("max_img_size", AttrOpt Float), '("min_img_size", AttrOpt Float),
+        '("brightness", AttrOpt Float), '("contrast", AttrOpt Float),
+        '("saturation", AttrOpt Float), '("pca_noise", AttrOpt Float),
+        '("random_h", AttrOpt Int), '("random_s", AttrOpt Int),
+        '("random_l", AttrOpt Int), '("rotate", AttrOpt Int),
+        '("fill_value", AttrOpt Int), '("data_shape", AttrReq [Int]),
+        '("inter_method", AttrOpt Int), '("pad", AttrOpt Int),
+        '("seed_aug", AttrOpt (Maybe Int))]
 
 _ImageRecordUInt8Iter ::
                       forall args . Fullfilled "ImageRecordUInt8Iter" args =>
@@ -790,6 +805,8 @@ _ImageRecordUInt8Iter args
                  (args !? #max_random_area :: Maybe Float),
                ("min_random_area",) . showValue <$>
                  (args !? #min_random_area :: Maybe Float),
+               ("max_img_size",) . showValue <$>
+                 (args !? #max_img_size :: Maybe Float),
                ("min_img_size",) . showValue <$>
                  (args !? #min_img_size :: Maybe Float),
                ("brightness",) . showValue <$>
