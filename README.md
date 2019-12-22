@@ -10,6 +10,5 @@
 
 ## see also
 + https://github.com/pierric/fei-nn
-+ https://github.com/pierric/fei-dataiter
 + https://github.com/pierric/fei-cocoapi
 + https://github.com/pierric/fei-examples
