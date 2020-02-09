@@ -13,6 +13,11 @@ category:            Machine Learning, AI
 build-type:          Simple
 extra-source-files:  README.md
 
+Flag MXNet_1_6 {
+  Description: With MXNet 1.6.x operators
+  Default: True
+}
+
 Flag MXNet_1_5 {
   Description: With MXNet 1.5.x operators
   Default: True
@@ -47,6 +52,9 @@ library
   elif flag(MXNet_1_5) {
       hs-source-dirs:  ops/1.5
   }
+  elif flag(MXNet_1_6) {
+      hs-source-dirs:  ops/1.6
+  }
   build-depends:       base >= 4.7 && < 5,
                        c2hs-extra == 0.1.0.1,
                        tuple-ops == 0.0.0.3,
@@ -74,7 +82,7 @@ library
                        MXNet.Base.Executor,
                        MXNet.Base.Spec.Operator,
                        MXNet.Base.Spec.HMap
-  if flag(MXNet_1_0) || flag(MXNet_1_3) || flag(MXNet_1_4) || flag(MXnet_1_5) {
+  if flag(MXNet_1_0) || flag(MXNet_1_3) || flag(MXNet_1_4) || flag(MXnet_1_5) || flag(MXnet_1_6) {
     exposed-modules:   MXNet.Base.Operators.Symbol,
                        MXNet.Base.Operators.NDArray,
                        MXNet.Base.DataIter
