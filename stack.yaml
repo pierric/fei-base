@@ -9,9 +9,9 @@ extra-deps:
 - git: https://github.com/pierric/haskell-src-exts.git
   commit: f75a5dbe2ec9fbc67df0936333e0665b033f9e22
 extra-include-dirs:
-- /home/jiasen/dschungel/incubator-mxnet-1.5/include
+- /home/jiasen/hdd/dschungel/incubator-mxnet-1.6.0.rc1/include
 extra-lib-dirs:
-- /home/jiasen/dschungel/incubator-mxnet-1.5/lib
+- /home/jiasen/hdd/dschungel/incubator-mxnet-1.6.0.rc1/lib
 flags:
   fei-base:
-    MXNet_1_5: true
+    MXNet_1_6: true
