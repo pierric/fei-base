@@ -11,6 +11,9 @@ import qualified Data.Array.Repa as Repa
 import qualified Data.Array.Repa.Eval as Repa
 import GHC.Generics (Generic, Generic1)
 import Control.DeepSeq (NFData, NFData1)
+import qualified Data.Store as S
+import Control.Monad.IO.Class
+import System.IO.Unsafe
 
 import qualified MXNet.Base.Raw as I
 import MXNet.Base.Types (Context(..), contextCPU, DType(..), ForeignData(..))
@@ -22,6 +25,23 @@ instance ForeignData (NDArray a) where
 
 instance NFData (NDArray a)
 instance NFData1 NDArray
+
+instance (DType a, S.Store a) => S.Store (NDArray a) where
+    size = S.VarSize $ \a ->
+                -- not ideal, I should avoid call toVector
+                let b = unsafePerformIO $ do
+                            shape <- ndshape a
+                            vec <- toVector a
+                            return (shape, vec)
+                    S.VarSize sz = S.size :: S.Size ([Int], V.Vector a)
+                in sz b
+    peek = do
+        (shape, vec) <- S.peek
+        liftIO $ fromVector shape vec
+    poke a = do
+        shape <- liftIO $ ndshape a
+        vec <- liftIO $ toVector a
+        S.poke (shape, vec)
 
 makeEmptyNDArray :: forall a. DType a => [Int] -> Context -> IO (NDArray a)
 makeEmptyNDArray shape ctx = do
