@@ -528,52 +528,6 @@ _ImageRecordUInt8Iter_v1 args
          di <- return (dis !! 3)
          mxDataIterCreateIter di keys vals
 
-type instance ParameterList "MNISTIter" =
-     '[ '("image", AttrOpt String), '("label", AttrOpt String),
-        '("batch_size", AttrOpt Int), '("shuffle", AttrOpt Bool),
-        '("flat", AttrOpt Bool), '("seed", AttrOpt Int),
-        '("silent", AttrOpt Bool), '("num_parts", AttrOpt Int),
-        '("part_index", AttrOpt Int), '("prefetch_buffer", AttrOpt Int),
-        '("ctx", AttrOpt (EnumType '["cpu", "gpu"])),
-        '("dtype",
-          AttrOpt
-            (Maybe
-               (EnumType
-                  '["float16", "float32", "float64", "int32", "int64", "int8",
-                    "uint8"])))]
-
-_MNISTIter ::
-           forall args . Fullfilled "MNISTIter" args =>
-             ArgsHMap "MNISTIter" args -> IO DataIterHandle
-_MNISTIter args
-  = let allargs
-          = catMaybes
-              [("image",) . showValue <$> (args !? #image :: Maybe String),
-               ("label",) . showValue <$> (args !? #label :: Maybe String),
-               ("batch_size",) . showValue <$> (args !? #batch_size :: Maybe Int),
-               ("shuffle",) . showValue <$> (args !? #shuffle :: Maybe Bool),
-               ("flat",) . showValue <$> (args !? #flat :: Maybe Bool),
-               ("seed",) . showValue <$> (args !? #seed :: Maybe Int),
-               ("silent",) . showValue <$> (args !? #silent :: Maybe Bool),
-               ("num_parts",) . showValue <$> (args !? #num_parts :: Maybe Int),
-               ("part_index",) . showValue <$> (args !? #part_index :: Maybe Int),
-               ("prefetch_buffer",) . showValue <$>
-                 (args !? #prefetch_buffer :: Maybe Int),
-               ("ctx",) . showValue <$>
-                 (args !? #ctx :: Maybe (EnumType '["cpu", "gpu"])),
-               ("dtype",) . showValue <$>
-                 (args !? #dtype ::
-                    Maybe
-                      (Maybe
-                         (EnumType
-                            '["float16", "float32", "float64", "int32", "int64", "int8",
-                              "uint8"])))]
-        (keys, vals) = unzip allargs
-      in
-      do dis <- mxListDataIters
-         di <- return (dis !! 4)
-         mxDataIterCreateIter di keys vals
-
 type instance ParameterList "ImageRecordIter" =
      '[ '("path_imglist", AttrOpt String),
         '("path_imgrec", AttrOpt String), '("path_imgidx", AttrOpt String),
@@ -734,7 +688,7 @@ _ImageRecordIter args
         (keys, vals) = unzip allargs
       in
       do dis <- mxListDataIters
-         di <- return (dis !! 5)
+         di <- return (dis !! 4)
          mxDataIterCreateIter di keys vals
 
 type instance ParameterList "ImageRecordUInt8Iter" =
@@ -869,7 +823,7 @@ _ImageRecordUInt8Iter args
         (keys, vals) = unzip allargs
       in
       do dis <- mxListDataIters
-         di <- return (dis !! 6)
+         di <- return (dis !! 5)
          mxDataIterCreateIter di keys vals
 
 type instance ParameterList "ImageRecordInt8Iter" =
@@ -1004,7 +958,7 @@ _ImageRecordInt8Iter args
         (keys, vals) = unzip allargs
       in
       do dis <- mxListDataIters
-         di <- return (dis !! 7)
+         di <- return (dis !! 6)
          mxDataIterCreateIter di keys vals
 
 type instance ParameterList "LibSVMIter" =
@@ -1040,6 +994,52 @@ _LibSVMIter args
                ("batch_size",) . showValue <$> (args !? #batch_size :: Maybe Int),
                ("round_batch",) . showValue <$>
                  (args !? #round_batch :: Maybe Bool),
+               ("prefetch_buffer",) . showValue <$>
+                 (args !? #prefetch_buffer :: Maybe Int),
+               ("ctx",) . showValue <$>
+                 (args !? #ctx :: Maybe (EnumType '["cpu", "gpu"])),
+               ("dtype",) . showValue <$>
+                 (args !? #dtype ::
+                    Maybe
+                      (Maybe
+                         (EnumType
+                            '["float16", "float32", "float64", "int32", "int64", "int8",
+                              "uint8"])))]
+        (keys, vals) = unzip allargs
+      in
+      do dis <- mxListDataIters
+         di <- return (dis !! 7)
+         mxDataIterCreateIter di keys vals
+
+type instance ParameterList "MNISTIter" =
+     '[ '("image", AttrOpt String), '("label", AttrOpt String),
+        '("batch_size", AttrOpt Int), '("shuffle", AttrOpt Bool),
+        '("flat", AttrOpt Bool), '("seed", AttrOpt Int),
+        '("silent", AttrOpt Bool), '("num_parts", AttrOpt Int),
+        '("part_index", AttrOpt Int), '("prefetch_buffer", AttrOpt Int),
+        '("ctx", AttrOpt (EnumType '["cpu", "gpu"])),
+        '("dtype",
+          AttrOpt
+            (Maybe
+               (EnumType
+                  '["float16", "float32", "float64", "int32", "int64", "int8",
+                    "uint8"])))]
+
+_MNISTIter ::
+           forall args . Fullfilled "MNISTIter" args =>
+             ArgsHMap "MNISTIter" args -> IO DataIterHandle
+_MNISTIter args
+  = let allargs
+          = catMaybes
+              [("image",) . showValue <$> (args !? #image :: Maybe String),
+               ("label",) . showValue <$> (args !? #label :: Maybe String),
+               ("batch_size",) . showValue <$> (args !? #batch_size :: Maybe Int),
+               ("shuffle",) . showValue <$> (args !? #shuffle :: Maybe Bool),
+               ("flat",) . showValue <$> (args !? #flat :: Maybe Bool),
+               ("seed",) . showValue <$> (args !? #seed :: Maybe Int),
+               ("silent",) . showValue <$> (args !? #silent :: Maybe Bool),
+               ("num_parts",) . showValue <$> (args !? #num_parts :: Maybe Int),
+               ("part_index",) . showValue <$> (args !? #part_index :: Maybe Int),
                ("prefetch_buffer",) . showValue <$>
                  (args !? #prefetch_buffer :: Maybe Int),
                ("ctx",) . showValue <$>
