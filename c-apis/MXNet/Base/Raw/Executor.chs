@@ -40,7 +40,7 @@ touchExecutorHandle :: ExecutorHandle -> IO ()
 touchExecutorHandle (ExecutorHandle fptr) = touchForeignPtr fptr
 
 newExecutorHandle :: ExecutorHandlePtr -> IO ExecutorHandle
-newExecutorHandle ptr = newForeignPtr ptr (mxExecutorFree ptr) >>= return . ExecutorHandle
+newExecutorHandle ptr = newForeignPtr_ ptr >>= return . ExecutorHandle
 
 peekExecutorHandle :: Ptr ExecutorHandlePtr -> IO ExecutorHandle
 peekExecutorHandle = peek >=> newExecutorHandle

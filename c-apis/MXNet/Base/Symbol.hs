@@ -21,7 +21,6 @@ import Control.Exception.Base (Exception, throwIO)
 
 import qualified MXNet.Base.Raw as I
 import MXNet.Base.Types (ForeignData(..))
-import Debug.Trace
 
 newtype Symbol a = Symbol { unSymbol :: I.SymbolHandle }
 
