@@ -24,7 +24,7 @@ import Control.Monad ((>=>))
 
 -- NDArray
 {#
-pointer NDArrayHandle foreign newtype 
+pointer NDArrayHandle foreign newtype
 #}
 
 deriving instance Generic NDArrayHandle
@@ -125,7 +125,7 @@ fun MXNDArraySyncCopyFromCPU as mxNDArraySyncCopyFromCPU_
 #}
 
 mxNDArraySyncCopyFromCPU :: NDArrayHandle -> Ptr () -> Int -> IO ()
-mxNDArraySyncCopyFromCPU array ptr size = 
+mxNDArraySyncCopyFromCPU array ptr size =
     checked $ mxNDArraySyncCopyFromCPU_ array ptr (fromIntegral size)
 
 {#
@@ -151,7 +151,7 @@ fun MXNDArraySyncCopyFromNDArray as mxNDArraySyncCopyFromNDArray_
 #}
 
 mxNDArraySyncCopyFromNDArray :: NDArrayHandle -> NDArrayHandle -> Int -> IO ()
-mxNDArraySyncCopyFromNDArray array_dst array_src blob = 
+mxNDArraySyncCopyFromNDArray array_dst array_src blob =
     checked $ mxNDArraySyncCopyFromNDArray_ array_dst array_src (fromIntegral blob)
 
 {#
@@ -183,6 +183,7 @@ fun MXNDArrayWaitAll as mxNDArrayWaitAll_
 mxNDArrayWaitAll :: IO ()
 mxNDArrayWaitAll = checked mxNDArrayWaitAll_
 
+#if MXNet_MAJOR==1 && MXNet_MINOR<6
 {#
 fun MXNDArraySlice as mxNDArraySlice_
     {
@@ -192,6 +193,17 @@ fun MXNDArraySlice as mxNDArraySlice_
         alloca- `NDArrayHandle' peekNDArrayHandle*
     } -> `CInt'
 #}
+#else
+{#
+fun MXNDArraySlice as mxNDArraySlice_
+    {
+        `NDArrayHandle',
+        `CUInt',
+        `CUInt',
+        alloca- `NDArrayHandle' peekNDArrayHandle*
+    } -> `CInt'
+#}
+#endif
 
 mxNDArraySlice :: NDArrayHandle -> Int -> Int -> IO NDArrayHandle
 mxNDArraySlice array begin end = do
@@ -199,6 +211,8 @@ mxNDArraySlice array begin end = do
         end_   = fromIntegral end
     checked $ mxNDArraySlice_ array begin_ end_
 
+
+#if MXNet_MAJOR==1 && MXNet_MINOR<6
 {#
 fun MXNDArrayAt as mxNDArrayAt_
     {
@@ -207,6 +221,16 @@ fun MXNDArrayAt as mxNDArrayAt_
         alloca- `NDArrayHandle' peekNDArrayHandle*
     } -> `CInt'
 #}
+#else
+{#
+fun MXNDArrayAt as mxNDArrayAt_
+    {
+        `NDArrayHandle',
+        `CUInt',
+        alloca- `NDArrayHandle' peekNDArrayHandle*
+    } -> `CInt'
+#}
+#endif
 
 mxNDArrayAt :: NDArrayHandle -> Int -> IO NDArrayHandle
 mxNDArrayAt array index = do
@@ -257,7 +281,7 @@ mxNDArrayGetShape array = do
     return $ fromIntegral <$> shape
 
 -- MXImperativeInvoke is hacky.
--- num-outputs 
+-- num-outputs
 --   0: create new NDArrayHandler in the array-of-NDArrayHandle
 --   length of array-of-NDArrayHandle (non-0): reuse NDArrayHandler in the array-of-NDArrayHandle
 {#
@@ -292,7 +316,7 @@ mxImperativeInvoke creator inputs params outputs = do
                 checked $ mxImperativeInvoke_ creator ninput inputs pn pp nparam keys values
                 n' <- peek pn
                 p' <- peek pp
-                if n' == 0 
+                if n' == 0
                     then return []
                     else do
                         pa <- peekArray (fromIntegral n') (p' :: Ptr NDArrayHandlePtr)
@@ -321,8 +345,9 @@ mxNDArrayGetContext handle = do
     return (fromIntegral devtyp, fromIntegral devidx)
 
 
+#if MXNet_MAJOR==1 && MXNet_MINOR<6
 {#
-fun MXNDArraySave as mxNDArraySave_ 
+fun MXNDArraySave as mxNDArraySave_
     {
         `String',
         `MX_UINT',
@@ -330,6 +355,17 @@ fun MXNDArraySave as mxNDArraySave_
         withStringArray* `[String]'
     } -> `CInt'
 #}
+#else
+{#
+fun MXNDArraySave as mxNDArraySave_
+    {
+        `String',
+        `CUInt',
+        withNDArrayHandleArray* `[NDArrayHandle]',
+        withStringArray* `[String]'
+    } -> `CInt'
+#}
+#endif
 
 mxNDArraySave ::  String -> [(String, NDArrayHandle)] -> IO ()
 mxNDArraySave filename keyvals = do
