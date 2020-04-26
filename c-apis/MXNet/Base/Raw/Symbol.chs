@@ -58,6 +58,7 @@ fun MXSymbolFree as mxSymbolFree_
 mxSymbolFree :: SymbolHandlePtr -> IO ()
 mxSymbolFree = checked . mxSymbolFree_
 
+#if MXNet_MAJOR==1 && MXNet_MINOR<6
 {#
 fun MXSymbolCreateAtomicSymbol as mxSymbolCreateAtomicSymbol_
     {
@@ -68,6 +69,18 @@ fun MXSymbolCreateAtomicSymbol as mxSymbolCreateAtomicSymbol_
         alloca- `SymbolHandle' peekSymbolHandle*
     } -> `CInt'
 #}
+#else
+{#
+fun MXSymbolCreateAtomicSymbol as mxSymbolCreateAtomicSymbol_
+    {
+        `AtomicSymbolCreator',
+        `CUInt',
+        withStringArray* `[String]',
+        withStringArray* `[String]',
+        alloca- `SymbolHandle' peekSymbolHandle*
+    } -> `CInt'
+#}
+#endif
 
 mxSymbolCreateAtomicSymbol :: AtomicSymbolCreator
                            -> [String]
@@ -88,6 +101,7 @@ fun MXSymbolCreateVariable as mxSymbolCreateVariable_
 mxSymbolCreateVariable :: String -> IO SymbolHandle
 mxSymbolCreateVariable = checked . mxSymbolCreateVariable_
 
+#if MXNet_MAJOR==1 && MXNet_MINOR<6
 {#
 fun MXSymbolCreateGroup as mxSymbolCreateGroup_
     {
@@ -96,6 +110,16 @@ fun MXSymbolCreateGroup as mxSymbolCreateGroup_
         alloca- `SymbolHandle' peekSymbolHandle*
     } -> `CInt'
 #}
+#else
+{#
+fun MXSymbolCreateGroup as mxSymbolCreateGroup_
+    {
+        `CUInt',
+        withSymbolHandleArray* `[SymbolHandle]',
+        alloca- `SymbolHandle' peekSymbolHandle*
+    } -> `CInt'
+#}
+#endif
 
 mxSymbolCreateGroup :: [SymbolHandle] -> IO SymbolHandle
 mxSymbolCreateGroup syms = checked $ mxSymbolCreateGroup_ (fromIntegral $ length syms) syms
@@ -278,6 +302,7 @@ fun MXSymbolGetChildren as mxSymbolGetChildren_
 mxSymbolGetChildren :: SymbolHandle -> IO SymbolHandle
 mxSymbolGetChildren = checked . mxSymbolGetChildren_
 
+#if MXNet_MAJOR==1 && MXNet_MINOR<6
 {#
 fun MXSymbolGetOutput as mxSymbolGetOutput_
     {
@@ -286,6 +311,17 @@ fun MXSymbolGetOutput as mxSymbolGetOutput_
         alloca- `SymbolHandle' peekSymbolHandle*
     } -> `CInt'
 #}
+#else
+{#
+fun MXSymbolGetOutput as mxSymbolGetOutput_
+    {
+        `SymbolHandle',
+        `CUInt',
+        alloca- `SymbolHandle' peekSymbolHandle*
+    } -> `CInt'
+#}
+#endif
+
 mxSymbolGetOutput :: SymbolHandle
                    -> Int
                    -> IO SymbolHandle
@@ -305,6 +341,7 @@ mxSymbolListAuxiliaryStates symbol = do
     (cnt, ptr) <- checked $ mxSymbolListAuxiliaryStates_ symbol
     peekStringArray (fromIntegral cnt) ptr
 
+#if MXNet_MAJOR==1 && MXNet_MINOR<6
 {#
 fun MXSymbolCompose as mxSymbolCompose_
     {
@@ -315,6 +352,18 @@ fun MXSymbolCompose as mxSymbolCompose_
         withSymbolHandleArray* `[SymbolHandle]'
     } -> `CInt'
 #}
+#else
+{#
+fun MXSymbolCompose as mxSymbolCompose_
+    {
+        `SymbolHandle',
+        `String',
+        `CUInt',
+        id `Ptr (Ptr CChar)',
+        withSymbolHandleArray* `[SymbolHandle]'
+    } -> `CInt'
+#}
+#endif
 
 mxSymbolCompose :: SymbolHandle
                 -> String
@@ -327,6 +376,7 @@ mxSymbolCompose symbol name maybekeys args = do
       Nothing -> checked $ mxSymbolCompose_ symbol name len C2HSImp.nullPtr args
       Just keys -> withStringArray keys $ \pkeys -> checked $ mxSymbolCompose_ symbol name len pkeys args
 
+#if MXNet_MAJOR==1 && MXNet_MINOR<6
 {#
 fun MXSymbolInferShape as mxSymbolInferShape_
     {
@@ -347,6 +397,28 @@ fun MXSymbolInferShape as mxSymbolInferShape_
         alloca- `CInt' peek*
     } -> `CInt'
 #}
+#else
+{#
+fun MXSymbolInferShape as mxSymbolInferShape_
+    {
+        `SymbolHandle',
+        `CUInt',
+        withStringArray* `[String]',
+        withArray* `[CUInt]',
+        withArray* `[CUInt]',
+        alloca- `CUInt' peek*,
+        alloca- `Ptr CUInt' peek*,
+        alloca- `Ptr (Ptr CUInt)' peek*,
+        alloca- `CUInt' peek*,
+        alloca- `Ptr CUInt' peek*,
+        alloca- `Ptr (Ptr CUInt)' peek*,
+        alloca- `CUInt' peek*,
+        alloca- `Ptr CUInt' peek*,
+        alloca- `Ptr (Ptr CUInt)' peek*,
+        alloca- `CInt' peek*
+    } -> `CInt'
+#}
+#endif
 
 mxSymbolInferShape :: SymbolHandle
                    -> [String]
@@ -375,6 +447,7 @@ mxSymbolInferShape symbol keys arg_ind arg_shape = do
     auxshape_data_ret<- mapM (uncurry peekArrayOfUInt) (zip auxshape_ndim' auxshape_data')
     return (inshape_data_ret, outshape_data_ret, auxshape_data_ret, complete == 1)
 
+#if MXNet_MAJOR==1 && MXNet_MINOR<6
 {#
 fun MXSymbolInferShapePartial as mxSymbolInferShapePartial_
     {
@@ -395,6 +468,28 @@ fun MXSymbolInferShapePartial as mxSymbolInferShapePartial_
         alloca- `CInt' peek*
     } -> `CInt'
 #}
+#else
+{#
+fun MXSymbolInferShapePartial as mxSymbolInferShapePartial_
+    {
+        `SymbolHandle',
+        `CUInt',
+        withStringArray* `[String]',
+        withArray* `[CUInt]',
+        withArray* `[CUInt]',
+        alloca- `CUInt' peek*,
+        alloca- `Ptr CUInt' peek*,
+        alloca- `Ptr (Ptr CUInt)' peek*,
+        alloca- `CUInt' peek*,
+        alloca- `Ptr CUInt' peek*,
+        alloca- `Ptr (Ptr CUInt)' peek*,
+        alloca- `CUInt' peek*,
+        alloca- `Ptr CUInt' peek*,
+        alloca- `Ptr (Ptr CUInt)' peek*,
+        alloca- `CInt' peek*
+    } -> `CInt'
+#}
+#endif
 
 mxSymbolInferShapePartial :: SymbolHandle
                    -> [String]
@@ -425,6 +520,7 @@ mxSymbolInferShapePartial symbol keys arg_ind arg_shape = do
 
 peekArrayOfUInt cnt ptr = peekIntegralArray (fromIntegral cnt)  ptr
 
+#if MXNet_MAJOR==1 && MXNet_MINOR<6
 {#
 fun MXSymbolInferType as mxSymbolInferType_
     {
@@ -441,6 +537,24 @@ fun MXSymbolInferType as mxSymbolInferType_
         alloca- `CInt' peek*
     } -> `CInt'
 #}
+#else
+{#
+fun MXSymbolInferType as mxSymbolInferType_
+    {
+        `SymbolHandle',
+        `CUInt',
+        withStringArray* `[String]',
+        withArray* `[CInt]',
+        alloca- `MX_UINT' peek*,
+        alloca- `Ptr CInt' peek*,
+        alloca- `MX_UINT' peek*,
+        alloca- `Ptr CInt' peek*,
+        alloca- `MX_UINT' peek*,
+        alloca- `Ptr CInt' peek*,
+        alloca- `CInt' peek*
+    } -> `CInt'
+#}
+#endif
 
 mxSymbolInferType :: SymbolHandle
                   -> [String]
