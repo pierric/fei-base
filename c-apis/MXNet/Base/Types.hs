@@ -2,7 +2,7 @@
 {-# LANGUAGE TypeFamilies #-}
 module MXNet.Base.Types where
 
-import Foreign.Storable (Storable)
+import RIO
 import Data.Vector.Unboxed (Unbox)
 import Data.Proxy (Proxy(..))
 import GHC.TypeLits (Symbol, KnownSymbol)

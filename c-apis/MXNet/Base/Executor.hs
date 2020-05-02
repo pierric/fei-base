@@ -2,9 +2,9 @@
 {-# Language LambdaCase #-}
 module MXNet.Base.Executor where
 
+import RIO
+import RIO.List (unzip, scanl)
 import GHC.Generics (Generic, Generic1)
-import Data.Maybe (fromMaybe)
-import Control.DeepSeq (NFData, NFData1, ($!!))
 
 import qualified MXNet.Base.Raw as I
 import MXNet.Base.Types (ForeignData(..), Context(..))
@@ -18,7 +18,6 @@ instance ForeignData (Executor a) where
     touch = I.touchExecutorHandle . unExecutor
 
 instance NFData (Executor a)
-instance NFData1 Executor
 
 execGetOutputs :: Executor a -> IO [NDArray a]
 execGetOutputs (Executor hdl) = do
@@ -31,7 +30,7 @@ execForward (Executor hdl) = I.mxExecutorForward hdl
 execBackward :: Executor a -> [NDArray a] -> IO ()
 execBackward (Executor hdl) arrs = I.mxExecutorBackward hdl (map unNDArray arrs)
 
-execReshapeEx :: Executor a -> Bool -> Bool -> Context -> [(String, [Int])] -> IO ([NDArray a], [Maybe (NDArray a)], [NDArray a], Executor a)
+execReshapeEx :: Executor a -> Bool -> Bool -> Context -> [(Text, [Int])] -> IO ([NDArray a], [Maybe (NDArray a)], [NDArray a], Executor a)
 execReshapeEx (Executor hdl) partial_shaping allow_up_sizing Context{..} input_shapes = do
     let (names, shapes) = unzip input_shapes
         arg_ind = scanl (+) 0 $ map length shapes

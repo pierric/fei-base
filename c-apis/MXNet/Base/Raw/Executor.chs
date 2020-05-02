@@ -1,6 +1,7 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 module MXNet.Base.Raw.Executor where
 
+import RIO
 import Foreign.Marshal (alloca, withArray, peekArray)
 import Foreign.Storable (Storable(..))
 import Foreign.Concurrent (newForeignPtr)
@@ -8,11 +9,8 @@ import Foreign.ForeignPtr (newForeignPtr_, touchForeignPtr)
 import Foreign.ForeignPtr.Unsafe (unsafeForeignPtrToPtr)
 import Foreign.Ptr
 import Foreign.C.Types
-import C2HS.C.Extra.Marshal (withIntegralArray, peekIntegralArray, peekString, peekStringArray)
-import GHC.Generics (Generic)
+import C2HS.C.Extra.Marshal (withIntegralArray, peekIntegralArray)
 import Control.DeepSeq (NFData(..), rwhnf)
-import Control.Monad ((>=>))
-import Data.Maybe (fromMaybe)
 
 {# import MXNet.Base.Raw.Common #}
 {# import MXNet.Base.Raw.NDArray #}
@@ -66,12 +64,12 @@ mxExecutorFree = checked . mxExecutorFree_
 fun MXExecutorPrint as mxExecutorPrint_
     {
         `ExecutorHandle',
-        alloca- `String' peekString*
+        alloca- `Text' peekCStringPtrT*
     } -> `CInt'
 #}
 
-mxExecutorPrint :: ExecutorHandle -> IO String
-mxExecutorPrint = checked . mxExecutorPrint_
+mxExecutorPrint :: ExecutorHandle -> IO Text
+mxExecutorPrint = fmap unWrapText . checked . fmap (second WrapText) . mxExecutorPrint_
 
 {#
 fun MXExecutorForward as mxExecutorForward_
@@ -217,7 +215,7 @@ fun MXExecutorBindX as mxExecutorBindX_
         `CInt',
         `CInt',
         `MX_UINT',
-        withStringArray* `[String]',
+        withCStringArrayT* `[Text]',
         withArray* `[CInt]',
         withArray* `[CInt]',
         `MX_UINT',
@@ -237,7 +235,7 @@ fun MXExecutorBindX as mxExecutorBindX_
         `CInt',
         `CInt',
         `CUInt',
-        withStringArray* `[String]',
+        withCStringArrayT* `[Text]',
         withArray* `[CInt]',
         withArray* `[CInt]',
         `CUInt',
@@ -254,7 +252,7 @@ fun MXExecutorBindX as mxExecutorBindX_
 mxExecutorBindX :: SymbolHandle
                 -> Int
                 -> Int
-                -> [String]
+                -> [Text]
                 -> [Int]
                 -> [Int]
                 -> [NDArrayHandle]
@@ -284,7 +282,7 @@ fun MXExecutorBindEX as mxExecutorBindEX_
         `CInt',
         `CInt',
         `MX_UINT',
-        withStringArray* `[String]',
+        withCStringArrayT* `[Text]',
         withArray* `[CInt]',
         withArray* `[CInt]',
         `MX_UINT',
@@ -305,7 +303,7 @@ fun MXExecutorBindEX as mxExecutorBindEX_
         `CInt',
         `CInt',
         `CUInt',
-        withStringArray* `[String]',
+        withCStringArrayT* `[Text]',
         withArray* `[CInt]',
         withArray* `[CInt]',
         `CUInt',
@@ -323,7 +321,7 @@ fun MXExecutorBindEX as mxExecutorBindEX_
 mxExecutorBindEX :: SymbolHandle
                  -> Int
                  -> Int
-                 -> [String]
+                 -> [Text]
                  -> [Int]
                  -> [Int]
                  -> [NDArrayHandle]
@@ -354,24 +352,24 @@ fun MXExecutorSimpleBind as mxExecutorSimpleBind_
         `CInt',
         `CInt',
         `MX_UINT',
-        withStringArray* `[String]',
+        withCStringArrayT* `[Text]',
         withArray* `[CInt]',
         withArray* `[CInt]',
         `MX_UINT',
-        withStringArray* `[String]',
-        withStringArray* `[String]',
+        withCStringArrayT* `[Text]',
+        withCStringArrayT* `[Text]',
         `MX_UINT',
-        withStringArray* `[String]',
+        withCStringArrayT* `[Text]',
         withArray* `[MX_UINT]',
         withArray* `[MX_UINT]',
         `MX_UINT',
-        withStringArray* `[String]',
+        withCStringArrayT* `[Text]',
         withArray* `[CInt]',
         `MX_UINT',
-        withStringArray* `[String]',
+        withCStringArrayT* `[Text]',
         withArray* `[CInt]',
         `MX_UINT',
-        withStringArray* `[String]',
+        withCStringArrayT* `[Text]',
         id `Ptr CInt',                          -- [in/out] shared_buffer_len
         id `Ptr (Ptr CChar)',                   -- [in, optional] shared_buffer_name_list
         id `Ptr NDArrayHandlePtr',              -- [in, optional] shared_buffer_handle_list
@@ -394,24 +392,24 @@ fun MXExecutorSimpleBind as mxExecutorSimpleBind_
         `CInt',
         `CInt',
         `CUInt',
-        withStringArray* `[String]',
+        withCStringArrayT* `[Text]',
         withArray* `[CInt]',
         withArray* `[CInt]',
         `CUInt',
-        withStringArray* `[String]',
-        withStringArray* `[String]',
+        withCStringArrayT* `[Text]',
+        withCStringArrayT* `[Text]',
         `CUInt',
-        withStringArray* `[String]',
+        withCStringArrayT* `[Text]',
         withArray* `[CUInt]',
         withArray* `[CUInt]',
         `CUInt',
-        withStringArray* `[String]',
+        withCStringArrayT* `[Text]',
         withArray* `[CInt]',
         `CUInt',
-        withStringArray* `[String]',
+        withCStringArrayT* `[Text]',
         withArray* `[CInt]',
         `CUInt',
-        withStringArray* `[String]',
+        withCStringArrayT* `[Text]',
         id `Ptr CInt',                          -- [in/out] shared_buffer_len
         id `Ptr (Ptr CChar)',                   -- [in, optional] shared_buffer_name_list
         id `Ptr NDArrayHandlePtr',              -- [in, optional] shared_buffer_handle_list
@@ -430,15 +428,15 @@ fun MXExecutorSimpleBind as mxExecutorSimpleBind_
 
 mxExecutorSimpleBind :: SymbolHandle
                      -> Int -> Int                        -- device
-                     -> [String] -> [Int] -> [Int]        -- g2c
-                     -> [String] -> [String]              -- provided_grad_req_list
-                     -> [String] -> [Int] -> [Int]        -- provided_arg_shapes
-                     -> [String] -> [Int]                 -- provided_arg_dtypes
-                     -> [String] -> [Int]                 -- provided_arg_stypes
-                     -> [String]                          -- shared_arg_names
-                     -> Maybe ([String], [NDArrayHandle]) -- shared_buffer
+                     -> [Text] -> [Int] -> [Int]        -- g2c
+                     -> [Text] -> [Text]              -- provided_grad_req_list
+                     -> [Text] -> [Int] -> [Int]        -- provided_arg_shapes
+                     -> [Text] -> [Int]                 -- provided_arg_dtypes
+                     -> [Text] -> [Int]                 -- provided_arg_stypes
+                     -> [Text]                          -- shared_arg_names
+                     -> Maybe ([Text], [NDArrayHandle]) -- shared_buffer
                      -> ExecutorHandle                    -- shared_exec_handle
-                     -> IO (Maybe ([String], [NDArrayHandle]), -- updated_shared_buffer
+                     -> IO (Maybe ([Text], [NDArrayHandle]), -- updated_shared_buffer
                             [NDArrayHandle],                   -- arg_array
                             [NDArrayHandle],                   -- grad_array
                             [NDArrayHandle],                   -- aux_array
@@ -475,7 +473,7 @@ mxExecutorSimpleBind symbol
 
         Just (shared_buffer_name_list, shared_buffer_handle_list) -> alloca (\ptr_shared_buffer_len -> do
             poke ptr_shared_buffer_len (fromIntegral $ length shared_buffer_name_list)
-            withStringArray shared_buffer_name_list (\ptr_shared_buffer_name_list ->
+            withCStringArrayT shared_buffer_name_list (\ptr_shared_buffer_name_list ->
                 withNDArrayHandleArray shared_buffer_handle_list (\ptr_shared_buffer_handle_list -> do
                     (ptr_updated_shared_buffer_name_list, ptr_updated_shared_buffer_handle_list, num_in_args, in_args, arg_grads, num_aux_states, aux_states, out) <- checked $ mxExecutorSimpleBind_
                                 symbol devtype_ devid_
@@ -491,7 +489,7 @@ mxExecutorSimpleBind symbol
                     grad_array <- peekArray (fromIntegral num_in_args) arg_grads >>= mapM newNDArrayHandle
                     aux_array  <- peekArray (fromIntegral num_aux_states) aux_states >>= mapM newNDArrayHandle
                     update_shared_buffer_len <- fromIntegral <$> peek ptr_shared_buffer_len
-                    updated_shared_buffer_name_list <- peekStringArray update_shared_buffer_len ptr_updated_shared_buffer_name_list
+                    updated_shared_buffer_name_list <- peekCStringArrayT update_shared_buffer_len ptr_updated_shared_buffer_name_list
                     updated_shared_buffer_handle_list <- peekArray update_shared_buffer_len ptr_updated_shared_buffer_handle_list >>= mapM newNDArrayHandle
                     return (Just (updated_shared_buffer_name_list, updated_shared_buffer_handle_list), arg_array, grad_array, aux_array, out)
                 )))
@@ -521,11 +519,11 @@ fun MXExecutorReshapeEx as mxExecutorReshapeEx_
         `CInt',
         `CInt',
         `MX_UINT',
-        withStringArray* `[String]',
+        withCStringArrayT* `[Text]',
         withArray* `[CInt]',
         withArray* `[CInt]',
         `MX_UINT',
-        withStringArray* `[String]',
+        withCStringArrayT* `[Text]',
         withArray* `[CInt]',
         withArray* `[MX_UINT]',
         alloca0- `MX_UINT' peek*,
@@ -546,11 +544,11 @@ fun MXExecutorReshapeEx as mxExecutorReshapeEx_
         `CInt',
         `CInt',
         `CUInt',
-        withStringArray* `[String]',
+        withCStringArrayT* `[Text]',
         withArray* `[CInt]',
         withArray* `[CInt]',
         `CUInt',
-        withStringArray* `[String]',
+        withCStringArrayT* `[Text]',
         withArray* `[CInt]',
         withArray* `[CUInt]',
         alloca0- `CUInt' peek*,
@@ -565,8 +563,8 @@ fun MXExecutorReshapeEx as mxExecutorReshapeEx_
 #endif
 
 mxExecutorReshapeEx :: Bool -> Bool -> Int -> Int
-                    -> [String] -> [Int] -> [Int]        -- group2ctx
-                    -> [String] -> [Int] -> [Int]        -- provided_arg_shapes
+                    -> [Text] -> [Int] -> [Int]        -- group2ctx
+                    -> [Text] -> [Int] -> [Int]        -- provided_arg_shapes
                     -> ExecutorHandle                    -- shared exec
                     -> IO ([NDArrayHandle], [Maybe NDArrayHandle], [NDArrayHandle], ExecutorHandle)
 mxExecutorReshapeEx partial_shaping allow_up_sizing

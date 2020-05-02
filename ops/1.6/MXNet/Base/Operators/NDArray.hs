@@ -1,4 +1,6 @@
 module MXNet.Base.Operators.NDArray where
+import RIO
+import RIO.List
 import MXNet.Base.Raw
 import MXNet.Base.Spec.Operator
 import MXNet.Base.Spec.HMap
@@ -2901,7 +2903,7 @@ _adamw_update_upd outputs args
 type instance ParameterList "_arange(ndarray)" =
      '[ '("start", AttrReq Double), '("stop", AttrOpt (Maybe Double)),
         '("step", AttrOpt Double), '("repeat", AttrOpt Int),
-        '("infer_range", AttrOpt Bool), '("ctx", AttrOpt String),
+        '("infer_range", AttrOpt Bool), '("ctx", AttrOpt Text),
         '("dtype",
           AttrOpt
             (EnumType
@@ -2920,7 +2922,7 @@ _arange args
                ("repeat",) . showValue <$> (args !? #repeat :: Maybe Int),
                ("infer_range",) . showValue <$>
                  (args !? #infer_range :: Maybe Bool),
-               ("ctx",) . showValue <$> (args !? #ctx :: Maybe String),
+               ("ctx",) . showValue <$> (args !? #ctx :: Maybe Text),
                ("dtype",) . showValue <$>
                  (args !? #dtype ::
                     Maybe
@@ -2948,7 +2950,7 @@ _arange_upd outputs args
                ("repeat",) . showValue <$> (args !? #repeat :: Maybe Int),
                ("infer_range",) . showValue <$>
                  (args !? #infer_range :: Maybe Bool),
-               ("ctx",) . showValue <$> (args !? #ctx :: Maybe String),
+               ("ctx",) . showValue <$> (args !? #ctx :: Maybe Text),
                ("dtype",) . showValue <$>
                  (args !? #dtype ::
                     Maybe
@@ -12014,7 +12016,7 @@ type instance ParameterList "_contrib_SyncBatchNorm(ndarray)" =
      '[ '("eps", AttrOpt Float), '("momentum", AttrOpt Float),
         '("fix_gamma", AttrOpt Bool), '("use_global_stats", AttrOpt Bool),
         '("output_mean_var", AttrOpt Bool), '("ndev", AttrOpt Int),
-        '("key", AttrReq String), '("data", AttrOpt NDArrayHandle),
+        '("key", AttrReq Text), '("data", AttrOpt NDArrayHandle),
         '("gamma", AttrOpt NDArrayHandle),
         '("beta", AttrOpt NDArrayHandle),
         '("moving_mean", AttrOpt NDArrayHandle),
@@ -12035,7 +12037,7 @@ _contrib_SyncBatchNorm args
                ("output_mean_var",) . showValue <$>
                  (args !? #output_mean_var :: Maybe Bool),
                ("ndev",) . showValue <$> (args !? #ndev :: Maybe Int),
-               ("key",) . showValue <$> (args !? #key :: Maybe String)]
+               ("key",) . showValue <$> (args !? #key :: Maybe Text)]
         tensorArgs
           = catMaybes
               [("data",) <$> (args !? #data :: Maybe NDArrayHandle),
@@ -12066,7 +12068,7 @@ _contrib_SyncBatchNorm_upd outputs args
                ("output_mean_var",) . showValue <$>
                  (args !? #output_mean_var :: Maybe Bool),
                ("ndev",) . showValue <$> (args !? #ndev :: Maybe Int),
-               ("key",) . showValue <$> (args !? #key :: Maybe String)]
+               ("key",) . showValue <$> (args !? #key :: Maybe Text)]
         tensorArgs
           = catMaybes
               [("data",) <$> (args !? #data :: Maybe NDArrayHandle),
@@ -12132,7 +12134,7 @@ _contrib_allclose_upd outputs args
 
 type instance ParameterList "_contrib_arange_like(ndarray)" =
      '[ '("start", AttrOpt Double), '("step", AttrOpt Double),
-        '("repeat", AttrOpt Int), '("ctx", AttrOpt String),
+        '("repeat", AttrOpt Int), '("ctx", AttrOpt Text),
         '("axis", AttrOpt (Maybe Int)), '("data", AttrOpt NDArrayHandle)]
 
 _contrib_arange_like ::
@@ -12144,7 +12146,7 @@ _contrib_arange_like args
               [("start",) . showValue <$> (args !? #start :: Maybe Double),
                ("step",) . showValue <$> (args !? #step :: Maybe Double),
                ("repeat",) . showValue <$> (args !? #repeat :: Maybe Int),
-               ("ctx",) . showValue <$> (args !? #ctx :: Maybe String),
+               ("ctx",) . showValue <$> (args !? #ctx :: Maybe Text),
                ("axis",) . showValue <$> (args !? #axis :: Maybe (Maybe Int))]
         tensorArgs
           = catMaybes [("data",) <$> (args !? #data :: Maybe NDArrayHandle)]
@@ -12166,7 +12168,7 @@ _contrib_arange_like_upd outputs args
               [("start",) . showValue <$> (args !? #start :: Maybe Double),
                ("step",) . showValue <$> (args !? #step :: Maybe Double),
                ("repeat",) . showValue <$> (args !? #repeat :: Maybe Int),
-               ("ctx",) . showValue <$> (args !? #ctx :: Maybe String),
+               ("ctx",) . showValue <$> (args !? #ctx :: Maybe Text),
                ("axis",) . showValue <$> (args !? #axis :: Maybe (Maybe Int))]
         tensorArgs
           = catMaybes [("data",) <$> (args !? #data :: Maybe NDArrayHandle)]
@@ -14598,7 +14600,7 @@ _cvimdecode_upd outputs args
          return ()
 
 type instance ParameterList "_cvimread(ndarray)" =
-     '[ '("filename", AttrReq String), '("flag", AttrOpt Int),
+     '[ '("filename", AttrReq Text), '("flag", AttrOpt Int),
         '("to_rgb", AttrOpt Bool)]
 
 _cvimread ::
@@ -14607,7 +14609,7 @@ _cvimread ::
 _cvimread args
   = let scalarArgs
           = catMaybes
-              [("filename",) . showValue <$> (args !? #filename :: Maybe String),
+              [("filename",) . showValue <$> (args !? #filename :: Maybe Text),
                ("flag",) . showValue <$> (args !? #flag :: Maybe Int),
                ("to_rgb",) . showValue <$> (args !? #to_rgb :: Maybe Bool)]
         tensorArgs = catMaybes []
@@ -14625,7 +14627,7 @@ _cvimread_upd ::
 _cvimread_upd outputs args
   = let scalarArgs
           = catMaybes
-              [("filename",) . showValue <$> (args !? #filename :: Maybe String),
+              [("filename",) . showValue <$> (args !? #filename :: Maybe Text),
                ("flag",) . showValue <$> (args !? #flag :: Maybe Int),
                ("to_rgb",) . showValue <$> (args !? #to_rgb :: Maybe Bool)]
         tensorArgs = catMaybes []
@@ -14792,7 +14794,7 @@ _equal_scalar_upd outputs args
          return ()
 
 type instance ParameterList "_full(ndarray)" =
-     '[ '("shape", AttrOpt [Int]), '("ctx", AttrOpt String),
+     '[ '("shape", AttrOpt [Int]), '("ctx", AttrOpt Text),
         '("dtype",
           AttrOpt
             (EnumType
@@ -14807,7 +14809,7 @@ _full args
   = let scalarArgs
           = catMaybes
               [("shape",) . showValue <$> (args !? #shape :: Maybe [Int]),
-               ("ctx",) . showValue <$> (args !? #ctx :: Maybe String),
+               ("ctx",) . showValue <$> (args !? #ctx :: Maybe Text),
                ("dtype",) . showValue <$>
                  (args !? #dtype ::
                     Maybe
@@ -14831,7 +14833,7 @@ _full_upd outputs args
   = let scalarArgs
           = catMaybes
               [("shape",) . showValue <$> (args !? #shape :: Maybe [Int]),
-               ("ctx",) . showValue <$> (args !? #ctx :: Maybe String),
+               ("ctx",) . showValue <$> (args !? #ctx :: Maybe Text),
                ("dtype",) . showValue <$>
                  (args !? #dtype ::
                     Maybe
@@ -16715,7 +16717,7 @@ _linalg_trsm_upd outputs args
 type instance ParameterList "_linspace(ndarray)" =
      '[ '("start", AttrReq Double), '("stop", AttrOpt (Maybe Double)),
         '("step", AttrOpt Double), '("repeat", AttrOpt Int),
-        '("infer_range", AttrOpt Bool), '("ctx", AttrOpt String),
+        '("infer_range", AttrOpt Bool), '("ctx", AttrOpt Text),
         '("dtype",
           AttrOpt
             (EnumType
@@ -16734,7 +16736,7 @@ _linspace args
                ("repeat",) . showValue <$> (args !? #repeat :: Maybe Int),
                ("infer_range",) . showValue <$>
                  (args !? #infer_range :: Maybe Bool),
-               ("ctx",) . showValue <$> (args !? #ctx :: Maybe String),
+               ("ctx",) . showValue <$> (args !? #ctx :: Maybe Text),
                ("dtype",) . showValue <$>
                  (args !? #dtype ::
                     Maybe
@@ -16762,7 +16764,7 @@ _linspace_upd outputs args
                ("repeat",) . showValue <$> (args !? #repeat :: Maybe Int),
                ("infer_range",) . showValue <$>
                  (args !? #infer_range :: Maybe Bool),
-               ("ctx",) . showValue <$> (args !? #ctx :: Maybe String),
+               ("ctx",) . showValue <$> (args !? #ctx :: Maybe Text),
                ("dtype",) . showValue <$>
                  (args !? #dtype ::
                     Maybe
@@ -17974,7 +17976,7 @@ _np_prod_upd outputs args
          return ()
 
 type instance ParameterList "_np_reshape(ndarray)" =
-     '[ '("newshape", AttrReq [Int]), '("order", AttrOpt String),
+     '[ '("newshape", AttrReq [Int]), '("order", AttrOpt Text),
         '("a", AttrOpt NDArrayHandle)]
 
 _np_reshape ::
@@ -17984,7 +17986,7 @@ _np_reshape args
   = let scalarArgs
           = catMaybes
               [("newshape",) . showValue <$> (args !? #newshape :: Maybe [Int]),
-               ("order",) . showValue <$> (args !? #order :: Maybe String)]
+               ("order",) . showValue <$> (args !? #order :: Maybe Text)]
         tensorArgs
           = catMaybes [("a",) <$> (args !? #a :: Maybe NDArrayHandle)]
         (tensorkeys, tensorvals) = unzip tensorArgs
@@ -18002,7 +18004,7 @@ _np_reshape_upd outputs args
   = let scalarArgs
           = catMaybes
               [("newshape",) . showValue <$> (args !? #newshape :: Maybe [Int]),
-               ("order",) . showValue <$> (args !? #order :: Maybe String)]
+               ("order",) . showValue <$> (args !? #order :: Maybe Text)]
         tensorArgs
           = catMaybes [("a",) <$> (args !? #a :: Maybe NDArrayHandle)]
         (tensorkeys, tensorvals) = unzip tensorArgs
@@ -18381,7 +18383,7 @@ _npi_add_scalar_upd outputs args
 type instance ParameterList "_npi_arange(ndarray)" =
      '[ '("start", AttrReq Double), '("stop", AttrOpt (Maybe Double)),
         '("step", AttrOpt Double), '("repeat", AttrOpt Int),
-        '("infer_range", AttrOpt Bool), '("ctx", AttrOpt String),
+        '("infer_range", AttrOpt Bool), '("ctx", AttrOpt Text),
         '("dtype",
           AttrOpt
             (EnumType
@@ -18400,7 +18402,7 @@ _npi_arange args
                ("repeat",) . showValue <$> (args !? #repeat :: Maybe Int),
                ("infer_range",) . showValue <$>
                  (args !? #infer_range :: Maybe Bool),
-               ("ctx",) . showValue <$> (args !? #ctx :: Maybe String),
+               ("ctx",) . showValue <$> (args !? #ctx :: Maybe Text),
                ("dtype",) . showValue <$>
                  (args !? #dtype ::
                     Maybe
@@ -18428,7 +18430,7 @@ _npi_arange_upd outputs args
                ("repeat",) . showValue <$> (args !? #repeat :: Maybe Int),
                ("infer_range",) . showValue <$>
                  (args !? #infer_range :: Maybe Bool),
-               ("ctx",) . showValue <$> (args !? #ctx :: Maybe String),
+               ("ctx",) . showValue <$> (args !? #ctx :: Maybe Text),
                ("dtype",) . showValue <$>
                  (args !? #dtype ::
                     Maybe
@@ -18913,7 +18915,7 @@ _npi_bitwise_xor_scalar_upd outputs args
          return ()
 
 type instance ParameterList "_npi_blackman(ndarray)" =
-     '[ '("_M", AttrOpt Int), '("ctx", AttrOpt String),
+     '[ '("_M", AttrOpt Int), '("ctx", AttrOpt Text),
         '("dtype",
           AttrOpt
             (EnumType
@@ -18927,7 +18929,7 @@ _npi_blackman args
   = let scalarArgs
           = catMaybes
               [("_M",) . showValue <$> (args !? #_M :: Maybe Int),
-               ("ctx",) . showValue <$> (args !? #ctx :: Maybe String),
+               ("ctx",) . showValue <$> (args !? #ctx :: Maybe Text),
                ("dtype",) . showValue <$>
                  (args !? #dtype ::
                     Maybe
@@ -18950,7 +18952,7 @@ _npi_blackman_upd outputs args
   = let scalarArgs
           = catMaybes
               [("_M",) . showValue <$> (args !? #_M :: Maybe Int),
-               ("ctx",) . showValue <$> (args !? #ctx :: Maybe String),
+               ("ctx",) . showValue <$> (args !? #ctx :: Maybe Text),
                ("dtype",) . showValue <$>
                  (args !? #dtype ::
                     Maybe
@@ -19129,7 +19131,7 @@ _npi_ceil_upd outputs args
 
 type instance ParameterList "_npi_choice(ndarray)" =
      '[ '("a", AttrReq Int), '("size", AttrReq Int),
-        '("ctx", AttrOpt String), '("replace", AttrOpt Bool),
+        '("ctx", AttrOpt Text), '("replace", AttrOpt Bool),
         '("weighted", AttrOpt Bool), '("input1", AttrOpt NDArrayHandle),
         '("input2", AttrOpt NDArrayHandle)]
 
@@ -19141,7 +19143,7 @@ _npi_choice args
           = catMaybes
               [("a",) . showValue <$> (args !? #a :: Maybe Int),
                ("size",) . showValue <$> (args !? #size :: Maybe Int),
-               ("ctx",) . showValue <$> (args !? #ctx :: Maybe String),
+               ("ctx",) . showValue <$> (args !? #ctx :: Maybe Text),
                ("replace",) . showValue <$> (args !? #replace :: Maybe Bool),
                ("weighted",) . showValue <$> (args !? #weighted :: Maybe Bool)]
         tensorArgs
@@ -19164,7 +19166,7 @@ _npi_choice_upd outputs args
           = catMaybes
               [("a",) . showValue <$> (args !? #a :: Maybe Int),
                ("size",) . showValue <$> (args !? #size :: Maybe Int),
-               ("ctx",) . showValue <$> (args !? #ctx :: Maybe String),
+               ("ctx",) . showValue <$> (args !? #ctx :: Maybe Text),
                ("replace",) . showValue <$> (args !? #replace :: Maybe Bool),
                ("weighted",) . showValue <$> (args !? #weighted :: Maybe Bool)]
         tensorArgs
@@ -19526,7 +19528,7 @@ _npi_dstack_upd outputs args
          return ()
 
 type instance ParameterList "_npi_einsum(ndarray)" =
-     '[ '("num_args", AttrReq Int), '("subscripts", AttrOpt String),
+     '[ '("num_args", AttrReq Int), '("subscripts", AttrOpt Text),
         '("optimize", AttrOpt Int), '("data", AttrOpt [NDArrayHandle])]
 
 _npi_einsum ::
@@ -19537,7 +19539,7 @@ _npi_einsum args
           = catMaybes
               [("num_args",) . showValue <$> (args !? #num_args :: Maybe Int),
                ("subscripts",) . showValue <$>
-                 (args !? #subscripts :: Maybe String),
+                 (args !? #subscripts :: Maybe Text),
                ("optimize",) . showValue <$> (args !? #optimize :: Maybe Int)]
         tensorArgs = catMaybes []
         (tensorkeys, tensorvals) = unzip tensorArgs
@@ -19559,7 +19561,7 @@ _npi_einsum_upd outputs args
           = catMaybes
               [("num_args",) . showValue <$> (args !? #num_args :: Maybe Int),
                ("subscripts",) . showValue <$>
-                 (args !? #subscripts :: Maybe String),
+                 (args !? #subscripts :: Maybe Text),
                ("optimize",) . showValue <$> (args !? #optimize :: Maybe Int)]
         tensorArgs = catMaybes []
         (tensorkeys, tensorvals) = unzip tensorArgs
@@ -19975,7 +19977,7 @@ _npi_greater_scalar_upd outputs args
          return ()
 
 type instance ParameterList "_npi_hamming(ndarray)" =
-     '[ '("_M", AttrOpt Int), '("ctx", AttrOpt String),
+     '[ '("_M", AttrOpt Int), '("ctx", AttrOpt Text),
         '("dtype",
           AttrOpt
             (EnumType
@@ -19989,7 +19991,7 @@ _npi_hamming args
   = let scalarArgs
           = catMaybes
               [("_M",) . showValue <$> (args !? #_M :: Maybe Int),
-               ("ctx",) . showValue <$> (args !? #ctx :: Maybe String),
+               ("ctx",) . showValue <$> (args !? #ctx :: Maybe Text),
                ("dtype",) . showValue <$>
                  (args !? #dtype ::
                     Maybe
@@ -20012,7 +20014,7 @@ _npi_hamming_upd outputs args
   = let scalarArgs
           = catMaybes
               [("_M",) . showValue <$> (args !? #_M :: Maybe Int),
-               ("ctx",) . showValue <$> (args !? #ctx :: Maybe String),
+               ("ctx",) . showValue <$> (args !? #ctx :: Maybe Text),
                ("dtype",) . showValue <$>
                  (args !? #dtype ::
                     Maybe
@@ -20029,7 +20031,7 @@ _npi_hamming_upd outputs args
          return ()
 
 type instance ParameterList "_npi_hanning(ndarray)" =
-     '[ '("_M", AttrOpt Int), '("ctx", AttrOpt String),
+     '[ '("_M", AttrOpt Int), '("ctx", AttrOpt Text),
         '("dtype",
           AttrOpt
             (EnumType
@@ -20043,7 +20045,7 @@ _npi_hanning args
   = let scalarArgs
           = catMaybes
               [("_M",) . showValue <$> (args !? #_M :: Maybe Int),
-               ("ctx",) . showValue <$> (args !? #ctx :: Maybe String),
+               ("ctx",) . showValue <$> (args !? #ctx :: Maybe Text),
                ("dtype",) . showValue <$>
                  (args !? #dtype ::
                     Maybe
@@ -20066,7 +20068,7 @@ _npi_hanning_upd outputs args
   = let scalarArgs
           = catMaybes
               [("_M",) . showValue <$> (args !? #_M :: Maybe Int),
-               ("ctx",) . showValue <$> (args !? #ctx :: Maybe String),
+               ("ctx",) . showValue <$> (args !? #ctx :: Maybe Text),
                ("dtype",) . showValue <$>
                  (args !? #dtype ::
                     Maybe
@@ -20198,7 +20200,7 @@ _npi_hypot_upd outputs args
          return ()
 
 type instance ParameterList "_npi_identity(ndarray)" =
-     '[ '("shape", AttrOpt [Int]), '("ctx", AttrOpt String),
+     '[ '("shape", AttrOpt [Int]), '("ctx", AttrOpt Text),
         '("dtype",
           AttrOpt
             (EnumType
@@ -20212,7 +20214,7 @@ _npi_identity args
   = let scalarArgs
           = catMaybes
               [("shape",) . showValue <$> (args !? #shape :: Maybe [Int]),
-               ("ctx",) . showValue <$> (args !? #ctx :: Maybe String),
+               ("ctx",) . showValue <$> (args !? #ctx :: Maybe Text),
                ("dtype",) . showValue <$>
                  (args !? #dtype ::
                     Maybe
@@ -20235,7 +20237,7 @@ _npi_identity_upd outputs args
   = let scalarArgs
           = catMaybes
               [("shape",) . showValue <$> (args !? #shape :: Maybe [Int]),
-               ("ctx",) . showValue <$> (args !? #ctx :: Maybe String),
+               ("ctx",) . showValue <$> (args !? #ctx :: Maybe Text),
                ("dtype",) . showValue <$>
                  (args !? #dtype ::
                     Maybe
@@ -20258,7 +20260,7 @@ type instance ParameterList "_npi_indices(ndarray)" =
             (EnumType
                '["float16", "float32", "float64", "int32", "int64", "int8",
                  "uint8"])),
-        '("ctx", AttrOpt String)]
+        '("ctx", AttrOpt Text)]
 
 _npi_indices ::
              forall args . Fullfilled "_npi_indices(ndarray)" args =>
@@ -20274,7 +20276,7 @@ _npi_indices args
                       (EnumType
                          '["float16", "float32", "float64", "int32", "int64", "int8",
                            "uint8"])),
-               ("ctx",) . showValue <$> (args !? #ctx :: Maybe String)]
+               ("ctx",) . showValue <$> (args !? #ctx :: Maybe Text)]
         tensorArgs = catMaybes []
         (tensorkeys, tensorvals) = unzip tensorArgs
       in
@@ -20298,7 +20300,7 @@ _npi_indices_upd outputs args
                       (EnumType
                          '["float16", "float32", "float64", "int32", "int64", "int8",
                            "uint8"])),
-               ("ctx",) . showValue <$> (args !? #ctx :: Maybe String)]
+               ("ctx",) . showValue <$> (args !? #ctx :: Maybe Text)]
         tensorArgs = catMaybes []
         (tensorkeys, tensorvals) = unzip tensorArgs
       in
@@ -20783,7 +20785,7 @@ _npi_logical_not_upd outputs args
 type instance ParameterList "_npi_logspace(ndarray)" =
      '[ '("start", AttrReq Double), '("stop", AttrReq Double),
         '("num", AttrReq Int), '("endpoint", AttrOpt Bool),
-        '("base", AttrOpt Double), '("ctx", AttrOpt String),
+        '("base", AttrOpt Double), '("ctx", AttrOpt Text),
         '("dtype",
           AttrOpt
             (EnumType
@@ -20801,7 +20803,7 @@ _npi_logspace args
                ("num",) . showValue <$> (args !? #num :: Maybe Int),
                ("endpoint",) . showValue <$> (args !? #endpoint :: Maybe Bool),
                ("base",) . showValue <$> (args !? #base :: Maybe Double),
-               ("ctx",) . showValue <$> (args !? #ctx :: Maybe String),
+               ("ctx",) . showValue <$> (args !? #ctx :: Maybe Text),
                ("dtype",) . showValue <$>
                  (args !? #dtype ::
                     Maybe
@@ -20828,7 +20830,7 @@ _npi_logspace_upd outputs args
                ("num",) . showValue <$> (args !? #num :: Maybe Int),
                ("endpoint",) . showValue <$> (args !? #endpoint :: Maybe Bool),
                ("base",) . showValue <$> (args !? #base :: Maybe Double),
-               ("ctx",) . showValue <$> (args !? #ctx :: Maybe String),
+               ("ctx",) . showValue <$> (args !? #ctx :: Maybe Text),
                ("dtype",) . showValue <$>
                  (args !? #dtype ::
                     Maybe
@@ -21140,7 +21142,7 @@ _npi_negative_upd outputs args
 type instance ParameterList "_npi_normal(ndarray)" =
      '[ '("loc", AttrReq (Maybe Float)),
         '("scale", AttrReq (Maybe Float)),
-        '("size", AttrOpt (Maybe [Int])), '("ctx", AttrOpt String),
+        '("size", AttrOpt (Maybe [Int])), '("ctx", AttrOpt Text),
         '("dtype", AttrOpt (EnumType '["float16", "float32", "float64"])),
         '("input1", AttrOpt NDArrayHandle),
         '("input2", AttrOpt NDArrayHandle)]
@@ -21154,7 +21156,7 @@ _npi_normal args
               [("loc",) . showValue <$> (args !? #loc :: Maybe (Maybe Float)),
                ("scale",) . showValue <$> (args !? #scale :: Maybe (Maybe Float)),
                ("size",) . showValue <$> (args !? #size :: Maybe (Maybe [Int])),
-               ("ctx",) . showValue <$> (args !? #ctx :: Maybe String),
+               ("ctx",) . showValue <$> (args !? #ctx :: Maybe Text),
                ("dtype",) . showValue <$>
                  (args !? #dtype ::
                     Maybe (EnumType '["float16", "float32", "float64"]))]
@@ -21179,7 +21181,7 @@ _npi_normal_upd outputs args
               [("loc",) . showValue <$> (args !? #loc :: Maybe (Maybe Float)),
                ("scale",) . showValue <$> (args !? #scale :: Maybe (Maybe Float)),
                ("size",) . showValue <$> (args !? #size :: Maybe (Maybe [Int])),
-               ("ctx",) . showValue <$> (args !? #ctx :: Maybe String),
+               ("ctx",) . showValue <$> (args !? #ctx :: Maybe Text),
                ("dtype",) . showValue <$>
                  (args !? #dtype ::
                     Maybe (EnumType '["float16", "float32", "float64"]))]
@@ -21273,7 +21275,7 @@ _npi_not_equal_scalar_upd outputs args
          return ()
 
 type instance ParameterList "_npi_ones(ndarray)" =
-     '[ '("shape", AttrOpt [Int]), '("ctx", AttrOpt String),
+     '[ '("shape", AttrOpt [Int]), '("ctx", AttrOpt Text),
         '("dtype",
           AttrOpt
             (EnumType
@@ -21287,7 +21289,7 @@ _npi_ones args
   = let scalarArgs
           = catMaybes
               [("shape",) . showValue <$> (args !? #shape :: Maybe [Int]),
-               ("ctx",) . showValue <$> (args !? #ctx :: Maybe String),
+               ("ctx",) . showValue <$> (args !? #ctx :: Maybe Text),
                ("dtype",) . showValue <$>
                  (args !? #dtype ::
                     Maybe
@@ -21310,7 +21312,7 @@ _npi_ones_upd outputs args
   = let scalarArgs
           = catMaybes
               [("shape",) . showValue <$> (args !? #shape :: Maybe [Int]),
-               ("ctx",) . showValue <$> (args !? #ctx :: Maybe String),
+               ("ctx",) . showValue <$> (args !? #ctx :: Maybe Text),
                ("dtype",) . showValue <$>
                  (args !? #dtype ::
                     Maybe
@@ -22537,7 +22539,7 @@ _npi_trunc_upd outputs args
 type instance ParameterList "_npi_uniform(ndarray)" =
      '[ '("low", AttrReq (Maybe Float)),
         '("high", AttrReq (Maybe Float)), '("size", AttrOpt (Maybe [Int])),
-        '("ctx", AttrOpt String),
+        '("ctx", AttrOpt Text),
         '("dtype", AttrOpt (EnumType '["float16", "float32", "float64"])),
         '("input1", AttrOpt NDArrayHandle),
         '("input2", AttrOpt NDArrayHandle)]
@@ -22551,7 +22553,7 @@ _npi_uniform args
               [("low",) . showValue <$> (args !? #low :: Maybe (Maybe Float)),
                ("high",) . showValue <$> (args !? #high :: Maybe (Maybe Float)),
                ("size",) . showValue <$> (args !? #size :: Maybe (Maybe [Int])),
-               ("ctx",) . showValue <$> (args !? #ctx :: Maybe String),
+               ("ctx",) . showValue <$> (args !? #ctx :: Maybe Text),
                ("dtype",) . showValue <$>
                  (args !? #dtype ::
                     Maybe (EnumType '["float16", "float32", "float64"]))]
@@ -22576,7 +22578,7 @@ _npi_uniform_upd outputs args
               [("low",) . showValue <$> (args !? #low :: Maybe (Maybe Float)),
                ("high",) . showValue <$> (args !? #high :: Maybe (Maybe Float)),
                ("size",) . showValue <$> (args !? #size :: Maybe (Maybe [Int])),
-               ("ctx",) . showValue <$> (args !? #ctx :: Maybe String),
+               ("ctx",) . showValue <$> (args !? #ctx :: Maybe Text),
                ("dtype",) . showValue <$>
                  (args !? #dtype ::
                     Maybe (EnumType '["float16", "float32", "float64"]))]
@@ -22746,7 +22748,7 @@ _npi_vstack_upd outputs args
          return ()
 
 type instance ParameterList "_npi_zeros(ndarray)" =
-     '[ '("shape", AttrOpt [Int]), '("ctx", AttrOpt String),
+     '[ '("shape", AttrOpt [Int]), '("ctx", AttrOpt Text),
         '("dtype",
           AttrOpt
             (EnumType
@@ -22760,7 +22762,7 @@ _npi_zeros args
   = let scalarArgs
           = catMaybes
               [("shape",) . showValue <$> (args !? #shape :: Maybe [Int]),
-               ("ctx",) . showValue <$> (args !? #ctx :: Maybe String),
+               ("ctx",) . showValue <$> (args !? #ctx :: Maybe Text),
                ("dtype",) . showValue <$>
                  (args !? #dtype ::
                     Maybe
@@ -22783,7 +22785,7 @@ _npi_zeros_upd outputs args
   = let scalarArgs
           = catMaybes
               [("shape",) . showValue <$> (args !? #shape :: Maybe [Int]),
-               ("ctx",) . showValue <$> (args !? #ctx :: Maybe String),
+               ("ctx",) . showValue <$> (args !? #ctx :: Maybe Text),
                ("dtype",) . showValue <$>
                  (args !? #dtype ::
                     Maybe
@@ -22867,7 +22869,7 @@ _npx_relu_upd outputs args
 
 type instance ParameterList "_npx_reshape(ndarray)" =
      '[ '("newshape", AttrReq [Int]), '("reverse", AttrOpt Bool),
-        '("order", AttrOpt String), '("a", AttrOpt NDArrayHandle)]
+        '("order", AttrOpt Text), '("a", AttrOpt NDArrayHandle)]
 
 _npx_reshape ::
              forall args . Fullfilled "_npx_reshape(ndarray)" args =>
@@ -22877,7 +22879,7 @@ _npx_reshape args
           = catMaybes
               [("newshape",) . showValue <$> (args !? #newshape :: Maybe [Int]),
                ("reverse",) . showValue <$> (args !? #reverse :: Maybe Bool),
-               ("order",) . showValue <$> (args !? #order :: Maybe String)]
+               ("order",) . showValue <$> (args !? #order :: Maybe Text)]
         tensorArgs
           = catMaybes [("a",) <$> (args !? #a :: Maybe NDArrayHandle)]
         (tensorkeys, tensorvals) = unzip tensorArgs
@@ -22896,7 +22898,7 @@ _npx_reshape_upd outputs args
           = catMaybes
               [("newshape",) . showValue <$> (args !? #newshape :: Maybe [Int]),
                ("reverse",) . showValue <$> (args !? #reverse :: Maybe Bool),
-               ("order",) . showValue <$> (args !? #order :: Maybe String)]
+               ("order",) . showValue <$> (args !? #order :: Maybe Text)]
         tensorArgs
           = catMaybes [("a",) <$> (args !? #a :: Maybe NDArrayHandle)]
         (tensorkeys, tensorvals) = unzip tensorArgs
@@ -22979,7 +22981,7 @@ _onehot_encode_upd outputs args
          return ()
 
 type instance ParameterList "_ones(ndarray)" =
-     '[ '("shape", AttrOpt [Int]), '("ctx", AttrOpt String),
+     '[ '("shape", AttrOpt [Int]), '("ctx", AttrOpt Text),
         '("dtype",
           AttrOpt
             (EnumType
@@ -22993,7 +22995,7 @@ _ones args
   = let scalarArgs
           = catMaybes
               [("shape",) . showValue <$> (args !? #shape :: Maybe [Int]),
-               ("ctx",) . showValue <$> (args !? #ctx :: Maybe String),
+               ("ctx",) . showValue <$> (args !? #ctx :: Maybe Text),
                ("dtype",) . showValue <$>
                  (args !? #dtype ::
                     Maybe
@@ -23016,7 +23018,7 @@ _ones_upd outputs args
   = let scalarArgs
           = catMaybes
               [("shape",) . showValue <$> (args !? #shape :: Maybe [Int]),
-               ("ctx",) . showValue <$> (args !? #ctx :: Maybe String),
+               ("ctx",) . showValue <$> (args !? #ctx :: Maybe Text),
                ("dtype",) . showValue <$>
                  (args !? #dtype ::
                     Maybe
@@ -23146,7 +23148,7 @@ _power_scalar_upd outputs args
 
 type instance ParameterList "_random_exponential(ndarray)" =
      '[ '("lam", AttrOpt Float), '("shape", AttrOpt [Int]),
-        '("ctx", AttrOpt String),
+        '("ctx", AttrOpt Text),
         '("dtype",
           AttrOpt (EnumType '["None", "float16", "float32", "float64"]))]
 
@@ -23158,7 +23160,7 @@ _random_exponential args
           = catMaybes
               [("lam",) . showValue <$> (args !? #lam :: Maybe Float),
                ("shape",) . showValue <$> (args !? #shape :: Maybe [Int]),
-               ("ctx",) . showValue <$> (args !? #ctx :: Maybe String),
+               ("ctx",) . showValue <$> (args !? #ctx :: Maybe Text),
                ("dtype",) . showValue <$>
                  (args !? #dtype ::
                     Maybe (EnumType '["None", "float16", "float32", "float64"]))]
@@ -23180,7 +23182,7 @@ _random_exponential_upd outputs args
           = catMaybes
               [("lam",) . showValue <$> (args !? #lam :: Maybe Float),
                ("shape",) . showValue <$> (args !? #shape :: Maybe [Int]),
-               ("ctx",) . showValue <$> (args !? #ctx :: Maybe String),
+               ("ctx",) . showValue <$> (args !? #ctx :: Maybe Text),
                ("dtype",) . showValue <$>
                  (args !? #dtype ::
                     Maybe (EnumType '["None", "float16", "float32", "float64"]))]
@@ -23236,7 +23238,7 @@ _random_exponential_like_upd outputs args
 
 type instance ParameterList "_random_gamma(ndarray)" =
      '[ '("alpha", AttrOpt Float), '("beta", AttrOpt Float),
-        '("shape", AttrOpt [Int]), '("ctx", AttrOpt String),
+        '("shape", AttrOpt [Int]), '("ctx", AttrOpt Text),
         '("dtype",
           AttrOpt (EnumType '["None", "float16", "float32", "float64"]))]
 
@@ -23249,7 +23251,7 @@ _random_gamma args
               [("alpha",) . showValue <$> (args !? #alpha :: Maybe Float),
                ("beta",) . showValue <$> (args !? #beta :: Maybe Float),
                ("shape",) . showValue <$> (args !? #shape :: Maybe [Int]),
-               ("ctx",) . showValue <$> (args !? #ctx :: Maybe String),
+               ("ctx",) . showValue <$> (args !? #ctx :: Maybe Text),
                ("dtype",) . showValue <$>
                  (args !? #dtype ::
                     Maybe (EnumType '["None", "float16", "float32", "float64"]))]
@@ -23271,7 +23273,7 @@ _random_gamma_upd outputs args
               [("alpha",) . showValue <$> (args !? #alpha :: Maybe Float),
                ("beta",) . showValue <$> (args !? #beta :: Maybe Float),
                ("shape",) . showValue <$> (args !? #shape :: Maybe [Int]),
-               ("ctx",) . showValue <$> (args !? #ctx :: Maybe String),
+               ("ctx",) . showValue <$> (args !? #ctx :: Maybe Text),
                ("dtype",) . showValue <$>
                  (args !? #dtype ::
                     Maybe (EnumType '["None", "float16", "float32", "float64"]))]
@@ -23328,7 +23330,7 @@ _random_gamma_like_upd outputs args
 type instance
      ParameterList "_random_generalized_negative_binomial(ndarray)" =
      '[ '("mu", AttrOpt Float), '("alpha", AttrOpt Float),
-        '("shape", AttrOpt [Int]), '("ctx", AttrOpt String),
+        '("shape", AttrOpt [Int]), '("ctx", AttrOpt Text),
         '("dtype",
           AttrOpt (EnumType '["None", "float16", "float32", "float64"]))]
 
@@ -23345,7 +23347,7 @@ _random_generalized_negative_binomial args
               [("mu",) . showValue <$> (args !? #mu :: Maybe Float),
                ("alpha",) . showValue <$> (args !? #alpha :: Maybe Float),
                ("shape",) . showValue <$> (args !? #shape :: Maybe [Int]),
-               ("ctx",) . showValue <$> (args !? #ctx :: Maybe String),
+               ("ctx",) . showValue <$> (args !? #ctx :: Maybe Text),
                ("dtype",) . showValue <$>
                  (args !? #dtype ::
                     Maybe (EnumType '["None", "float16", "float32", "float64"]))]
@@ -23374,7 +23376,7 @@ _random_generalized_negative_binomial_upd outputs args
               [("mu",) . showValue <$> (args !? #mu :: Maybe Float),
                ("alpha",) . showValue <$> (args !? #alpha :: Maybe Float),
                ("shape",) . showValue <$> (args !? #shape :: Maybe [Int]),
-               ("ctx",) . showValue <$> (args !? #ctx :: Maybe String),
+               ("ctx",) . showValue <$> (args !? #ctx :: Maybe Text),
                ("dtype",) . showValue <$>
                  (args !? #dtype ::
                     Maybe (EnumType '["None", "float16", "float32", "float64"]))]
@@ -23444,7 +23446,7 @@ _random_generalized_negative_binomial_like_upd outputs args
 
 type instance ParameterList "_random_negative_binomial(ndarray)" =
      '[ '("k", AttrOpt Int), '("p", AttrOpt Float),
-        '("shape", AttrOpt [Int]), '("ctx", AttrOpt String),
+        '("shape", AttrOpt [Int]), '("ctx", AttrOpt Text),
         '("dtype",
           AttrOpt (EnumType '["None", "float16", "float32", "float64"]))]
 
@@ -23459,7 +23461,7 @@ _random_negative_binomial args
               [("k",) . showValue <$> (args !? #k :: Maybe Int),
                ("p",) . showValue <$> (args !? #p :: Maybe Float),
                ("shape",) . showValue <$> (args !? #shape :: Maybe [Int]),
-               ("ctx",) . showValue <$> (args !? #ctx :: Maybe String),
+               ("ctx",) . showValue <$> (args !? #ctx :: Maybe Text),
                ("dtype",) . showValue <$>
                  (args !? #dtype ::
                     Maybe (EnumType '["None", "float16", "float32", "float64"]))]
@@ -23483,7 +23485,7 @@ _random_negative_binomial_upd outputs args
               [("k",) . showValue <$> (args !? #k :: Maybe Int),
                ("p",) . showValue <$> (args !? #p :: Maybe Float),
                ("shape",) . showValue <$> (args !? #shape :: Maybe [Int]),
-               ("ctx",) . showValue <$> (args !? #ctx :: Maybe String),
+               ("ctx",) . showValue <$> (args !? #ctx :: Maybe Text),
                ("dtype",) . showValue <$>
                  (args !? #dtype ::
                     Maybe (EnumType '["None", "float16", "float32", "float64"]))]
@@ -23544,7 +23546,7 @@ _random_negative_binomial_like_upd outputs args
 
 type instance ParameterList "_random_normal(ndarray)" =
      '[ '("loc", AttrOpt Float), '("scale", AttrOpt Float),
-        '("shape", AttrOpt [Int]), '("ctx", AttrOpt String),
+        '("shape", AttrOpt [Int]), '("ctx", AttrOpt Text),
         '("dtype",
           AttrOpt (EnumType '["None", "float16", "float32", "float64"]))]
 
@@ -23557,7 +23559,7 @@ _random_normal args
               [("loc",) . showValue <$> (args !? #loc :: Maybe Float),
                ("scale",) . showValue <$> (args !? #scale :: Maybe Float),
                ("shape",) . showValue <$> (args !? #shape :: Maybe [Int]),
-               ("ctx",) . showValue <$> (args !? #ctx :: Maybe String),
+               ("ctx",) . showValue <$> (args !? #ctx :: Maybe Text),
                ("dtype",) . showValue <$>
                  (args !? #dtype ::
                     Maybe (EnumType '["None", "float16", "float32", "float64"]))]
@@ -23579,7 +23581,7 @@ _random_normal_upd outputs args
               [("loc",) . showValue <$> (args !? #loc :: Maybe Float),
                ("scale",) . showValue <$> (args !? #scale :: Maybe Float),
                ("shape",) . showValue <$> (args !? #shape :: Maybe [Int]),
-               ("ctx",) . showValue <$> (args !? #ctx :: Maybe String),
+               ("ctx",) . showValue <$> (args !? #ctx :: Maybe Text),
                ("dtype",) . showValue <$>
                  (args !? #dtype ::
                     Maybe (EnumType '["None", "float16", "float32", "float64"]))]
@@ -24011,7 +24013,7 @@ _random_pdf_uniform_upd outputs args
 
 type instance ParameterList "_random_poisson(ndarray)" =
      '[ '("lam", AttrOpt Float), '("shape", AttrOpt [Int]),
-        '("ctx", AttrOpt String),
+        '("ctx", AttrOpt Text),
         '("dtype",
           AttrOpt (EnumType '["None", "float16", "float32", "float64"]))]
 
@@ -24023,7 +24025,7 @@ _random_poisson args
           = catMaybes
               [("lam",) . showValue <$> (args !? #lam :: Maybe Float),
                ("shape",) . showValue <$> (args !? #shape :: Maybe [Int]),
-               ("ctx",) . showValue <$> (args !? #ctx :: Maybe String),
+               ("ctx",) . showValue <$> (args !? #ctx :: Maybe Text),
                ("dtype",) . showValue <$>
                  (args !? #dtype ::
                     Maybe (EnumType '["None", "float16", "float32", "float64"]))]
@@ -24045,7 +24047,7 @@ _random_poisson_upd outputs args
           = catMaybes
               [("lam",) . showValue <$> (args !? #lam :: Maybe Float),
                ("shape",) . showValue <$> (args !? #shape :: Maybe [Int]),
-               ("ctx",) . showValue <$> (args !? #ctx :: Maybe String),
+               ("ctx",) . showValue <$> (args !? #ctx :: Maybe Text),
                ("dtype",) . showValue <$>
                  (args !? #dtype ::
                     Maybe (EnumType '["None", "float16", "float32", "float64"]))]
@@ -24098,7 +24100,7 @@ _random_poisson_like_upd outputs args
 
 type instance ParameterList "_random_uniform(ndarray)" =
      '[ '("low", AttrOpt Float), '("high", AttrOpt Float),
-        '("shape", AttrOpt [Int]), '("ctx", AttrOpt String),
+        '("shape", AttrOpt [Int]), '("ctx", AttrOpt Text),
         '("dtype",
           AttrOpt (EnumType '["None", "float16", "float32", "float64"]))]
 
@@ -24111,7 +24113,7 @@ _random_uniform args
               [("low",) . showValue <$> (args !? #low :: Maybe Float),
                ("high",) . showValue <$> (args !? #high :: Maybe Float),
                ("shape",) . showValue <$> (args !? #shape :: Maybe [Int]),
-               ("ctx",) . showValue <$> (args !? #ctx :: Maybe String),
+               ("ctx",) . showValue <$> (args !? #ctx :: Maybe Text),
                ("dtype",) . showValue <$>
                  (args !? #dtype ::
                     Maybe (EnumType '["None", "float16", "float32", "float64"]))]
@@ -24134,7 +24136,7 @@ _random_uniform_upd outputs args
               [("low",) . showValue <$> (args !? #low :: Maybe Float),
                ("high",) . showValue <$> (args !? #high :: Maybe Float),
                ("shape",) . showValue <$> (args !? #shape :: Maybe [Int]),
-               ("ctx",) . showValue <$> (args !? #ctx :: Maybe String),
+               ("ctx",) . showValue <$> (args !? #ctx :: Maybe Text),
                ("dtype",) . showValue <$>
                  (args !? #dtype ::
                     Maybe (EnumType '["None", "float16", "float32", "float64"]))]
@@ -25541,7 +25543,7 @@ _unravel_index_upd outputs args
          return ()
 
 type instance ParameterList "_zeros(ndarray)" =
-     '[ '("shape", AttrOpt [Int]), '("ctx", AttrOpt String),
+     '[ '("shape", AttrOpt [Int]), '("ctx", AttrOpt Text),
         '("dtype",
           AttrOpt
             (EnumType
@@ -25555,7 +25557,7 @@ _zeros args
   = let scalarArgs
           = catMaybes
               [("shape",) . showValue <$> (args !? #shape :: Maybe [Int]),
-               ("ctx",) . showValue <$> (args !? #ctx :: Maybe String),
+               ("ctx",) . showValue <$> (args !? #ctx :: Maybe Text),
                ("dtype",) . showValue <$>
                  (args !? #dtype ::
                     Maybe
@@ -25578,7 +25580,7 @@ _zeros_upd outputs args
   = let scalarArgs
           = catMaybes
               [("shape",) . showValue <$> (args !? #shape :: Maybe [Int]),
-               ("ctx",) . showValue <$> (args !? #ctx :: Maybe String),
+               ("ctx",) . showValue <$> (args !? #ctx :: Maybe Text),
                ("dtype",) . showValue <$>
                  (args !? #dtype ::
                     Maybe
@@ -25595,7 +25597,7 @@ _zeros_upd outputs args
          return ()
 
 type instance ParameterList "_zeros_without_dtype(ndarray)" =
-     '[ '("shape", AttrOpt [Int]), '("ctx", AttrOpt String),
+     '[ '("shape", AttrOpt [Int]), '("ctx", AttrOpt Text),
         '("dtype", AttrOpt Int)]
 
 _zeros_without_dtype ::
@@ -25605,7 +25607,7 @@ _zeros_without_dtype args
   = let scalarArgs
           = catMaybes
               [("shape",) . showValue <$> (args !? #shape :: Maybe [Int]),
-               ("ctx",) . showValue <$> (args !? #ctx :: Maybe String),
+               ("ctx",) . showValue <$> (args !? #ctx :: Maybe Text),
                ("dtype",) . showValue <$> (args !? #dtype :: Maybe Int)]
         tensorArgs = catMaybes []
         (tensorkeys, tensorvals) = unzip tensorArgs
@@ -25624,7 +25626,7 @@ _zeros_without_dtype_upd outputs args
   = let scalarArgs
           = catMaybes
               [("shape",) . showValue <$> (args !? #shape :: Maybe [Int]),
-               ("ctx",) . showValue <$> (args !? #ctx :: Maybe String),
+               ("ctx",) . showValue <$> (args !? #ctx :: Maybe Text),
                ("dtype",) . showValue <$> (args !? #dtype :: Maybe Int)]
         tensorArgs = catMaybes []
         (tensorkeys, tensorvals) = unzip tensorArgs

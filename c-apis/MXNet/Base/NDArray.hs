@@ -1,6 +1,7 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 module MXNet.Base.NDArray where
 
+import RIO hiding (Vector)
 import Foreign.Ptr (castPtr)
 import Foreign.Storable (Storable(..))
 import Data.Vector.Storable (Vector)
@@ -10,9 +11,7 @@ import qualified Data.Vector.Unboxed as UV
 import qualified Data.Array.Repa as Repa
 import qualified Data.Array.Repa.Eval as Repa
 import GHC.Generics (Generic, Generic1)
-import Control.DeepSeq (NFData, NFData1)
 import qualified Data.Store as S
-import Control.Monad.IO.Class
 import System.IO.Unsafe
 
 import qualified MXNet.Base.Raw as I
@@ -24,7 +23,6 @@ instance ForeignData (NDArray a) where
     touch = I.touchNDArrayHandle . unNDArray
 
 instance NFData (NDArray a)
-instance NFData1 NDArray
 
 instance (DType a, S.Store a) => S.Store (NDArray a) where
     size = S.VarSize $ \a ->
@@ -81,7 +79,7 @@ fromVector shape = makeNDArray shape contextCPU
 copyFromVector :: DType a => NDArray a -> Vector a -> IO ()
 copyFromVector arr vec = do
     sz <- ndsize arr
-    if (sz /= V.length vec) 
+    if (sz /= V.length vec)
       then error ""
       else do
         V.unsafeWith vec $ \p -> do

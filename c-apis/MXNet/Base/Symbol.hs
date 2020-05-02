@@ -1,6 +1,11 @@
 {-# LANGUAGE TypeFamilies #-}
 module MXNet.Base.Symbol where
 
+import RIO
+import RIO.List (unzip, scanl, headMaybe)
+import RIO.Partial (toEnum)
+import qualified RIO.NonEmpty as RNE
+
 import Foreign.Marshal.Array
 import Foreign.Marshal.Alloc
 import Foreign.Storable
@@ -8,16 +13,10 @@ import Foreign.Ptr
 import Foreign.C.String
 import Foreign.C.Types
 import Control.Monad
-import Control.Exception.Base (assert, Exception, throwIO)
-import Data.List (groupBy)
-import Data.Function
-import Data.Maybe
 import Text.Printf (printf)
-import Control.Concurrent.MVar
 import qualified Data.Vector as V
 import qualified Data.Vector.Mutable as VM
 import Data.Typeable (Typeable)
-import Control.Exception.Base (Exception, throwIO)
 
 import qualified MXNet.Base.Raw as I
 import MXNet.Base.Types (ForeignData(..))
@@ -28,22 +27,22 @@ instance ForeignData (Symbol a) where
     touch = I.touchSymbolHandle . unSymbol
 
 data SymbolException = SymbolIndexOutOfBound Int Int
-                     | SymbolNameNotFound String
+                     | SymbolNameNotFound Text
     deriving (Typeable, Show)
 instance Exception SymbolException
 
 class SymbolClass s where
-    getName             :: s -> IO (Maybe String)
-    listArguments       :: s -> IO [String]
-    listOutputs         :: s -> IO [String]
-    listAuxiliaryStates :: s -> IO [String]
+    getName             :: s -> IO (Maybe Text)
+    listArguments       :: s -> IO [Text]
+    listOutputs         :: s -> IO [Text]
+    listAuxiliaryStates :: s -> IO [Text]
     numOutputs          :: s -> IO Int
     at                  :: s -> Int -> IO s
     group               :: [s] -> IO s
     internals           :: s -> IO s
-    inferShape          :: s -> [(String, [Int])] ->IO ([(String, [Int])], [(String, [Int])], [(String, [Int])], Bool)
+    inferShape          :: s -> [(Text, [Int])] ->IO ([(Text, [Int])], [(Text, [Int])], [(Text, [Int])], Bool)
 
-    at'                 :: s -> String -> IO s
+    at'                 :: s -> Text -> IO s
     at' sym name = do
         all_names <- listOutputs sym
         case V.findIndex (== name) $ V.fromList all_names of
@@ -85,7 +84,7 @@ instance SymbolClass (Symbol a) where
     numOutputs          = numOutputs . unSymbol
     at (Symbol s)       = (Symbol <$>) . at s
     group = (Symbol <$>) . group . map unSymbol
-    internals           = (Symbol <$>) . internals . unSymbol 
+    internals           = (Symbol <$>) . internals . unSymbol
     inferShape          = inferShape  . unSymbol
 
 
@@ -156,10 +155,10 @@ class CustomOperation (Operation prop) => CustomOperationProp prop where
         in withAssert (ograd_stype', in_stype', out_stype', igrad_stype', aux_stype')
     prop_infer_type :: prop -> [MXDType] -> ([MXDType],[MXDType], [MXDType])
     prop_infer_type prop in_type =
-        let t0 = head in_type
-            out_type = replicate (length (prop_list_outputs prop)) t0
-            aux_type = replicate (length (prop_list_auxiliary_states prop)) t0
-        in (in_type, out_type, aux_type)
+        case headMaybe in_type of
+            Just t0 -> let out_type = replicate (length (prop_list_outputs prop)) t0
+                           aux_type = replicate (length (prop_list_auxiliary_states prop)) t0
+                       in (in_type, out_type, aux_type)
 
     data Operation prop :: *
     prop_create_operator :: prop -> [[Int]] -> [MXDType] -> IO (Operation prop)
@@ -182,15 +181,15 @@ class CustomOperation op where
 data ReqEnum = ReqNull | ReqWrite | ReqInplace | ReqAdd
     deriving (Bounded, Enum)
 
-registerCustomOperator :: CustomOperationProp op => (String, [(String, String)] -> IO op) -> IO ()
+registerCustomOperator :: CustomOperationProp op => (Text, [(Text, Text)] -> IO op) -> IO ()
 registerCustomOperator (op_type, op_ctor) = do
     ptr_creator <- I.mkCustomOpPropCreator creator
     I.mxCustomOpRegister op_type ptr_creator
   where
     creator name argc keys values ret = do
         let argc' = fromIntegral argc
-        keys_ <- peekArray argc' keys   >>= mapM peekCString
-        vals_ <- peekArray argc' values >>= mapM peekCString
+        keys_ <- peekArray argc' keys   >>= mapM I.peekCStringT
+        vals_ <- peekArray argc' values >>= mapM I.peekCStringT
         prop <- op_ctor $ zip keys_ vals_
 
         args <- mapM newCString (prop_list_arguments prop)
@@ -336,8 +335,11 @@ registerCustomOperator (op_type, op_ctor) = do
             num_tensor' = fromIntegral num_tensor
         tags' <- peekArray num_tensor' tags
         tensor_types' <- peekArray num_tensor' tensor_stypes
-        let tensors = groupBy ((==) `on` fst) (zip tags' tensor_types')
-            tensors_table = map (\t -> (fst (head t), map (toStorageType . snd) t)) tensors
+        let tensors = RNE.groupBy ((==) `on` fst) (zip tags' tensor_types')
+            tensors_table = map (\t ->
+                let tag = fst $ RNE.head t
+                    sto = RNE.toList $ RNE.map (toStorageType . snd) t
+                in (tag, sto)) tensors
             [ograd0, input0, output0, igrad0, aux0] = map (fromMaybe [] . flip lookup tensors_table) [3, 0, 1, 2, 4]
             (ograd, input, output, igrad, aux) = prop_infer_storage_type_backward prop ograd0 input0 output0 igrad0 aux0
             all_stypes = map fromStorageType $ ograd ++ input ++ output ++ igrad ++ aux

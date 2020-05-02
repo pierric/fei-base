@@ -1,27 +1,31 @@
 module MXNet.Base.Raw.Common where
 
-import Control.Exception.Base (Exception, throwIO)
-import Data.Typeable (Typeable)
+import RIO
+import qualified RIO.Text as T
 import Data.Tuple.Ops (Unconsable, uncons)
 import Foreign.Marshal (alloca, peekArray, withArray)
 import Foreign.Storable (Storable(..))
-import Foreign.C (withCString)
 import Foreign.C.Types
+import Foreign.C.String (CString, peekCString, withCString)
 import Foreign.Ptr
-import C2HS.C.Extra.Marshal (peekString, peekStringArray)
 import GHC.Generics (Generic)
-import Data.Word (Word64)
 
 type MX_UINT  = C2HSImp.CUInt
 type MX_CCHAR = C2HSImp.CChar
 
-data MXNetError = MXNetError String
+{# typedef char CChar #}
+{# default in  `Text' [char *] withCStringT* #}
+{# default out `Text' [char *] peekCStringT* #}
+
+data MXNetError = MXNetError Text
     deriving Typeable
 instance Exception MXNetError
 
 instance Show MXNetError where
-    show (MXNetError msg) = "an error occurred in MXNet.\n" ++ msg
+    show (MXNetError msg) = "an error occurred in MXNet.\n" ++ T.unpack msg
 
+newtype WrapText = WrapText {unWrapText :: Text}
+deriving instance Generic WrapText
 deriving instance Generic C2HSImp.CInt
 deriving instance Generic C2HSImp.CUInt
 
@@ -33,11 +37,33 @@ checked call = do
               throwIO $ MXNetError err
       else return ret
 
-withStringArray :: [String] -> (Ptr (Ptr CChar) -> IO a) -> IO a
-withStringArray strs act = go strs []
+peekCStringT :: CString -> IO Text
+peekCStringT = fmap T.pack . peekCString
+
+peekCStringPtrT :: Ptr CString -> IO Text
+peekCStringPtrT ptr = do
+    cstr <- peek ptr
+    if | cstr == nullPtr -> return ""
+       | otherwise -> peekCStringT cstr
+
+peekCStringArrayT :: Int -> Ptr CString -> IO [Text]
+peekCStringArrayT cnt ptr = peekArray cnt ptr >>= mapM peekCStringT
+
+withCStringT :: Text -> (CString -> IO a) -> IO a
+withCStringT str = withCString (T.unpack str)
+
+-- TODO: Does it worth of any opt for the withCStringArrayT?
+-- withCStringArrayT :: [Text] -> (Ptr CString -> IO a) -> IO a
+-- withCStringArrayT arr act = do
+--     let nul = T.singleton '\NUL'
+--         whole = T.concat $ map (`T.append` nul) arr
+--     T.encodeUtf8 whole
+
+withCStringArrayT :: [Text] -> (Ptr CString -> IO a) -> IO a
+withCStringArrayT strs act = go strs []
   where
     go [] all = withArray (reverse all) act
-    go (s:ss) all = withCString s (go ss . (:all))
+    go (s:ss) all = withCStringT s (go ss . (:all))
 
 #include <mxnet/c_api.h>
 #include <nnvm/c_api.h>
@@ -60,15 +86,15 @@ fun MXListAllOpNames as mxListAllOpNames_
     } -> `CInt'
 #}
 
-mxListAllOpNames :: IO [String]
+mxListAllOpNames :: IO [Text]
 mxListAllOpNames = do
     (cnt, ptr) <- checked mxListAllOpNames_
-    peekStringArray (fromIntegral cnt :: Int) ptr
+    peekCStringArrayT (fromIntegral cnt :: Int) ptr
 
 {#
 fun MXGetLastError as mxGetLastError
     {
-    } -> `String'
+    } -> `Text' peekCStringT*
 #}
 
 {#
@@ -102,42 +128,42 @@ mxSymbolGetAtomicSymbolCreatorAt idx = do
 fun MXSymbolGetAtomicSymbolName as mxSymbolGetAtomicSymbolName_
     {
         `AtomicSymbolCreator',
-        alloca- `String' peekString*
+        alloca- `Text' peekCStringPtrT*
     } -> `CInt'
 #}
 
-mxSymbolGetAtomicSymbolName :: AtomicSymbolCreator -> IO String
-mxSymbolGetAtomicSymbolName = checked . mxSymbolGetAtomicSymbolName_
+mxSymbolGetAtomicSymbolName :: AtomicSymbolCreator -> IO Text
+mxSymbolGetAtomicSymbolName = fmap unWrapText . checked . fmap (second WrapText) . mxSymbolGetAtomicSymbolName_
 
 {#
 fun MXSymbolGetAtomicSymbolInfo as mxSymbolGetAtomicSymbolInfo_
     {
         `AtomicSymbolCreator',
-        alloca- `String' peekString*,
-        alloca- `String' peekString*,
+        alloca- `Text' peekCStringPtrT*,
+        alloca- `Text' peekCStringPtrT*,
         alloca- `MX_UINT' peek*,
-        alloca- `Ptr (Ptr CChar)' peek*,
-        alloca- `Ptr (Ptr CChar)' peek*,
-        alloca- `Ptr (Ptr CChar)' peek*,
-        alloca- `String' peekString*,
-        alloca- `String' peekString*
+        alloca- `Ptr CString' peek*,
+        alloca- `Ptr CString' peek*,
+        alloca- `Ptr CString' peek*,
+        alloca- `Text' peekCStringPtrT*,
+        alloca- `Text' peekCStringPtrT*
     } -> `CInt'
 #}
 
 mxSymbolGetAtomicSymbolInfo :: AtomicSymbolCreator
-                            -> IO (String,
-                                   String,
-                                   [String],
-                                   [String],
-                                   [String],
-                                   String,
-                                   String)
+                            -> IO (Text,
+                                   Text,
+                                   [Text],
+                                   [Text],
+                                   [Text],
+                                   Text,
+                                   Text)
 mxSymbolGetAtomicSymbolInfo creator = do
     (name, desc, argcnt, argname, argtype, argdesc, key_var_num_args, rettyp) <- checked $ mxSymbolGetAtomicSymbolInfo_ creator
     let n = fromIntegral argcnt
-    argname <- peekStringArray n argname
-    argtype <- peekStringArray n argtype
-    argdesc <- peekStringArray n argdesc
+    argname <- peekCStringArrayT n argname
+    argtype <- peekCStringArrayT n argtype
+    argdesc <- peekCStringArrayT n argdesc
     return (name, desc, argname, argtype, argdesc, key_var_num_args, rettyp)
 
 {#
@@ -168,10 +194,10 @@ fun NNListAllOpNames as nnListAllOpNames_
     } -> `CInt'
 #}
 
-nnListAllOpNames :: IO [String]
+nnListAllOpNames :: IO [Text]
 nnListAllOpNames = do
     (cnt, ptr) <- checked nnListAllOpNames_
-    peekStringArray (fromIntegral cnt :: Int) ptr
+    peekCStringArrayT (fromIntegral cnt) ptr
 
 {#
 fun NNListUniqueOps as nnListUniqueOps_
@@ -189,39 +215,39 @@ nnListUniqueOps = do
 {#
 fun NNGetOpHandle as nnGetOpHandle_
     {
-        `String',
+        withCStringT* `Text',
         alloca- `OpHandle' peek*
     } -> `CInt'
 #}
 
-nnGetOpHandle :: String -> IO OpHandle
+nnGetOpHandle :: Text -> IO OpHandle
 nnGetOpHandle = checked . nnGetOpHandle_
 
 {#
 fun NNGetOpInfo as nnGetOpInfo_
     {
         `OpHandle',
-        alloca- `String' peekString*,
-        alloca- `String' peekString*,
+        alloca- `Text' peekCStringPtrT*,
+        alloca- `Text' peekCStringPtrT*,
         alloca- `NN_UINT' peek*,
-        alloca- `Ptr (Ptr CChar)' peek*,
-        alloca- `Ptr (Ptr CChar)' peek*,
-        alloca- `Ptr (Ptr CChar)' peek*,
-        alloca- `String' peekString*
+        alloca- `Ptr CString' peek*,
+        alloca- `Ptr CString' peek*,
+        alloca- `Ptr CString' peek*,
+        alloca- `Text' peekCStringPtrT*
     } -> `CInt'
 #}
 
-nnGetOpInfo :: OpHandle -> IO (String, String, [String], [String], [String], String)
+nnGetOpInfo :: OpHandle -> IO (Text, Text, [Text], [Text], [Text], Text)
 nnGetOpInfo op = do
     (name, desc, num_args, ptr_arg_names, ptr_arg_types, ptr_arg_descs, ret_type) <- checked $ nnGetOpInfo_ op
     let num_args_ = fromIntegral num_args
-    arg_names <- peekStringArray num_args_ ptr_arg_names
-    arg_types <- peekStringArray num_args_ ptr_arg_types
-    arg_descs <- peekStringArray num_args_ ptr_arg_descs
+    arg_names <- peekCStringArrayT num_args_ ptr_arg_names
+    arg_types <- peekCStringArrayT num_args_ ptr_arg_types
+    arg_descs <- peekCStringArrayT num_args_ ptr_arg_descs
     return (name, desc, arg_names, arg_types, arg_descs, ret_type)
 
 {#
 fun NNGetLastError as nnGetLastError
     {
-    } -> `String'
+    } -> `Text' peekCStringT*
 #}

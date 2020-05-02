@@ -1,14 +1,17 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 module MXNet.Base.Raw.NDArray where
 
+import RIO
+import RIO.List (unzip)
 import Foreign.Marshal (alloca, withArray, peekArray)
 import Foreign.Storable (Storable(..))
 import Foreign.Concurrent (newForeignPtr)
 import Foreign.ForeignPtr (touchForeignPtr)
 import Foreign.ForeignPtr.Unsafe (unsafeForeignPtrToPtr)
 import Foreign.C.Types
+import Foreign.C.String (CString)
 import Foreign.Ptr
-import C2HS.C.Extra.Marshal (withIntegralArray, peekStringArray)
+import C2HS.C.Extra.Marshal (withIntegralArray)
 import GHC.Generics (Generic)
 import Control.DeepSeq (NFData(..), rwhnf)
 import Control.Monad ((>=>))
@@ -293,15 +296,15 @@ fun MXImperativeInvoke as mxImperativeInvoke_
         id `Ptr CInt',                    -- num-outputs
         id `Ptr (Ptr NDArrayHandlePtr)',  -- array-of-NDArrayHandle
         `CInt',
-        withStringArray* `[String]',
-        withStringArray* `[String]'
+        withCStringArrayT* `[Text]',
+        withCStringArrayT* `[Text]'
     } -> `CInt'
 #}
 
 -- | Invoke a nnvm op and imperative function.
 mxImperativeInvoke :: AtomicSymbolCreator
                    -> [NDArrayHandle]
-                   -> [(String, String)]
+                   -> [(Text, Text)]
                    -> Maybe [NDArrayHandle]
                    -> IO [NDArrayHandle]
 mxImperativeInvoke creator inputs params outputs = do
@@ -349,25 +352,25 @@ mxNDArrayGetContext handle = do
 {#
 fun MXNDArraySave as mxNDArraySave_
     {
-        `String',
+        withCStringT* `Text',
         `MX_UINT',
         withNDArrayHandleArray* `[NDArrayHandle]',
-        withStringArray* `[String]'
+        withCStringArrayT* `[Text]'
     } -> `CInt'
 #}
 #else
 {#
 fun MXNDArraySave as mxNDArraySave_
     {
-        `String',
+        withCStringT* `Text',
         `CUInt',
         withNDArrayHandleArray* `[NDArrayHandle]',
-        withStringArray* `[String]'
+        withCStringArrayT* `[Text]'
     } -> `CInt'
 #}
 #endif
 
-mxNDArraySave ::  String -> [(String, NDArrayHandle)] -> IO ()
+mxNDArraySave ::  Text -> [(Text, NDArrayHandle)] -> IO ()
 mxNDArraySave filename keyvals = do
     let num = length keyvals
         (keys, vals) = unzip keyvals
@@ -376,18 +379,18 @@ mxNDArraySave filename keyvals = do
 {#
 fun MXNDArrayLoad as mxNDArrayLoad_
     {
-        `String',
+        withCStringT* `Text',
         alloca- `MX_UINT' peek*,
         alloca- `Ptr NDArrayHandlePtr' peek*,
         alloca- `MX_UINT' peek*,
-        alloca- `Ptr (Ptr CChar)' peek*
+        alloca- `Ptr CString' peek*
     } -> `CInt'
 #}
 
-mxNDArrayLoad :: String -> IO [(String, NDArrayHandle)]
+mxNDArrayLoad :: Text -> IO [(Text, NDArrayHandle)]
 mxNDArrayLoad path = do
     (numArrays, ptrArrays, numNames, ptrNames) <- checked $ mxNDArrayLoad_ path
     pa <- peekArray (fromIntegral numArrays) ptrArrays
     arrays <- mapM newNDArrayHandle pa
-    names <- peekStringArray numNames ptrNames
+    names <- peekCStringArrayT (fromIntegral numNames) ptrNames
     return $ zip names arrays
