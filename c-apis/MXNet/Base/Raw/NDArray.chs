@@ -11,7 +11,6 @@ import Foreign.ForeignPtr.Unsafe (unsafeForeignPtrToPtr)
 import Foreign.C.Types
 import Foreign.C.String (CString)
 import Foreign.Ptr
-import C2HS.C.Extra.Marshal (withIntegralArray)
 import GHC.Generics (Generic)
 import Control.DeepSeq (NFData(..), rwhnf)
 import Control.Monad ((>=>))
@@ -257,7 +256,7 @@ fun MXNDArrayReshape as mxNDArrayReshape_
     {
         `NDArrayHandle',
         `CInt',
-        withIntegralArray* `[CInt]',
+        withArray* `[CInt]',
         alloca- `NDArrayHandle' peekNDArrayHandle*
     } -> `CInt'
 #}

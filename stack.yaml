@@ -1,17 +1,16 @@
-resolver: lts-12.16
+resolver: lts-14.27
 packages:
 - .
 extra-deps:
 - ../tuple-ops
-- c2hs-extra-0.1.0.1
 - git: https://github.com/0xCM/type-combinators.git
   commit: 58167dd4017b666ff592bb9493b0570a054aabdb
 - git: https://github.com/pierric/haskell-src-exts.git
   commit: f75a5dbe2ec9fbc67df0936333e0665b033f9e22
 extra-include-dirs:
-- /home/jiasen/hdd/dschungel/incubator-mxnet-1.6.0.rc1/include
+- /home/jiasen/workspace/mxnet/build-1.6.0/include
 extra-lib-dirs:
-- /home/jiasen/hdd/dschungel/incubator-mxnet-1.6.0.rc1/lib
+- /home/jiasen/workspace/mxnet/build-1.6.0
 flags:
   fei-base:
     MXNet_1_6: true

@@ -5,6 +5,9 @@ import RIO
 import RIO.List (unzip, scanl, headMaybe)
 import RIO.Partial (toEnum)
 import qualified RIO.NonEmpty as RNE
+import qualified RIO.Vector.Boxed as V
+import qualified RIO.Vector.Boxed.Unsafe as V
+import qualified Data.Vector.Mutable as VM
 
 import Foreign.Marshal.Array
 import Foreign.Marshal.Alloc
@@ -14,8 +17,6 @@ import Foreign.C.String
 import Foreign.C.Types
 import Control.Monad
 import Text.Printf (printf)
-import qualified Data.Vector as V
-import qualified Data.Vector.Mutable as VM
 import Data.Typeable (Typeable)
 
 import qualified MXNet.Base.Raw as I
@@ -40,7 +41,8 @@ class SymbolClass s where
     at                  :: s -> Int -> IO s
     group               :: [s] -> IO s
     internals           :: s -> IO s
-    inferShape          :: s -> [(Text, [Int])] ->IO ([(Text, [Int])], [(Text, [Int])], [(Text, [Int])], Bool)
+    inferShape          :: s -> [(Text, NonEmpty Int)] ->
+                           IO ([(Text, NonEmpty Int)], [(Text, NonEmpty Int)], [(Text, NonEmpty Int)], Bool)
 
     at'                 :: s -> Text -> IO s
     at' sym name = do
@@ -67,14 +69,17 @@ instance SymbolClass I.SymbolHandle where
     inferShape sym known = do
         let (names, shapes) = unzip known
             arg_ind = scanl (+) 0 $ map length shapes
-            arg_shp = concat shapes
+            arg_shp = concatMap RNE.toList shapes
         (inp_shp, out_shp, aux_shp, complete) <- I.mxSymbolInferShapePartial sym names arg_ind arg_shp
         inps <- listArguments sym
         outs <- listOutputs sym
         auxs <- listAuxiliaryStates sym
         return (pair inps inp_shp, pair outs out_shp, pair auxs aux_shp, complete)
       where
-        pair names shapes = filter (not . null . snd) $ zip names shapes
+        build name shape = do
+            s <- RNE.nonEmpty shape
+            return (name, s)
+        pair names shapes = catMaybes $ zipWith build names shapes
 
 instance SymbolClass (Symbol a) where
     getName             = getName . unSymbol
@@ -416,4 +421,4 @@ registerCustomOperator (op_type, op_ctor) = do
         backward op reqs in_data out_data in_grad out_grad aux
         return 1
 
-    (!) = (V.!)
+    (!) = V.unsafeIndex

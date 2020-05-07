@@ -4,6 +4,7 @@ module MXNet.Base.Executor where
 
 import RIO
 import RIO.List (unzip, scanl)
+import qualified RIO.NonEmpty as RNE
 import GHC.Generics (Generic, Generic1)
 
 import qualified MXNet.Base.Raw as I
@@ -30,11 +31,11 @@ execForward (Executor hdl) = I.mxExecutorForward hdl
 execBackward :: Executor a -> [NDArray a] -> IO ()
 execBackward (Executor hdl) arrs = I.mxExecutorBackward hdl (map unNDArray arrs)
 
-execReshapeEx :: Executor a -> Bool -> Bool -> Context -> [(Text, [Int])] -> IO ([NDArray a], [Maybe (NDArray a)], [NDArray a], Executor a)
+execReshapeEx :: Executor a -> Bool -> Bool -> Context -> [(Text, NonEmpty Int)] -> IO ([NDArray a], [Maybe (NDArray a)], [NDArray a], Executor a)
 execReshapeEx (Executor hdl) partial_shaping allow_up_sizing Context{..} input_shapes = do
     let (names, shapes) = unzip input_shapes
         arg_ind = scanl (+) 0 $ map length shapes
-        arg_shp = concat shapes
+        arg_shp = concatMap RNE.toList shapes
     (new_arg_in, new_arg_grad, new_arg_aux, new_hdl) <- I.mxExecutorReshapeEx
         partial_shaping allow_up_sizing
         _device_type _device_id

@@ -9,7 +9,6 @@ import Foreign.ForeignPtr (finalizeForeignPtr)
 import Foreign.C.Types
 import Foreign.C.String (CString)
 import Foreign.Ptr
-import C2HS.C.Extra.Marshal (peekIntegralArray)
 
 {# import MXNet.Base.Raw.Common #}
 {# import MXNet.Base.Raw.NDArray #}
@@ -166,7 +165,7 @@ fun MXDataIterGetIndex as mxDataIterGetIndex_
 mxDataIterGetIndex :: DataIterHandle -> IO [Integer]
 mxDataIterGetIndex dataiter = do
     (ptr, cnt) <- checked $ mxDataIterGetIndex_ dataiter
-    peekIntegralArray (fromIntegral cnt) ptr
+    map fromIntegral <$> peekArray (fromIntegral cnt) ptr
 
 {#
 fun MXDataIterGetPadNum as mxDataIterGetPadNum_

@@ -9,7 +9,6 @@ import Foreign.ForeignPtr (newForeignPtr_, touchForeignPtr)
 import Foreign.ForeignPtr.Unsafe (unsafeForeignPtrToPtr)
 import Foreign.Ptr
 import Foreign.C.Types
-import C2HS.C.Extra.Marshal (withIntegralArray, peekIntegralArray)
 import Control.DeepSeq (NFData(..), rwhnf)
 
 {# import MXNet.Base.Raw.Common #}

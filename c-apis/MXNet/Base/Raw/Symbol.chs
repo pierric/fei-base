@@ -11,7 +11,6 @@ import Foreign.Ptr
 import Foreign.Concurrent (newForeignPtr)
 import Foreign.ForeignPtr (touchForeignPtr)
 import Foreign.ForeignPtr.Unsafe (unsafeForeignPtrToPtr)
-import C2HS.C.Extra.Marshal (withIntegralArray, peekIntegralArray)
 
 {# import MXNet.Base.Raw.Common #}
 {# import MXNet.Base.Raw.NDArray #}
@@ -433,17 +432,17 @@ mxSymbolInferShape symbol keys arg_ind arg_shape = do
      auxshape_size, auxshape_ndim, auxshape_data,
      complete) <- checked $ mxSymbolInferShape_ symbol num_args' keys arg_ind' arg_shape'
     let inshape_size' = fromIntegral inshape_size
-    inshape_ndim'    <- peekArray inshape_size' inshape_ndim
+    inshape_ndim'    <- map fromIntegral <$> peekArray inshape_size' inshape_ndim
     inshape_data'    <- peekArray inshape_size' inshape_data
-    inshape_data_ret <- mapM (uncurry peekArrayOfUInt) (zip inshape_ndim' inshape_data')
+    inshape_data_ret <- mapM (uncurry peekArrayAsIntegral) (zip inshape_ndim' inshape_data')
     let outshape_size'= fromIntegral outshape_size
-    outshape_ndim'   <- peekArray outshape_size' outshape_ndim
+    outshape_ndim'   <- map fromIntegral <$> peekArray outshape_size' outshape_ndim
     outshape_data'   <- peekArray outshape_size' outshape_data
-    outshape_data_ret<- mapM (uncurry peekArrayOfUInt) (zip outshape_ndim' outshape_data')
+    outshape_data_ret<- mapM (uncurry peekArrayAsIntegral) (zip outshape_ndim' outshape_data')
     let auxshape_size'= fromIntegral auxshape_size
-    auxshape_ndim'   <- peekArray auxshape_size' auxshape_ndim
+    auxshape_ndim'   <- map fromIntegral <$> peekArray auxshape_size' auxshape_ndim
     auxshape_data'   <- peekArray auxshape_size' auxshape_data
-    auxshape_data_ret<- mapM (uncurry peekArrayOfUInt) (zip auxshape_ndim' auxshape_data')
+    auxshape_data_ret<- mapM (uncurry peekArrayAsIntegral) (zip auxshape_ndim' auxshape_data')
     return (inshape_data_ret, outshape_data_ret, auxshape_data_ret, complete == 1)
 
 #if MXNet_MAJOR==1 && MXNet_MINOR<6
@@ -504,20 +503,20 @@ mxSymbolInferShapePartial symbol keys arg_ind arg_shape = do
      auxshape_size, auxshape_ndim, auxshape_data,
      complete) <- checked $ mxSymbolInferShapePartial_ symbol num_args' keys arg_ind' arg_shape'
     let inshape_size' = fromIntegral inshape_size
-    inshape_ndim'    <- peekArray inshape_size' inshape_ndim
+    inshape_ndim'    <- map fromIntegral <$> peekArray inshape_size' inshape_ndim
     inshape_data'    <- peekArray inshape_size' inshape_data
-    inshape_data_ret <- mapM (uncurry peekArrayOfUInt) (zip inshape_ndim' inshape_data')
+    inshape_data_ret <- mapM (uncurry peekArrayAsIntegral) (zip inshape_ndim' inshape_data')
     let outshape_size'= fromIntegral outshape_size
-    outshape_ndim'   <- peekArray outshape_size' outshape_ndim
+    outshape_ndim'   <- map fromIntegral <$> peekArray outshape_size' outshape_ndim
     outshape_data'   <- peekArray outshape_size' outshape_data
-    outshape_data_ret<- mapM (uncurry peekArrayOfUInt) (zip outshape_ndim' outshape_data')
+    outshape_data_ret<- mapM (uncurry peekArrayAsIntegral) (zip outshape_ndim' outshape_data')
     let auxshape_size'= fromIntegral auxshape_size
-    auxshape_ndim'   <- peekArray auxshape_size' auxshape_ndim
+    auxshape_ndim'   <- map fromIntegral <$> peekArray auxshape_size' auxshape_ndim
     auxshape_data'   <- peekArray auxshape_size' auxshape_data
-    auxshape_data_ret<- mapM (uncurry peekArrayOfUInt) (zip auxshape_ndim' auxshape_data')
+    auxshape_data_ret<- mapM (uncurry peekArrayAsIntegral) (zip auxshape_ndim' auxshape_data')
     return (inshape_data_ret, outshape_data_ret, auxshape_data_ret, complete == 1)
 
-peekArrayOfUInt cnt ptr = peekIntegralArray (fromIntegral cnt)  ptr
+peekArrayAsIntegral cnt ptr = map fromIntegral <$> peekArray (fromIntegral cnt) ptr
 
 #if MXNet_MAJOR==1 && MXNet_MINOR<6
 {#
@@ -567,9 +566,9 @@ mxSymbolInferType symbol keys arg_type = do
      auxshape_size, auxshape_data,
      succ) <- checked $ mxSymbolInferType_ symbol num_args keys arg_type'
     if succ == 0 then do
-        inshape_data_ret  <- peekIntegralArray (fromIntegral inshape_size)  inshape_data
-        outshape_data_ret <- peekIntegralArray (fromIntegral outshape_size) outshape_data
-        auxshape_data_ret <- peekIntegralArray (fromIntegral auxshape_size) auxshape_data
+        inshape_data_ret  <- peekArrayAsIntegral (fromIntegral inshape_size)  inshape_data
+        outshape_data_ret <- peekArrayAsIntegral (fromIntegral outshape_size) outshape_data
+        auxshape_data_ret <- peekArrayAsIntegral (fromIntegral auxshape_size) auxshape_data
         return $ Just (inshape_data_ret, outshape_data_ret, auxshape_data_ret)
     else
         return Nothing
