@@ -121,6 +121,7 @@ toMXDType = toEnum . (+1) . fromIntegral
 fromMXDType :: Integral a => MXDType -> a
 fromMXDType = fromIntegral . (subtract 1) . fromEnum
 
+-- TODO: change String to Text
 class CustomOperation (Operation prop) => CustomOperationProp prop where
     -- list the names of inputs
     prop_list_arguments        :: prop -> [String]
@@ -131,7 +132,7 @@ class CustomOperation (Operation prop) => CustomOperationProp prop where
     -- infer the shape.
     -- params: shapes of each inputs
     -- return: shapes of inputs, outputs, auxiliary states
-    prop_infer_shape :: prop -> [[Int]] -> ([[Int]], [[Int]], [[Int]])
+    prop_infer_shape :: prop -> [NonEmpty Int] -> ([NonEmpty Int], [NonEmpty Int], [NonEmpty Int])
     -- declare the dependency of symbols
     -- params: unique indices of inputs, outputs, auxiliary states
     -- return: dependant indices.
@@ -197,6 +198,11 @@ registerCustomOperator (op_type, op_ctor) = do
         vals_ <- peekArray argc' values >>= mapM I.peekCStringT
         prop <- op_ctor $ zip keys_ vals_
 
+        -- TODO: a safer way is use ForeignPtr,
+        -- malloc the str as ForeignPtr, and save
+        -- to the allocList. When the delete_entry is
+        -- called, it take away all ForeignPtr, and
+        -- effectively informs GC to revoke underlying memory.
         args <- mapM newCString (prop_list_arguments prop)
         ptr_args <- newArray $ args ++ [nullPtr]
 
@@ -267,7 +273,9 @@ registerCustomOperator (op_type, op_ctor) = do
         -- read each shape of each input
         inp_shape_0 <- zipWithM (\i j -> do ptr <- peekElemOff in_out_shapes_tensor i
                                             arr <- peekArray j ptr
-                                            return $ map fromIntegral arr)
+                                            case RNE.nonEmpty arr of
+                                                Nothing  -> error $ "got an input with empty shape when calling infer_shape"
+                                                Just shp -> return $ RNE.map fromIntegral shp)
                                 [0..] (map fromIntegral inp_dim_0)
 
         let (inp_shape, out_shape, aux_shape) = prop_infer_shape prop inp_shape_0
@@ -279,7 +287,8 @@ registerCustomOperator (op_type, op_ctor) = do
         pokeArray in_out_dim_tensor (map fromIntegral all_shape_sizes)
         -- no need to allocate new dimensions of inputs/outputs/auxiliaries
         -- only need to allocate new shapes for each
-        ptr_0 <- newArray (map fromIntegral (concat all_shape) :: [CInt])
+        let shape_vec = map fromIntegral $ concatMap RNE.toList all_shape :: [CInt]
+        ptr_0 <- newArray shape_vec
         modifyMVar_ allocList (return . (castPtr ptr_0 :))
 
         let size_UINT = sizeOf (undefined :: I.MX_UINT)
