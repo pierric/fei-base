@@ -1,4 +1,4 @@
-{-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE ViewPatterns #-}
 module MXNet.Base.Symbol where
 
 import RIO
@@ -15,8 +15,6 @@ import Foreign.Storable
 import Foreign.Ptr
 import Foreign.C.String
 import Foreign.C.Types
-import Control.Monad
-import Text.Printf (printf)
 import Data.Typeable (Typeable)
 
 import qualified MXNet.Base.Raw as I
@@ -32,6 +30,18 @@ data SymbolException = SymbolIndexOutOfBound Int Int
     deriving (Typeable, Show)
 instance Exception SymbolException
 
+data FShape = STensor { _shape_nonempty :: NonEmpty Int} | SScalar
+    deriving Show
+
+shapeLength (STensor l) = length l
+shapeLength SScalar = 0
+
+shapeToList (STensor l) = RNE.toList l
+shapeToList SScalar = []
+
+shapeCons a (STensor s) = STensor $ a RNE.<| s
+shapeCons a SScalar = STensor $ a RNE.:| []
+
 class SymbolClass s where
     getName             :: s -> IO (Maybe Text)
     listArguments       :: s -> IO [Text]
@@ -41,8 +51,8 @@ class SymbolClass s where
     at                  :: s -> Int -> IO s
     group               :: [s] -> IO s
     internals           :: s -> IO s
-    inferShape          :: s -> [(Text, NonEmpty Int)] ->
-                           IO ([(Text, NonEmpty Int)], [(Text, NonEmpty Int)], [(Text, NonEmpty Int)], Bool)
+    inferShape          :: s -> [(Text, FShape)] ->
+                           IO ([(Text, FShape)], [(Text, FShape)], [(Text, FShape)], Bool)
 
     at'                 :: s -> Text -> IO s
     at' sym name = do
@@ -68,18 +78,17 @@ instance SymbolClass I.SymbolHandle where
 
     inferShape sym known = do
         let (names, shapes) = unzip known
-            arg_ind = scanl (+) 0 $ map length shapes
-            arg_shp = concatMap RNE.toList shapes
+            arg_ind = scanl (+) 0 $ map shapeLength shapes
+            arg_shp = concatMap shapeToList shapes
         (inp_shp, out_shp, aux_shp, complete) <- I.mxSymbolInferShapePartial sym names arg_ind arg_shp
         inps <- listArguments sym
         outs <- listOutputs sym
         auxs <- listAuxiliaryStates sym
         return (pair inps inp_shp, pair outs out_shp, pair auxs aux_shp, complete)
       where
-        build name shape = do
-            s <- RNE.nonEmpty shape
-            return (name, s)
-        pair names shapes = catMaybes $ zipWith build names shapes
+        build name (RNE.nonEmpty -> Just s) = (name, STensor s)
+        build name _ = (name, SScalar)
+        pair names shapes = zipWith build names shapes
 
 instance SymbolClass (Symbol a) where
     getName             = getName . unSymbol
@@ -132,7 +141,7 @@ class CustomOperation (Operation prop) => CustomOperationProp prop where
     -- infer the shape.
     -- params: shapes of each inputs
     -- return: shapes of inputs, outputs, auxiliary states
-    prop_infer_shape :: prop -> [NonEmpty Int] -> ([NonEmpty Int], [NonEmpty Int], [NonEmpty Int])
+    prop_infer_shape :: prop -> [FShape] -> ([FShape], [FShape], [FShape])
     -- declare the dependency of symbols
     -- params: unique indices of inputs, outputs, auxiliary states
     -- return: dependant indices.
@@ -273,21 +282,21 @@ registerCustomOperator (op_type, op_ctor) = do
         -- read each shape of each input
         inp_shape_0 <- zipWithM (\i j -> do ptr <- peekElemOff in_out_shapes_tensor i
                                             arr <- peekArray j ptr
-                                            case RNE.nonEmpty arr of
-                                                Nothing  -> error $ "got an input with empty shape when calling infer_shape"
-                                                Just shp -> return $ RNE.map fromIntegral shp)
+                                            case RNE.map fromIntegral <$> RNE.nonEmpty arr of
+                                                Nothing  -> return SScalar
+                                                Just shp -> return $ STensor shp)
                                 [0..] (map fromIntegral inp_dim_0)
 
         let (inp_shape, out_shape, aux_shape) = prop_infer_shape prop inp_shape_0
             all_shape = inp_shape ++ out_shape ++ aux_shape
-            all_shape_sizes = map length all_shape
+            all_shape_sizes = map shapeLength all_shape
 
         assert (length all_shape == num_tensor') (return ())
 
         pokeArray in_out_dim_tensor (map fromIntegral all_shape_sizes)
         -- no need to allocate new dimensions of inputs/outputs/auxiliaries
         -- only need to allocate new shapes for each
-        let shape_vec = map fromIntegral $ concatMap RNE.toList all_shape :: [CInt]
+        let shape_vec = map fromIntegral $ concatMap shapeToList all_shape :: [CInt]
         ptr_0 <- newArray shape_vec
         modifyMVar_ allocList (return . (castPtr ptr_0 :))
 
