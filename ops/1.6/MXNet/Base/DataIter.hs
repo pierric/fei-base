@@ -1,12 +1,15 @@
 module MXNet.Base.DataIter where
+import RIO
+import RIO.List
+import RIO.List.Partial ((!!))
 import MXNet.Base.Raw
 import MXNet.Base.Spec.Operator
 import MXNet.Base.Spec.HMap
 import Data.Maybe (catMaybes, fromMaybe)
 
-type instance ParameterList "CSVIter" =
-     '[ '("data_csv", AttrReq String), '("data_shape", AttrReq [Int]),
-        '("label_csv", AttrOpt String), '("label_shape", AttrOpt [Int]),
+type instance ParameterList "_CSVIter" =
+     '[ '("data_csv", AttrReq Text), '("data_shape", AttrReq [Int]),
+        '("label_csv", AttrOpt Text), '("label_shape", AttrOpt [Int]),
         '("batch_size", AttrReq Int), '("round_batch", AttrOpt Bool),
         '("prefetch_buffer", AttrOpt Int),
         '("ctx", AttrOpt (EnumType '["cpu", "gpu"])),
@@ -18,16 +21,15 @@ type instance ParameterList "CSVIter" =
                     "uint8"])))]
 
 _CSVIter ::
-         forall args . Fullfilled "CSVIter" args =>
-           ArgsHMap "CSVIter" args -> IO DataIterHandle
+         forall args . Fullfilled "_CSVIter" args =>
+           ArgsHMap "_CSVIter" args -> IO DataIterHandle
 _CSVIter args
   = let allargs
           = catMaybes
-              [("data_csv",) . showValue <$> (args !? #data_csv :: Maybe String),
+              [("data_csv",) . showValue <$> (args !? #data_csv :: Maybe Text),
                ("data_shape",) . showValue <$>
                  (args !? #data_shape :: Maybe [Int]),
-               ("label_csv",) . showValue <$>
-                 (args !? #label_csv :: Maybe String),
+               ("label_csv",) . showValue <$> (args !? #label_csv :: Maybe Text),
                ("label_shape",) . showValue <$>
                  (args !? #label_shape :: Maybe [Int]),
                ("batch_size",) . showValue <$> (args !? #batch_size :: Maybe Int),
@@ -50,10 +52,10 @@ _CSVIter args
          di <- return (dis !! 0)
          mxDataIterCreateIter di keys vals
 
-type instance ParameterList "ImageDetRecordIter" =
-     '[ '("path_imglist", AttrOpt String),
-        '("path_imgrec", AttrOpt String), '("aug_seq", AttrOpt String),
-        '("label_width", AttrOpt Int), '("data_shape", AttrReq [Int]),
+type instance ParameterList "_ImageDetRecordIter" =
+     '[ '("path_imglist", AttrOpt Text), '("path_imgrec", AttrOpt Text),
+        '("aug_seq", AttrOpt Text), '("label_width", AttrOpt Int),
+        '("data_shape", AttrReq [Int]),
         '("preprocess_threads", AttrOpt Int), '("verbose", AttrOpt Bool),
         '("num_parts", AttrOpt Int), '("part_index", AttrOpt Int),
         '("shuffle_chunk_size", AttrOpt Int),
@@ -98,7 +100,7 @@ type instance ParameterList "ImageDetRecordIter" =
         '("rand_mirror_prob", AttrOpt Float), '("fill_value", AttrOpt Int),
         '("inter_method", AttrOpt Int), '("data_shape", AttrReq [Int]),
         '("resize_mode", AttrOpt (EnumType '["fit", "force", "shrink"])),
-        '("seed", AttrOpt Int), '("mean_img", AttrOpt String),
+        '("seed", AttrOpt Int), '("mean_img", AttrOpt Text),
         '("mean_r", AttrOpt Float), '("mean_g", AttrOpt Float),
         '("mean_b", AttrOpt Float), '("mean_a", AttrOpt Float),
         '("std_r", AttrOpt Float), '("std_g", AttrOpt Float),
@@ -106,16 +108,16 @@ type instance ParameterList "ImageDetRecordIter" =
         '("scale", AttrOpt Float), '("verbose", AttrOpt Bool)]
 
 _ImageDetRecordIter ::
-                    forall args . Fullfilled "ImageDetRecordIter" args =>
-                      ArgsHMap "ImageDetRecordIter" args -> IO DataIterHandle
+                    forall args . Fullfilled "_ImageDetRecordIter" args =>
+                      ArgsHMap "_ImageDetRecordIter" args -> IO DataIterHandle
 _ImageDetRecordIter args
   = let allargs
           = catMaybes
               [("path_imglist",) . showValue <$>
-                 (args !? #path_imglist :: Maybe String),
+                 (args !? #path_imglist :: Maybe Text),
                ("path_imgrec",) . showValue <$>
-                 (args !? #path_imgrec :: Maybe String),
-               ("aug_seq",) . showValue <$> (args !? #aug_seq :: Maybe String),
+                 (args !? #path_imgrec :: Maybe Text),
+               ("aug_seq",) . showValue <$> (args !? #aug_seq :: Maybe Text),
                ("label_width",) . showValue <$>
                  (args !? #label_width :: Maybe Int),
                ("data_shape",) . showValue <$>
@@ -213,7 +215,7 @@ _ImageDetRecordIter args
                  (args !? #resize_mode ::
                     Maybe (EnumType '["fit", "force", "shrink"])),
                ("seed",) . showValue <$> (args !? #seed :: Maybe Int),
-               ("mean_img",) . showValue <$> (args !? #mean_img :: Maybe String),
+               ("mean_img",) . showValue <$> (args !? #mean_img :: Maybe Text),
                ("mean_r",) . showValue <$> (args !? #mean_r :: Maybe Float),
                ("mean_g",) . showValue <$> (args !? #mean_g :: Maybe Float),
                ("mean_b",) . showValue <$> (args !? #mean_b :: Maybe Float),
@@ -230,11 +232,10 @@ _ImageDetRecordIter args
          di <- return (dis !! 1)
          mxDataIterCreateIter di keys vals
 
-type instance ParameterList "ImageRecordIter_v1" =
-     '[ '("path_imglist", AttrOpt String),
-        '("path_imgrec", AttrOpt String), '("path_imgidx", AttrOpt String),
-        '("aug_seq", AttrOpt String), '("label_width", AttrOpt Int),
-        '("data_shape", AttrReq [Int]),
+type instance ParameterList "_ImageRecordIter_v1" =
+     '[ '("path_imglist", AttrOpt Text), '("path_imgrec", AttrOpt Text),
+        '("path_imgidx", AttrOpt Text), '("aug_seq", AttrOpt Text),
+        '("label_width", AttrOpt Int), '("data_shape", AttrReq [Int]),
         '("preprocess_threads", AttrOpt Int), '("verbose", AttrOpt Bool),
         '("num_parts", AttrOpt Int), '("part_index", AttrOpt Int),
         '("device_id", AttrOpt Int), '("shuffle_chunk_size", AttrOpt Int),
@@ -269,7 +270,7 @@ type instance ParameterList "ImageRecordIter_v1" =
         '("fill_value", AttrOpt Int), '("data_shape", AttrReq [Int]),
         '("inter_method", AttrOpt Int), '("pad", AttrOpt Int),
         '("seed", AttrOpt Int), '("mirror", AttrOpt Bool),
-        '("rand_mirror", AttrOpt Bool), '("mean_img", AttrOpt String),
+        '("rand_mirror", AttrOpt Bool), '("mean_img", AttrOpt Text),
         '("mean_r", AttrOpt Float), '("mean_g", AttrOpt Float),
         '("mean_b", AttrOpt Float), '("mean_a", AttrOpt Float),
         '("std_r", AttrOpt Float), '("std_g", AttrOpt Float),
@@ -279,18 +280,18 @@ type instance ParameterList "ImageRecordIter_v1" =
         '("verbose", AttrOpt Bool)]
 
 _ImageRecordIter_v1 ::
-                    forall args . Fullfilled "ImageRecordIter_v1" args =>
-                      ArgsHMap "ImageRecordIter_v1" args -> IO DataIterHandle
+                    forall args . Fullfilled "_ImageRecordIter_v1" args =>
+                      ArgsHMap "_ImageRecordIter_v1" args -> IO DataIterHandle
 _ImageRecordIter_v1 args
   = let allargs
           = catMaybes
               [("path_imglist",) . showValue <$>
-                 (args !? #path_imglist :: Maybe String),
+                 (args !? #path_imglist :: Maybe Text),
                ("path_imgrec",) . showValue <$>
-                 (args !? #path_imgrec :: Maybe String),
+                 (args !? #path_imgrec :: Maybe Text),
                ("path_imgidx",) . showValue <$>
-                 (args !? #path_imgidx :: Maybe String),
-               ("aug_seq",) . showValue <$> (args !? #aug_seq :: Maybe String),
+                 (args !? #path_imgidx :: Maybe Text),
+               ("aug_seq",) . showValue <$> (args !? #aug_seq :: Maybe Text),
                ("label_width",) . showValue <$>
                  (args !? #label_width :: Maybe Int),
                ("data_shape",) . showValue <$>
@@ -372,7 +373,7 @@ _ImageRecordIter_v1 args
                ("mirror",) . showValue <$> (args !? #mirror :: Maybe Bool),
                ("rand_mirror",) . showValue <$>
                  (args !? #rand_mirror :: Maybe Bool),
-               ("mean_img",) . showValue <$> (args !? #mean_img :: Maybe String),
+               ("mean_img",) . showValue <$> (args !? #mean_img :: Maybe Text),
                ("mean_r",) . showValue <$> (args !? #mean_r :: Maybe Float),
                ("mean_g",) . showValue <$> (args !? #mean_g :: Maybe Float),
                ("mean_b",) . showValue <$> (args !? #mean_b :: Maybe Float),
@@ -393,11 +394,10 @@ _ImageRecordIter_v1 args
          di <- return (dis !! 2)
          mxDataIterCreateIter di keys vals
 
-type instance ParameterList "ImageRecordUInt8Iter_v1" =
-     '[ '("path_imglist", AttrOpt String),
-        '("path_imgrec", AttrOpt String), '("path_imgidx", AttrOpt String),
-        '("aug_seq", AttrOpt String), '("label_width", AttrOpt Int),
-        '("data_shape", AttrReq [Int]),
+type instance ParameterList "_ImageRecordUInt8Iter_v1" =
+     '[ '("path_imglist", AttrOpt Text), '("path_imgrec", AttrOpt Text),
+        '("path_imgidx", AttrOpt Text), '("aug_seq", AttrOpt Text),
+        '("label_width", AttrOpt Int), '("data_shape", AttrReq [Int]),
         '("preprocess_threads", AttrOpt Int), '("verbose", AttrOpt Bool),
         '("num_parts", AttrOpt Int), '("part_index", AttrOpt Int),
         '("device_id", AttrOpt Int), '("shuffle_chunk_size", AttrOpt Int),
@@ -433,18 +433,18 @@ type instance ParameterList "ImageRecordUInt8Iter_v1" =
         '("inter_method", AttrOpt Int), '("pad", AttrOpt Int)]
 
 _ImageRecordUInt8Iter_v1 ::
-                         forall args . Fullfilled "ImageRecordUInt8Iter_v1" args =>
-                           ArgsHMap "ImageRecordUInt8Iter_v1" args -> IO DataIterHandle
+                         forall args . Fullfilled "_ImageRecordUInt8Iter_v1" args =>
+                           ArgsHMap "_ImageRecordUInt8Iter_v1" args -> IO DataIterHandle
 _ImageRecordUInt8Iter_v1 args
   = let allargs
           = catMaybes
               [("path_imglist",) . showValue <$>
-                 (args !? #path_imglist :: Maybe String),
+                 (args !? #path_imglist :: Maybe Text),
                ("path_imgrec",) . showValue <$>
-                 (args !? #path_imgrec :: Maybe String),
+                 (args !? #path_imgrec :: Maybe Text),
                ("path_imgidx",) . showValue <$>
-                 (args !? #path_imgidx :: Maybe String),
-               ("aug_seq",) . showValue <$> (args !? #aug_seq :: Maybe String),
+                 (args !? #path_imgidx :: Maybe Text),
+               ("aug_seq",) . showValue <$> (args !? #aug_seq :: Maybe Text),
                ("label_width",) . showValue <$>
                  (args !? #label_width :: Maybe Int),
                ("data_shape",) . showValue <$>
@@ -528,11 +528,10 @@ _ImageRecordUInt8Iter_v1 args
          di <- return (dis !! 3)
          mxDataIterCreateIter di keys vals
 
-type instance ParameterList "ImageRecordIter" =
-     '[ '("path_imglist", AttrOpt String),
-        '("path_imgrec", AttrOpt String), '("path_imgidx", AttrOpt String),
-        '("aug_seq", AttrOpt String), '("label_width", AttrOpt Int),
-        '("data_shape", AttrReq [Int]),
+type instance ParameterList "_ImageRecordIter" =
+     '[ '("path_imglist", AttrOpt Text), '("path_imgrec", AttrOpt Text),
+        '("path_imgidx", AttrOpt Text), '("aug_seq", AttrOpt Text),
+        '("label_width", AttrOpt Int), '("data_shape", AttrReq [Int]),
         '("preprocess_threads", AttrOpt Int), '("verbose", AttrOpt Bool),
         '("num_parts", AttrOpt Int), '("part_index", AttrOpt Int),
         '("device_id", AttrOpt Int), '("shuffle_chunk_size", AttrOpt Int),
@@ -567,7 +566,7 @@ type instance ParameterList "ImageRecordIter" =
         '("fill_value", AttrOpt Int), '("data_shape", AttrReq [Int]),
         '("inter_method", AttrOpt Int), '("pad", AttrOpt Int),
         '("seed", AttrOpt Int), '("mirror", AttrOpt Bool),
-        '("rand_mirror", AttrOpt Bool), '("mean_img", AttrOpt String),
+        '("rand_mirror", AttrOpt Bool), '("mean_img", AttrOpt Text),
         '("mean_r", AttrOpt Float), '("mean_g", AttrOpt Float),
         '("mean_b", AttrOpt Float), '("mean_a", AttrOpt Float),
         '("std_r", AttrOpt Float), '("std_g", AttrOpt Float),
@@ -577,18 +576,18 @@ type instance ParameterList "ImageRecordIter" =
         '("verbose", AttrOpt Bool)]
 
 _ImageRecordIter ::
-                 forall args . Fullfilled "ImageRecordIter" args =>
-                   ArgsHMap "ImageRecordIter" args -> IO DataIterHandle
+                 forall args . Fullfilled "_ImageRecordIter" args =>
+                   ArgsHMap "_ImageRecordIter" args -> IO DataIterHandle
 _ImageRecordIter args
   = let allargs
           = catMaybes
               [("path_imglist",) . showValue <$>
-                 (args !? #path_imglist :: Maybe String),
+                 (args !? #path_imglist :: Maybe Text),
                ("path_imgrec",) . showValue <$>
-                 (args !? #path_imgrec :: Maybe String),
+                 (args !? #path_imgrec :: Maybe Text),
                ("path_imgidx",) . showValue <$>
-                 (args !? #path_imgidx :: Maybe String),
-               ("aug_seq",) . showValue <$> (args !? #aug_seq :: Maybe String),
+                 (args !? #path_imgidx :: Maybe Text),
+               ("aug_seq",) . showValue <$> (args !? #aug_seq :: Maybe Text),
                ("label_width",) . showValue <$>
                  (args !? #label_width :: Maybe Int),
                ("data_shape",) . showValue <$>
@@ -670,7 +669,7 @@ _ImageRecordIter args
                ("mirror",) . showValue <$> (args !? #mirror :: Maybe Bool),
                ("rand_mirror",) . showValue <$>
                  (args !? #rand_mirror :: Maybe Bool),
-               ("mean_img",) . showValue <$> (args !? #mean_img :: Maybe String),
+               ("mean_img",) . showValue <$> (args !? #mean_img :: Maybe Text),
                ("mean_r",) . showValue <$> (args !? #mean_r :: Maybe Float),
                ("mean_g",) . showValue <$> (args !? #mean_g :: Maybe Float),
                ("mean_b",) . showValue <$> (args !? #mean_b :: Maybe Float),
@@ -691,11 +690,10 @@ _ImageRecordIter args
          di <- return (dis !! 4)
          mxDataIterCreateIter di keys vals
 
-type instance ParameterList "ImageRecordUInt8Iter" =
-     '[ '("path_imglist", AttrOpt String),
-        '("path_imgrec", AttrOpt String), '("path_imgidx", AttrOpt String),
-        '("aug_seq", AttrOpt String), '("label_width", AttrOpt Int),
-        '("data_shape", AttrReq [Int]),
+type instance ParameterList "_ImageRecordUInt8Iter" =
+     '[ '("path_imglist", AttrOpt Text), '("path_imgrec", AttrOpt Text),
+        '("path_imgidx", AttrOpt Text), '("aug_seq", AttrOpt Text),
+        '("label_width", AttrOpt Int), '("data_shape", AttrReq [Int]),
         '("preprocess_threads", AttrOpt Int), '("verbose", AttrOpt Bool),
         '("num_parts", AttrOpt Int), '("part_index", AttrOpt Int),
         '("device_id", AttrOpt Int), '("shuffle_chunk_size", AttrOpt Int),
@@ -731,18 +729,18 @@ type instance ParameterList "ImageRecordUInt8Iter" =
         '("inter_method", AttrOpt Int), '("pad", AttrOpt Int)]
 
 _ImageRecordUInt8Iter ::
-                      forall args . Fullfilled "ImageRecordUInt8Iter" args =>
-                        ArgsHMap "ImageRecordUInt8Iter" args -> IO DataIterHandle
+                      forall args . Fullfilled "_ImageRecordUInt8Iter" args =>
+                        ArgsHMap "_ImageRecordUInt8Iter" args -> IO DataIterHandle
 _ImageRecordUInt8Iter args
   = let allargs
           = catMaybes
               [("path_imglist",) . showValue <$>
-                 (args !? #path_imglist :: Maybe String),
+                 (args !? #path_imglist :: Maybe Text),
                ("path_imgrec",) . showValue <$>
-                 (args !? #path_imgrec :: Maybe String),
+                 (args !? #path_imgrec :: Maybe Text),
                ("path_imgidx",) . showValue <$>
-                 (args !? #path_imgidx :: Maybe String),
-               ("aug_seq",) . showValue <$> (args !? #aug_seq :: Maybe String),
+                 (args !? #path_imgidx :: Maybe Text),
+               ("aug_seq",) . showValue <$> (args !? #aug_seq :: Maybe Text),
                ("label_width",) . showValue <$>
                  (args !? #label_width :: Maybe Int),
                ("data_shape",) . showValue <$>
@@ -826,11 +824,10 @@ _ImageRecordUInt8Iter args
          di <- return (dis !! 5)
          mxDataIterCreateIter di keys vals
 
-type instance ParameterList "ImageRecordInt8Iter" =
-     '[ '("path_imglist", AttrOpt String),
-        '("path_imgrec", AttrOpt String), '("path_imgidx", AttrOpt String),
-        '("aug_seq", AttrOpt String), '("label_width", AttrOpt Int),
-        '("data_shape", AttrReq [Int]),
+type instance ParameterList "_ImageRecordInt8Iter" =
+     '[ '("path_imglist", AttrOpt Text), '("path_imgrec", AttrOpt Text),
+        '("path_imgidx", AttrOpt Text), '("aug_seq", AttrOpt Text),
+        '("label_width", AttrOpt Int), '("data_shape", AttrReq [Int]),
         '("preprocess_threads", AttrOpt Int), '("verbose", AttrOpt Bool),
         '("num_parts", AttrOpt Int), '("part_index", AttrOpt Int),
         '("device_id", AttrOpt Int), '("shuffle_chunk_size", AttrOpt Int),
@@ -866,18 +863,18 @@ type instance ParameterList "ImageRecordInt8Iter" =
         '("inter_method", AttrOpt Int), '("pad", AttrOpt Int)]
 
 _ImageRecordInt8Iter ::
-                     forall args . Fullfilled "ImageRecordInt8Iter" args =>
-                       ArgsHMap "ImageRecordInt8Iter" args -> IO DataIterHandle
+                     forall args . Fullfilled "_ImageRecordInt8Iter" args =>
+                       ArgsHMap "_ImageRecordInt8Iter" args -> IO DataIterHandle
 _ImageRecordInt8Iter args
   = let allargs
           = catMaybes
               [("path_imglist",) . showValue <$>
-                 (args !? #path_imglist :: Maybe String),
+                 (args !? #path_imglist :: Maybe Text),
                ("path_imgrec",) . showValue <$>
-                 (args !? #path_imgrec :: Maybe String),
+                 (args !? #path_imgrec :: Maybe Text),
                ("path_imgidx",) . showValue <$>
-                 (args !? #path_imgidx :: Maybe String),
-               ("aug_seq",) . showValue <$> (args !? #aug_seq :: Maybe String),
+                 (args !? #path_imgidx :: Maybe Text),
+               ("aug_seq",) . showValue <$> (args !? #aug_seq :: Maybe Text),
                ("label_width",) . showValue <$>
                  (args !? #label_width :: Maybe Int),
                ("data_shape",) . showValue <$>
@@ -961,12 +958,12 @@ _ImageRecordInt8Iter args
          di <- return (dis !! 6)
          mxDataIterCreateIter di keys vals
 
-type instance ParameterList "LibSVMIter" =
-     '[ '("data_libsvm", AttrReq String),
-        '("data_shape", AttrReq [Int]), '("label_libsvm", AttrOpt String),
-        '("label_shape", AttrOpt [Int]), '("num_parts", AttrOpt Int),
-        '("part_index", AttrOpt Int), '("batch_size", AttrReq Int),
-        '("round_batch", AttrOpt Bool), '("prefetch_buffer", AttrOpt Int),
+type instance ParameterList "_LibSVMIter" =
+     '[ '("data_libsvm", AttrReq Text), '("data_shape", AttrReq [Int]),
+        '("label_libsvm", AttrOpt Text), '("label_shape", AttrOpt [Int]),
+        '("num_parts", AttrOpt Int), '("part_index", AttrOpt Int),
+        '("batch_size", AttrReq Int), '("round_batch", AttrOpt Bool),
+        '("prefetch_buffer", AttrOpt Int),
         '("ctx", AttrOpt (EnumType '["cpu", "gpu"])),
         '("dtype",
           AttrOpt
@@ -976,17 +973,17 @@ type instance ParameterList "LibSVMIter" =
                     "uint8"])))]
 
 _LibSVMIter ::
-            forall args . Fullfilled "LibSVMIter" args =>
-              ArgsHMap "LibSVMIter" args -> IO DataIterHandle
+            forall args . Fullfilled "_LibSVMIter" args =>
+              ArgsHMap "_LibSVMIter" args -> IO DataIterHandle
 _LibSVMIter args
   = let allargs
           = catMaybes
               [("data_libsvm",) . showValue <$>
-                 (args !? #data_libsvm :: Maybe String),
+                 (args !? #data_libsvm :: Maybe Text),
                ("data_shape",) . showValue <$>
                  (args !? #data_shape :: Maybe [Int]),
                ("label_libsvm",) . showValue <$>
-                 (args !? #label_libsvm :: Maybe String),
+                 (args !? #label_libsvm :: Maybe Text),
                ("label_shape",) . showValue <$>
                  (args !? #label_shape :: Maybe [Int]),
                ("num_parts",) . showValue <$> (args !? #num_parts :: Maybe Int),
@@ -1011,8 +1008,8 @@ _LibSVMIter args
          di <- return (dis !! 7)
          mxDataIterCreateIter di keys vals
 
-type instance ParameterList "MNISTIter" =
-     '[ '("image", AttrOpt String), '("label", AttrOpt String),
+type instance ParameterList "_MNISTIter" =
+     '[ '("image", AttrOpt Text), '("label", AttrOpt Text),
         '("batch_size", AttrOpt Int), '("shuffle", AttrOpt Bool),
         '("flat", AttrOpt Bool), '("seed", AttrOpt Int),
         '("silent", AttrOpt Bool), '("num_parts", AttrOpt Int),
@@ -1026,13 +1023,13 @@ type instance ParameterList "MNISTIter" =
                     "uint8"])))]
 
 _MNISTIter ::
-           forall args . Fullfilled "MNISTIter" args =>
-             ArgsHMap "MNISTIter" args -> IO DataIterHandle
+           forall args . Fullfilled "_MNISTIter" args =>
+             ArgsHMap "_MNISTIter" args -> IO DataIterHandle
 _MNISTIter args
   = let allargs
           = catMaybes
-              [("image",) . showValue <$> (args !? #image :: Maybe String),
-               ("label",) . showValue <$> (args !? #label :: Maybe String),
+              [("image",) . showValue <$> (args !? #image :: Maybe Text),
+               ("label",) . showValue <$> (args !? #label :: Maybe Text),
                ("batch_size",) . showValue <$> (args !? #batch_size :: Maybe Int),
                ("shuffle",) . showValue <$> (args !? #shuffle :: Maybe Bool),
                ("flat",) . showValue <$> (args !? #flat :: Maybe Bool),

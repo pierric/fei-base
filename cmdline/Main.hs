@@ -1,20 +1,19 @@
 module Main where
 
+import Prelude
+import RIO (on, first, (<>), forM, zipWithM_)
+import qualified RIO.Text as T
+import RIO.List (sortBy)
+import RIO.Char (toLower, isUpper, isSpace, isAlphaNum)
+import RIO.Directory
+import RIO.FilePath ((</>), FilePath)
+import RIO.Writer (Writer, execWriter, tell)
+
 import Options.Applicative hiding (optional)
-import Data.Semigroup ((<>))
-import Data.Function (on)
-import Data.List (sortBy)
 import Language.Haskell.Exts
-import qualified Data.Text as T
 import System.Log.Logger
-import Control.Monad
-import Control.Monad.Writer (Writer, execWriter, tell)
-import Data.Either
-import Data.Char (toLower, isUpper, isSpace, isAlphaNum)
 import Text.Printf (printf)
 import Text.ParserCombinators.ReadP
-import System.FilePath
-import System.Directory
 import Data.Tuple.Ops (uncons)
 
 import MXNet.Base.Raw
@@ -55,23 +54,30 @@ main = do
   where
     opts = info (args_spec <**> helper) (fullDesc <> progDesc "Generate MXNet operators")
     modSymbol = Module () (Just $ ModuleHead () (ModuleName () "MXNet.Base.Operators.Symbol") Nothing Nothing) []
-                [ simpleImport "MXNet.Base.Raw"
+                [ simpleImport "RIO"
+                , simpleImport "RIO.List"
+                , simpleImport "MXNet.Base.Raw"
                 , simpleImport "MXNet.Base.Spec.Operator"
                 , simpleImport "MXNet.Base.Spec.HMap"
                 , simpleImportVars "Data.Maybe" ["catMaybes", "fromMaybe"]]
     modArray  = Module () (Just $ ModuleHead () (ModuleName () "MXNet.Base.Operators.NDArray") Nothing Nothing) []
-                [ simpleImport "MXNet.Base.Raw"
+                [ simpleImport "RIO"
+                , simpleImport "RIO.List"
+                , simpleImport "MXNet.Base.Raw"
                 , simpleImport "MXNet.Base.Spec.Operator"
                 , simpleImport "MXNet.Base.Spec.HMap"
                 , simpleImportVars "Data.Maybe" ["catMaybes", "fromMaybe"]]
-    modDataIter = Module () (Just $ ModuleHead () (ModuleName () "MXNet.Base.DataIter") Nothing Nothing) [] 
-                  [ simpleImport "MXNet.Base.Raw"
+    modDataIter = Module () (Just $ ModuleHead () (ModuleName () "MXNet.Base.DataIter") Nothing Nothing) []
+                  [ simpleImport "RIO"
+                  , simpleImport "RIO.List"
+                  , simpleImportVars "RIO.List.Partial" ["(!!)"]
+                  , simpleImport "MXNet.Base.Raw"
                   , simpleImport "MXNet.Base.Spec.Operator"
                   , simpleImport "MXNet.Base.Spec.HMap"
                   , simpleImportVars "Data.Maybe" ["catMaybes", "fromMaybe"]]
 
 getOpName :: AtomicSymbolCreator -> IO String
-getOpName sc = fst . uncons <$> mxSymbolGetAtomicSymbolInfo sc
+getOpName = fmap T.unpack . mxSymbolGetAtomicSymbolName
 
 makeParamInst :: String -> [ResolvedType] -> Bool -> Decl ()
 makeParamInst symname typs symbolapi =
@@ -87,7 +93,7 @@ makeSignature :: String -> GenFlag -> [Asst ()]-> Decl ()
 makeSignature symname flag extra_constraints =
     let (funname, appendix, rettype, maketype) =
             case flag of
-              GenSymbolOp      -> (symname, "(symbol)", tyCon $ unQual $ name "SymbolHandle", tyFun (tyCon $ unQual $ name "String"))
+              GenSymbolOp      -> (symname, "(symbol)", tyCon $ unQual $ name "SymbolHandle", tyFun (tyCon $ unQual $ name "Text"))
               GenNDArrayReturn -> (symname, "(ndarray)", tyList $ tyCon $ unQual $ name "NDArrayHandle", id)
               GenNDArrayUpdate -> (symname ++ "_upd", "(ndarray)", unit_tycon (), tyFun (tyList $ tyCon $ unQual $ name "NDArrayHandle"))
         symname_with_appendix = symname ++ appendix
@@ -99,7 +105,12 @@ makeSignature symname flag extra_constraints =
 
 genSymOp :: AtomicSymbolCreator -> IO [Decl ()]
 genSymOp sc = do
-    (symname, desc, argname, argtype, argdesc, key_var_num_args, rettyp) <- mxSymbolGetAtomicSymbolInfo sc
+    (symname_t, _, argname_t, argtype_t, _, key_var_num_args_t, rettyp) <- mxSymbolGetAtomicSymbolInfo sc
+    let symname = T.unpack symname_t
+        argname = map T.unpack argname_t
+        argtype = map T.unpack argtype_t
+        key_var_num_args = T.unpack key_var_num_args_t
+
     if symname `elem` ["_Native", "_NDArray"] then
         return []
     else do
@@ -213,7 +224,11 @@ genSymOp sc = do
 
 genArrOp :: AtomicSymbolCreator -> IO [Decl ()]
 genArrOp sc = do
-    (symname, desc, argname0, argtype0, argdesc, key_var_num_args, rettyp) <- mxSymbolGetAtomicSymbolInfo sc
+    (symname_t, _, argname0_t, argtype0_t, _, key_var_num_args_t, rettyp) <- mxSymbolGetAtomicSymbolInfo sc
+    let symname  = T.unpack symname_t
+        argname0 = map T.unpack argname0_t
+        argtype0 = map T.unpack argtype0_t
+        key_var_num_args = T.unpack key_var_num_args_t
 
     -- some ops (names like *_mkl_*) are malformed. They declare zero args, but actually has the "data" and "num_args"
     let (argname, argtype) = if not (null key_var_num_args) && null argname0 then
@@ -297,8 +312,11 @@ genArrOp sc = do
 
 genDataIter :: (DataIterCreator, Integer) -> IO [Decl ()]
 genDataIter (dataitercreator, index) = do
-    (diname, didesc, argnames, argtypes, argdescs) <- mxDataIterGetIterInfo dataitercreator
-    let diname_ = normalizeName diname
+    (diname_t, _, argnames_t, argtypes_t, _) <- mxDataIterGetIterInfo dataitercreator
+    let diname = normalizeName $ T.unpack diname_t
+        argnames = map T.unpack argnames_t
+        argtypes = map T.unpack argtypes_t
+
         (errs, scalarTypes, _, _) = execWriter $ zipWithM_ (resolveHaskellType ResolveDataIter) argnames argtypes
 
         -- parameter list
@@ -310,10 +328,10 @@ genDataIter (dataitercreator, index) = do
         cxfullfill = appA (name "Fullfilled") [tyPromotedStr diname, tyVarIdent "args"]
         tyfun = tyFun (tyApp (tyApp (tyCon $ unQual $ name "ArgsHMap") (tyPromotedStr diname)) (tyVarIdent "args"))
                     (tyApp (tyCon $ unQual $ name "IO") (tyCon $ unQual $ name "DataIterHandle"))
-        tysig = tySig [name diname_] $ tyForall [unkindedVar (name "args")] (cxSingle cxfullfill) tyfun
+        tysig = tySig [name diname] $ tyForall [unkindedVar (name "args")] (cxSingle cxfullfill) tyfun
 
         -- function
-        fun = sfun (name diname_) [name "args"] (UnGuardedRhs () body) Nothing
+        fun = sfun (name diname) [name "args"] (UnGuardedRhs () body) Nothing
         body = letE ([
                 patBind (pvar $ name "allargs") (function "catMaybes"
                     `app` listE [
@@ -392,7 +410,7 @@ resolveHaskellType mode symname desc = do
                 ParamDescItem "float32"             -> scalar $ tyCon $ unQual $ name "Float"
                 -- real_t (from mshadow) is by default float.
                 ParamDescItem "real_t"              -> scalar $ tyCon $ unQual $ name "Float"
-                ParamDescItem "string"              -> scalar $ tyCon $ unQual $ name "String"
+                ParamDescItem "string"              -> scalar $ tyCon $ unQual $ name "Text"
                 ParamDescItem "int or None"         -> scalar $ tyApp (tyCon $ unQual $ name "Maybe") (tyCon $ unQual $ name "Int")
                 ParamDescItem "float or None"       -> scalar $ tyApp (tyCon $ unQual $ name "Maybe") (tyCon $ unQual $ name "Float")
                 ParamDescItem "double or None"      -> scalar $ tyApp (tyCon $ unQual $ name "Maybe") (tyCon $ unQual $ name "Double")

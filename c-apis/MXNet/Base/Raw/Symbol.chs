@@ -1,18 +1,16 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 module MXNet.Base.Raw.Symbol where
 
+import RIO
 import Foreign.Marshal (alloca, withArray, peekArray, allocaBytesAligned)
 import Foreign.Storable (Storable(..))
 import Foreign.Ptr (FunPtr)
 import Foreign.C.Types
-import Foreign.C.String
+import Foreign.C.String (CString)
 import Foreign.Ptr
 import Foreign.Concurrent (newForeignPtr)
 import Foreign.ForeignPtr (touchForeignPtr)
 import Foreign.ForeignPtr.Unsafe (unsafeForeignPtrToPtr)
-import C2HS.C.Extra.Marshal (withIntegralArray, peekIntegralArray, peekString, peekStringArray)
-import GHC.Generics (Generic)
-import Control.Monad ((>=>))
 
 {# import MXNet.Base.Raw.Common #}
 {# import MXNet.Base.Raw.NDArray #}
@@ -64,8 +62,8 @@ fun MXSymbolCreateAtomicSymbol as mxSymbolCreateAtomicSymbol_
     {
         `AtomicSymbolCreator',
         `MX_UINT',
-        withStringArray* `[String]',
-        withStringArray* `[String]',
+        withCStringArrayT* `[Text]',
+        withCStringArrayT* `[Text]',
         alloca- `SymbolHandle' peekSymbolHandle*
     } -> `CInt'
 #}
@@ -75,16 +73,16 @@ fun MXSymbolCreateAtomicSymbol as mxSymbolCreateAtomicSymbol_
     {
         `AtomicSymbolCreator',
         `CUInt',
-        withStringArray* `[String]',
-        withStringArray* `[String]',
+        withCStringArrayT* `[Text]',
+        withCStringArrayT* `[Text]',
         alloca- `SymbolHandle' peekSymbolHandle*
     } -> `CInt'
 #}
 #endif
 
 mxSymbolCreateAtomicSymbol :: AtomicSymbolCreator
-                           -> [String]
-                           -> [String]
+                           -> [Text]
+                           -> [Text]
                            -> IO SymbolHandle
 mxSymbolCreateAtomicSymbol creator keys vals = do
     let argcnt = fromIntegral $ length keys
@@ -93,12 +91,12 @@ mxSymbolCreateAtomicSymbol creator keys vals = do
 {#
 fun MXSymbolCreateVariable as mxSymbolCreateVariable_
     {
-        `String',
+        withCStringT* `Text',
         alloca- `SymbolHandle' peekSymbolHandle*
     } -> `CInt'
 #}
 
-mxSymbolCreateVariable :: String -> IO SymbolHandle
+mxSymbolCreateVariable :: Text -> IO SymbolHandle
 mxSymbolCreateVariable = checked . mxSymbolCreateVariable_
 
 #if MXNet_MAJOR==1 && MXNet_MINOR<6
@@ -127,24 +125,24 @@ mxSymbolCreateGroup syms = checked $ mxSymbolCreateGroup_ (fromIntegral $ length
 {#
 fun MXSymbolCreateFromJSON as mxSymbolCreateFromJSON_
     {
-        `String',
+        withCStringT* `Text',
         alloca- `SymbolHandle' peekSymbolHandle*
     } -> `CInt'
 #}
 
-mxSymbolCreateFromJSON :: String -> IO SymbolHandle
+mxSymbolCreateFromJSON :: Text -> IO SymbolHandle
 mxSymbolCreateFromJSON = checked . mxSymbolCreateFromJSON_
 
 {#
 fun MXSymbolSaveToJSON as mxSymbolSaveToJSON_
     {
         `SymbolHandle',
-        alloca- `String' peekString*
+        alloca- `Text' peekCStringPtrT*
     } -> `CInt'
 #}
 
-mxSymbolSaveToJSON :: SymbolHandle -> IO String
-mxSymbolSaveToJSON = checked . mxSymbolSaveToJSON_
+mxSymbolSaveToJSON :: SymbolHandle -> IO Text
+mxSymbolSaveToJSON = fmap unWrapText . checked . fmap (second WrapText) . mxSymbolSaveToJSON_
 
 {#
 fun MXSymbolCopy as mxSymbolCopy_
@@ -161,27 +159,27 @@ mxSymbolCopy = checked . mxSymbolCopy_
 fun MXSymbolPrint as mxSymbolPrint_
     {
         `SymbolHandle',
-        alloca- `String' peekString*
+        alloca- `Text' peekCStringPtrT*
     } -> `CInt'
 #}
 
-mxSymbolPrint :: SymbolHandle -> IO String
-mxSymbolPrint = checked . mxSymbolPrint_
+mxSymbolPrint :: SymbolHandle -> IO Text
+mxSymbolPrint = fmap unWrapText . checked . fmap (second WrapText) . mxSymbolPrint_
 
 {#
 fun MXSymbolGetName as mxSymbolGetName_
     {
         `SymbolHandle',
-        alloca- `Ptr (Ptr CChar)' id,
+        alloca- `Ptr CString' id,
         alloca- `CInt' peek*
     } -> `CInt'
 #}
 
-mxSymbolGetName :: SymbolHandle -> IO (Maybe String)
+mxSymbolGetName :: SymbolHandle -> IO (Maybe Text)
 mxSymbolGetName symbol = do
     (out, succ) <- checked $ mxSymbolGetName_ symbol
     if succ == 0 then
-        Just <$> peekString out
+        Just <$> peekCStringPtrT out
     else
         return Nothing
 
@@ -189,19 +187,19 @@ mxSymbolGetName symbol = do
 fun MXSymbolGetAttr as mxSymbolGetAttr_
     {
         `SymbolHandle',
-        `String',
-        alloca- `Ptr (Ptr CChar)' id,
+        withCStringT* `Text',
+        alloca- `Ptr CString' id,
         alloca- `CInt' peek*
     } -> `CInt'
 #}
 
 mxSymbolGetAttr :: SymbolHandle
-                -> String
-                -> IO (Maybe String)
+                -> Text
+                -> IO (Maybe Text)
 mxSymbolGetAttr symbol key = do
     (pstr, succ) <- checked $ mxSymbolGetAttr_ symbol key
     if succ == 0 then
-        Just <$> peekString pstr
+        Just <$> peekCStringPtrT pstr
     else
         return Nothing
 
@@ -209,14 +207,14 @@ mxSymbolGetAttr symbol key = do
 fun MXSymbolSetAttr as mxSymbolSetAttr_
     {
         `SymbolHandle',
-        `String',
-        `String'
+        withCStringT* `Text',
+        withCStringT* `Text'
     } -> `CInt'
 #}
 
 mxSymbolSetAttr :: SymbolHandle
-                -> String
-                -> String
+                -> Text
+                -> Text
                 -> IO ()
 mxSymbolSetAttr symbol key val = checked $ mxSymbolSetAttr_ symbol key val
 
@@ -225,60 +223,60 @@ fun MXSymbolListAttr as mxSymbolListAttr_
     {
         `SymbolHandle',
         alloca- `MX_UINT' peek*,
-        alloca- `Ptr (Ptr CChar)' peek*
+        alloca- `Ptr CString' peek*
     } -> `CInt'
 #}
 
 mxSymbolListAttr :: SymbolHandle
-                 -> IO [String]
+                 -> IO [Text]
 mxSymbolListAttr symbol = do
     (cnt, ptr) <- checked $ mxSymbolListAttr_ symbol
-    peekStringArray (fromIntegral cnt) ptr
+    peekCStringArrayT (fromIntegral cnt) ptr
 
 {#
 fun MXSymbolListAttrShallow as mxSymbolListAttrShallow_
     {
         `SymbolHandle',
         alloca- `MX_UINT' peek*,
-        alloca- `Ptr (Ptr CChar)' peek*
+        alloca- `Ptr CString' peek*
     } -> `CInt'
 #}
 
 mxSymbolListAttrShallow :: SymbolHandle
-                        -> IO [String]
+                        -> IO [Text]
 mxSymbolListAttrShallow symbol = do
     (cnt, ptr) <- checked $ mxSymbolListAttrShallow_ symbol
-    peekStringArray (fromIntegral cnt) ptr
+    peekCStringArrayT (fromIntegral cnt) ptr
 
 {#
 fun MXSymbolListArguments as mxSymbolListArguments_
     {
         `SymbolHandle',
         alloca- `MX_UINT' peek*,
-        alloca- `Ptr (Ptr CChar)' peek*
+        alloca- `Ptr CString' peek*
     } -> `CInt'
 #}
 
 mxSymbolListArguments :: SymbolHandle
-                      -> IO [String]
+                      -> IO [Text]
 mxSymbolListArguments symbol = do
     (cnt, ptr) <- checked $ mxSymbolListArguments_ symbol
-    peekStringArray (fromIntegral cnt) ptr
+    peekCStringArrayT (fromIntegral cnt) ptr
 
 {#
 fun MXSymbolListOutputs as mxSymbolListOutputs_
     {
         `SymbolHandle',
         alloca- `MX_UINT' peek*,
-        alloca- `Ptr (Ptr CChar)' peek*
+        alloca- `Ptr CString' peek*
     } -> `CInt'
 #}
 
 mxSymbolListOutputs :: SymbolHandle
-                    -> IO [String]
+                    -> IO [Text]
 mxSymbolListOutputs symbol = do
     (cnt, ptr) <- checked $ mxSymbolListOutputs_ symbol
-    peekStringArray (fromIntegral cnt) ptr
+    peekCStringArrayT (fromIntegral cnt) ptr
 
 {#
 fun MXSymbolGetInternals as mxSymbolGetInternals_
@@ -333,22 +331,22 @@ fun MXSymbolListAuxiliaryStates as mxSymbolListAuxiliaryStates_
     {
         `SymbolHandle',
         alloca- `MX_UINT' peek*,
-        alloca- `Ptr (Ptr CChar)' peek*
+        alloca- `Ptr CString' peek*
     } -> `CInt'
 #}
-mxSymbolListAuxiliaryStates :: SymbolHandle -> IO [String]
+mxSymbolListAuxiliaryStates :: SymbolHandle -> IO [Text]
 mxSymbolListAuxiliaryStates symbol = do
     (cnt, ptr) <- checked $ mxSymbolListAuxiliaryStates_ symbol
-    peekStringArray (fromIntegral cnt) ptr
+    peekCStringArrayT (fromIntegral cnt) ptr
 
 #if MXNet_MAJOR==1 && MXNet_MINOR<6
 {#
 fun MXSymbolCompose as mxSymbolCompose_
     {
         `SymbolHandle',
-        `String',
+        `Text',
         `MX_UINT',
-        id `Ptr (Ptr CChar)',
+        id `Ptr CString',
         withSymbolHandleArray* `[SymbolHandle]'
     } -> `CInt'
 #}
@@ -357,24 +355,24 @@ fun MXSymbolCompose as mxSymbolCompose_
 fun MXSymbolCompose as mxSymbolCompose_
     {
         `SymbolHandle',
-        `String',
+        withCStringT* `Text',
         `CUInt',
-        id `Ptr (Ptr CChar)',
+        id `Ptr CString',
         withSymbolHandleArray* `[SymbolHandle]'
     } -> `CInt'
 #}
 #endif
 
 mxSymbolCompose :: SymbolHandle
-                -> String
-                -> Maybe [String]
+                -> Text
+                -> Maybe [Text]
                 -> [SymbolHandle]
                 -> IO ()
 mxSymbolCompose symbol name maybekeys args = do
     let len = fromIntegral $ length args
     case maybekeys of
       Nothing -> checked $ mxSymbolCompose_ symbol name len C2HSImp.nullPtr args
-      Just keys -> withStringArray keys $ \pkeys -> checked $ mxSymbolCompose_ symbol name len pkeys args
+      Just keys -> withCStringArrayT keys $ \pkeys -> checked $ mxSymbolCompose_ symbol name len pkeys args
 
 #if MXNet_MAJOR==1 && MXNet_MINOR<6
 {#
@@ -382,7 +380,7 @@ fun MXSymbolInferShape as mxSymbolInferShape_
     {
         `SymbolHandle',
         `MX_UINT',
-        withStringArray* `[String]',
+        withCStringArrayT* `[Text]',
         withArray* `[MX_UINT]',
         withArray* `[MX_UINT]',
         alloca- `MX_UINT' peek*,
@@ -403,7 +401,7 @@ fun MXSymbolInferShape as mxSymbolInferShape_
     {
         `SymbolHandle',
         `CUInt',
-        withStringArray* `[String]',
+        withCStringArrayT* `[Text]',
         withArray* `[CUInt]',
         withArray* `[CUInt]',
         alloca- `CUInt' peek*,
@@ -421,7 +419,7 @@ fun MXSymbolInferShape as mxSymbolInferShape_
 #endif
 
 mxSymbolInferShape :: SymbolHandle
-                   -> [String]
+                   -> [Text]
                    -> [Int]
                    -> [Int]
                    -> IO ([[Int]], [[Int]], [[Int]], Bool)
@@ -434,17 +432,17 @@ mxSymbolInferShape symbol keys arg_ind arg_shape = do
      auxshape_size, auxshape_ndim, auxshape_data,
      complete) <- checked $ mxSymbolInferShape_ symbol num_args' keys arg_ind' arg_shape'
     let inshape_size' = fromIntegral inshape_size
-    inshape_ndim'    <- peekArray inshape_size' inshape_ndim
+    inshape_ndim'    <- map fromIntegral <$> peekArray inshape_size' inshape_ndim
     inshape_data'    <- peekArray inshape_size' inshape_data
-    inshape_data_ret <- mapM (uncurry peekArrayOfUInt) (zip inshape_ndim' inshape_data')
+    inshape_data_ret <- mapM (uncurry peekArrayAsIntegral) (zip inshape_ndim' inshape_data')
     let outshape_size'= fromIntegral outshape_size
-    outshape_ndim'   <- peekArray outshape_size' outshape_ndim
+    outshape_ndim'   <- map fromIntegral <$> peekArray outshape_size' outshape_ndim
     outshape_data'   <- peekArray outshape_size' outshape_data
-    outshape_data_ret<- mapM (uncurry peekArrayOfUInt) (zip outshape_ndim' outshape_data')
+    outshape_data_ret<- mapM (uncurry peekArrayAsIntegral) (zip outshape_ndim' outshape_data')
     let auxshape_size'= fromIntegral auxshape_size
-    auxshape_ndim'   <- peekArray auxshape_size' auxshape_ndim
+    auxshape_ndim'   <- map fromIntegral <$> peekArray auxshape_size' auxshape_ndim
     auxshape_data'   <- peekArray auxshape_size' auxshape_data
-    auxshape_data_ret<- mapM (uncurry peekArrayOfUInt) (zip auxshape_ndim' auxshape_data')
+    auxshape_data_ret<- mapM (uncurry peekArrayAsIntegral) (zip auxshape_ndim' auxshape_data')
     return (inshape_data_ret, outshape_data_ret, auxshape_data_ret, complete == 1)
 
 #if MXNet_MAJOR==1 && MXNet_MINOR<6
@@ -453,7 +451,7 @@ fun MXSymbolInferShapePartial as mxSymbolInferShapePartial_
     {
         `SymbolHandle',
         `MX_UINT',
-        withStringArray* `[String]',
+        withCStringArrayT* `[Text]',
         withArray* `[MX_UINT]',
         withArray* `[MX_UINT]',
         alloca- `MX_UINT' peek*,
@@ -474,7 +472,7 @@ fun MXSymbolInferShapePartial as mxSymbolInferShapePartial_
     {
         `SymbolHandle',
         `CUInt',
-        withStringArray* `[String]',
+        withCStringArrayT* `[Text]',
         withArray* `[CUInt]',
         withArray* `[CUInt]',
         alloca- `CUInt' peek*,
@@ -492,7 +490,7 @@ fun MXSymbolInferShapePartial as mxSymbolInferShapePartial_
 #endif
 
 mxSymbolInferShapePartial :: SymbolHandle
-                   -> [String]
+                   -> [Text]
                    -> [Int]
                    -> [Int]
                    -> IO ([[Int]], [[Int]], [[Int]], Bool)
@@ -505,20 +503,20 @@ mxSymbolInferShapePartial symbol keys arg_ind arg_shape = do
      auxshape_size, auxshape_ndim, auxshape_data,
      complete) <- checked $ mxSymbolInferShapePartial_ symbol num_args' keys arg_ind' arg_shape'
     let inshape_size' = fromIntegral inshape_size
-    inshape_ndim'    <- peekArray inshape_size' inshape_ndim
+    inshape_ndim'    <- map fromIntegral <$> peekArray inshape_size' inshape_ndim
     inshape_data'    <- peekArray inshape_size' inshape_data
-    inshape_data_ret <- mapM (uncurry peekArrayOfUInt) (zip inshape_ndim' inshape_data')
+    inshape_data_ret <- mapM (uncurry peekArrayAsIntegral) (zip inshape_ndim' inshape_data')
     let outshape_size'= fromIntegral outshape_size
-    outshape_ndim'   <- peekArray outshape_size' outshape_ndim
+    outshape_ndim'   <- map fromIntegral <$> peekArray outshape_size' outshape_ndim
     outshape_data'   <- peekArray outshape_size' outshape_data
-    outshape_data_ret<- mapM (uncurry peekArrayOfUInt) (zip outshape_ndim' outshape_data')
+    outshape_data_ret<- mapM (uncurry peekArrayAsIntegral) (zip outshape_ndim' outshape_data')
     let auxshape_size'= fromIntegral auxshape_size
-    auxshape_ndim'   <- peekArray auxshape_size' auxshape_ndim
+    auxshape_ndim'   <- map fromIntegral <$> peekArray auxshape_size' auxshape_ndim
     auxshape_data'   <- peekArray auxshape_size' auxshape_data
-    auxshape_data_ret<- mapM (uncurry peekArrayOfUInt) (zip auxshape_ndim' auxshape_data')
+    auxshape_data_ret<- mapM (uncurry peekArrayAsIntegral) (zip auxshape_ndim' auxshape_data')
     return (inshape_data_ret, outshape_data_ret, auxshape_data_ret, complete == 1)
 
-peekArrayOfUInt cnt ptr = peekIntegralArray (fromIntegral cnt)  ptr
+peekArrayAsIntegral cnt ptr = map fromIntegral <$> peekArray (fromIntegral cnt) ptr
 
 #if MXNet_MAJOR==1 && MXNet_MINOR<6
 {#
@@ -526,7 +524,7 @@ fun MXSymbolInferType as mxSymbolInferType_
     {
         `SymbolHandle',
         `MX_UINT',
-        withStringArray* `[String]',
+        withCStringArrayT* `[Text]',
         withArray* `[CInt]',
         alloca- `MX_UINT' peek*,
         alloca- `Ptr CInt' peek*,
@@ -543,7 +541,7 @@ fun MXSymbolInferType as mxSymbolInferType_
     {
         `SymbolHandle',
         `CUInt',
-        withStringArray* `[String]',
+        withCStringArrayT* `[Text]',
         withArray* `[CInt]',
         alloca- `MX_UINT' peek*,
         alloca- `Ptr CInt' peek*,
@@ -557,7 +555,7 @@ fun MXSymbolInferType as mxSymbolInferType_
 #endif
 
 mxSymbolInferType :: SymbolHandle
-                  -> [String]
+                  -> [Text]
                   -> [Int]
                   -> IO (Maybe ([Int], [Int], [Int]))
 mxSymbolInferType symbol keys arg_type = do
@@ -568,9 +566,9 @@ mxSymbolInferType symbol keys arg_type = do
      auxshape_size, auxshape_data,
      succ) <- checked $ mxSymbolInferType_ symbol num_args keys arg_type'
     if succ == 0 then do
-        inshape_data_ret  <- peekIntegralArray (fromIntegral inshape_size)  inshape_data
-        outshape_data_ret <- peekIntegralArray (fromIntegral outshape_size) outshape_data
-        auxshape_data_ret <- peekIntegralArray (fromIntegral auxshape_size) auxshape_data
+        inshape_data_ret  <- peekArrayAsIntegral (fromIntegral inshape_size)  inshape_data
+        outshape_data_ret <- peekArrayAsIntegral (fromIntegral outshape_size) outshape_data
+        auxshape_data_ret <- peekArrayAsIntegral (fromIntegral auxshape_size) auxshape_data
         return $ Just (inshape_data_ret, outshape_data_ret, auxshape_data_ret)
     else
         return Nothing
@@ -579,11 +577,11 @@ mxSymbolInferType symbol keys arg_type = do
 fun MXSymbolSaveToFile as mxSymbolSaveToFile_
     {
         `SymbolHandle',
-        `String'
+        withCStringT* `Text'
     } -> `CInt'
 #}
 
-mxSymbolSaveToFile :: String -> SymbolHandle -> IO ()
+mxSymbolSaveToFile :: Text -> SymbolHandle -> IO ()
 mxSymbolSaveToFile filename sym = do
     checked $ mxSymbolSaveToFile_ sym filename
 
@@ -631,12 +629,12 @@ foreign import ccall "wrapper" mkCustomFunctionDelFunc  :: CustomFunctionDelFunc
 {#
 fun MXCustomOpRegister as mxCustomOpRegister_
     {
-        `String',
+        withCStringT* `Text',
         id `FunPtr CustomOpPropCreator'
     } -> `CInt'
 #}
 
-mxCustomOpRegister :: String -> FunPtr CustomOpPropCreator -> IO ()
+mxCustomOpRegister :: Text -> FunPtr CustomOpPropCreator -> IO ()
 mxCustomOpRegister op cr = checked $ mxCustomOpRegister_ op cr
 
 -- {#

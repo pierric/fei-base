@@ -1,5 +1,13 @@
-{-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE ViewPatterns #-}
 module MXNet.Base.Symbol where
+
+import RIO
+import RIO.List (unzip, scanl, headMaybe)
+import RIO.Partial (toEnum)
+import qualified RIO.NonEmpty as RNE
+import qualified RIO.Vector.Boxed as V
+import qualified RIO.Vector.Boxed.Unsafe as V
+import qualified Data.Vector.Mutable as VM
 
 import Foreign.Marshal.Array
 import Foreign.Marshal.Alloc
@@ -7,17 +15,7 @@ import Foreign.Storable
 import Foreign.Ptr
 import Foreign.C.String
 import Foreign.C.Types
-import Control.Monad
-import Control.Exception.Base (assert, Exception, throwIO)
-import Data.List (groupBy)
-import Data.Function
-import Data.Maybe
-import Text.Printf (printf)
-import Control.Concurrent.MVar
-import qualified Data.Vector as V
-import qualified Data.Vector.Mutable as VM
 import Data.Typeable (Typeable)
-import Control.Exception.Base (Exception, throwIO)
 
 import qualified MXNet.Base.Raw as I
 import MXNet.Base.Types (ForeignData(..))
@@ -28,22 +26,35 @@ instance ForeignData (Symbol a) where
     touch = I.touchSymbolHandle . unSymbol
 
 data SymbolException = SymbolIndexOutOfBound Int Int
-                     | SymbolNameNotFound String
+                     | SymbolNameNotFound Text
     deriving (Typeable, Show)
 instance Exception SymbolException
 
+data FShape = STensor { _shape_nonempty :: NonEmpty Int} | SScalar
+    deriving Show
+
+shapeLength (STensor l) = length l
+shapeLength SScalar = 0
+
+shapeToList (STensor l) = RNE.toList l
+shapeToList SScalar = []
+
+shapeCons a (STensor s) = STensor $ a RNE.<| s
+shapeCons a SScalar = STensor $ a RNE.:| []
+
 class SymbolClass s where
-    getName             :: s -> IO (Maybe String)
-    listArguments       :: s -> IO [String]
-    listOutputs         :: s -> IO [String]
-    listAuxiliaryStates :: s -> IO [String]
+    getName             :: s -> IO (Maybe Text)
+    listArguments       :: s -> IO [Text]
+    listOutputs         :: s -> IO [Text]
+    listAuxiliaryStates :: s -> IO [Text]
     numOutputs          :: s -> IO Int
     at                  :: s -> Int -> IO s
     group               :: [s] -> IO s
     internals           :: s -> IO s
-    inferShape          :: s -> [(String, [Int])] ->IO ([(String, [Int])], [(String, [Int])], [(String, [Int])], Bool)
+    inferShape          :: s -> [(Text, FShape)] ->
+                           IO ([(Text, FShape)], [(Text, FShape)], [(Text, FShape)], Bool)
 
-    at'                 :: s -> String -> IO s
+    at'                 :: s -> Text -> IO s
     at' sym name = do
         all_names <- listOutputs sym
         case V.findIndex (== name) $ V.fromList all_names of
@@ -67,15 +78,17 @@ instance SymbolClass I.SymbolHandle where
 
     inferShape sym known = do
         let (names, shapes) = unzip known
-            arg_ind = scanl (+) 0 $ map length shapes
-            arg_shp = concat shapes
+            arg_ind = scanl (+) 0 $ map shapeLength shapes
+            arg_shp = concatMap shapeToList shapes
         (inp_shp, out_shp, aux_shp, complete) <- I.mxSymbolInferShapePartial sym names arg_ind arg_shp
         inps <- listArguments sym
         outs <- listOutputs sym
         auxs <- listAuxiliaryStates sym
         return (pair inps inp_shp, pair outs out_shp, pair auxs aux_shp, complete)
       where
-        pair names shapes = filter (not . null . snd) $ zip names shapes
+        build name (RNE.nonEmpty -> Just s) = (name, STensor s)
+        build name _ = (name, SScalar)
+        pair names shapes = zipWith build names shapes
 
 instance SymbolClass (Symbol a) where
     getName             = getName . unSymbol
@@ -85,7 +98,7 @@ instance SymbolClass (Symbol a) where
     numOutputs          = numOutputs . unSymbol
     at (Symbol s)       = (Symbol <$>) . at s
     group = (Symbol <$>) . group . map unSymbol
-    internals           = (Symbol <$>) . internals . unSymbol 
+    internals           = (Symbol <$>) . internals . unSymbol
     inferShape          = inferShape  . unSymbol
 
 
@@ -117,6 +130,7 @@ toMXDType = toEnum . (+1) . fromIntegral
 fromMXDType :: Integral a => MXDType -> a
 fromMXDType = fromIntegral . (subtract 1) . fromEnum
 
+-- TODO: change String to Text
 class CustomOperation (Operation prop) => CustomOperationProp prop where
     -- list the names of inputs
     prop_list_arguments        :: prop -> [String]
@@ -127,7 +141,7 @@ class CustomOperation (Operation prop) => CustomOperationProp prop where
     -- infer the shape.
     -- params: shapes of each inputs
     -- return: shapes of inputs, outputs, auxiliary states
-    prop_infer_shape :: prop -> [[Int]] -> ([[Int]], [[Int]], [[Int]])
+    prop_infer_shape :: prop -> [FShape] -> ([FShape], [FShape], [FShape])
     -- declare the dependency of symbols
     -- params: unique indices of inputs, outputs, auxiliary states
     -- return: dependant indices.
@@ -156,10 +170,10 @@ class CustomOperation (Operation prop) => CustomOperationProp prop where
         in withAssert (ograd_stype', in_stype', out_stype', igrad_stype', aux_stype')
     prop_infer_type :: prop -> [MXDType] -> ([MXDType],[MXDType], [MXDType])
     prop_infer_type prop in_type =
-        let t0 = head in_type
-            out_type = replicate (length (prop_list_outputs prop)) t0
-            aux_type = replicate (length (prop_list_auxiliary_states prop)) t0
-        in (in_type, out_type, aux_type)
+        case headMaybe in_type of
+            Just t0 -> let out_type = replicate (length (prop_list_outputs prop)) t0
+                           aux_type = replicate (length (prop_list_auxiliary_states prop)) t0
+                       in (in_type, out_type, aux_type)
 
     data Operation prop :: *
     prop_create_operator :: prop -> [[Int]] -> [MXDType] -> IO (Operation prop)
@@ -182,17 +196,22 @@ class CustomOperation op where
 data ReqEnum = ReqNull | ReqWrite | ReqInplace | ReqAdd
     deriving (Bounded, Enum)
 
-registerCustomOperator :: CustomOperationProp op => (String, [(String, String)] -> IO op) -> IO ()
+registerCustomOperator :: CustomOperationProp op => (Text, [(Text, Text)] -> IO op) -> IO ()
 registerCustomOperator (op_type, op_ctor) = do
     ptr_creator <- I.mkCustomOpPropCreator creator
     I.mxCustomOpRegister op_type ptr_creator
   where
     creator name argc keys values ret = do
         let argc' = fromIntegral argc
-        keys_ <- peekArray argc' keys   >>= mapM peekCString
-        vals_ <- peekArray argc' values >>= mapM peekCString
+        keys_ <- peekArray argc' keys   >>= mapM I.peekCStringT
+        vals_ <- peekArray argc' values >>= mapM I.peekCStringT
         prop <- op_ctor $ zip keys_ vals_
 
+        -- TODO: a safer way is use ForeignPtr,
+        -- malloc the str as ForeignPtr, and save
+        -- to the allocList. When the delete_entry is
+        -- called, it take away all ForeignPtr, and
+        -- effectively informs GC to revoke underlying memory.
         args <- mapM newCString (prop_list_arguments prop)
         ptr_args <- newArray $ args ++ [nullPtr]
 
@@ -263,19 +282,22 @@ registerCustomOperator (op_type, op_ctor) = do
         -- read each shape of each input
         inp_shape_0 <- zipWithM (\i j -> do ptr <- peekElemOff in_out_shapes_tensor i
                                             arr <- peekArray j ptr
-                                            return $ map fromIntegral arr)
+                                            case RNE.map fromIntegral <$> RNE.nonEmpty arr of
+                                                Nothing  -> return SScalar
+                                                Just shp -> return $ STensor shp)
                                 [0..] (map fromIntegral inp_dim_0)
 
         let (inp_shape, out_shape, aux_shape) = prop_infer_shape prop inp_shape_0
             all_shape = inp_shape ++ out_shape ++ aux_shape
-            all_shape_sizes = map length all_shape
+            all_shape_sizes = map shapeLength all_shape
 
         assert (length all_shape == num_tensor') (return ())
 
         pokeArray in_out_dim_tensor (map fromIntegral all_shape_sizes)
         -- no need to allocate new dimensions of inputs/outputs/auxiliaries
         -- only need to allocate new shapes for each
-        ptr_0 <- newArray (map fromIntegral (concat all_shape) :: [CInt])
+        let shape_vec = map fromIntegral $ concatMap shapeToList all_shape :: [CInt]
+        ptr_0 <- newArray shape_vec
         modifyMVar_ allocList (return . (castPtr ptr_0 :))
 
         let size_UINT = sizeOf (undefined :: I.MX_UINT)
@@ -336,8 +358,11 @@ registerCustomOperator (op_type, op_ctor) = do
             num_tensor' = fromIntegral num_tensor
         tags' <- peekArray num_tensor' tags
         tensor_types' <- peekArray num_tensor' tensor_stypes
-        let tensors = groupBy ((==) `on` fst) (zip tags' tensor_types')
-            tensors_table = map (\t -> (fst (head t), map (toStorageType . snd) t)) tensors
+        let tensors = RNE.groupBy ((==) `on` fst) (zip tags' tensor_types')
+            tensors_table = map (\t ->
+                let tag = fst $ RNE.head t
+                    sto = RNE.toList $ RNE.map (toStorageType . snd) t
+                in (tag, sto)) tensors
             [ograd0, input0, output0, igrad0, aux0] = map (fromMaybe [] . flip lookup tensors_table) [3, 0, 1, 2, 4]
             (ograd, input, output, igrad, aux) = prop_infer_storage_type_backward prop ograd0 input0 output0 igrad0 aux0
             all_stypes = map fromStorageType $ ograd ++ input ++ output ++ igrad ++ aux
@@ -414,4 +439,4 @@ registerCustomOperator (op_type, op_ctor) = do
         backward op reqs in_data out_data in_grad out_grad aux
         return 1
 
-    (!) = (V.!)
+    (!) = V.unsafeIndex

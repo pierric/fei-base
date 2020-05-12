@@ -8,11 +8,13 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 module MXNet.Base.Spec.Operator where
 
+import RIO hiding (Text)
+import qualified RIO.Text as RT
+import RIO.List (intersperse)
 import GHC.OverloadedLabels
 import GHC.TypeLits
 import GHC.Exts (Constraint)
 import Data.Proxy
-import Data.List (intersperse)
 import Data.Constraint
 import MXNet.Base.Spec.HMap
 
@@ -32,7 +34,7 @@ type family FormatEnum (l :: [Symbol]) :: ErrorMessage where
 
 instance (KnownSymbol v, HasEnum v e) => IsLabel v (EnumType e) where
     fromLabel = EnumType (Proxy :: Proxy v)
-  
+
 ----
 type family ParameterList (s :: Symbol) :: [(Symbol, Attr)]
 
@@ -45,7 +47,7 @@ type family ParameterType (a :: Attr) :: * where
   ParameterType (AttrOpt a) = a
 
 type family ResolveParameter (s :: Symbol) (k :: Symbol) :: Attr where
-  ResolveParameter s k = FindKey k (ParameterList s) (Text "Parameter '" :<>: 
+  ResolveParameter s k = FindKey k (ParameterList s) (Text "Parameter '" :<>:
                               Text k :<>:
                               Text " not found")
 
@@ -69,69 +71,72 @@ instance Pair (ArgOf s) where
 infix 5 !, !?
 infix 1 :=, :≅
 
-(!) :: Access (MatchHead (ArgOf s) k v kvs) (ArgOf s) k v kvs 
+(!) :: Access (MatchHead (ArgOf s) k v kvs) (ArgOf s) k v kvs
   => ArgsHMap s kvs -> Proxy k -> v
 (!) = get
 
-(!?) :: (ParameterType (ResolveParameter s k) ~ v, Query (MatchHead (ArgOf s) k v kvs) (ArgOf s) k v kvs) 
+(!?) :: (ParameterType (ResolveParameter s k) ~ v, Query (MatchHead (ArgOf s) k v kvs) (ArgOf s) k v kvs)
   => ArgsHMap s kvs -> Proxy k -> Maybe v
 (!?) = query
 
 type ArgsHMap s kvs = HMap (ArgOf s) kvs
 ----
 class Value a where
-  showValue :: a -> String
+  showValue :: a -> RT.Text
 
 instance Value (EnumType e) where
-  showValue (EnumType v) = symbolVal v
+  showValue (EnumType v) = RT.pack $ symbolVal v
 
 instance Value Int where
-  showValue = show
+  showValue = tshow
 
 instance Value Bool where
-  showValue = show
+  showValue = tshow
 
 instance Value Float where
-  showValue = show
+  showValue = tshow
 
 instance Value Double where
-  showValue = show
+  showValue = tshow
+
+instance Value RT.Text where
+  showValue = id
 
 instance Value a => Value (Maybe a) where
   showValue Nothing = "None"
   showValue (Just a) = showValue a
-  
+
 instance ValueList (IsChar a) [a] => Value [a] where
   showValue = showValueList (Proxy :: Proxy (IsChar a))
 
 class ValueList (str :: Bool) as where
-  showValueList :: Proxy str -> as -> String
+  showValueList :: Proxy str -> as -> RT.Text
 
 instance ValueList True String where
-  showValueList _ = id
+  showValueList _ = RT.pack
 
 instance Value a => ValueList False [a] where
-  showValueList _ as = "[" ++ concat (intersperse "," (map showValue as)) ++ "]"
+  showValueList _ as = RT.concat $ ["["] ++ intersperse "," (map showValue as) ++ ["]"]
 
 type family IsChar a :: Bool where
   IsChar Char = True
   IsChar x = False
 
 class Dump a where
-  dump :: a -> [(String, String)]
+  dump :: a -> [(RT.Text, RT.Text)]
 
 instance Dump (ArgsHMap s '[]) where
   dump = const []
 
 instance (Dump (ArgsHMap s kvs), KnownSymbol k, Value v) => Dump (ArgsHMap s (ArgOf s k v ': kvs)) where
-  dump (Cons (k := v) kvs) = (symbolVal k, showValue v) : dump kvs
-  dump (Cons (k :≅ v) kvs) = (symbolVal k, showValue v) : dump kvs
+  dump (Cons (k := v) kvs) = (RT.pack $ symbolVal k, showValue v) : dump kvs
+  dump (Cons (k :≅ v) kvs) = (RT.pack $ symbolVal k, showValue v) : dump kvs
 
 ----
 type family Subset (s1 :: [(Symbol, *)]) (s2 :: [(Symbol, *)]) :: Constraint where
   Subset '[] _ = ()
-  Subset ('(a, t) ': s1) s2 = ( IfThenElse (HasElement '(a,t) s2) 
-                                  (() :: Constraint) 
+  Subset ('(a, t) ': s1) s2 = ( IfThenElse (HasElement '(a,t) s2)
+                                  (() :: Constraint)
                                   (TypeError (Text "Argument '" :<>: Text a :<>: Text "' is required."))
                               , Subset s1 s2)
   Subset a b = TypeError (Text "xx")
@@ -167,25 +172,25 @@ type family Fullfilled (s :: Symbol) (args :: [*]) :: Constraint where
 
 -- type family HasOptArg (s :: Symbol) (args :: [*]) (k :: [Symbol]) :: Constraint where
 --   HasOptArg s args '[] = ()
---   HasOptArg s args (k0 ': ks) = ( Query (MatchHead (ArgOf s) k0 (ParameterType (ResolveParameter s k0)) args) 
---                                         (ArgOf s) 
---                                         k0 
---                                         (ParameterType (ResolveParameter s k0)) 
+--   HasOptArg s args (k0 ': ks) = ( Query (MatchHead (ArgOf s) k0 (ParameterType (ResolveParameter s k0)) args)
+--                                         (ArgOf s)
+--                                         k0
+--                                         (ParameterType (ResolveParameter s k0))
 --                                         args
 --                                 , HasOptArg s args ks)
 
 -- type family HasReqArg (s :: Symbol) (args :: [*]) (k :: [Symbol]) :: Constraint where
 --   HasReqArg s args '[] = ()
---   HasReqArg s args (k0 ': ks) = ( Access (MatchHead (ArgOf s) k0 (ParameterType (ResolveParameter s k0)) args) 
---                                         (ArgOf s) 
---                                         k0 
---                                         (ParameterType (ResolveParameter s k0)) 
+--   HasReqArg s args (k0 ': ks) = ( Access (MatchHead (ArgOf s) k0 (ParameterType (ResolveParameter s k0)) args)
+--                                         (ArgOf s)
+--                                         k0
+--                                         (ParameterType (ResolveParameter s k0))
 --                                         args
 --                                 , HasElement '(k0, ParameterType (ResolveParameter s k0)) (AsKVs args) ~ True
---                                 , Query  (MatchHead (ArgOf s) k0 (ParameterType (ResolveParameter s k0)) args) 
---                                         (ArgOf s) 
---                                         k0 
---                                         (ParameterType (ResolveParameter s k0)) 
+--                                 , Query  (MatchHead (ArgOf s) k0 (ParameterType (ResolveParameter s k0)) args)
+--                                         (ArgOf s)
+--                                         k0
+--                                         (ParameterType (ResolveParameter s k0))
 --                                         args
 --                                 , HasReqArg s args ks)
 
@@ -219,7 +224,7 @@ type family IfThenElse (b :: Bool) (t :: k) (f :: k) :: k where
 -------------------------------------
 
 type instance ParameterList "fn" = [
-  '("a", AttrReq Int), 
+  '("a", AttrReq Int),
   '("b", AttrOpt String),
   '("c", AttrReq (EnumType '["c1","c2"])),
   '("d", AttrOpt (Maybe (EnumType '["c1","c2"])))

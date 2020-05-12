@@ -1,6 +1,6 @@
 cabal-version:       2.2
 name:                fei-base
-version:             0.2.1
+version:             0.3
 synopsis:            FFI to MXNet
 description:         This package provides a FFI wrap of MXNet, including c-apis and symbol/array/executor operations.
 homepage:
@@ -20,7 +20,7 @@ Flag MXNet_1_6 {
 
 Flag MXNet_1_5 {
   Description: With MXNet 1.5.x operators
-  Default: True
+  Default: False
 }
 
 Flag MXNet_1_4 {
@@ -56,12 +56,12 @@ library
       hs-source-dirs:  ops/1.6
   }
   build-depends:       base >= 4.7 && < 5,
-                       c2hs-extra == 0.1.0.1,
                        tuple-ops == 0.0.0.3,
-                       vector >= 0.11 && < 0.13,
                        deepseq,
                        constraints,
                        repa,
+                       vector,
+                       rio,
                        store
   default-language:    Haskell2010
   build-tool-depends:  c2hs:c2hs
@@ -74,6 +74,11 @@ library
                        DataKinds,
                        TypeFamilies,
                        OverloadedLabels,
+                       OverloadedStrings,
+                       LambdaCase,
+                       MultiWayIf,
+                       DoAndIfThenElse,
+                       NoImplicitPrelude,
                        TupleSections
   exposed-modules:     MXNet.Base,
                        MXNet.Base.Raw,
@@ -102,11 +107,8 @@ executable mxnet-op-gen
                        optparse-applicative >= 0.14 && < 0.15,
                        haskell-src-exts >= 1.20,
                        hslogger >= 1.2,
-                       text >= 1.2.0 && < 1.3,
-                       mtl,
-                       filepath >= 1.4 && < 1.5,
-                       directory >= 1.3 && < 1.4,
                        tuple-ops == 0.0.0.3,
+                       rio,
                        fei-base
   default-language:    Haskell2010
   default-extensions:  FlexibleContexts

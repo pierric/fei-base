@@ -1,4 +1,6 @@
 module MXNet.Base.Operators.Symbol where
+import RIO
+import RIO.List
 import MXNet.Base.Raw
 import MXNet.Base.Spec.Operator
 import MXNet.Base.Spec.HMap
@@ -12,7 +14,7 @@ type instance ParameterList "_Activation(symbol)" =
 
 _Activation ::
             forall args . Fullfilled "_Activation(symbol)" args =>
-              String -> ArgsHMap "_Activation(symbol)" args -> IO SymbolHandle
+              Text -> ArgsHMap "_Activation(symbol)" args -> IO SymbolHandle
 _Activation name args
   = let scalarArgs
           = catMaybes
@@ -45,7 +47,7 @@ type instance ParameterList "_BatchNorm(symbol)" =
 
 _BatchNorm ::
            forall args . Fullfilled "_BatchNorm(symbol)" args =>
-             String -> ArgsHMap "_BatchNorm(symbol)" args -> IO SymbolHandle
+             Text -> ArgsHMap "_BatchNorm(symbol)" args -> IO SymbolHandle
 _BatchNorm name args
   = let scalarArgs
           = catMaybes
@@ -87,7 +89,7 @@ type instance ParameterList "_BatchNorm_v1(symbol)" =
 
 _BatchNorm_v1 ::
               forall args . Fullfilled "_BatchNorm_v1(symbol)" args =>
-                String -> ArgsHMap "_BatchNorm_v1(symbol)" args -> IO SymbolHandle
+                Text -> ArgsHMap "_BatchNorm_v1(symbol)" args -> IO SymbolHandle
 _BatchNorm_v1 name args
   = let scalarArgs
           = catMaybes
@@ -118,8 +120,7 @@ type instance ParameterList "_BilinearSampler(symbol)" =
 
 _BilinearSampler ::
                  forall args . Fullfilled "_BilinearSampler(symbol)" args =>
-                   String ->
-                     ArgsHMap "_BilinearSampler(symbol)" args -> IO SymbolHandle
+                   Text -> ArgsHMap "_BilinearSampler(symbol)" args -> IO SymbolHandle
 _BilinearSampler name args
   = let scalarArgs
           = catMaybes
@@ -143,7 +144,7 @@ type instance ParameterList "_BlockGrad(symbol)" =
 
 _BlockGrad ::
            forall args . Fullfilled "_BlockGrad(symbol)" args =>
-             String -> ArgsHMap "_BlockGrad(symbol)" args -> IO SymbolHandle
+             Text -> ArgsHMap "_BlockGrad(symbol)" args -> IO SymbolHandle
 _BlockGrad name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -167,7 +168,7 @@ type instance ParameterList "_CTCLoss(symbol)" =
 
 _CTCLoss ::
          forall args . Fullfilled "_CTCLoss(symbol)" args =>
-           String -> ArgsHMap "_CTCLoss(symbol)" args -> IO SymbolHandle
+           Text -> ArgsHMap "_CTCLoss(symbol)" args -> IO SymbolHandle
 _CTCLoss name args
   = let scalarArgs
           = catMaybes
@@ -204,7 +205,7 @@ type instance ParameterList "_Cast(symbol)" =
 
 _Cast ::
       forall args . Fullfilled "_Cast(symbol)" args =>
-        String -> ArgsHMap "_Cast(symbol)" args -> IO SymbolHandle
+        Text -> ArgsHMap "_Cast(symbol)" args -> IO SymbolHandle
 _Cast name args
   = let scalarArgs
           = catMaybes
@@ -231,7 +232,7 @@ type instance ParameterList "_Concat(symbol)" =
 
 _Concat ::
         forall args . Fullfilled "_Concat(symbol)" args =>
-          String -> ArgsHMap "_Concat(symbol)" args -> IO SymbolHandle
+          Text -> ArgsHMap "_Concat(symbol)" args -> IO SymbolHandle
 _Concat name args
   = let scalarArgs
           = catMaybes
@@ -269,7 +270,7 @@ type instance ParameterList "_Convolution(symbol)" =
 
 _Convolution ::
              forall args . Fullfilled "_Convolution(symbol)" args =>
-               String -> ArgsHMap "_Convolution(symbol)" args -> IO SymbolHandle
+               Text -> ArgsHMap "_Convolution(symbol)" args -> IO SymbolHandle
 _Convolution name args
   = let scalarArgs
           = catMaybes
@@ -319,8 +320,7 @@ type instance ParameterList "_Convolution_v1(symbol)" =
 
 _Convolution_v1 ::
                 forall args . Fullfilled "_Convolution_v1(symbol)" args =>
-                  String ->
-                    ArgsHMap "_Convolution_v1(symbol)" args -> IO SymbolHandle
+                  Text -> ArgsHMap "_Convolution_v1(symbol)" args -> IO SymbolHandle
 _Convolution_v1 name args
   = let scalarArgs
           = catMaybes
@@ -362,7 +362,7 @@ type instance ParameterList "_Correlation(symbol)" =
 
 _Correlation ::
              forall args . Fullfilled "_Correlation(symbol)" args =>
-               String -> ArgsHMap "_Correlation(symbol)" args -> IO SymbolHandle
+               Text -> ArgsHMap "_Correlation(symbol)" args -> IO SymbolHandle
 _Correlation name args
   = let scalarArgs
           = catMaybes
@@ -395,7 +395,7 @@ type instance ParameterList "_Crop(symbol)" =
 
 _Crop ::
       forall args . Fullfilled "_Crop(symbol)" args =>
-        String -> ArgsHMap "_Crop(symbol)" args -> IO SymbolHandle
+        Text -> ArgsHMap "_Crop(symbol)" args -> IO SymbolHandle
 _Crop name args
   = let scalarArgs
           = catMaybes
@@ -433,8 +433,7 @@ type instance ParameterList "_CuDNNBatchNorm(symbol)" =
 
 _CuDNNBatchNorm ::
                 forall args . Fullfilled "_CuDNNBatchNorm(symbol)" args =>
-                  String ->
-                    ArgsHMap "_CuDNNBatchNorm(symbol)" args -> IO SymbolHandle
+                  Text -> ArgsHMap "_CuDNNBatchNorm(symbol)" args -> IO SymbolHandle
 _CuDNNBatchNorm name args
   = let scalarArgs
           = catMaybes
@@ -468,14 +467,14 @@ _CuDNNBatchNorm name args
          return sym
 
 type instance ParameterList "_Custom(symbol)" =
-     '[ '("op_type", AttrOpt String), '("data", AttrOpt [SymbolHandle])]
+     '[ '("op_type", AttrOpt Text), '("data", AttrOpt [SymbolHandle])]
 
 _Custom ::
         forall args .
           (Fullfilled "_Custom(symbol)" args,
            PopKey (ArgOf "_Custom(symbol)") args "data",
            Dump (PopResult (ArgOf "_Custom(symbol)") args "data")) =>
-          String -> ArgsHMap "_Custom(symbol)" args -> IO SymbolHandle
+          Text -> ArgsHMap "_Custom(symbol)" args -> IO SymbolHandle
 _Custom name args
   = let scalarArgs = dump (pop args #data)
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -507,7 +506,7 @@ type instance ParameterList "_Deconvolution(symbol)" =
 
 _Deconvolution ::
                forall args . Fullfilled "_Deconvolution(symbol)" args =>
-                 String -> ArgsHMap "_Deconvolution(symbol)" args -> IO SymbolHandle
+                 Text -> ArgsHMap "_Deconvolution(symbol)" args -> IO SymbolHandle
 _Deconvolution name args
   = let scalarArgs
           = catMaybes
@@ -552,7 +551,7 @@ type instance ParameterList "_Dropout(symbol)" =
 
 _Dropout ::
          forall args . Fullfilled "_Dropout(symbol)" args =>
-           String -> ArgsHMap "_Dropout(symbol)" args -> IO SymbolHandle
+           Text -> ArgsHMap "_Dropout(symbol)" args -> IO SymbolHandle
 _Dropout name args
   = let scalarArgs
           = catMaybes
@@ -585,7 +584,7 @@ type instance ParameterList "_Embedding(symbol)" =
 
 _Embedding ::
            forall args . Fullfilled "_Embedding(symbol)" args =>
-             String -> ArgsHMap "_Embedding(symbol)" args -> IO SymbolHandle
+             Text -> ArgsHMap "_Embedding(symbol)" args -> IO SymbolHandle
 _Embedding name args
   = let scalarArgs
           = catMaybes
@@ -617,7 +616,7 @@ type instance ParameterList "_Flatten(symbol)" =
 
 _Flatten ::
          forall args . Fullfilled "_Flatten(symbol)" args =>
-           String -> ArgsHMap "_Flatten(symbol)" args -> IO SymbolHandle
+           Text -> ArgsHMap "_Flatten(symbol)" args -> IO SymbolHandle
 _Flatten name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -638,8 +637,7 @@ type instance ParameterList "_FullyConnected(symbol)" =
 
 _FullyConnected ::
                 forall args . Fullfilled "_FullyConnected(symbol)" args =>
-                  String ->
-                    ArgsHMap "_FullyConnected(symbol)" args -> IO SymbolHandle
+                  Text -> ArgsHMap "_FullyConnected(symbol)" args -> IO SymbolHandle
 _FullyConnected name args
   = let scalarArgs
           = catMaybes
@@ -667,7 +665,7 @@ type instance ParameterList "_GridGenerator(symbol)" =
 
 _GridGenerator ::
                forall args . Fullfilled "_GridGenerator(symbol)" args =>
-                 String -> ArgsHMap "_GridGenerator(symbol)" args -> IO SymbolHandle
+                 Text -> ArgsHMap "_GridGenerator(symbol)" args -> IO SymbolHandle
 _GridGenerator name args
   = let scalarArgs
           = catMaybes
@@ -694,7 +692,7 @@ type instance ParameterList "_GroupNorm(symbol)" =
 
 _GroupNorm ::
            forall args . Fullfilled "_GroupNorm(symbol)" args =>
-             String -> ArgsHMap "_GroupNorm(symbol)" args -> IO SymbolHandle
+             Text -> ArgsHMap "_GroupNorm(symbol)" args -> IO SymbolHandle
 _GroupNorm name args
   = let scalarArgs
           = catMaybes
@@ -725,7 +723,7 @@ type instance ParameterList "_IdentityAttachKLSparseReg(symbol)" =
 _IdentityAttachKLSparseReg ::
                            forall args .
                              Fullfilled "_IdentityAttachKLSparseReg(symbol)" args =>
-                             String ->
+                             Text ->
                                ArgsHMap "_IdentityAttachKLSparseReg(symbol)" args ->
                                  IO SymbolHandle
 _IdentityAttachKLSparseReg name args
@@ -752,7 +750,7 @@ type instance ParameterList "_InstanceNorm(symbol)" =
 
 _InstanceNorm ::
               forall args . Fullfilled "_InstanceNorm(symbol)" args =>
-                String -> ArgsHMap "_InstanceNorm(symbol)" args -> IO SymbolHandle
+                Text -> ArgsHMap "_InstanceNorm(symbol)" args -> IO SymbolHandle
 _InstanceNorm name args
   = let scalarArgs
           = catMaybes
@@ -778,8 +776,7 @@ type instance ParameterList "_L2Normalization(symbol)" =
 
 _L2Normalization ::
                  forall args . Fullfilled "_L2Normalization(symbol)" args =>
-                   String ->
-                     ArgsHMap "_L2Normalization(symbol)" args -> IO SymbolHandle
+                   Text -> ArgsHMap "_L2Normalization(symbol)" args -> IO SymbolHandle
 _L2Normalization name args
   = let scalarArgs
           = catMaybes
@@ -805,7 +802,7 @@ type instance ParameterList "_LRN(symbol)" =
 
 _LRN ::
      forall args . Fullfilled "_LRN(symbol)" args =>
-       String -> ArgsHMap "_LRN(symbol)" args -> IO SymbolHandle
+       Text -> ArgsHMap "_LRN(symbol)" args -> IO SymbolHandle
 _LRN name args
   = let scalarArgs
           = catMaybes
@@ -832,7 +829,7 @@ type instance ParameterList "_LayerNorm(symbol)" =
 
 _LayerNorm ::
            forall args . Fullfilled "_LayerNorm(symbol)" args =>
-             String -> ArgsHMap "_LayerNorm(symbol)" args -> IO SymbolHandle
+             Text -> ArgsHMap "_LayerNorm(symbol)" args -> IO SymbolHandle
 _LayerNorm name args
   = let scalarArgs
           = catMaybes
@@ -864,7 +861,7 @@ type instance ParameterList "_LeakyReLU(symbol)" =
 
 _LeakyReLU ::
            forall args . Fullfilled "_LeakyReLU(symbol)" args =>
-             String -> ArgsHMap "_LeakyReLU(symbol)" args -> IO SymbolHandle
+             Text -> ArgsHMap "_LeakyReLU(symbol)" args -> IO SymbolHandle
 _LeakyReLU name args
   = let scalarArgs
           = catMaybes
@@ -896,7 +893,7 @@ type instance ParameterList "_LinearRegressionOutput(symbol)" =
 
 _LinearRegressionOutput ::
                         forall args . Fullfilled "_LinearRegressionOutput(symbol)" args =>
-                          String ->
+                          Text ->
                             ArgsHMap "_LinearRegressionOutput(symbol)" args -> IO SymbolHandle
 _LinearRegressionOutput name args
   = let scalarArgs
@@ -923,7 +920,7 @@ type instance ParameterList "_LogisticRegressionOutput(symbol)" =
 _LogisticRegressionOutput ::
                           forall args .
                             Fullfilled "_LogisticRegressionOutput(symbol)" args =>
-                            String ->
+                            Text ->
                               ArgsHMap "_LogisticRegressionOutput(symbol)" args ->
                                 IO SymbolHandle
 _LogisticRegressionOutput name args
@@ -950,7 +947,7 @@ type instance ParameterList "_MAERegressionOutput(symbol)" =
 
 _MAERegressionOutput ::
                      forall args . Fullfilled "_MAERegressionOutput(symbol)" args =>
-                       String ->
+                       Text ->
                          ArgsHMap "_MAERegressionOutput(symbol)" args -> IO SymbolHandle
 _MAERegressionOutput name args
   = let scalarArgs
@@ -978,7 +975,7 @@ type instance ParameterList "_MakeLoss(symbol)" =
 
 _MakeLoss ::
           forall args . Fullfilled "_MakeLoss(symbol)" args =>
-            String -> ArgsHMap "_MakeLoss(symbol)" args -> IO SymbolHandle
+            Text -> ArgsHMap "_MakeLoss(symbol)" args -> IO SymbolHandle
 _MakeLoss name args
   = let scalarArgs
           = catMaybes
@@ -1007,7 +1004,7 @@ type instance ParameterList "_Pad(symbol)" =
 
 _Pad ::
      forall args . Fullfilled "_Pad(symbol)" args =>
-       String -> ArgsHMap "_Pad(symbol)" args -> IO SymbolHandle
+       Text -> ArgsHMap "_Pad(symbol)" args -> IO SymbolHandle
 _Pad name args
   = let scalarArgs
           = catMaybes
@@ -1045,7 +1042,7 @@ type instance ParameterList "_Pooling(symbol)" =
 
 _Pooling ::
          forall args . Fullfilled "_Pooling(symbol)" args =>
-           String -> ArgsHMap "_Pooling(symbol)" args -> IO SymbolHandle
+           Text -> ArgsHMap "_Pooling(symbol)" args -> IO SymbolHandle
 _Pooling name args
   = let scalarArgs
           = catMaybes
@@ -1091,7 +1088,7 @@ type instance ParameterList "_Pooling_v1(symbol)" =
 
 _Pooling_v1 ::
             forall args . Fullfilled "_Pooling_v1(symbol)" args =>
-              String -> ArgsHMap "_Pooling_v1(symbol)" args -> IO SymbolHandle
+              Text -> ArgsHMap "_Pooling_v1(symbol)" args -> IO SymbolHandle
 _Pooling_v1 name args
   = let scalarArgs
           = catMaybes
@@ -1135,7 +1132,7 @@ type instance ParameterList "_RNN(symbol)" =
 
 _RNN ::
      forall args . Fullfilled "_RNN(symbol)" args =>
-       String -> ArgsHMap "_RNN(symbol)" args -> IO SymbolHandle
+       Text -> ArgsHMap "_RNN(symbol)" args -> IO SymbolHandle
 _RNN name args
   = let scalarArgs
           = catMaybes
@@ -1184,7 +1181,7 @@ type instance ParameterList "_ROIPooling(symbol)" =
 
 _ROIPooling ::
             forall args . Fullfilled "_ROIPooling(symbol)" args =>
-              String -> ArgsHMap "_ROIPooling(symbol)" args -> IO SymbolHandle
+              Text -> ArgsHMap "_ROIPooling(symbol)" args -> IO SymbolHandle
 _ROIPooling name args
   = let scalarArgs
           = catMaybes
@@ -1212,7 +1209,7 @@ type instance ParameterList "_Reshape(symbol)" =
 
 _Reshape ::
          forall args . Fullfilled "_Reshape(symbol)" args =>
-           String -> ArgsHMap "_Reshape(symbol)" args -> IO SymbolHandle
+           Text -> ArgsHMap "_Reshape(symbol)" args -> IO SymbolHandle
 _Reshape name args
   = let scalarArgs
           = catMaybes
@@ -1241,7 +1238,7 @@ type instance ParameterList "_SVMOutput(symbol)" =
 
 _SVMOutput ::
            forall args . Fullfilled "_SVMOutput(symbol)" args =>
-             String -> ArgsHMap "_SVMOutput(symbol)" args -> IO SymbolHandle
+             Text -> ArgsHMap "_SVMOutput(symbol)" args -> IO SymbolHandle
 _SVMOutput name args
   = let scalarArgs
           = catMaybes
@@ -1270,7 +1267,7 @@ type instance ParameterList "_SequenceLast(symbol)" =
 
 _SequenceLast ::
               forall args . Fullfilled "_SequenceLast(symbol)" args =>
-                String -> ArgsHMap "_SequenceLast(symbol)" args -> IO SymbolHandle
+                Text -> ArgsHMap "_SequenceLast(symbol)" args -> IO SymbolHandle
 _SequenceLast name args
   = let scalarArgs
           = catMaybes
@@ -1299,7 +1296,7 @@ type instance ParameterList "_SequenceMask(symbol)" =
 
 _SequenceMask ::
               forall args . Fullfilled "_SequenceMask(symbol)" args =>
-                String -> ArgsHMap "_SequenceMask(symbol)" args -> IO SymbolHandle
+                Text -> ArgsHMap "_SequenceMask(symbol)" args -> IO SymbolHandle
 _SequenceMask name args
   = let scalarArgs
           = catMaybes
@@ -1328,8 +1325,7 @@ type instance ParameterList "_SequenceReverse(symbol)" =
 
 _SequenceReverse ::
                  forall args . Fullfilled "_SequenceReverse(symbol)" args =>
-                   String ->
-                     ArgsHMap "_SequenceReverse(symbol)" args -> IO SymbolHandle
+                   Text -> ArgsHMap "_SequenceReverse(symbol)" args -> IO SymbolHandle
 _SequenceReverse name args
   = let scalarArgs
           = catMaybes
@@ -1356,7 +1352,7 @@ type instance ParameterList "_SliceChannel(symbol)" =
 
 _SliceChannel ::
               forall args . Fullfilled "_SliceChannel(symbol)" args =>
-                String -> ArgsHMap "_SliceChannel(symbol)" args -> IO SymbolHandle
+                Text -> ArgsHMap "_SliceChannel(symbol)" args -> IO SymbolHandle
 _SliceChannel name args
   = let scalarArgs
           = catMaybes
@@ -1382,7 +1378,7 @@ type instance ParameterList "_SoftmaxActivation(symbol)" =
 
 _SoftmaxActivation ::
                    forall args . Fullfilled "_SoftmaxActivation(symbol)" args =>
-                     String ->
+                     Text ->
                        ArgsHMap "_SoftmaxActivation(symbol)" args -> IO SymbolHandle
 _SoftmaxActivation name args
   = let scalarArgs
@@ -1410,7 +1406,7 @@ type instance ParameterList "_SoftmaxOutput(symbol)" =
 
 _SoftmaxOutput ::
                forall args . Fullfilled "_SoftmaxOutput(symbol)" args =>
-                 String -> ArgsHMap "_SoftmaxOutput(symbol)" args -> IO SymbolHandle
+                 Text -> ArgsHMap "_SoftmaxOutput(symbol)" args -> IO SymbolHandle
 _SoftmaxOutput name args
   = let scalarArgs
           = catMaybes
@@ -1452,7 +1448,7 @@ type instance ParameterList "_SpatialTransformer(symbol)" =
 
 _SpatialTransformer ::
                     forall args . Fullfilled "_SpatialTransformer(symbol)" args =>
-                      String ->
+                      Text ->
                         ArgsHMap "_SpatialTransformer(symbol)" args -> IO SymbolHandle
 _SpatialTransformer name args
   = let scalarArgs
@@ -1484,7 +1480,7 @@ type instance ParameterList "_SwapAxis(symbol)" =
 
 _SwapAxis ::
           forall args . Fullfilled "_SwapAxis(symbol)" args =>
-            String -> ArgsHMap "_SwapAxis(symbol)" args -> IO SymbolHandle
+            Text -> ArgsHMap "_SwapAxis(symbol)" args -> IO SymbolHandle
 _SwapAxis name args
   = let scalarArgs
           = catMaybes
@@ -1510,7 +1506,7 @@ type instance ParameterList "_UpSampling(symbol)" =
 
 _UpSampling ::
             forall args . Fullfilled "_UpSampling(symbol)" args =>
-              String -> ArgsHMap "_UpSampling(symbol)" args -> IO SymbolHandle
+              Text -> ArgsHMap "_UpSampling(symbol)" args -> IO SymbolHandle
 _UpSampling name args
   = let scalarArgs
           = catMaybes
@@ -1543,7 +1539,7 @@ type instance ParameterList "_CachedOp(symbol)" =
 
 _CachedOp ::
           forall args . Fullfilled "_CachedOp(symbol)" args =>
-            String -> ArgsHMap "_CachedOp(symbol)" args -> IO SymbolHandle
+            Text -> ArgsHMap "_CachedOp(symbol)" args -> IO SymbolHandle
 _CachedOp name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -1561,8 +1557,7 @@ type instance ParameterList "_CrossDeviceCopy(symbol)" = '[]
 
 _CrossDeviceCopy ::
                  forall args . Fullfilled "_CrossDeviceCopy(symbol)" args =>
-                   String ->
-                     ArgsHMap "_CrossDeviceCopy(symbol)" args -> IO SymbolHandle
+                   Text -> ArgsHMap "_CrossDeviceCopy(symbol)" args -> IO SymbolHandle
 _CrossDeviceCopy name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -1579,8 +1574,7 @@ type instance ParameterList "_CustomFunction(symbol)" = '[]
 
 _CustomFunction ::
                 forall args . Fullfilled "_CustomFunction(symbol)" args =>
-                  String ->
-                    ArgsHMap "_CustomFunction(symbol)" args -> IO SymbolHandle
+                  Text -> ArgsHMap "_CustomFunction(symbol)" args -> IO SymbolHandle
 _CustomFunction name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -1598,7 +1592,7 @@ type instance ParameterList "_FusedOp(symbol)" =
 
 _FusedOp ::
          forall args . Fullfilled "_FusedOp(symbol)" args =>
-           String -> ArgsHMap "_FusedOp(symbol)" args -> IO SymbolHandle
+           Text -> ArgsHMap "_FusedOp(symbol)" args -> IO SymbolHandle
 _FusedOp name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -1616,7 +1610,7 @@ type instance ParameterList "_FusedOpHelper(symbol)" = '[]
 
 _FusedOpHelper ::
                forall args . Fullfilled "_FusedOpHelper(symbol)" args =>
-                 String -> ArgsHMap "_FusedOpHelper(symbol)" args -> IO SymbolHandle
+                 Text -> ArgsHMap "_FusedOpHelper(symbol)" args -> IO SymbolHandle
 _FusedOpHelper name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -1633,7 +1627,7 @@ type instance ParameterList "_FusedOpOutHelper(symbol)" = '[]
 
 _FusedOpOutHelper ::
                   forall args . Fullfilled "_FusedOpOutHelper(symbol)" args =>
-                    String ->
+                    Text ->
                       ArgsHMap "_FusedOpOutHelper(symbol)" args -> IO SymbolHandle
 _FusedOpOutHelper name args
   = let scalarArgs = catMaybes []
@@ -1651,7 +1645,7 @@ type instance ParameterList "_NoGradient(symbol)" = '[]
 
 _NoGradient ::
             forall args . Fullfilled "_NoGradient(symbol)" args =>
-              String -> ArgsHMap "_NoGradient(symbol)" args -> IO SymbolHandle
+              Text -> ArgsHMap "_NoGradient(symbol)" args -> IO SymbolHandle
 _NoGradient name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -1675,7 +1669,7 @@ type instance ParameterList "_adamw_update(symbol)" =
 
 _adamw_update ::
               forall args . Fullfilled "_adamw_update(symbol)" args =>
-                String -> ArgsHMap "_adamw_update(symbol)" args -> IO SymbolHandle
+                Text -> ArgsHMap "_adamw_update(symbol)" args -> IO SymbolHandle
 _adamw_update name args
   = let scalarArgs
           = catMaybes
@@ -1707,7 +1701,7 @@ _adamw_update name args
 type instance ParameterList "_arange(symbol)" =
      '[ '("start", AttrReq Double), '("stop", AttrOpt (Maybe Double)),
         '("step", AttrOpt Double), '("repeat", AttrOpt Int),
-        '("infer_range", AttrOpt Bool), '("ctx", AttrOpt String),
+        '("infer_range", AttrOpt Bool), '("ctx", AttrOpt Text),
         '("dtype",
           AttrOpt
             (EnumType
@@ -1716,7 +1710,7 @@ type instance ParameterList "_arange(symbol)" =
 
 _arange ::
         forall args . Fullfilled "_arange(symbol)" args =>
-          String -> ArgsHMap "_arange(symbol)" args -> IO SymbolHandle
+          Text -> ArgsHMap "_arange(symbol)" args -> IO SymbolHandle
 _arange name args
   = let scalarArgs
           = catMaybes
@@ -1726,7 +1720,7 @@ _arange name args
                ("repeat",) . showValue <$> (args !? #repeat :: Maybe Int),
                ("infer_range",) . showValue <$>
                  (args !? #infer_range :: Maybe Bool),
-               ("ctx",) . showValue <$> (args !? #ctx :: Maybe String),
+               ("ctx",) . showValue <$> (args !? #ctx :: Maybe Text),
                ("dtype",) . showValue <$>
                  (args !? #dtype ::
                     Maybe
@@ -1747,7 +1741,7 @@ type instance ParameterList "_backward_Activation(symbol)" = '[]
 
 _backward_Activation ::
                      forall args . Fullfilled "_backward_Activation(symbol)" args =>
-                       String ->
+                       Text ->
                          ArgsHMap "_backward_Activation(symbol)" args -> IO SymbolHandle
 _backward_Activation name args
   = let scalarArgs = catMaybes []
@@ -1765,7 +1759,7 @@ type instance ParameterList "_backward_BatchNorm(symbol)" = '[]
 
 _backward_BatchNorm ::
                     forall args . Fullfilled "_backward_BatchNorm(symbol)" args =>
-                      String ->
+                      Text ->
                         ArgsHMap "_backward_BatchNorm(symbol)" args -> IO SymbolHandle
 _backward_BatchNorm name args
   = let scalarArgs = catMaybes []
@@ -1783,7 +1777,7 @@ type instance ParameterList "_backward_BatchNorm_v1(symbol)" = '[]
 
 _backward_BatchNorm_v1 ::
                        forall args . Fullfilled "_backward_BatchNorm_v1(symbol)" args =>
-                         String ->
+                         Text ->
                            ArgsHMap "_backward_BatchNorm_v1(symbol)" args -> IO SymbolHandle
 _backward_BatchNorm_v1 name args
   = let scalarArgs = catMaybes []
@@ -1803,7 +1797,7 @@ type instance ParameterList "_backward_BilinearSampler(symbol)" =
 _backward_BilinearSampler ::
                           forall args .
                             Fullfilled "_backward_BilinearSampler(symbol)" args =>
-                            String ->
+                            Text ->
                               ArgsHMap "_backward_BilinearSampler(symbol)" args ->
                                 IO SymbolHandle
 _backward_BilinearSampler name args
@@ -1822,7 +1816,7 @@ type instance ParameterList "_backward_CachedOp(symbol)" = '[]
 
 _backward_CachedOp ::
                    forall args . Fullfilled "_backward_CachedOp(symbol)" args =>
-                     String ->
+                     Text ->
                        ArgsHMap "_backward_CachedOp(symbol)" args -> IO SymbolHandle
 _backward_CachedOp name args
   = let scalarArgs = catMaybes []
@@ -1840,8 +1834,7 @@ type instance ParameterList "_backward_Concat(symbol)" = '[]
 
 _backward_Concat ::
                  forall args . Fullfilled "_backward_Concat(symbol)" args =>
-                   String ->
-                     ArgsHMap "_backward_Concat(symbol)" args -> IO SymbolHandle
+                   Text -> ArgsHMap "_backward_Concat(symbol)" args -> IO SymbolHandle
 _backward_Concat name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -1858,7 +1851,7 @@ type instance ParameterList "_backward_Convolution(symbol)" = '[]
 
 _backward_Convolution ::
                       forall args . Fullfilled "_backward_Convolution(symbol)" args =>
-                        String ->
+                        Text ->
                           ArgsHMap "_backward_Convolution(symbol)" args -> IO SymbolHandle
 _backward_Convolution name args
   = let scalarArgs = catMaybes []
@@ -1877,7 +1870,7 @@ type instance ParameterList "_backward_Convolution_v1(symbol)" =
 
 _backward_Convolution_v1 ::
                          forall args . Fullfilled "_backward_Convolution_v1(symbol)" args =>
-                           String ->
+                           Text ->
                              ArgsHMap "_backward_Convolution_v1(symbol)" args -> IO SymbolHandle
 _backward_Convolution_v1 name args
   = let scalarArgs = catMaybes []
@@ -1895,7 +1888,7 @@ type instance ParameterList "_backward_Correlation(symbol)" = '[]
 
 _backward_Correlation ::
                       forall args . Fullfilled "_backward_Correlation(symbol)" args =>
-                        String ->
+                        Text ->
                           ArgsHMap "_backward_Correlation(symbol)" args -> IO SymbolHandle
 _backward_Correlation name args
   = let scalarArgs = catMaybes []
@@ -1913,7 +1906,7 @@ type instance ParameterList "_backward_Crop(symbol)" = '[]
 
 _backward_Crop ::
                forall args . Fullfilled "_backward_Crop(symbol)" args =>
-                 String -> ArgsHMap "_backward_Crop(symbol)" args -> IO SymbolHandle
+                 Text -> ArgsHMap "_backward_Crop(symbol)" args -> IO SymbolHandle
 _backward_Crop name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -1931,7 +1924,7 @@ type instance ParameterList "_backward_CuDNNBatchNorm(symbol)" =
 
 _backward_CuDNNBatchNorm ::
                          forall args . Fullfilled "_backward_CuDNNBatchNorm(symbol)" args =>
-                           String ->
+                           Text ->
                              ArgsHMap "_backward_CuDNNBatchNorm(symbol)" args -> IO SymbolHandle
 _backward_CuDNNBatchNorm name args
   = let scalarArgs = catMaybes []
@@ -1949,8 +1942,7 @@ type instance ParameterList "_backward_Custom(symbol)" = '[]
 
 _backward_Custom ::
                  forall args . Fullfilled "_backward_Custom(symbol)" args =>
-                   String ->
-                     ArgsHMap "_backward_Custom(symbol)" args -> IO SymbolHandle
+                   Text -> ArgsHMap "_backward_Custom(symbol)" args -> IO SymbolHandle
 _backward_Custom name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -1968,7 +1960,7 @@ type instance ParameterList "_backward_CustomFunction(symbol)" =
 
 _backward_CustomFunction ::
                          forall args . Fullfilled "_backward_CustomFunction(symbol)" args =>
-                           String ->
+                           Text ->
                              ArgsHMap "_backward_CustomFunction(symbol)" args -> IO SymbolHandle
 _backward_CustomFunction name args
   = let scalarArgs = catMaybes []
@@ -1986,7 +1978,7 @@ type instance ParameterList "_backward_Deconvolution(symbol)" = '[]
 
 _backward_Deconvolution ::
                         forall args . Fullfilled "_backward_Deconvolution(symbol)" args =>
-                          String ->
+                          Text ->
                             ArgsHMap "_backward_Deconvolution(symbol)" args -> IO SymbolHandle
 _backward_Deconvolution name args
   = let scalarArgs = catMaybes []
@@ -2004,7 +1996,7 @@ type instance ParameterList "_backward_Dropout(symbol)" = '[]
 
 _backward_Dropout ::
                   forall args . Fullfilled "_backward_Dropout(symbol)" args =>
-                    String ->
+                    Text ->
                       ArgsHMap "_backward_Dropout(symbol)" args -> IO SymbolHandle
 _backward_Dropout name args
   = let scalarArgs = catMaybes []
@@ -2022,7 +2014,7 @@ type instance ParameterList "_backward_Embedding(symbol)" = '[]
 
 _backward_Embedding ::
                     forall args . Fullfilled "_backward_Embedding(symbol)" args =>
-                      String ->
+                      Text ->
                         ArgsHMap "_backward_Embedding(symbol)" args -> IO SymbolHandle
 _backward_Embedding name args
   = let scalarArgs = catMaybes []
@@ -2041,7 +2033,7 @@ type instance ParameterList "_backward_FullyConnected(symbol)" =
 
 _backward_FullyConnected ::
                          forall args . Fullfilled "_backward_FullyConnected(symbol)" args =>
-                           String ->
+                           Text ->
                              ArgsHMap "_backward_FullyConnected(symbol)" args -> IO SymbolHandle
 _backward_FullyConnected name args
   = let scalarArgs = catMaybes []
@@ -2059,7 +2051,7 @@ type instance ParameterList "_backward_GridGenerator(symbol)" = '[]
 
 _backward_GridGenerator ::
                         forall args . Fullfilled "_backward_GridGenerator(symbol)" args =>
-                          String ->
+                          Text ->
                             ArgsHMap "_backward_GridGenerator(symbol)" args -> IO SymbolHandle
 _backward_GridGenerator name args
   = let scalarArgs = catMaybes []
@@ -2077,7 +2069,7 @@ type instance ParameterList "_backward_GroupNorm(symbol)" = '[]
 
 _backward_GroupNorm ::
                     forall args . Fullfilled "_backward_GroupNorm(symbol)" args =>
-                      String ->
+                      Text ->
                         ArgsHMap "_backward_GroupNorm(symbol)" args -> IO SymbolHandle
 _backward_GroupNorm name args
   = let scalarArgs = catMaybes []
@@ -2098,7 +2090,7 @@ _backward_IdentityAttachKLSparseReg ::
                                     forall args .
                                       Fullfilled "_backward_IdentityAttachKLSparseReg(symbol)"
                                         args =>
-                                      String ->
+                                      Text ->
                                         ArgsHMap "_backward_IdentityAttachKLSparseReg(symbol)" args
                                           -> IO SymbolHandle
 _backward_IdentityAttachKLSparseReg name args
@@ -2117,7 +2109,7 @@ type instance ParameterList "_backward_InstanceNorm(symbol)" = '[]
 
 _backward_InstanceNorm ::
                        forall args . Fullfilled "_backward_InstanceNorm(symbol)" args =>
-                         String ->
+                         Text ->
                            ArgsHMap "_backward_InstanceNorm(symbol)" args -> IO SymbolHandle
 _backward_InstanceNorm name args
   = let scalarArgs = catMaybes []
@@ -2137,7 +2129,7 @@ type instance ParameterList "_backward_L2Normalization(symbol)" =
 _backward_L2Normalization ::
                           forall args .
                             Fullfilled "_backward_L2Normalization(symbol)" args =>
-                            String ->
+                            Text ->
                               ArgsHMap "_backward_L2Normalization(symbol)" args ->
                                 IO SymbolHandle
 _backward_L2Normalization name args
@@ -2156,7 +2148,7 @@ type instance ParameterList "_backward_LRN(symbol)" = '[]
 
 _backward_LRN ::
               forall args . Fullfilled "_backward_LRN(symbol)" args =>
-                String -> ArgsHMap "_backward_LRN(symbol)" args -> IO SymbolHandle
+                Text -> ArgsHMap "_backward_LRN(symbol)" args -> IO SymbolHandle
 _backward_LRN name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -2173,7 +2165,7 @@ type instance ParameterList "_backward_LayerNorm(symbol)" = '[]
 
 _backward_LayerNorm ::
                     forall args . Fullfilled "_backward_LayerNorm(symbol)" args =>
-                      String ->
+                      Text ->
                         ArgsHMap "_backward_LayerNorm(symbol)" args -> IO SymbolHandle
 _backward_LayerNorm name args
   = let scalarArgs = catMaybes []
@@ -2191,7 +2183,7 @@ type instance ParameterList "_backward_LeakyReLU(symbol)" = '[]
 
 _backward_LeakyReLU ::
                     forall args . Fullfilled "_backward_LeakyReLU(symbol)" args =>
-                      String ->
+                      Text ->
                         ArgsHMap "_backward_LeakyReLU(symbol)" args -> IO SymbolHandle
 _backward_LeakyReLU name args
   = let scalarArgs = catMaybes []
@@ -2209,7 +2201,7 @@ type instance ParameterList "_backward_MakeLoss(symbol)" = '[]
 
 _backward_MakeLoss ::
                    forall args . Fullfilled "_backward_MakeLoss(symbol)" args =>
-                     String ->
+                     Text ->
                        ArgsHMap "_backward_MakeLoss(symbol)" args -> IO SymbolHandle
 _backward_MakeLoss name args
   = let scalarArgs = catMaybes []
@@ -2227,7 +2219,7 @@ type instance ParameterList "_backward_Pad(symbol)" = '[]
 
 _backward_Pad ::
               forall args . Fullfilled "_backward_Pad(symbol)" args =>
-                String -> ArgsHMap "_backward_Pad(symbol)" args -> IO SymbolHandle
+                Text -> ArgsHMap "_backward_Pad(symbol)" args -> IO SymbolHandle
 _backward_Pad name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -2244,7 +2236,7 @@ type instance ParameterList "_backward_Pooling(symbol)" = '[]
 
 _backward_Pooling ::
                   forall args . Fullfilled "_backward_Pooling(symbol)" args =>
-                    String ->
+                    Text ->
                       ArgsHMap "_backward_Pooling(symbol)" args -> IO SymbolHandle
 _backward_Pooling name args
   = let scalarArgs = catMaybes []
@@ -2262,7 +2254,7 @@ type instance ParameterList "_backward_Pooling_v1(symbol)" = '[]
 
 _backward_Pooling_v1 ::
                      forall args . Fullfilled "_backward_Pooling_v1(symbol)" args =>
-                       String ->
+                       Text ->
                          ArgsHMap "_backward_Pooling_v1(symbol)" args -> IO SymbolHandle
 _backward_Pooling_v1 name args
   = let scalarArgs = catMaybes []
@@ -2280,7 +2272,7 @@ type instance ParameterList "_backward_RNN(symbol)" = '[]
 
 _backward_RNN ::
               forall args . Fullfilled "_backward_RNN(symbol)" args =>
-                String -> ArgsHMap "_backward_RNN(symbol)" args -> IO SymbolHandle
+                Text -> ArgsHMap "_backward_RNN(symbol)" args -> IO SymbolHandle
 _backward_RNN name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -2297,7 +2289,7 @@ type instance ParameterList "_backward_ROIAlign(symbol)" = '[]
 
 _backward_ROIAlign ::
                    forall args . Fullfilled "_backward_ROIAlign(symbol)" args =>
-                     String ->
+                     Text ->
                        ArgsHMap "_backward_ROIAlign(symbol)" args -> IO SymbolHandle
 _backward_ROIAlign name args
   = let scalarArgs = catMaybes []
@@ -2315,7 +2307,7 @@ type instance ParameterList "_backward_ROIPooling(symbol)" = '[]
 
 _backward_ROIPooling ::
                      forall args . Fullfilled "_backward_ROIPooling(symbol)" args =>
-                       String ->
+                       Text ->
                          ArgsHMap "_backward_ROIPooling(symbol)" args -> IO SymbolHandle
 _backward_ROIPooling name args
   = let scalarArgs = catMaybes []
@@ -2333,7 +2325,7 @@ type instance ParameterList "_backward_RROIAlign(symbol)" = '[]
 
 _backward_RROIAlign ::
                     forall args . Fullfilled "_backward_RROIAlign(symbol)" args =>
-                      String ->
+                      Text ->
                         ArgsHMap "_backward_RROIAlign(symbol)" args -> IO SymbolHandle
 _backward_RROIAlign name args
   = let scalarArgs = catMaybes []
@@ -2351,7 +2343,7 @@ type instance ParameterList "_backward_SVMOutput(symbol)" = '[]
 
 _backward_SVMOutput ::
                     forall args . Fullfilled "_backward_SVMOutput(symbol)" args =>
-                      String ->
+                      Text ->
                         ArgsHMap "_backward_SVMOutput(symbol)" args -> IO SymbolHandle
 _backward_SVMOutput name args
   = let scalarArgs = catMaybes []
@@ -2369,7 +2361,7 @@ type instance ParameterList "_backward_SequenceLast(symbol)" = '[]
 
 _backward_SequenceLast ::
                        forall args . Fullfilled "_backward_SequenceLast(symbol)" args =>
-                         String ->
+                         Text ->
                            ArgsHMap "_backward_SequenceLast(symbol)" args -> IO SymbolHandle
 _backward_SequenceLast name args
   = let scalarArgs = catMaybes []
@@ -2387,7 +2379,7 @@ type instance ParameterList "_backward_SequenceMask(symbol)" = '[]
 
 _backward_SequenceMask ::
                        forall args . Fullfilled "_backward_SequenceMask(symbol)" args =>
-                         String ->
+                         Text ->
                            ArgsHMap "_backward_SequenceMask(symbol)" args -> IO SymbolHandle
 _backward_SequenceMask name args
   = let scalarArgs = catMaybes []
@@ -2407,7 +2399,7 @@ type instance ParameterList "_backward_SequenceReverse(symbol)" =
 _backward_SequenceReverse ::
                           forall args .
                             Fullfilled "_backward_SequenceReverse(symbol)" args =>
-                            String ->
+                            Text ->
                               ArgsHMap "_backward_SequenceReverse(symbol)" args ->
                                 IO SymbolHandle
 _backward_SequenceReverse name args
@@ -2426,7 +2418,7 @@ type instance ParameterList "_backward_SliceChannel(symbol)" = '[]
 
 _backward_SliceChannel ::
                        forall args . Fullfilled "_backward_SliceChannel(symbol)" args =>
-                         String ->
+                         Text ->
                            ArgsHMap "_backward_SliceChannel(symbol)" args -> IO SymbolHandle
 _backward_SliceChannel name args
   = let scalarArgs = catMaybes []
@@ -2446,7 +2438,7 @@ type instance ParameterList "_backward_SoftmaxActivation(symbol)" =
 _backward_SoftmaxActivation ::
                             forall args .
                               Fullfilled "_backward_SoftmaxActivation(symbol)" args =>
-                              String ->
+                              Text ->
                                 ArgsHMap "_backward_SoftmaxActivation(symbol)" args ->
                                   IO SymbolHandle
 _backward_SoftmaxActivation name args
@@ -2465,7 +2457,7 @@ type instance ParameterList "_backward_SoftmaxOutput(symbol)" = '[]
 
 _backward_SoftmaxOutput ::
                         forall args . Fullfilled "_backward_SoftmaxOutput(symbol)" args =>
-                          String ->
+                          Text ->
                             ArgsHMap "_backward_SoftmaxOutput(symbol)" args -> IO SymbolHandle
 _backward_SoftmaxOutput name args
   = let scalarArgs = catMaybes []
@@ -2485,7 +2477,7 @@ type instance ParameterList "_backward_SparseEmbedding(symbol)" =
 _backward_SparseEmbedding ::
                           forall args .
                             Fullfilled "_backward_SparseEmbedding(symbol)" args =>
-                            String ->
+                            Text ->
                               ArgsHMap "_backward_SparseEmbedding(symbol)" args ->
                                 IO SymbolHandle
 _backward_SparseEmbedding name args
@@ -2506,7 +2498,7 @@ type instance ParameterList "_backward_SpatialTransformer(symbol)"
 _backward_SpatialTransformer ::
                              forall args .
                                Fullfilled "_backward_SpatialTransformer(symbol)" args =>
-                               String ->
+                               Text ->
                                  ArgsHMap "_backward_SpatialTransformer(symbol)" args ->
                                    IO SymbolHandle
 _backward_SpatialTransformer name args
@@ -2525,7 +2517,7 @@ type instance ParameterList "_backward_SwapAxis(symbol)" = '[]
 
 _backward_SwapAxis ::
                    forall args . Fullfilled "_backward_SwapAxis(symbol)" args =>
-                     String ->
+                     Text ->
                        ArgsHMap "_backward_SwapAxis(symbol)" args -> IO SymbolHandle
 _backward_SwapAxis name args
   = let scalarArgs = catMaybes []
@@ -2543,7 +2535,7 @@ type instance ParameterList "_backward_UpSampling(symbol)" = '[]
 
 _backward_UpSampling ::
                      forall args . Fullfilled "_backward_UpSampling(symbol)" args =>
-                       String ->
+                       Text ->
                          ArgsHMap "_backward_UpSampling(symbol)" args -> IO SymbolHandle
 _backward_UpSampling name args
   = let scalarArgs = catMaybes []
@@ -2563,7 +2555,7 @@ type instance ParameterList "_backward__CrossDeviceCopy(symbol)" =
 _backward__CrossDeviceCopy ::
                            forall args .
                              Fullfilled "_backward__CrossDeviceCopy(symbol)" args =>
-                             String ->
+                             Text ->
                                ArgsHMap "_backward__CrossDeviceCopy(symbol)" args ->
                                  IO SymbolHandle
 _backward__CrossDeviceCopy name args
@@ -2582,7 +2574,7 @@ type instance ParameterList "_backward__NDArray(symbol)" = '[]
 
 _backward__NDArray ::
                    forall args . Fullfilled "_backward__NDArray(symbol)" args =>
-                     String ->
+                     Text ->
                        ArgsHMap "_backward__NDArray(symbol)" args -> IO SymbolHandle
 _backward__NDArray name args
   = let scalarArgs = catMaybes []
@@ -2600,7 +2592,7 @@ type instance ParameterList "_backward__Native(symbol)" = '[]
 
 _backward__Native ::
                   forall args . Fullfilled "_backward__Native(symbol)" args =>
-                    String ->
+                    Text ->
                       ArgsHMap "_backward__Native(symbol)" args -> IO SymbolHandle
 _backward__Native name args
   = let scalarArgs = catMaybes []
@@ -2623,7 +2615,7 @@ _backward__contrib_DeformableConvolution ::
                                            Fullfilled
                                              "_backward__contrib_DeformableConvolution(symbol)"
                                              args =>
-                                           String ->
+                                           Text ->
                                              ArgsHMap
                                                "_backward__contrib_DeformableConvolution(symbol)"
                                                args
@@ -2649,7 +2641,7 @@ _backward__contrib_DeformablePSROIPooling ::
                                             Fullfilled
                                               "_backward__contrib_DeformablePSROIPooling(symbol)"
                                               args =>
-                                            String ->
+                                            Text ->
                                               ArgsHMap
                                                 "_backward__contrib_DeformablePSROIPooling(symbol)"
                                                 args
@@ -2673,7 +2665,7 @@ _backward__contrib_MultiBoxDetection ::
                                      forall args .
                                        Fullfilled "_backward__contrib_MultiBoxDetection(symbol)"
                                          args =>
-                                       String ->
+                                       Text ->
                                          ArgsHMap "_backward__contrib_MultiBoxDetection(symbol)"
                                            args
                                            -> IO SymbolHandle
@@ -2695,7 +2687,7 @@ type instance
 _backward__contrib_MultiBoxPrior ::
                                  forall args .
                                    Fullfilled "_backward__contrib_MultiBoxPrior(symbol)" args =>
-                                   String ->
+                                   Text ->
                                      ArgsHMap "_backward__contrib_MultiBoxPrior(symbol)" args ->
                                        IO SymbolHandle
 _backward__contrib_MultiBoxPrior name args
@@ -2716,7 +2708,7 @@ type instance
 _backward__contrib_MultiBoxTarget ::
                                   forall args .
                                     Fullfilled "_backward__contrib_MultiBoxTarget(symbol)" args =>
-                                    String ->
+                                    Text ->
                                       ArgsHMap "_backward__contrib_MultiBoxTarget(symbol)" args ->
                                         IO SymbolHandle
 _backward__contrib_MultiBoxTarget name args
@@ -2737,7 +2729,7 @@ type instance
 _backward__contrib_MultiProposal ::
                                  forall args .
                                    Fullfilled "_backward__contrib_MultiProposal(symbol)" args =>
-                                   String ->
+                                   Text ->
                                      ArgsHMap "_backward__contrib_MultiProposal(symbol)" args ->
                                        IO SymbolHandle
 _backward__contrib_MultiProposal name args
@@ -2758,7 +2750,7 @@ type instance
 _backward__contrib_PSROIPooling ::
                                 forall args .
                                   Fullfilled "_backward__contrib_PSROIPooling(symbol)" args =>
-                                  String ->
+                                  Text ->
                                     ArgsHMap "_backward__contrib_PSROIPooling(symbol)" args ->
                                       IO SymbolHandle
 _backward__contrib_PSROIPooling name args
@@ -2779,7 +2771,7 @@ type instance ParameterList "_backward__contrib_Proposal(symbol)" =
 _backward__contrib_Proposal ::
                             forall args .
                               Fullfilled "_backward__contrib_Proposal(symbol)" args =>
-                              String ->
+                              Text ->
                                 ArgsHMap "_backward__contrib_Proposal(symbol)" args ->
                                   IO SymbolHandle
 _backward__contrib_Proposal name args
@@ -2800,7 +2792,7 @@ type instance
 _backward__contrib_SyncBatchNorm ::
                                  forall args .
                                    Fullfilled "_backward__contrib_SyncBatchNorm(symbol)" args =>
-                                   String ->
+                                   Text ->
                                      ArgsHMap "_backward__contrib_SyncBatchNorm(symbol)" args ->
                                        IO SymbolHandle
 _backward__contrib_SyncBatchNorm name args
@@ -2821,7 +2813,7 @@ type instance
 _backward__contrib_count_sketch ::
                                 forall args .
                                   Fullfilled "_backward__contrib_count_sketch(symbol)" args =>
-                                  String ->
+                                  Text ->
                                     ArgsHMap "_backward__contrib_count_sketch(symbol)" args ->
                                       IO SymbolHandle
 _backward__contrib_count_sketch name args
@@ -2840,7 +2832,7 @@ type instance ParameterList "_backward__contrib_fft(symbol)" = '[]
 
 _backward__contrib_fft ::
                        forall args . Fullfilled "_backward__contrib_fft(symbol)" args =>
-                         String ->
+                         Text ->
                            ArgsHMap "_backward__contrib_fft(symbol)" args -> IO SymbolHandle
 _backward__contrib_fft name args
   = let scalarArgs = catMaybes []
@@ -2858,7 +2850,7 @@ type instance ParameterList "_backward__contrib_ifft(symbol)" = '[]
 
 _backward__contrib_ifft ::
                         forall args . Fullfilled "_backward__contrib_ifft(symbol)" args =>
-                          String ->
+                          Text ->
                             ArgsHMap "_backward__contrib_ifft(symbol)" args -> IO SymbolHandle
 _backward__contrib_ifft name args
   = let scalarArgs = catMaybes []
@@ -2877,7 +2869,7 @@ type instance ParameterList "_backward_abs(symbol)" =
 
 _backward_abs ::
               forall args . Fullfilled "_backward_abs(symbol)" args =>
-                String -> ArgsHMap "_backward_abs(symbol)" args -> IO SymbolHandle
+                Text -> ArgsHMap "_backward_abs(symbol)" args -> IO SymbolHandle
 _backward_abs name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -2897,7 +2889,7 @@ type instance ParameterList "_backward_add(symbol)" = '[]
 
 _backward_add ::
               forall args . Fullfilled "_backward_add(symbol)" args =>
-                String -> ArgsHMap "_backward_add(symbol)" args -> IO SymbolHandle
+                Text -> ArgsHMap "_backward_add(symbol)" args -> IO SymbolHandle
 _backward_add name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -2914,7 +2906,7 @@ type instance ParameterList "_backward_amp_cast(symbol)" = '[]
 
 _backward_amp_cast ::
                    forall args . Fullfilled "_backward_amp_cast(symbol)" args =>
-                     String ->
+                     Text ->
                        ArgsHMap "_backward_amp_cast(symbol)" args -> IO SymbolHandle
 _backward_amp_cast name args
   = let scalarArgs = catMaybes []
@@ -2934,7 +2926,7 @@ type instance ParameterList "_backward_amp_multicast(symbol)" =
 
 _backward_amp_multicast ::
                         forall args . Fullfilled "_backward_amp_multicast(symbol)" args =>
-                          String ->
+                          Text ->
                             ArgsHMap "_backward_amp_multicast(symbol)" args -> IO SymbolHandle
 _backward_amp_multicast name args
   = let scalarArgs
@@ -2959,8 +2951,7 @@ type instance ParameterList "_backward_arccos(symbol)" =
 
 _backward_arccos ::
                  forall args . Fullfilled "_backward_arccos(symbol)" args =>
-                   String ->
-                     ArgsHMap "_backward_arccos(symbol)" args -> IO SymbolHandle
+                   Text -> ArgsHMap "_backward_arccos(symbol)" args -> IO SymbolHandle
 _backward_arccos name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -2981,7 +2972,7 @@ type instance ParameterList "_backward_arccosh(symbol)" =
 
 _backward_arccosh ::
                   forall args . Fullfilled "_backward_arccosh(symbol)" args =>
-                    String ->
+                    Text ->
                       ArgsHMap "_backward_arccosh(symbol)" args -> IO SymbolHandle
 _backward_arccosh name args
   = let scalarArgs = catMaybes []
@@ -3003,8 +2994,7 @@ type instance ParameterList "_backward_arcsin(symbol)" =
 
 _backward_arcsin ::
                  forall args . Fullfilled "_backward_arcsin(symbol)" args =>
-                   String ->
-                     ArgsHMap "_backward_arcsin(symbol)" args -> IO SymbolHandle
+                   Text -> ArgsHMap "_backward_arcsin(symbol)" args -> IO SymbolHandle
 _backward_arcsin name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -3025,7 +3015,7 @@ type instance ParameterList "_backward_arcsinh(symbol)" =
 
 _backward_arcsinh ::
                   forall args . Fullfilled "_backward_arcsinh(symbol)" args =>
-                    String ->
+                    Text ->
                       ArgsHMap "_backward_arcsinh(symbol)" args -> IO SymbolHandle
 _backward_arcsinh name args
   = let scalarArgs = catMaybes []
@@ -3047,8 +3037,7 @@ type instance ParameterList "_backward_arctan(symbol)" =
 
 _backward_arctan ::
                  forall args . Fullfilled "_backward_arctan(symbol)" args =>
-                   String ->
-                     ArgsHMap "_backward_arctan(symbol)" args -> IO SymbolHandle
+                   Text -> ArgsHMap "_backward_arctan(symbol)" args -> IO SymbolHandle
 _backward_arctan name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -3069,7 +3058,7 @@ type instance ParameterList "_backward_arctanh(symbol)" =
 
 _backward_arctanh ::
                   forall args . Fullfilled "_backward_arctanh(symbol)" args =>
-                    String ->
+                    Text ->
                       ArgsHMap "_backward_arctanh(symbol)" args -> IO SymbolHandle
 _backward_arctanh name args
   = let scalarArgs = catMaybes []
@@ -3092,7 +3081,7 @@ type instance
 _backward_backward_FullyConnected ::
                                   forall args .
                                     Fullfilled "_backward_backward_FullyConnected(symbol)" args =>
-                                    String ->
+                                    Text ->
                                       ArgsHMap "_backward_backward_FullyConnected(symbol)" args ->
                                         IO SymbolHandle
 _backward_backward_FullyConnected name args
@@ -3111,7 +3100,7 @@ type instance ParameterList "_backward_broadcast_add(symbol)" = '[]
 
 _backward_broadcast_add ::
                         forall args . Fullfilled "_backward_broadcast_add(symbol)" args =>
-                          String ->
+                          Text ->
                             ArgsHMap "_backward_broadcast_add(symbol)" args -> IO SymbolHandle
 _backward_broadcast_add name args
   = let scalarArgs = catMaybes []
@@ -3129,7 +3118,7 @@ type instance ParameterList "_backward_broadcast_div(symbol)" = '[]
 
 _backward_broadcast_div ::
                         forall args . Fullfilled "_backward_broadcast_div(symbol)" args =>
-                          String ->
+                          Text ->
                             ArgsHMap "_backward_broadcast_div(symbol)" args -> IO SymbolHandle
 _backward_broadcast_div name args
   = let scalarArgs = catMaybes []
@@ -3149,7 +3138,7 @@ type instance ParameterList "_backward_broadcast_hypot(symbol)" =
 _backward_broadcast_hypot ::
                           forall args .
                             Fullfilled "_backward_broadcast_hypot(symbol)" args =>
-                            String ->
+                            Text ->
                               ArgsHMap "_backward_broadcast_hypot(symbol)" args ->
                                 IO SymbolHandle
 _backward_broadcast_hypot name args
@@ -3170,7 +3159,7 @@ type instance ParameterList "_backward_broadcast_maximum(symbol)" =
 _backward_broadcast_maximum ::
                             forall args .
                               Fullfilled "_backward_broadcast_maximum(symbol)" args =>
-                              String ->
+                              Text ->
                                 ArgsHMap "_backward_broadcast_maximum(symbol)" args ->
                                   IO SymbolHandle
 _backward_broadcast_maximum name args
@@ -3191,7 +3180,7 @@ type instance ParameterList "_backward_broadcast_minimum(symbol)" =
 _backward_broadcast_minimum ::
                             forall args .
                               Fullfilled "_backward_broadcast_minimum(symbol)" args =>
-                              String ->
+                              Text ->
                                 ArgsHMap "_backward_broadcast_minimum(symbol)" args ->
                                   IO SymbolHandle
 _backward_broadcast_minimum name args
@@ -3210,7 +3199,7 @@ type instance ParameterList "_backward_broadcast_mod(symbol)" = '[]
 
 _backward_broadcast_mod ::
                         forall args . Fullfilled "_backward_broadcast_mod(symbol)" args =>
-                          String ->
+                          Text ->
                             ArgsHMap "_backward_broadcast_mod(symbol)" args -> IO SymbolHandle
 _backward_broadcast_mod name args
   = let scalarArgs = catMaybes []
@@ -3228,7 +3217,7 @@ type instance ParameterList "_backward_broadcast_mul(symbol)" = '[]
 
 _backward_broadcast_mul ::
                         forall args . Fullfilled "_backward_broadcast_mul(symbol)" args =>
-                          String ->
+                          Text ->
                             ArgsHMap "_backward_broadcast_mul(symbol)" args -> IO SymbolHandle
 _backward_broadcast_mul name args
   = let scalarArgs = catMaybes []
@@ -3248,7 +3237,7 @@ type instance ParameterList "_backward_broadcast_power(symbol)" =
 _backward_broadcast_power ::
                           forall args .
                             Fullfilled "_backward_broadcast_power(symbol)" args =>
-                            String ->
+                            Text ->
                               ArgsHMap "_backward_broadcast_power(symbol)" args ->
                                 IO SymbolHandle
 _backward_broadcast_power name args
@@ -3267,7 +3256,7 @@ type instance ParameterList "_backward_broadcast_sub(symbol)" = '[]
 
 _backward_broadcast_sub ::
                         forall args . Fullfilled "_backward_broadcast_sub(symbol)" args =>
-                          String ->
+                          Text ->
                             ArgsHMap "_backward_broadcast_sub(symbol)" args -> IO SymbolHandle
 _backward_broadcast_sub name args
   = let scalarArgs = catMaybes []
@@ -3285,7 +3274,7 @@ type instance ParameterList "_backward_cast(symbol)" = '[]
 
 _backward_cast ::
                forall args . Fullfilled "_backward_cast(symbol)" args =>
-                 String -> ArgsHMap "_backward_cast(symbol)" args -> IO SymbolHandle
+                 Text -> ArgsHMap "_backward_cast(symbol)" args -> IO SymbolHandle
 _backward_cast name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -3303,7 +3292,7 @@ type instance ParameterList "_backward_cbrt(symbol)" =
 
 _backward_cbrt ::
                forall args . Fullfilled "_backward_cbrt(symbol)" args =>
-                 String -> ArgsHMap "_backward_cbrt(symbol)" args -> IO SymbolHandle
+                 Text -> ArgsHMap "_backward_cbrt(symbol)" args -> IO SymbolHandle
 _backward_cbrt name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -3323,7 +3312,7 @@ type instance ParameterList "_backward_clip(symbol)" = '[]
 
 _backward_clip ::
                forall args . Fullfilled "_backward_clip(symbol)" args =>
-                 String -> ArgsHMap "_backward_clip(symbol)" args -> IO SymbolHandle
+                 Text -> ArgsHMap "_backward_clip(symbol)" args -> IO SymbolHandle
 _backward_clip name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -3340,7 +3329,7 @@ type instance ParameterList "_backward_cond(symbol)" = '[]
 
 _backward_cond ::
                forall args . Fullfilled "_backward_cond(symbol)" args =>
-                 String -> ArgsHMap "_backward_cond(symbol)" args -> IO SymbolHandle
+                 Text -> ArgsHMap "_backward_cond(symbol)" args -> IO SymbolHandle
 _backward_cond name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -3361,7 +3350,7 @@ _backward_contrib_AdaptiveAvgPooling2D ::
                                        forall args .
                                          Fullfilled "_backward_contrib_AdaptiveAvgPooling2D(symbol)"
                                            args =>
-                                         String ->
+                                         Text ->
                                            ArgsHMap "_backward_contrib_AdaptiveAvgPooling2D(symbol)"
                                              args
                                              -> IO SymbolHandle
@@ -3383,7 +3372,7 @@ type instance
 _backward_contrib_BilinearResize2D ::
                                    forall args .
                                      Fullfilled "_backward_contrib_BilinearResize2D(symbol)" args =>
-                                     String ->
+                                     Text ->
                                        ArgsHMap "_backward_contrib_BilinearResize2D(symbol)" args ->
                                          IO SymbolHandle
 _backward_contrib_BilinearResize2D name args
@@ -3407,7 +3396,7 @@ _backward_contrib_bipartite_matching ::
                                      forall args .
                                        Fullfilled "_backward_contrib_bipartite_matching(symbol)"
                                          args =>
-                                       String ->
+                                       Text ->
                                          ArgsHMap "_backward_contrib_bipartite_matching(symbol)"
                                            args
                                            -> IO SymbolHandle
@@ -3434,7 +3423,7 @@ type instance
 _backward_contrib_boolean_mask ::
                                forall args .
                                  Fullfilled "_backward_contrib_boolean_mask(symbol)" args =>
-                                 String ->
+                                 Text ->
                                    ArgsHMap "_backward_contrib_boolean_mask(symbol)" args ->
                                      IO SymbolHandle
 _backward_contrib_boolean_mask name args
@@ -3457,7 +3446,7 @@ type instance ParameterList "_backward_contrib_box_iou(symbol)" =
 _backward_contrib_box_iou ::
                           forall args .
                             Fullfilled "_backward_contrib_box_iou(symbol)" args =>
-                            String ->
+                            Text ->
                               ArgsHMap "_backward_contrib_box_iou(symbol)" args ->
                                 IO SymbolHandle
 _backward_contrib_box_iou name args
@@ -3487,7 +3476,7 @@ type instance ParameterList "_backward_contrib_box_nms(symbol)" =
 _backward_contrib_box_nms ::
                           forall args .
                             Fullfilled "_backward_contrib_box_nms(symbol)" args =>
-                            String ->
+                            Text ->
                               ArgsHMap "_backward_contrib_box_nms(symbol)" args ->
                                 IO SymbolHandle
 _backward_contrib_box_nms name args
@@ -3525,7 +3514,7 @@ type instance ParameterList "_backward_copy(symbol)" = '[]
 
 _backward_copy ::
                forall args . Fullfilled "_backward_copy(symbol)" args =>
-                 String -> ArgsHMap "_backward_copy(symbol)" args -> IO SymbolHandle
+                 Text -> ArgsHMap "_backward_copy(symbol)" args -> IO SymbolHandle
 _backward_copy name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -3543,7 +3532,7 @@ type instance ParameterList "_backward_cos(symbol)" =
 
 _backward_cos ::
               forall args . Fullfilled "_backward_cos(symbol)" args =>
-                String -> ArgsHMap "_backward_cos(symbol)" args -> IO SymbolHandle
+                Text -> ArgsHMap "_backward_cos(symbol)" args -> IO SymbolHandle
 _backward_cos name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -3564,7 +3553,7 @@ type instance ParameterList "_backward_cosh(symbol)" =
 
 _backward_cosh ::
                forall args . Fullfilled "_backward_cosh(symbol)" args =>
-                 String -> ArgsHMap "_backward_cosh(symbol)" args -> IO SymbolHandle
+                 Text -> ArgsHMap "_backward_cosh(symbol)" args -> IO SymbolHandle
 _backward_cosh name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -3584,7 +3573,7 @@ type instance ParameterList "_backward_ctc_loss(symbol)" = '[]
 
 _backward_ctc_loss ::
                    forall args . Fullfilled "_backward_ctc_loss(symbol)" args =>
-                     String ->
+                     Text ->
                        ArgsHMap "_backward_ctc_loss(symbol)" args -> IO SymbolHandle
 _backward_ctc_loss name args
   = let scalarArgs = catMaybes []
@@ -3603,7 +3592,7 @@ type instance ParameterList "_backward_degrees(symbol)" =
 
 _backward_degrees ::
                   forall args . Fullfilled "_backward_degrees(symbol)" args =>
-                    String ->
+                    Text ->
                       ArgsHMap "_backward_degrees(symbol)" args -> IO SymbolHandle
 _backward_degrees name args
   = let scalarArgs = catMaybes []
@@ -3624,7 +3613,7 @@ type instance ParameterList "_backward_diag(symbol)" = '[]
 
 _backward_diag ::
                forall args . Fullfilled "_backward_diag(symbol)" args =>
-                 String -> ArgsHMap "_backward_diag(symbol)" args -> IO SymbolHandle
+                 Text -> ArgsHMap "_backward_diag(symbol)" args -> IO SymbolHandle
 _backward_diag name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -3641,7 +3630,7 @@ type instance ParameterList "_backward_div(symbol)" = '[]
 
 _backward_div ::
               forall args . Fullfilled "_backward_div(symbol)" args =>
-                String -> ArgsHMap "_backward_div(symbol)" args -> IO SymbolHandle
+                Text -> ArgsHMap "_backward_div(symbol)" args -> IO SymbolHandle
 _backward_div name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -3659,7 +3648,7 @@ type instance ParameterList "_backward_div_scalar(symbol)" =
 
 _backward_div_scalar ::
                      forall args . Fullfilled "_backward_div_scalar(symbol)" args =>
-                       String ->
+                       Text ->
                          ArgsHMap "_backward_div_scalar(symbol)" args -> IO SymbolHandle
 _backward_div_scalar name args
   = let scalarArgs
@@ -3683,7 +3672,7 @@ type instance ParameterList "_backward_dot(symbol)" =
 
 _backward_dot ::
               forall args . Fullfilled "_backward_dot(symbol)" args =>
-                String -> ArgsHMap "_backward_dot(symbol)" args -> IO SymbolHandle
+                Text -> ArgsHMap "_backward_dot(symbol)" args -> IO SymbolHandle
 _backward_dot name args
   = let scalarArgs
           = catMaybes
@@ -3709,7 +3698,7 @@ type instance ParameterList "_backward_erf(symbol)" =
 
 _backward_erf ::
               forall args . Fullfilled "_backward_erf(symbol)" args =>
-                String -> ArgsHMap "_backward_erf(symbol)" args -> IO SymbolHandle
+                Text -> ArgsHMap "_backward_erf(symbol)" args -> IO SymbolHandle
 _backward_erf name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -3730,8 +3719,7 @@ type instance ParameterList "_backward_erfinv(symbol)" =
 
 _backward_erfinv ::
                  forall args . Fullfilled "_backward_erfinv(symbol)" args =>
-                   String ->
-                     ArgsHMap "_backward_erfinv(symbol)" args -> IO SymbolHandle
+                   Text -> ArgsHMap "_backward_erfinv(symbol)" args -> IO SymbolHandle
 _backward_erfinv name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -3752,8 +3740,7 @@ type instance ParameterList "_backward_expm1(symbol)" =
 
 _backward_expm1 ::
                 forall args . Fullfilled "_backward_expm1(symbol)" args =>
-                  String ->
-                    ArgsHMap "_backward_expm1(symbol)" args -> IO SymbolHandle
+                  Text -> ArgsHMap "_backward_expm1(symbol)" args -> IO SymbolHandle
 _backward_expm1 name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -3773,7 +3760,7 @@ type instance ParameterList "_backward_foreach(symbol)" = '[]
 
 _backward_foreach ::
                   forall args . Fullfilled "_backward_foreach(symbol)" args =>
-                    String ->
+                    Text ->
                       ArgsHMap "_backward_foreach(symbol)" args -> IO SymbolHandle
 _backward_foreach name args
   = let scalarArgs = catMaybes []
@@ -3792,8 +3779,7 @@ type instance ParameterList "_backward_gamma(symbol)" =
 
 _backward_gamma ::
                 forall args . Fullfilled "_backward_gamma(symbol)" args =>
-                  String ->
-                    ArgsHMap "_backward_gamma(symbol)" args -> IO SymbolHandle
+                  Text -> ArgsHMap "_backward_gamma(symbol)" args -> IO SymbolHandle
 _backward_gamma name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -3814,7 +3800,7 @@ type instance ParameterList "_backward_gammaln(symbol)" =
 
 _backward_gammaln ::
                   forall args . Fullfilled "_backward_gammaln(symbol)" args =>
-                    String ->
+                    Text ->
                       ArgsHMap "_backward_gammaln(symbol)" args -> IO SymbolHandle
 _backward_gammaln name args
   = let scalarArgs = catMaybes []
@@ -3837,7 +3823,7 @@ type instance ParameterList "_backward_gather_nd(symbol)" =
 
 _backward_gather_nd ::
                     forall args . Fullfilled "_backward_gather_nd(symbol)" args =>
-                      String ->
+                      Text ->
                         ArgsHMap "_backward_gather_nd(symbol)" args -> IO SymbolHandle
 _backward_gather_nd name args
   = let scalarArgs
@@ -3860,7 +3846,7 @@ type instance ParameterList "_backward_hard_sigmoid(symbol)" = '[]
 
 _backward_hard_sigmoid ::
                        forall args . Fullfilled "_backward_hard_sigmoid(symbol)" args =>
-                         String ->
+                         Text ->
                            ArgsHMap "_backward_hard_sigmoid(symbol)" args -> IO SymbolHandle
 _backward_hard_sigmoid name args
   = let scalarArgs = catMaybes []
@@ -3878,8 +3864,7 @@ type instance ParameterList "_backward_hypot(symbol)" = '[]
 
 _backward_hypot ::
                 forall args . Fullfilled "_backward_hypot(symbol)" args =>
-                  String ->
-                    ArgsHMap "_backward_hypot(symbol)" args -> IO SymbolHandle
+                  Text -> ArgsHMap "_backward_hypot(symbol)" args -> IO SymbolHandle
 _backward_hypot name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -3898,7 +3883,7 @@ type instance ParameterList "_backward_hypot_scalar(symbol)" =
 
 _backward_hypot_scalar ::
                        forall args . Fullfilled "_backward_hypot_scalar(symbol)" args =>
-                         String ->
+                         Text ->
                            ArgsHMap "_backward_hypot_scalar(symbol)" args -> IO SymbolHandle
 _backward_hypot_scalar name args
   = let scalarArgs
@@ -3921,7 +3906,7 @@ type instance ParameterList "_backward_image_crop(symbol)" = '[]
 
 _backward_image_crop ::
                      forall args . Fullfilled "_backward_image_crop(symbol)" args =>
-                       String ->
+                       Text ->
                          ArgsHMap "_backward_image_crop(symbol)" args -> IO SymbolHandle
 _backward_image_crop name args
   = let scalarArgs = catMaybes []
@@ -3941,7 +3926,7 @@ type instance ParameterList "_backward_image_normalize(symbol)" =
 _backward_image_normalize ::
                           forall args .
                             Fullfilled "_backward_image_normalize(symbol)" args =>
-                            String ->
+                            Text ->
                               ArgsHMap "_backward_image_normalize(symbol)" args ->
                                 IO SymbolHandle
 _backward_image_normalize name args
@@ -3964,7 +3949,7 @@ _backward_interleaved_matmul_encdec_qk ::
                                        forall args .
                                          Fullfilled "_backward_interleaved_matmul_encdec_qk(symbol)"
                                            args =>
-                                         String ->
+                                         Text ->
                                            ArgsHMap "_backward_interleaved_matmul_encdec_qk(symbol)"
                                              args
                                              -> IO SymbolHandle
@@ -3989,7 +3974,7 @@ _backward_interleaved_matmul_encdec_valatt ::
                                              Fullfilled
                                                "_backward_interleaved_matmul_encdec_valatt(symbol)"
                                                args =>
-                                             String ->
+                                             Text ->
                                                ArgsHMap
                                                  "_backward_interleaved_matmul_encdec_valatt(symbol)"
                                                  args
@@ -4015,7 +4000,7 @@ _backward_interleaved_matmul_selfatt_qk ::
                                           Fullfilled
                                             "_backward_interleaved_matmul_selfatt_qk(symbol)"
                                             args =>
-                                          String ->
+                                          Text ->
                                             ArgsHMap
                                               "_backward_interleaved_matmul_selfatt_qk(symbol)"
                                               args
@@ -4041,7 +4026,7 @@ _backward_interleaved_matmul_selfatt_valatt ::
                                               Fullfilled
                                                 "_backward_interleaved_matmul_selfatt_valatt(symbol)"
                                                 args =>
-                                              String ->
+                                              Text ->
                                                 ArgsHMap
                                                   "_backward_interleaved_matmul_selfatt_valatt(symbol)"
                                                   args
@@ -4063,7 +4048,7 @@ type instance ParameterList "_backward_linalg_det(symbol)" = '[]
 
 _backward_linalg_det ::
                      forall args . Fullfilled "_backward_linalg_det(symbol)" args =>
-                       String ->
+                       Text ->
                          ArgsHMap "_backward_linalg_det(symbol)" args -> IO SymbolHandle
 _backward_linalg_det name args
   = let scalarArgs = catMaybes []
@@ -4083,7 +4068,7 @@ type instance ParameterList "_backward_linalg_extractdiag(symbol)"
 _backward_linalg_extractdiag ::
                              forall args .
                                Fullfilled "_backward_linalg_extractdiag(symbol)" args =>
-                               String ->
+                               Text ->
                                  ArgsHMap "_backward_linalg_extractdiag(symbol)" args ->
                                    IO SymbolHandle
 _backward_linalg_extractdiag name args
@@ -4104,7 +4089,7 @@ type instance ParameterList "_backward_linalg_extracttrian(symbol)"
 _backward_linalg_extracttrian ::
                               forall args .
                                 Fullfilled "_backward_linalg_extracttrian(symbol)" args =>
-                                String ->
+                                Text ->
                                   ArgsHMap "_backward_linalg_extracttrian(symbol)" args ->
                                     IO SymbolHandle
 _backward_linalg_extracttrian name args
@@ -4123,7 +4108,7 @@ type instance ParameterList "_backward_linalg_gelqf(symbol)" = '[]
 
 _backward_linalg_gelqf ::
                        forall args . Fullfilled "_backward_linalg_gelqf(symbol)" args =>
-                         String ->
+                         Text ->
                            ArgsHMap "_backward_linalg_gelqf(symbol)" args -> IO SymbolHandle
 _backward_linalg_gelqf name args
   = let scalarArgs = catMaybes []
@@ -4141,7 +4126,7 @@ type instance ParameterList "_backward_linalg_gemm(symbol)" = '[]
 
 _backward_linalg_gemm ::
                       forall args . Fullfilled "_backward_linalg_gemm(symbol)" args =>
-                        String ->
+                        Text ->
                           ArgsHMap "_backward_linalg_gemm(symbol)" args -> IO SymbolHandle
 _backward_linalg_gemm name args
   = let scalarArgs = catMaybes []
@@ -4159,7 +4144,7 @@ type instance ParameterList "_backward_linalg_gemm2(symbol)" = '[]
 
 _backward_linalg_gemm2 ::
                        forall args . Fullfilled "_backward_linalg_gemm2(symbol)" args =>
-                         String ->
+                         Text ->
                            ArgsHMap "_backward_linalg_gemm2(symbol)" args -> IO SymbolHandle
 _backward_linalg_gemm2 name args
   = let scalarArgs = catMaybes []
@@ -4178,7 +4163,7 @@ type instance ParameterList "_backward_linalg_inverse(symbol)" =
 
 _backward_linalg_inverse ::
                          forall args . Fullfilled "_backward_linalg_inverse(symbol)" args =>
-                           String ->
+                           Text ->
                              ArgsHMap "_backward_linalg_inverse(symbol)" args -> IO SymbolHandle
 _backward_linalg_inverse name args
   = let scalarArgs = catMaybes []
@@ -4198,7 +4183,7 @@ type instance ParameterList "_backward_linalg_makediag(symbol)" =
 _backward_linalg_makediag ::
                           forall args .
                             Fullfilled "_backward_linalg_makediag(symbol)" args =>
-                            String ->
+                            Text ->
                               ArgsHMap "_backward_linalg_makediag(symbol)" args ->
                                 IO SymbolHandle
 _backward_linalg_makediag name args
@@ -4219,7 +4204,7 @@ type instance ParameterList "_backward_linalg_maketrian(symbol)" =
 _backward_linalg_maketrian ::
                            forall args .
                              Fullfilled "_backward_linalg_maketrian(symbol)" args =>
-                             String ->
+                             Text ->
                                ArgsHMap "_backward_linalg_maketrian(symbol)" args ->
                                  IO SymbolHandle
 _backward_linalg_maketrian name args
@@ -4238,7 +4223,7 @@ type instance ParameterList "_backward_linalg_potrf(symbol)" = '[]
 
 _backward_linalg_potrf ::
                        forall args . Fullfilled "_backward_linalg_potrf(symbol)" args =>
-                         String ->
+                         Text ->
                            ArgsHMap "_backward_linalg_potrf(symbol)" args -> IO SymbolHandle
 _backward_linalg_potrf name args
   = let scalarArgs = catMaybes []
@@ -4256,7 +4241,7 @@ type instance ParameterList "_backward_linalg_potri(symbol)" = '[]
 
 _backward_linalg_potri ::
                        forall args . Fullfilled "_backward_linalg_potri(symbol)" args =>
-                         String ->
+                         Text ->
                            ArgsHMap "_backward_linalg_potri(symbol)" args -> IO SymbolHandle
 _backward_linalg_potri name args
   = let scalarArgs = catMaybes []
@@ -4275,7 +4260,7 @@ type instance ParameterList "_backward_linalg_slogdet(symbol)" =
 
 _backward_linalg_slogdet ::
                          forall args . Fullfilled "_backward_linalg_slogdet(symbol)" args =>
-                           String ->
+                           Text ->
                              ArgsHMap "_backward_linalg_slogdet(symbol)" args -> IO SymbolHandle
 _backward_linalg_slogdet name args
   = let scalarArgs = catMaybes []
@@ -4295,7 +4280,7 @@ type instance ParameterList "_backward_linalg_sumlogdiag(symbol)" =
 _backward_linalg_sumlogdiag ::
                             forall args .
                               Fullfilled "_backward_linalg_sumlogdiag(symbol)" args =>
-                              String ->
+                              Text ->
                                 ArgsHMap "_backward_linalg_sumlogdiag(symbol)" args ->
                                   IO SymbolHandle
 _backward_linalg_sumlogdiag name args
@@ -4314,7 +4299,7 @@ type instance ParameterList "_backward_linalg_syevd(symbol)" = '[]
 
 _backward_linalg_syevd ::
                        forall args . Fullfilled "_backward_linalg_syevd(symbol)" args =>
-                         String ->
+                         Text ->
                            ArgsHMap "_backward_linalg_syevd(symbol)" args -> IO SymbolHandle
 _backward_linalg_syevd name args
   = let scalarArgs = catMaybes []
@@ -4332,7 +4317,7 @@ type instance ParameterList "_backward_linalg_syrk(symbol)" = '[]
 
 _backward_linalg_syrk ::
                       forall args . Fullfilled "_backward_linalg_syrk(symbol)" args =>
-                        String ->
+                        Text ->
                           ArgsHMap "_backward_linalg_syrk(symbol)" args -> IO SymbolHandle
 _backward_linalg_syrk name args
   = let scalarArgs = catMaybes []
@@ -4350,7 +4335,7 @@ type instance ParameterList "_backward_linalg_trmm(symbol)" = '[]
 
 _backward_linalg_trmm ::
                       forall args . Fullfilled "_backward_linalg_trmm(symbol)" args =>
-                        String ->
+                        Text ->
                           ArgsHMap "_backward_linalg_trmm(symbol)" args -> IO SymbolHandle
 _backward_linalg_trmm name args
   = let scalarArgs = catMaybes []
@@ -4368,7 +4353,7 @@ type instance ParameterList "_backward_linalg_trsm(symbol)" = '[]
 
 _backward_linalg_trsm ::
                       forall args . Fullfilled "_backward_linalg_trsm(symbol)" args =>
-                        String ->
+                        Text ->
                           ArgsHMap "_backward_linalg_trsm(symbol)" args -> IO SymbolHandle
 _backward_linalg_trsm name args
   = let scalarArgs = catMaybes []
@@ -4387,7 +4372,7 @@ type instance ParameterList "_backward_linear_reg_out(symbol)" =
 
 _backward_linear_reg_out ::
                          forall args . Fullfilled "_backward_linear_reg_out(symbol)" args =>
-                           String ->
+                           Text ->
                              ArgsHMap "_backward_linear_reg_out(symbol)" args -> IO SymbolHandle
 _backward_linear_reg_out name args
   = let scalarArgs = catMaybes []
@@ -4406,7 +4391,7 @@ type instance ParameterList "_backward_log(symbol)" =
 
 _backward_log ::
               forall args . Fullfilled "_backward_log(symbol)" args =>
-                String -> ArgsHMap "_backward_log(symbol)" args -> IO SymbolHandle
+                Text -> ArgsHMap "_backward_log(symbol)" args -> IO SymbolHandle
 _backward_log name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -4427,8 +4412,7 @@ type instance ParameterList "_backward_log10(symbol)" =
 
 _backward_log10 ::
                 forall args . Fullfilled "_backward_log10(symbol)" args =>
-                  String ->
-                    ArgsHMap "_backward_log10(symbol)" args -> IO SymbolHandle
+                  Text -> ArgsHMap "_backward_log10(symbol)" args -> IO SymbolHandle
 _backward_log10 name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -4449,8 +4433,7 @@ type instance ParameterList "_backward_log1p(symbol)" =
 
 _backward_log1p ::
                 forall args . Fullfilled "_backward_log1p(symbol)" args =>
-                  String ->
-                    ArgsHMap "_backward_log1p(symbol)" args -> IO SymbolHandle
+                  Text -> ArgsHMap "_backward_log1p(symbol)" args -> IO SymbolHandle
 _backward_log1p name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -4471,7 +4454,7 @@ type instance ParameterList "_backward_log2(symbol)" =
 
 _backward_log2 ::
                forall args . Fullfilled "_backward_log2(symbol)" args =>
-                 String -> ArgsHMap "_backward_log2(symbol)" args -> IO SymbolHandle
+                 Text -> ArgsHMap "_backward_log2(symbol)" args -> IO SymbolHandle
 _backward_log2 name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -4492,7 +4475,7 @@ type instance ParameterList "_backward_log_softmax(symbol)" =
 
 _backward_log_softmax ::
                       forall args . Fullfilled "_backward_log_softmax(symbol)" args =>
-                        String ->
+                        Text ->
                           ArgsHMap "_backward_log_softmax(symbol)" args -> IO SymbolHandle
 _backward_log_softmax name args
   = let scalarArgs = catMaybes []
@@ -4513,7 +4496,7 @@ type instance ParameterList "_backward_logistic_reg_out(symbol)" =
 _backward_logistic_reg_out ::
                            forall args .
                              Fullfilled "_backward_logistic_reg_out(symbol)" args =>
-                             String ->
+                             Text ->
                                ArgsHMap "_backward_logistic_reg_out(symbol)" args ->
                                  IO SymbolHandle
 _backward_logistic_reg_out name args
@@ -4532,7 +4515,7 @@ type instance ParameterList "_backward_mae_reg_out(symbol)" = '[]
 
 _backward_mae_reg_out ::
                       forall args . Fullfilled "_backward_mae_reg_out(symbol)" args =>
-                        String ->
+                        Text ->
                           ArgsHMap "_backward_mae_reg_out(symbol)" args -> IO SymbolHandle
 _backward_mae_reg_out name args
   = let scalarArgs = catMaybes []
@@ -4550,7 +4533,7 @@ type instance ParameterList "_backward_max(symbol)" = '[]
 
 _backward_max ::
               forall args . Fullfilled "_backward_max(symbol)" args =>
-                String -> ArgsHMap "_backward_max(symbol)" args -> IO SymbolHandle
+                Text -> ArgsHMap "_backward_max(symbol)" args -> IO SymbolHandle
 _backward_max name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -4567,7 +4550,7 @@ type instance ParameterList "_backward_maximum(symbol)" = '[]
 
 _backward_maximum ::
                   forall args . Fullfilled "_backward_maximum(symbol)" args =>
-                    String ->
+                    Text ->
                       ArgsHMap "_backward_maximum(symbol)" args -> IO SymbolHandle
 _backward_maximum name args
   = let scalarArgs = catMaybes []
@@ -4587,7 +4570,7 @@ type instance ParameterList "_backward_maximum_scalar(symbol)" =
 
 _backward_maximum_scalar ::
                          forall args . Fullfilled "_backward_maximum_scalar(symbol)" args =>
-                           String ->
+                           Text ->
                              ArgsHMap "_backward_maximum_scalar(symbol)" args -> IO SymbolHandle
 _backward_maximum_scalar name args
   = let scalarArgs
@@ -4610,7 +4593,7 @@ type instance ParameterList "_backward_mean(symbol)" = '[]
 
 _backward_mean ::
                forall args . Fullfilled "_backward_mean(symbol)" args =>
-                 String -> ArgsHMap "_backward_mean(symbol)" args -> IO SymbolHandle
+                 Text -> ArgsHMap "_backward_mean(symbol)" args -> IO SymbolHandle
 _backward_mean name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -4627,7 +4610,7 @@ type instance ParameterList "_backward_min(symbol)" = '[]
 
 _backward_min ::
               forall args . Fullfilled "_backward_min(symbol)" args =>
-                String -> ArgsHMap "_backward_min(symbol)" args -> IO SymbolHandle
+                Text -> ArgsHMap "_backward_min(symbol)" args -> IO SymbolHandle
 _backward_min name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -4644,7 +4627,7 @@ type instance ParameterList "_backward_minimum(symbol)" = '[]
 
 _backward_minimum ::
                   forall args . Fullfilled "_backward_minimum(symbol)" args =>
-                    String ->
+                    Text ->
                       ArgsHMap "_backward_minimum(symbol)" args -> IO SymbolHandle
 _backward_minimum name args
   = let scalarArgs = catMaybes []
@@ -4664,7 +4647,7 @@ type instance ParameterList "_backward_minimum_scalar(symbol)" =
 
 _backward_minimum_scalar ::
                          forall args . Fullfilled "_backward_minimum_scalar(symbol)" args =>
-                           String ->
+                           Text ->
                              ArgsHMap "_backward_minimum_scalar(symbol)" args -> IO SymbolHandle
 _backward_minimum_scalar name args
   = let scalarArgs
@@ -4687,7 +4670,7 @@ type instance ParameterList "_backward_mod(symbol)" = '[]
 
 _backward_mod ::
               forall args . Fullfilled "_backward_mod(symbol)" args =>
-                String -> ArgsHMap "_backward_mod(symbol)" args -> IO SymbolHandle
+                Text -> ArgsHMap "_backward_mod(symbol)" args -> IO SymbolHandle
 _backward_mod name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -4706,7 +4689,7 @@ type instance ParameterList "_backward_mod_scalar(symbol)" =
 
 _backward_mod_scalar ::
                      forall args . Fullfilled "_backward_mod_scalar(symbol)" args =>
-                       String ->
+                       Text ->
                          ArgsHMap "_backward_mod_scalar(symbol)" args -> IO SymbolHandle
 _backward_mod_scalar name args
   = let scalarArgs
@@ -4729,7 +4712,7 @@ type instance ParameterList "_backward_moments(symbol)" = '[]
 
 _backward_moments ::
                   forall args . Fullfilled "_backward_moments(symbol)" args =>
-                    String ->
+                    Text ->
                       ArgsHMap "_backward_moments(symbol)" args -> IO SymbolHandle
 _backward_moments name args
   = let scalarArgs = catMaybes []
@@ -4747,7 +4730,7 @@ type instance ParameterList "_backward_mul(symbol)" = '[]
 
 _backward_mul ::
               forall args . Fullfilled "_backward_mul(symbol)" args =>
-                String -> ArgsHMap "_backward_mul(symbol)" args -> IO SymbolHandle
+                Text -> ArgsHMap "_backward_mul(symbol)" args -> IO SymbolHandle
 _backward_mul name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -4765,7 +4748,7 @@ type instance ParameterList "_backward_mul_scalar(symbol)" =
 
 _backward_mul_scalar ::
                      forall args . Fullfilled "_backward_mul_scalar(symbol)" args =>
-                       String ->
+                       Text ->
                          ArgsHMap "_backward_mul_scalar(symbol)" args -> IO SymbolHandle
 _backward_mul_scalar name args
   = let scalarArgs
@@ -4786,7 +4769,7 @@ type instance ParameterList "_backward_nanprod(symbol)" = '[]
 
 _backward_nanprod ::
                   forall args . Fullfilled "_backward_nanprod(symbol)" args =>
-                    String ->
+                    Text ->
                       ArgsHMap "_backward_nanprod(symbol)" args -> IO SymbolHandle
 _backward_nanprod name args
   = let scalarArgs = catMaybes []
@@ -4804,8 +4787,7 @@ type instance ParameterList "_backward_nansum(symbol)" = '[]
 
 _backward_nansum ::
                  forall args . Fullfilled "_backward_nansum(symbol)" args =>
-                   String ->
-                     ArgsHMap "_backward_nansum(symbol)" args -> IO SymbolHandle
+                   Text -> ArgsHMap "_backward_nansum(symbol)" args -> IO SymbolHandle
 _backward_nansum name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -4822,7 +4804,7 @@ type instance ParameterList "_backward_norm(symbol)" = '[]
 
 _backward_norm ::
                forall args . Fullfilled "_backward_norm(symbol)" args =>
-                 String -> ArgsHMap "_backward_norm(symbol)" args -> IO SymbolHandle
+                 Text -> ArgsHMap "_backward_norm(symbol)" args -> IO SymbolHandle
 _backward_norm name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -4841,7 +4823,7 @@ type instance ParameterList "_backward_np_broadcast_to(symbol)" =
 _backward_np_broadcast_to ::
                           forall args .
                             Fullfilled "_backward_np_broadcast_to(symbol)" args =>
-                            String ->
+                            Text ->
                               ArgsHMap "_backward_np_broadcast_to(symbol)" args ->
                                 IO SymbolHandle
 _backward_np_broadcast_to name args
@@ -4862,7 +4844,7 @@ type instance ParameterList "_backward_np_column_stack(symbol)" =
 _backward_np_column_stack ::
                           forall args .
                             Fullfilled "_backward_np_column_stack(symbol)" args =>
-                            String ->
+                            Text ->
                               ArgsHMap "_backward_np_column_stack(symbol)" args ->
                                 IO SymbolHandle
 _backward_np_column_stack name args
@@ -4881,7 +4863,7 @@ type instance ParameterList "_backward_np_concat(symbol)" = '[]
 
 _backward_np_concat ::
                     forall args . Fullfilled "_backward_np_concat(symbol)" args =>
-                      String ->
+                      Text ->
                         ArgsHMap "_backward_np_concat(symbol)" args -> IO SymbolHandle
 _backward_np_concat name args
   = let scalarArgs = catMaybes []
@@ -4899,7 +4881,7 @@ type instance ParameterList "_backward_np_cumsum(symbol)" = '[]
 
 _backward_np_cumsum ::
                     forall args . Fullfilled "_backward_np_cumsum(symbol)" args =>
-                      String ->
+                      Text ->
                         ArgsHMap "_backward_np_cumsum(symbol)" args -> IO SymbolHandle
 _backward_np_cumsum name args
   = let scalarArgs = catMaybes []
@@ -4917,8 +4899,7 @@ type instance ParameterList "_backward_np_dot(symbol)" = '[]
 
 _backward_np_dot ::
                  forall args . Fullfilled "_backward_np_dot(symbol)" args =>
-                   String ->
-                     ArgsHMap "_backward_np_dot(symbol)" args -> IO SymbolHandle
+                   Text -> ArgsHMap "_backward_np_dot(symbol)" args -> IO SymbolHandle
 _backward_np_dot name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -4935,7 +4916,7 @@ type instance ParameterList "_backward_np_dstack(symbol)" = '[]
 
 _backward_np_dstack ::
                     forall args . Fullfilled "_backward_np_dstack(symbol)" args =>
-                      String ->
+                      Text ->
                         ArgsHMap "_backward_np_dstack(symbol)" args -> IO SymbolHandle
 _backward_np_dstack name args
   = let scalarArgs = catMaybes []
@@ -4953,8 +4934,7 @@ type instance ParameterList "_backward_np_max(symbol)" = '[]
 
 _backward_np_max ::
                  forall args . Fullfilled "_backward_np_max(symbol)" args =>
-                   String ->
-                     ArgsHMap "_backward_np_max(symbol)" args -> IO SymbolHandle
+                   Text -> ArgsHMap "_backward_np_max(symbol)" args -> IO SymbolHandle
 _backward_np_max name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -4971,7 +4951,7 @@ type instance ParameterList "_backward_np_mean(symbol)" = '[]
 
 _backward_np_mean ::
                   forall args . Fullfilled "_backward_np_mean(symbol)" args =>
-                    String ->
+                    Text ->
                       ArgsHMap "_backward_np_mean(symbol)" args -> IO SymbolHandle
 _backward_np_mean name args
   = let scalarArgs = catMaybes []
@@ -4989,8 +4969,7 @@ type instance ParameterList "_backward_np_min(symbol)" = '[]
 
 _backward_np_min ::
                  forall args . Fullfilled "_backward_np_min(symbol)" args =>
-                   String ->
-                     ArgsHMap "_backward_np_min(symbol)" args -> IO SymbolHandle
+                   Text -> ArgsHMap "_backward_np_min(symbol)" args -> IO SymbolHandle
 _backward_np_min name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -5007,7 +4986,7 @@ type instance ParameterList "_backward_np_prod(symbol)" = '[]
 
 _backward_np_prod ::
                   forall args . Fullfilled "_backward_np_prod(symbol)" args =>
-                    String ->
+                    Text ->
                       ArgsHMap "_backward_np_prod(symbol)" args -> IO SymbolHandle
 _backward_np_prod name args
   = let scalarArgs = catMaybes []
@@ -5025,8 +5004,7 @@ type instance ParameterList "_backward_np_sum(symbol)" = '[]
 
 _backward_np_sum ::
                  forall args . Fullfilled "_backward_np_sum(symbol)" args =>
-                   String ->
-                     ArgsHMap "_backward_np_sum(symbol)" args -> IO SymbolHandle
+                   Text -> ArgsHMap "_backward_np_sum(symbol)" args -> IO SymbolHandle
 _backward_np_sum name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -5043,7 +5021,7 @@ type instance ParameterList "_backward_np_trace(symbol)" = '[]
 
 _backward_np_trace ::
                    forall args . Fullfilled "_backward_np_trace(symbol)" args =>
-                     String ->
+                     Text ->
                        ArgsHMap "_backward_np_trace(symbol)" args -> IO SymbolHandle
 _backward_np_trace name args
   = let scalarArgs = catMaybes []
@@ -5061,7 +5039,7 @@ type instance ParameterList "_backward_np_vstack(symbol)" = '[]
 
 _backward_np_vstack ::
                     forall args . Fullfilled "_backward_np_vstack(symbol)" args =>
-                      String ->
+                      Text ->
                         ArgsHMap "_backward_np_vstack(symbol)" args -> IO SymbolHandle
 _backward_np_vstack name args
   = let scalarArgs = catMaybes []
@@ -5079,7 +5057,7 @@ type instance ParameterList "_backward_npi_arctan2(symbol)" = '[]
 
 _backward_npi_arctan2 ::
                       forall args . Fullfilled "_backward_npi_arctan2(symbol)" args =>
-                        String ->
+                        Text ->
                           ArgsHMap "_backward_npi_arctan2(symbol)" args -> IO SymbolHandle
 _backward_npi_arctan2 name args
   = let scalarArgs = catMaybes []
@@ -5101,7 +5079,7 @@ type instance ParameterList "_backward_npi_arctan2_scalar(symbol)"
 _backward_npi_arctan2_scalar ::
                              forall args .
                                Fullfilled "_backward_npi_arctan2_scalar(symbol)" args =>
-                               String ->
+                               Text ->
                                  ArgsHMap "_backward_npi_arctan2_scalar(symbol)" args ->
                                    IO SymbolHandle
 _backward_npi_arctan2_scalar name args
@@ -5127,7 +5105,7 @@ type instance ParameterList "_backward_npi_broadcast_mul(symbol)" =
 _backward_npi_broadcast_mul ::
                             forall args .
                               Fullfilled "_backward_npi_broadcast_mul(symbol)" args =>
-                              String ->
+                              Text ->
                                 ArgsHMap "_backward_npi_broadcast_mul(symbol)" args ->
                                   IO SymbolHandle
 _backward_npi_broadcast_mul name args
@@ -5146,7 +5124,7 @@ type instance ParameterList "_backward_npi_copysign(symbol)" = '[]
 
 _backward_npi_copysign ::
                        forall args . Fullfilled "_backward_npi_copysign(symbol)" args =>
-                         String ->
+                         Text ->
                            ArgsHMap "_backward_npi_copysign(symbol)" args -> IO SymbolHandle
 _backward_npi_copysign name args
   = let scalarArgs = catMaybes []
@@ -5166,7 +5144,7 @@ type instance ParameterList "_backward_npi_copysign_scalar(symbol)"
 _backward_npi_copysign_scalar ::
                               forall args .
                                 Fullfilled "_backward_npi_copysign_scalar(symbol)" args =>
-                                String ->
+                                Text ->
                                   ArgsHMap "_backward_npi_copysign_scalar(symbol)" args ->
                                     IO SymbolHandle
 _backward_npi_copysign_scalar name args
@@ -5188,7 +5166,7 @@ type instance ParameterList "_backward_npi_diff(symbol)" = '[]
 
 _backward_npi_diff ::
                    forall args . Fullfilled "_backward_npi_diff(symbol)" args =>
-                     String ->
+                     Text ->
                        ArgsHMap "_backward_npi_diff(symbol)" args -> IO SymbolHandle
 _backward_npi_diff name args
   = let scalarArgs = catMaybes []
@@ -5206,7 +5184,7 @@ type instance ParameterList "_backward_npi_einsum(symbol)" = '[]
 
 _backward_npi_einsum ::
                      forall args . Fullfilled "_backward_npi_einsum(symbol)" args =>
-                       String ->
+                       Text ->
                          ArgsHMap "_backward_npi_einsum(symbol)" args -> IO SymbolHandle
 _backward_npi_einsum name args
   = let scalarArgs = catMaybes []
@@ -5224,7 +5202,7 @@ type instance ParameterList "_backward_npi_flip(symbol)" = '[]
 
 _backward_npi_flip ::
                    forall args . Fullfilled "_backward_npi_flip(symbol)" args =>
-                     String ->
+                     Text ->
                        ArgsHMap "_backward_npi_flip(symbol)" args -> IO SymbolHandle
 _backward_npi_flip name args
   = let scalarArgs = catMaybes []
@@ -5242,7 +5220,7 @@ type instance ParameterList "_backward_npi_hypot(symbol)" = '[]
 
 _backward_npi_hypot ::
                     forall args . Fullfilled "_backward_npi_hypot(symbol)" args =>
-                      String ->
+                      Text ->
                         ArgsHMap "_backward_npi_hypot(symbol)" args -> IO SymbolHandle
 _backward_npi_hypot name args
   = let scalarArgs = catMaybes []
@@ -5260,7 +5238,7 @@ type instance ParameterList "_backward_npi_ldexp(symbol)" = '[]
 
 _backward_npi_ldexp ::
                     forall args . Fullfilled "_backward_npi_ldexp(symbol)" args =>
-                      String ->
+                      Text ->
                         ArgsHMap "_backward_npi_ldexp(symbol)" args -> IO SymbolHandle
 _backward_npi_ldexp name args
   = let scalarArgs = catMaybes []
@@ -5281,7 +5259,7 @@ type instance ParameterList "_backward_npi_ldexp_scalar(symbol)" =
 _backward_npi_ldexp_scalar ::
                            forall args .
                              Fullfilled "_backward_npi_ldexp_scalar(symbol)" args =>
-                             String ->
+                             Text ->
                                ArgsHMap "_backward_npi_ldexp_scalar(symbol)" args ->
                                  IO SymbolHandle
 _backward_npi_ldexp_scalar name args
@@ -5309,7 +5287,7 @@ type instance ParameterList "_backward_npi_rarctan2_scalar(symbol)"
 _backward_npi_rarctan2_scalar ::
                               forall args .
                                 Fullfilled "_backward_npi_rarctan2_scalar(symbol)" args =>
-                                String ->
+                                Text ->
                                   ArgsHMap "_backward_npi_rarctan2_scalar(symbol)" args ->
                                     IO SymbolHandle
 _backward_npi_rarctan2_scalar name args
@@ -5336,7 +5314,7 @@ type instance
 _backward_npi_rcopysign_scalar ::
                                forall args .
                                  Fullfilled "_backward_npi_rcopysign_scalar(symbol)" args =>
-                                 String ->
+                                 Text ->
                                    ArgsHMap "_backward_npi_rcopysign_scalar(symbol)" args ->
                                      IO SymbolHandle
 _backward_npi_rcopysign_scalar name args
@@ -5361,7 +5339,7 @@ type instance ParameterList "_backward_npi_rldexp_scalar(symbol)" =
 _backward_npi_rldexp_scalar ::
                             forall args .
                               Fullfilled "_backward_npi_rldexp_scalar(symbol)" args =>
-                              String ->
+                              Text ->
                                 ArgsHMap "_backward_npi_rldexp_scalar(symbol)" args ->
                                   IO SymbolHandle
 _backward_npi_rldexp_scalar name args
@@ -5385,7 +5363,7 @@ type instance ParameterList "_backward_npi_svd(symbol)" = '[]
 
 _backward_npi_svd ::
                   forall args . Fullfilled "_backward_npi_svd(symbol)" args =>
-                    String ->
+                    Text ->
                       ArgsHMap "_backward_npi_svd(symbol)" args -> IO SymbolHandle
 _backward_npi_svd name args
   = let scalarArgs = catMaybes []
@@ -5403,7 +5381,7 @@ type instance ParameterList "_backward_npi_tensordot(symbol)" = '[]
 
 _backward_npi_tensordot ::
                         forall args . Fullfilled "_backward_npi_tensordot(symbol)" args =>
-                          String ->
+                          Text ->
                             ArgsHMap "_backward_npi_tensordot(symbol)" args -> IO SymbolHandle
 _backward_npi_tensordot name args
   = let scalarArgs = catMaybes []
@@ -5423,7 +5401,7 @@ type instance
 _backward_npi_tensordot_int_axes ::
                                  forall args .
                                    Fullfilled "_backward_npi_tensordot_int_axes(symbol)" args =>
-                                   String ->
+                                   Text ->
                                      ArgsHMap "_backward_npi_tensordot_int_axes(symbol)" args ->
                                        IO SymbolHandle
 _backward_npi_tensordot_int_axes name args
@@ -5442,7 +5420,7 @@ type instance ParameterList "_backward_pdf_dirichlet(symbol)" = '[]
 
 _backward_pdf_dirichlet ::
                         forall args . Fullfilled "_backward_pdf_dirichlet(symbol)" args =>
-                          String ->
+                          Text ->
                             ArgsHMap "_backward_pdf_dirichlet(symbol)" args -> IO SymbolHandle
 _backward_pdf_dirichlet name args
   = let scalarArgs = catMaybes []
@@ -5462,7 +5440,7 @@ type instance ParameterList "_backward_pdf_exponential(symbol)" =
 _backward_pdf_exponential ::
                           forall args .
                             Fullfilled "_backward_pdf_exponential(symbol)" args =>
-                            String ->
+                            Text ->
                               ArgsHMap "_backward_pdf_exponential(symbol)" args ->
                                 IO SymbolHandle
 _backward_pdf_exponential name args
@@ -5481,7 +5459,7 @@ type instance ParameterList "_backward_pdf_gamma(symbol)" = '[]
 
 _backward_pdf_gamma ::
                     forall args . Fullfilled "_backward_pdf_gamma(symbol)" args =>
-                      String ->
+                      Text ->
                         ArgsHMap "_backward_pdf_gamma(symbol)" args -> IO SymbolHandle
 _backward_pdf_gamma name args
   = let scalarArgs = catMaybes []
@@ -5504,7 +5482,7 @@ _backward_pdf_generalized_negative_binomial ::
                                               Fullfilled
                                                 "_backward_pdf_generalized_negative_binomial(symbol)"
                                                 args =>
-                                              String ->
+                                              Text ->
                                                 ArgsHMap
                                                   "_backward_pdf_generalized_negative_binomial(symbol)"
                                                   args
@@ -5528,7 +5506,7 @@ type instance
 _backward_pdf_negative_binomial ::
                                 forall args .
                                   Fullfilled "_backward_pdf_negative_binomial(symbol)" args =>
-                                  String ->
+                                  Text ->
                                     ArgsHMap "_backward_pdf_negative_binomial(symbol)" args ->
                                       IO SymbolHandle
 _backward_pdf_negative_binomial name args
@@ -5547,7 +5525,7 @@ type instance ParameterList "_backward_pdf_normal(symbol)" = '[]
 
 _backward_pdf_normal ::
                      forall args . Fullfilled "_backward_pdf_normal(symbol)" args =>
-                       String ->
+                       Text ->
                          ArgsHMap "_backward_pdf_normal(symbol)" args -> IO SymbolHandle
 _backward_pdf_normal name args
   = let scalarArgs = catMaybes []
@@ -5565,7 +5543,7 @@ type instance ParameterList "_backward_pdf_poisson(symbol)" = '[]
 
 _backward_pdf_poisson ::
                       forall args . Fullfilled "_backward_pdf_poisson(symbol)" args =>
-                        String ->
+                        Text ->
                           ArgsHMap "_backward_pdf_poisson(symbol)" args -> IO SymbolHandle
 _backward_pdf_poisson name args
   = let scalarArgs = catMaybes []
@@ -5583,7 +5561,7 @@ type instance ParameterList "_backward_pdf_uniform(symbol)" = '[]
 
 _backward_pdf_uniform ::
                       forall args . Fullfilled "_backward_pdf_uniform(symbol)" args =>
-                        String ->
+                        Text ->
                           ArgsHMap "_backward_pdf_uniform(symbol)" args -> IO SymbolHandle
 _backward_pdf_uniform name args
   = let scalarArgs = catMaybes []
@@ -5601,7 +5579,7 @@ type instance ParameterList "_backward_pick(symbol)" = '[]
 
 _backward_pick ::
                forall args . Fullfilled "_backward_pick(symbol)" args =>
-                 String -> ArgsHMap "_backward_pick(symbol)" args -> IO SymbolHandle
+                 Text -> ArgsHMap "_backward_pick(symbol)" args -> IO SymbolHandle
 _backward_pick name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -5618,8 +5596,7 @@ type instance ParameterList "_backward_power(symbol)" = '[]
 
 _backward_power ::
                 forall args . Fullfilled "_backward_power(symbol)" args =>
-                  String ->
-                    ArgsHMap "_backward_power(symbol)" args -> IO SymbolHandle
+                  Text -> ArgsHMap "_backward_power(symbol)" args -> IO SymbolHandle
 _backward_power name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -5638,7 +5615,7 @@ type instance ParameterList "_backward_power_scalar(symbol)" =
 
 _backward_power_scalar ::
                        forall args . Fullfilled "_backward_power_scalar(symbol)" args =>
-                         String ->
+                         Text ->
                            ArgsHMap "_backward_power_scalar(symbol)" args -> IO SymbolHandle
 _backward_power_scalar name args
   = let scalarArgs
@@ -5661,7 +5638,7 @@ type instance ParameterList "_backward_prod(symbol)" = '[]
 
 _backward_prod ::
                forall args . Fullfilled "_backward_prod(symbol)" args =>
-                 String -> ArgsHMap "_backward_prod(symbol)" args -> IO SymbolHandle
+                 Text -> ArgsHMap "_backward_prod(symbol)" args -> IO SymbolHandle
 _backward_prod name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -5679,7 +5656,7 @@ type instance ParameterList "_backward_radians(symbol)" =
 
 _backward_radians ::
                   forall args . Fullfilled "_backward_radians(symbol)" args =>
-                    String ->
+                    Text ->
                       ArgsHMap "_backward_radians(symbol)" args -> IO SymbolHandle
 _backward_radians name args
   = let scalarArgs = catMaybes []
@@ -5701,8 +5678,7 @@ type instance ParameterList "_backward_rcbrt(symbol)" =
 
 _backward_rcbrt ::
                 forall args . Fullfilled "_backward_rcbrt(symbol)" args =>
-                  String ->
-                    ArgsHMap "_backward_rcbrt(symbol)" args -> IO SymbolHandle
+                  Text -> ArgsHMap "_backward_rcbrt(symbol)" args -> IO SymbolHandle
 _backward_rcbrt name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -5724,7 +5700,7 @@ type instance ParameterList "_backward_rdiv_scalar(symbol)" =
 
 _backward_rdiv_scalar ::
                       forall args . Fullfilled "_backward_rdiv_scalar(symbol)" args =>
-                        String ->
+                        Text ->
                           ArgsHMap "_backward_rdiv_scalar(symbol)" args -> IO SymbolHandle
 _backward_rdiv_scalar name args
   = let scalarArgs
@@ -5748,7 +5724,7 @@ type instance ParameterList "_backward_reciprocal(symbol)" =
 
 _backward_reciprocal ::
                      forall args . Fullfilled "_backward_reciprocal(symbol)" args =>
-                       String ->
+                       Text ->
                          ArgsHMap "_backward_reciprocal(symbol)" args -> IO SymbolHandle
 _backward_reciprocal name args
   = let scalarArgs = catMaybes []
@@ -5770,7 +5746,7 @@ type instance ParameterList "_backward_relu(symbol)" =
 
 _backward_relu ::
                forall args . Fullfilled "_backward_relu(symbol)" args =>
-                 String -> ArgsHMap "_backward_relu(symbol)" args -> IO SymbolHandle
+                 Text -> ArgsHMap "_backward_relu(symbol)" args -> IO SymbolHandle
 _backward_relu name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -5790,8 +5766,7 @@ type instance ParameterList "_backward_repeat(symbol)" = '[]
 
 _backward_repeat ::
                  forall args . Fullfilled "_backward_repeat(symbol)" args =>
-                   String ->
-                     ArgsHMap "_backward_repeat(symbol)" args -> IO SymbolHandle
+                   Text -> ArgsHMap "_backward_repeat(symbol)" args -> IO SymbolHandle
 _backward_repeat name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -5808,7 +5783,7 @@ type instance ParameterList "_backward_reshape(symbol)" = '[]
 
 _backward_reshape ::
                   forall args . Fullfilled "_backward_reshape(symbol)" args =>
-                    String ->
+                    Text ->
                       ArgsHMap "_backward_reshape(symbol)" args -> IO SymbolHandle
 _backward_reshape name args
   = let scalarArgs = catMaybes []
@@ -5826,7 +5801,7 @@ type instance ParameterList "_backward_reverse(symbol)" = '[]
 
 _backward_reverse ::
                   forall args . Fullfilled "_backward_reverse(symbol)" args =>
-                    String ->
+                    Text ->
                       ArgsHMap "_backward_reverse(symbol)" args -> IO SymbolHandle
 _backward_reverse name args
   = let scalarArgs = catMaybes []
@@ -5846,7 +5821,7 @@ type instance ParameterList "_backward_rmod_scalar(symbol)" =
 
 _backward_rmod_scalar ::
                       forall args . Fullfilled "_backward_rmod_scalar(symbol)" args =>
-                        String ->
+                        Text ->
                           ArgsHMap "_backward_rmod_scalar(symbol)" args -> IO SymbolHandle
 _backward_rmod_scalar name args
   = let scalarArgs
@@ -5871,7 +5846,7 @@ type instance ParameterList "_backward_rpower_scalar(symbol)" =
 
 _backward_rpower_scalar ::
                         forall args . Fullfilled "_backward_rpower_scalar(symbol)" args =>
-                          String ->
+                          Text ->
                             ArgsHMap "_backward_rpower_scalar(symbol)" args -> IO SymbolHandle
 _backward_rpower_scalar name args
   = let scalarArgs
@@ -5895,8 +5870,7 @@ type instance ParameterList "_backward_rsqrt(symbol)" =
 
 _backward_rsqrt ::
                 forall args . Fullfilled "_backward_rsqrt(symbol)" args =>
-                  String ->
-                    ArgsHMap "_backward_rsqrt(symbol)" args -> IO SymbolHandle
+                  Text -> ArgsHMap "_backward_rsqrt(symbol)" args -> IO SymbolHandle
 _backward_rsqrt name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -5918,7 +5892,7 @@ type instance ParameterList "_backward_sample_multinomial(symbol)"
 _backward_sample_multinomial ::
                              forall args .
                                Fullfilled "_backward_sample_multinomial(symbol)" args =>
-                               String ->
+                               Text ->
                                  ArgsHMap "_backward_sample_multinomial(symbol)" args ->
                                    IO SymbolHandle
 _backward_sample_multinomial name args
@@ -5938,7 +5912,7 @@ type instance ParameterList "_backward_sigmoid(symbol)" =
 
 _backward_sigmoid ::
                   forall args . Fullfilled "_backward_sigmoid(symbol)" args =>
-                    String ->
+                    Text ->
                       ArgsHMap "_backward_sigmoid(symbol)" args -> IO SymbolHandle
 _backward_sigmoid name args
   = let scalarArgs = catMaybes []
@@ -5960,7 +5934,7 @@ type instance ParameterList "_backward_sign(symbol)" =
 
 _backward_sign ::
                forall args . Fullfilled "_backward_sign(symbol)" args =>
-                 String -> ArgsHMap "_backward_sign(symbol)" args -> IO SymbolHandle
+                 Text -> ArgsHMap "_backward_sign(symbol)" args -> IO SymbolHandle
 _backward_sign name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -5981,7 +5955,7 @@ type instance ParameterList "_backward_sin(symbol)" =
 
 _backward_sin ::
               forall args . Fullfilled "_backward_sin(symbol)" args =>
-                String -> ArgsHMap "_backward_sin(symbol)" args -> IO SymbolHandle
+                Text -> ArgsHMap "_backward_sin(symbol)" args -> IO SymbolHandle
 _backward_sin name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -6002,7 +5976,7 @@ type instance ParameterList "_backward_sinh(symbol)" =
 
 _backward_sinh ::
                forall args . Fullfilled "_backward_sinh(symbol)" args =>
-                 String -> ArgsHMap "_backward_sinh(symbol)" args -> IO SymbolHandle
+                 Text -> ArgsHMap "_backward_sinh(symbol)" args -> IO SymbolHandle
 _backward_sinh name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -6022,8 +5996,7 @@ type instance ParameterList "_backward_slice(symbol)" = '[]
 
 _backward_slice ::
                 forall args . Fullfilled "_backward_slice(symbol)" args =>
-                  String ->
-                    ArgsHMap "_backward_slice(symbol)" args -> IO SymbolHandle
+                  Text -> ArgsHMap "_backward_slice(symbol)" args -> IO SymbolHandle
 _backward_slice name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -6040,7 +6013,7 @@ type instance ParameterList "_backward_slice_axis(symbol)" = '[]
 
 _backward_slice_axis ::
                      forall args . Fullfilled "_backward_slice_axis(symbol)" args =>
-                       String ->
+                       Text ->
                          ArgsHMap "_backward_slice_axis(symbol)" args -> IO SymbolHandle
 _backward_slice_axis name args
   = let scalarArgs = catMaybes []
@@ -6058,7 +6031,7 @@ type instance ParameterList "_backward_slice_like(symbol)" = '[]
 
 _backward_slice_like ::
                      forall args . Fullfilled "_backward_slice_like(symbol)" args =>
-                       String ->
+                       Text ->
                          ArgsHMap "_backward_slice_like(symbol)" args -> IO SymbolHandle
 _backward_slice_like name args
   = let scalarArgs = catMaybes []
@@ -6077,7 +6050,7 @@ type instance ParameterList "_backward_smooth_l1(symbol)" =
 
 _backward_smooth_l1 ::
                     forall args . Fullfilled "_backward_smooth_l1(symbol)" args =>
-                      String ->
+                      Text ->
                         ArgsHMap "_backward_smooth_l1(symbol)" args -> IO SymbolHandle
 _backward_smooth_l1 name args
   = let scalarArgs = catMaybes []
@@ -6099,7 +6072,7 @@ type instance ParameterList "_backward_softmax(symbol)" =
 
 _backward_softmax ::
                   forall args . Fullfilled "_backward_softmax(symbol)" args =>
-                    String ->
+                    Text ->
                       ArgsHMap "_backward_softmax(symbol)" args -> IO SymbolHandle
 _backward_softmax name args
   = let scalarArgs = catMaybes []
@@ -6120,7 +6093,7 @@ type instance
 _backward_softmax_cross_entropy ::
                                 forall args .
                                   Fullfilled "_backward_softmax_cross_entropy(symbol)" args =>
-                                  String ->
+                                  Text ->
                                     ArgsHMap "_backward_softmax_cross_entropy(symbol)" args ->
                                       IO SymbolHandle
 _backward_softmax_cross_entropy name args
@@ -6140,7 +6113,7 @@ type instance ParameterList "_backward_softmin(symbol)" =
 
 _backward_softmin ::
                   forall args . Fullfilled "_backward_softmin(symbol)" args =>
-                    String ->
+                    Text ->
                       ArgsHMap "_backward_softmin(symbol)" args -> IO SymbolHandle
 _backward_softmin name args
   = let scalarArgs = catMaybes []
@@ -6160,7 +6133,7 @@ type instance ParameterList "_backward_softsign(symbol)" =
 
 _backward_softsign ::
                    forall args . Fullfilled "_backward_softsign(symbol)" args =>
-                     String ->
+                     Text ->
                        ArgsHMap "_backward_softsign(symbol)" args -> IO SymbolHandle
 _backward_softsign name args
   = let scalarArgs = catMaybes []
@@ -6181,7 +6154,7 @@ type instance ParameterList "_backward_sparse_retain(symbol)" = '[]
 
 _backward_sparse_retain ::
                         forall args . Fullfilled "_backward_sparse_retain(symbol)" args =>
-                          String ->
+                          Text ->
                             ArgsHMap "_backward_sparse_retain(symbol)" args -> IO SymbolHandle
 _backward_sparse_retain name args
   = let scalarArgs = catMaybes []
@@ -6200,7 +6173,7 @@ type instance ParameterList "_backward_sqrt(symbol)" =
 
 _backward_sqrt ::
                forall args . Fullfilled "_backward_sqrt(symbol)" args =>
-                 String -> ArgsHMap "_backward_sqrt(symbol)" args -> IO SymbolHandle
+                 Text -> ArgsHMap "_backward_sqrt(symbol)" args -> IO SymbolHandle
 _backward_sqrt name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -6221,8 +6194,7 @@ type instance ParameterList "_backward_square(symbol)" =
 
 _backward_square ::
                  forall args . Fullfilled "_backward_square(symbol)" args =>
-                   String ->
-                     ArgsHMap "_backward_square(symbol)" args -> IO SymbolHandle
+                   Text -> ArgsHMap "_backward_square(symbol)" args -> IO SymbolHandle
 _backward_square name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -6242,7 +6214,7 @@ type instance ParameterList "_backward_square_sum(symbol)" = '[]
 
 _backward_square_sum ::
                      forall args . Fullfilled "_backward_square_sum(symbol)" args =>
-                       String ->
+                       Text ->
                          ArgsHMap "_backward_square_sum(symbol)" args -> IO SymbolHandle
 _backward_square_sum name args
   = let scalarArgs = catMaybes []
@@ -6260,7 +6232,7 @@ type instance ParameterList "_backward_squeeze(symbol)" = '[]
 
 _backward_squeeze ::
                   forall args . Fullfilled "_backward_squeeze(symbol)" args =>
-                    String ->
+                    Text ->
                       ArgsHMap "_backward_squeeze(symbol)" args -> IO SymbolHandle
 _backward_squeeze name args
   = let scalarArgs = catMaybes []
@@ -6278,8 +6250,7 @@ type instance ParameterList "_backward_stack(symbol)" = '[]
 
 _backward_stack ::
                 forall args . Fullfilled "_backward_stack(symbol)" args =>
-                  String ->
-                    ArgsHMap "_backward_stack(symbol)" args -> IO SymbolHandle
+                  Text -> ArgsHMap "_backward_stack(symbol)" args -> IO SymbolHandle
 _backward_stack name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -6296,7 +6267,7 @@ type instance ParameterList "_backward_sub(symbol)" = '[]
 
 _backward_sub ::
               forall args . Fullfilled "_backward_sub(symbol)" args =>
-                String -> ArgsHMap "_backward_sub(symbol)" args -> IO SymbolHandle
+                Text -> ArgsHMap "_backward_sub(symbol)" args -> IO SymbolHandle
 _backward_sub name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -6313,7 +6284,7 @@ type instance ParameterList "_backward_sum(symbol)" = '[]
 
 _backward_sum ::
               forall args . Fullfilled "_backward_sum(symbol)" args =>
-                String -> ArgsHMap "_backward_sum(symbol)" args -> IO SymbolHandle
+                Text -> ArgsHMap "_backward_sum(symbol)" args -> IO SymbolHandle
 _backward_sum name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -6330,7 +6301,7 @@ type instance ParameterList "_backward_take(symbol)" = '[]
 
 _backward_take ::
                forall args . Fullfilled "_backward_take(symbol)" args =>
-                 String -> ArgsHMap "_backward_take(symbol)" args -> IO SymbolHandle
+                 Text -> ArgsHMap "_backward_take(symbol)" args -> IO SymbolHandle
 _backward_take name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -6348,7 +6319,7 @@ type instance ParameterList "_backward_tan(symbol)" =
 
 _backward_tan ::
               forall args . Fullfilled "_backward_tan(symbol)" args =>
-                String -> ArgsHMap "_backward_tan(symbol)" args -> IO SymbolHandle
+                Text -> ArgsHMap "_backward_tan(symbol)" args -> IO SymbolHandle
 _backward_tan name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -6369,7 +6340,7 @@ type instance ParameterList "_backward_tanh(symbol)" =
 
 _backward_tanh ::
                forall args . Fullfilled "_backward_tanh(symbol)" args =>
-                 String -> ArgsHMap "_backward_tanh(symbol)" args -> IO SymbolHandle
+                 Text -> ArgsHMap "_backward_tanh(symbol)" args -> IO SymbolHandle
 _backward_tanh name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -6389,7 +6360,7 @@ type instance ParameterList "_backward_tile(symbol)" = '[]
 
 _backward_tile ::
                forall args . Fullfilled "_backward_tile(symbol)" args =>
-                 String -> ArgsHMap "_backward_tile(symbol)" args -> IO SymbolHandle
+                 Text -> ArgsHMap "_backward_tile(symbol)" args -> IO SymbolHandle
 _backward_tile name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -6406,7 +6377,7 @@ type instance ParameterList "_backward_topk(symbol)" = '[]
 
 _backward_topk ::
                forall args . Fullfilled "_backward_topk(symbol)" args =>
-                 String -> ArgsHMap "_backward_topk(symbol)" args -> IO SymbolHandle
+                 Text -> ArgsHMap "_backward_topk(symbol)" args -> IO SymbolHandle
 _backward_topk name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -6423,7 +6394,7 @@ type instance ParameterList "_backward_tril(symbol)" = '[]
 
 _backward_tril ::
                forall args . Fullfilled "_backward_tril(symbol)" args =>
-                 String -> ArgsHMap "_backward_tril(symbol)" args -> IO SymbolHandle
+                 Text -> ArgsHMap "_backward_tril(symbol)" args -> IO SymbolHandle
 _backward_tril name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -6440,8 +6411,7 @@ type instance ParameterList "_backward_where(symbol)" = '[]
 
 _backward_where ::
                 forall args . Fullfilled "_backward_where(symbol)" args =>
-                  String ->
-                    ArgsHMap "_backward_where(symbol)" args -> IO SymbolHandle
+                  Text -> ArgsHMap "_backward_where(symbol)" args -> IO SymbolHandle
 _backward_where name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -6458,7 +6428,7 @@ type instance ParameterList "_backward_while_loop(symbol)" = '[]
 
 _backward_while_loop ::
                      forall args . Fullfilled "_backward_while_loop(symbol)" args =>
-                       String ->
+                       Text ->
                          ArgsHMap "_backward_while_loop(symbol)" args -> IO SymbolHandle
 _backward_while_loop name args
   = let scalarArgs = catMaybes []
@@ -6476,7 +6446,7 @@ type instance ParameterList "_broadcast_backward(symbol)" = '[]
 
 _broadcast_backward ::
                     forall args . Fullfilled "_broadcast_backward(symbol)" args =>
-                      String ->
+                      Text ->
                         ArgsHMap "_broadcast_backward(symbol)" args -> IO SymbolHandle
 _broadcast_backward name args
   = let scalarArgs = catMaybes []
@@ -6498,7 +6468,7 @@ type instance ParameterList "_contrib_AdaptiveAvgPooling2D(symbol)"
 _contrib_AdaptiveAvgPooling2D ::
                               forall args .
                                 Fullfilled "_contrib_AdaptiveAvgPooling2D(symbol)" args =>
-                                String ->
+                                Text ->
                                   ArgsHMap "_contrib_AdaptiveAvgPooling2D(symbol)" args ->
                                     IO SymbolHandle
 _contrib_AdaptiveAvgPooling2D name args
@@ -6531,7 +6501,7 @@ type instance ParameterList "_contrib_BilinearResize2D(symbol)" =
 _contrib_BilinearResize2D ::
                           forall args .
                             Fullfilled "_contrib_BilinearResize2D(symbol)" args =>
-                            String ->
+                            Text ->
                               ArgsHMap "_contrib_BilinearResize2D(symbol)" args ->
                                 IO SymbolHandle
 _contrib_BilinearResize2D name args
@@ -6576,7 +6546,7 @@ type instance
 _contrib_DeformableConvolution ::
                                forall args .
                                  Fullfilled "_contrib_DeformableConvolution(symbol)" args =>
-                                 String ->
+                                 Text ->
                                    ArgsHMap "_contrib_DeformableConvolution(symbol)" args ->
                                      IO SymbolHandle
 _contrib_DeformableConvolution name args
@@ -6622,7 +6592,7 @@ type instance
 _contrib_DeformablePSROIPooling ::
                                 forall args .
                                   Fullfilled "_contrib_DeformablePSROIPooling(symbol)" args =>
-                                  String ->
+                                  Text ->
                                     ArgsHMap "_contrib_DeformablePSROIPooling(symbol)" args ->
                                       IO SymbolHandle
 _contrib_DeformablePSROIPooling name args
@@ -6664,7 +6634,7 @@ type instance ParameterList "_contrib_MultiBoxDetection(symbol)" =
 _contrib_MultiBoxDetection ::
                            forall args .
                              Fullfilled "_contrib_MultiBoxDetection(symbol)" args =>
-                             String ->
+                             Text ->
                                ArgsHMap "_contrib_MultiBoxDetection(symbol)" args ->
                                  IO SymbolHandle
 _contrib_MultiBoxDetection name args
@@ -6702,7 +6672,7 @@ type instance ParameterList "_contrib_MultiBoxPrior(symbol)" =
 
 _contrib_MultiBoxPrior ::
                        forall args . Fullfilled "_contrib_MultiBoxPrior(symbol)" args =>
-                         String ->
+                         Text ->
                            ArgsHMap "_contrib_MultiBoxPrior(symbol)" args -> IO SymbolHandle
 _contrib_MultiBoxPrior name args
   = let scalarArgs
@@ -6735,7 +6705,7 @@ type instance ParameterList "_contrib_MultiBoxTarget(symbol)" =
 
 _contrib_MultiBoxTarget ::
                         forall args . Fullfilled "_contrib_MultiBoxTarget(symbol)" args =>
-                          String ->
+                          Text ->
                             ArgsHMap "_contrib_MultiBoxTarget(symbol)" args -> IO SymbolHandle
 _contrib_MultiBoxTarget name args
   = let scalarArgs
@@ -6778,7 +6748,7 @@ type instance ParameterList "_contrib_MultiProposal(symbol)" =
 
 _contrib_MultiProposal ::
                        forall args . Fullfilled "_contrib_MultiProposal(symbol)" args =>
-                         String ->
+                         Text ->
                            ArgsHMap "_contrib_MultiProposal(symbol)" args -> IO SymbolHandle
 _contrib_MultiProposal name args
   = let scalarArgs
@@ -6818,7 +6788,7 @@ type instance ParameterList "_contrib_PSROIPooling(symbol)" =
 
 _contrib_PSROIPooling ::
                       forall args . Fullfilled "_contrib_PSROIPooling(symbol)" args =>
-                        String ->
+                        Text ->
                           ArgsHMap "_contrib_PSROIPooling(symbol)" args -> IO SymbolHandle
 _contrib_PSROIPooling name args
   = let scalarArgs
@@ -6854,7 +6824,7 @@ type instance ParameterList "_contrib_Proposal(symbol)" =
 
 _contrib_Proposal ::
                   forall args . Fullfilled "_contrib_Proposal(symbol)" args =>
-                    String ->
+                    Text ->
                       ArgsHMap "_contrib_Proposal(symbol)" args -> IO SymbolHandle
 _contrib_Proposal name args
   = let scalarArgs
@@ -6895,7 +6865,7 @@ type instance ParameterList "_contrib_ROIAlign(symbol)" =
 
 _contrib_ROIAlign ::
                   forall args . Fullfilled "_contrib_ROIAlign(symbol)" args =>
-                    String ->
+                    Text ->
                       ArgsHMap "_contrib_ROIAlign(symbol)" args -> IO SymbolHandle
 _contrib_ROIAlign name args
   = let scalarArgs
@@ -6929,7 +6899,7 @@ type instance ParameterList "_contrib_RROIAlign(symbol)" =
 
 _contrib_RROIAlign ::
                    forall args . Fullfilled "_contrib_RROIAlign(symbol)" args =>
-                     String ->
+                     Text ->
                        ArgsHMap "_contrib_RROIAlign(symbol)" args -> IO SymbolHandle
 _contrib_RROIAlign name args
   = let scalarArgs
@@ -6965,7 +6935,7 @@ type instance ParameterList "_contrib_SparseEmbedding(symbol)" =
 
 _contrib_SparseEmbedding ::
                          forall args . Fullfilled "_contrib_SparseEmbedding(symbol)" args =>
-                           String ->
+                           Text ->
                              ArgsHMap "_contrib_SparseEmbedding(symbol)" args -> IO SymbolHandle
 _contrib_SparseEmbedding name args
   = let scalarArgs
@@ -6997,14 +6967,14 @@ type instance ParameterList "_contrib_SyncBatchNorm(symbol)" =
      '[ '("eps", AttrOpt Float), '("momentum", AttrOpt Float),
         '("fix_gamma", AttrOpt Bool), '("use_global_stats", AttrOpt Bool),
         '("output_mean_var", AttrOpt Bool), '("ndev", AttrOpt Int),
-        '("key", AttrReq String), '("data", AttrOpt SymbolHandle),
+        '("key", AttrReq Text), '("data", AttrOpt SymbolHandle),
         '("gamma", AttrOpt SymbolHandle), '("beta", AttrOpt SymbolHandle),
         '("moving_mean", AttrOpt SymbolHandle),
         '("moving_var", AttrOpt SymbolHandle)]
 
 _contrib_SyncBatchNorm ::
                        forall args . Fullfilled "_contrib_SyncBatchNorm(symbol)" args =>
-                         String ->
+                         Text ->
                            ArgsHMap "_contrib_SyncBatchNorm(symbol)" args -> IO SymbolHandle
 _contrib_SyncBatchNorm name args
   = let scalarArgs
@@ -7017,7 +6987,7 @@ _contrib_SyncBatchNorm name args
                ("output_mean_var",) . showValue <$>
                  (args !? #output_mean_var :: Maybe Bool),
                ("ndev",) . showValue <$> (args !? #ndev :: Maybe Int),
-               ("key",) . showValue <$> (args !? #key :: Maybe String)]
+               ("key",) . showValue <$> (args !? #key :: Maybe Text)]
         (scalarkeys, scalarvals) = unzip scalarArgs
         tensorArgs
           = catMaybes
@@ -7041,7 +7011,7 @@ type instance ParameterList "_contrib_allclose(symbol)" =
 
 _contrib_allclose ::
                   forall args . Fullfilled "_contrib_allclose(symbol)" args =>
-                    String ->
+                    Text ->
                       ArgsHMap "_contrib_allclose(symbol)" args -> IO SymbolHandle
 _contrib_allclose name args
   = let scalarArgs
@@ -7064,12 +7034,12 @@ _contrib_allclose name args
 
 type instance ParameterList "_contrib_arange_like(symbol)" =
      '[ '("start", AttrOpt Double), '("step", AttrOpt Double),
-        '("repeat", AttrOpt Int), '("ctx", AttrOpt String),
+        '("repeat", AttrOpt Int), '("ctx", AttrOpt Text),
         '("axis", AttrOpt (Maybe Int)), '("data", AttrOpt SymbolHandle)]
 
 _contrib_arange_like ::
                      forall args . Fullfilled "_contrib_arange_like(symbol)" args =>
-                       String ->
+                       Text ->
                          ArgsHMap "_contrib_arange_like(symbol)" args -> IO SymbolHandle
 _contrib_arange_like name args
   = let scalarArgs
@@ -7077,7 +7047,7 @@ _contrib_arange_like name args
               [("start",) . showValue <$> (args !? #start :: Maybe Double),
                ("step",) . showValue <$> (args !? #step :: Maybe Double),
                ("repeat",) . showValue <$> (args !? #repeat :: Maybe Int),
-               ("ctx",) . showValue <$> (args !? #ctx :: Maybe String),
+               ("ctx",) . showValue <$> (args !? #ctx :: Maybe Text),
                ("axis",) . showValue <$> (args !? #axis :: Maybe (Maybe Int))]
         (scalarkeys, scalarvals) = unzip scalarArgs
         tensorArgs
@@ -7098,7 +7068,7 @@ _contrib_backward_gradientmultiplier ::
                                      forall args .
                                        Fullfilled "_contrib_backward_gradientmultiplier(symbol)"
                                          args =>
-                                       String ->
+                                       Text ->
                                          ArgsHMap "_contrib_backward_gradientmultiplier(symbol)"
                                            args
                                            -> IO SymbolHandle
@@ -7123,7 +7093,7 @@ type instance ParameterList "_contrib_backward_hawkesll(symbol)" =
 _contrib_backward_hawkesll ::
                            forall args .
                              Fullfilled "_contrib_backward_hawkesll(symbol)" args =>
-                             String ->
+                             Text ->
                                ArgsHMap "_contrib_backward_hawkesll(symbol)" args ->
                                  IO SymbolHandle
 _contrib_backward_hawkesll name args
@@ -7144,7 +7114,7 @@ type instance ParameterList "_contrib_backward_index_copy(symbol)"
 _contrib_backward_index_copy ::
                              forall args .
                                Fullfilled "_contrib_backward_index_copy(symbol)" args =>
-                               String ->
+                               Text ->
                                  ArgsHMap "_contrib_backward_index_copy(symbol)" args ->
                                    IO SymbolHandle
 _contrib_backward_index_copy name args
@@ -7165,7 +7135,7 @@ type instance ParameterList "_contrib_backward_quadratic(symbol)" =
 _contrib_backward_quadratic ::
                             forall args .
                               Fullfilled "_contrib_backward_quadratic(symbol)" args =>
-                              String ->
+                              Text ->
                                 ArgsHMap "_contrib_backward_quadratic(symbol)" args ->
                                   IO SymbolHandle
 _contrib_backward_quadratic name args
@@ -7187,7 +7157,7 @@ type instance ParameterList "_contrib_bipartite_matching(symbol)" =
 _contrib_bipartite_matching ::
                             forall args .
                               Fullfilled "_contrib_bipartite_matching(symbol)" args =>
-                              String ->
+                              Text ->
                                 ArgsHMap "_contrib_bipartite_matching(symbol)" args ->
                                   IO SymbolHandle
 _contrib_bipartite_matching name args
@@ -7213,7 +7183,7 @@ type instance ParameterList "_contrib_boolean_mask(symbol)" =
 
 _contrib_boolean_mask ::
                       forall args . Fullfilled "_contrib_boolean_mask(symbol)" args =>
-                        String ->
+                        Text ->
                           ArgsHMap "_contrib_boolean_mask(symbol)" args -> IO SymbolHandle
 _contrib_boolean_mask name args
   = let scalarArgs
@@ -7242,7 +7212,7 @@ type instance ParameterList "_contrib_box_decode(symbol)" =
 
 _contrib_box_decode ::
                     forall args . Fullfilled "_contrib_box_decode(symbol)" args =>
-                      String ->
+                      Text ->
                         ArgsHMap "_contrib_box_decode(symbol)" args -> IO SymbolHandle
 _contrib_box_decode name args
   = let scalarArgs
@@ -7276,7 +7246,7 @@ type instance ParameterList "_contrib_box_encode(symbol)" =
 
 _contrib_box_encode ::
                     forall args . Fullfilled "_contrib_box_encode(symbol)" args =>
-                      String ->
+                      Text ->
                         ArgsHMap "_contrib_box_encode(symbol)" args -> IO SymbolHandle
 _contrib_box_encode name args
   = let scalarArgs = catMaybes []
@@ -7303,8 +7273,7 @@ type instance ParameterList "_contrib_box_iou(symbol)" =
 
 _contrib_box_iou ::
                  forall args . Fullfilled "_contrib_box_iou(symbol)" args =>
-                   String ->
-                     ArgsHMap "_contrib_box_iou(symbol)" args -> IO SymbolHandle
+                   Text -> ArgsHMap "_contrib_box_iou(symbol)" args -> IO SymbolHandle
 _contrib_box_iou name args
   = let scalarArgs
           = catMaybes
@@ -7335,8 +7304,7 @@ type instance ParameterList "_contrib_box_nms(symbol)" =
 
 _contrib_box_nms ::
                  forall args . Fullfilled "_contrib_box_nms(symbol)" args =>
-                   String ->
-                     ArgsHMap "_contrib_box_nms(symbol)" args -> IO SymbolHandle
+                   Text -> ArgsHMap "_contrib_box_nms(symbol)" args -> IO SymbolHandle
 _contrib_box_nms name args
   = let scalarArgs
           = catMaybes
@@ -7377,7 +7345,7 @@ type instance ParameterList "_contrib_calibrate_entropy(symbol)" =
 _contrib_calibrate_entropy ::
                            forall args .
                              Fullfilled "_contrib_calibrate_entropy(symbol)" args =>
-                             String ->
+                             Text ->
                                ArgsHMap "_contrib_calibrate_entropy(symbol)" args ->
                                  IO SymbolHandle
 _contrib_calibrate_entropy name args
@@ -7406,7 +7374,7 @@ type instance ParameterList "_contrib_count_sketch(symbol)" =
 
 _contrib_count_sketch ::
                       forall args . Fullfilled "_contrib_count_sketch(symbol)" args =>
-                        String ->
+                        Text ->
                           ArgsHMap "_contrib_count_sketch(symbol)" args -> IO SymbolHandle
 _contrib_count_sketch name args
   = let scalarArgs
@@ -7436,7 +7404,7 @@ type instance ParameterList "_contrib_dequantize(symbol)" =
 
 _contrib_dequantize ::
                     forall args . Fullfilled "_contrib_dequantize(symbol)" args =>
-                      String ->
+                      Text ->
                         ArgsHMap "_contrib_dequantize(symbol)" args -> IO SymbolHandle
 _contrib_dequantize name args
   = let scalarArgs
@@ -7462,7 +7430,7 @@ type instance ParameterList "_contrib_dgl_adjacency(symbol)" =
 
 _contrib_dgl_adjacency ::
                        forall args . Fullfilled "_contrib_dgl_adjacency(symbol)" args =>
-                         String ->
+                         Text ->
                            ArgsHMap "_contrib_dgl_adjacency(symbol)" args -> IO SymbolHandle
 _contrib_dgl_adjacency name args
   = let scalarArgs = catMaybes []
@@ -7482,7 +7450,7 @@ type instance ParameterList "_contrib_div_sqrt_dim(symbol)" =
 
 _contrib_div_sqrt_dim ::
                       forall args . Fullfilled "_contrib_div_sqrt_dim(symbol)" args =>
-                        String ->
+                        Text ->
                           ArgsHMap "_contrib_div_sqrt_dim(symbol)" args -> IO SymbolHandle
 _contrib_div_sqrt_dim name args
   = let scalarArgs = catMaybes []
@@ -7503,8 +7471,7 @@ type instance ParameterList "_contrib_edge_id(symbol)" =
 
 _contrib_edge_id ::
                  forall args . Fullfilled "_contrib_edge_id(symbol)" args =>
-                   String ->
-                     ArgsHMap "_contrib_edge_id(symbol)" args -> IO SymbolHandle
+                   Text -> ArgsHMap "_contrib_edge_id(symbol)" args -> IO SymbolHandle
 _contrib_edge_id name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -7526,7 +7493,7 @@ type instance ParameterList "_contrib_fft(symbol)" =
 
 _contrib_fft ::
              forall args . Fullfilled "_contrib_fft(symbol)" args =>
-               String -> ArgsHMap "_contrib_fft(symbol)" args -> IO SymbolHandle
+               Text -> ArgsHMap "_contrib_fft(symbol)" args -> IO SymbolHandle
 _contrib_fft name args
   = let scalarArgs
           = catMaybes
@@ -7548,8 +7515,7 @@ type instance ParameterList "_contrib_getnnz(symbol)" =
 
 _contrib_getnnz ::
                 forall args . Fullfilled "_contrib_getnnz(symbol)" args =>
-                  String ->
-                    ArgsHMap "_contrib_getnnz(symbol)" args -> IO SymbolHandle
+                  Text -> ArgsHMap "_contrib_getnnz(symbol)" args -> IO SymbolHandle
 _contrib_getnnz name args
   = let scalarArgs
           = catMaybes
@@ -7571,7 +7537,7 @@ type instance ParameterList "_contrib_gradientmultiplier(symbol)" =
 _contrib_gradientmultiplier ::
                             forall args .
                               Fullfilled "_contrib_gradientmultiplier(symbol)" args =>
-                              String ->
+                              Text ->
                                 ArgsHMap "_contrib_gradientmultiplier(symbol)" args ->
                                   IO SymbolHandle
 _contrib_gradientmultiplier name args
@@ -7599,7 +7565,7 @@ type instance ParameterList "_contrib_group_adagrad_update(symbol)"
 _contrib_group_adagrad_update ::
                               forall args .
                                 Fullfilled "_contrib_group_adagrad_update(symbol)" args =>
-                                String ->
+                                Text ->
                                   ArgsHMap "_contrib_group_adagrad_update(symbol)" args ->
                                     IO SymbolHandle
 _contrib_group_adagrad_update name args
@@ -7635,7 +7601,7 @@ type instance ParameterList "_contrib_hawkesll(symbol)" =
 
 _contrib_hawkesll ::
                   forall args . Fullfilled "_contrib_hawkesll(symbol)" args =>
-                    String ->
+                    Text ->
                       ArgsHMap "_contrib_hawkesll(symbol)" args -> IO SymbolHandle
 _contrib_hawkesll name args
   = let scalarArgs = catMaybes []
@@ -7664,7 +7630,7 @@ type instance ParameterList "_contrib_ifft(symbol)" =
 
 _contrib_ifft ::
               forall args . Fullfilled "_contrib_ifft(symbol)" args =>
-                String -> ArgsHMap "_contrib_ifft(symbol)" args -> IO SymbolHandle
+                Text -> ArgsHMap "_contrib_ifft(symbol)" args -> IO SymbolHandle
 _contrib_ifft name args
   = let scalarArgs
           = catMaybes
@@ -7687,7 +7653,7 @@ type instance ParameterList "_contrib_index_array(symbol)" =
 
 _contrib_index_array ::
                      forall args . Fullfilled "_contrib_index_array(symbol)" args =>
-                       String ->
+                       Text ->
                          ArgsHMap "_contrib_index_array(symbol)" args -> IO SymbolHandle
 _contrib_index_array name args
   = let scalarArgs
@@ -7711,7 +7677,7 @@ type instance ParameterList "_contrib_index_copy(symbol)" =
 
 _contrib_index_copy ::
                     forall args . Fullfilled "_contrib_index_copy(symbol)" args =>
-                      String ->
+                      Text ->
                         ArgsHMap "_contrib_index_copy(symbol)" args -> IO SymbolHandle
 _contrib_index_copy name args
   = let scalarArgs = catMaybes []
@@ -7739,7 +7705,7 @@ _contrib_interleaved_matmul_encdec_qk ::
                                       forall args .
                                         Fullfilled "_contrib_interleaved_matmul_encdec_qk(symbol)"
                                           args =>
-                                        String ->
+                                        Text ->
                                           ArgsHMap "_contrib_interleaved_matmul_encdec_qk(symbol)"
                                             args
                                             -> IO SymbolHandle
@@ -7770,7 +7736,7 @@ _contrib_interleaved_matmul_encdec_valatt ::
                                             Fullfilled
                                               "_contrib_interleaved_matmul_encdec_valatt(symbol)"
                                               args =>
-                                            String ->
+                                            Text ->
                                               ArgsHMap
                                                 "_contrib_interleaved_matmul_encdec_valatt(symbol)"
                                                 args
@@ -7801,7 +7767,7 @@ _contrib_interleaved_matmul_selfatt_qk ::
                                        forall args .
                                          Fullfilled "_contrib_interleaved_matmul_selfatt_qk(symbol)"
                                            args =>
-                                         String ->
+                                         Text ->
                                            ArgsHMap "_contrib_interleaved_matmul_selfatt_qk(symbol)"
                                              args
                                              -> IO SymbolHandle
@@ -7834,7 +7800,7 @@ _contrib_interleaved_matmul_selfatt_valatt ::
                                              Fullfilled
                                                "_contrib_interleaved_matmul_selfatt_valatt(symbol)"
                                                args =>
-                                             String ->
+                                             Text ->
                                                ArgsHMap
                                                  "_contrib_interleaved_matmul_selfatt_valatt(symbol)"
                                                  args
@@ -7868,7 +7834,7 @@ type instance ParameterList "_contrib_mrcnn_mask_target(symbol)" =
 _contrib_mrcnn_mask_target ::
                            forall args .
                              Fullfilled "_contrib_mrcnn_mask_target(symbol)" args =>
-                             String ->
+                             Text ->
                                ArgsHMap "_contrib_mrcnn_mask_target(symbol)" args ->
                                  IO SymbolHandle
 _contrib_mrcnn_mask_target name args
@@ -7901,7 +7867,7 @@ type instance ParameterList "_contrib_quadratic(symbol)" =
 
 _contrib_quadratic ::
                    forall args . Fullfilled "_contrib_quadratic(symbol)" args =>
-                     String ->
+                     Text ->
                        ArgsHMap "_contrib_quadratic(symbol)" args -> IO SymbolHandle
 _contrib_quadratic name args
   = let scalarArgs
@@ -7928,7 +7894,7 @@ type instance ParameterList "_contrib_quantize(symbol)" =
 
 _contrib_quantize ::
                   forall args . Fullfilled "_contrib_quantize(symbol)" args =>
-                    String ->
+                    Text ->
                       ArgsHMap "_contrib_quantize(symbol)" args -> IO SymbolHandle
 _contrib_quantize name args
   = let scalarArgs
@@ -7957,7 +7923,7 @@ type instance ParameterList "_contrib_quantize_v2(symbol)" =
 
 _contrib_quantize_v2 ::
                      forall args . Fullfilled "_contrib_quantize_v2(symbol)" args =>
-                       String ->
+                       Text ->
                          ArgsHMap "_contrib_quantize_v2(symbol)" args -> IO SymbolHandle
 _contrib_quantize_v2 name args
   = let scalarArgs
@@ -7989,7 +7955,7 @@ type instance ParameterList "_contrib_quantized_act(symbol)" =
 
 _contrib_quantized_act ::
                        forall args . Fullfilled "_contrib_quantized_act(symbol)" args =>
-                         String ->
+                         Text ->
                            ArgsHMap "_contrib_quantized_act(symbol)" args -> IO SymbolHandle
 _contrib_quantized_act name args
   = let scalarArgs
@@ -8030,7 +7996,7 @@ type instance ParameterList "_contrib_quantized_batch_norm(symbol)"
 _contrib_quantized_batch_norm ::
                               forall args .
                                 Fullfilled "_contrib_quantized_batch_norm(symbol)" args =>
-                                String ->
+                                Text ->
                                   ArgsHMap "_contrib_quantized_batch_norm(symbol)" args ->
                                     IO SymbolHandle
 _contrib_quantized_batch_norm name args
@@ -8074,7 +8040,7 @@ type instance ParameterList "_contrib_quantized_concat(symbol)" =
 _contrib_quantized_concat ::
                           forall args .
                             Fullfilled "_contrib_quantized_concat(symbol)" args =>
-                            String ->
+                            Text ->
                               ArgsHMap "_contrib_quantized_concat(symbol)" args ->
                                 IO SymbolHandle
 _contrib_quantized_concat name args
@@ -8120,7 +8086,7 @@ type instance ParameterList "_contrib_quantized_conv(symbol)" =
 
 _contrib_quantized_conv ::
                         forall args . Fullfilled "_contrib_quantized_conv(symbol)" args =>
-                          String ->
+                          Text ->
                             ArgsHMap "_contrib_quantized_conv(symbol)" args -> IO SymbolHandle
 _contrib_quantized_conv name args
   = let scalarArgs
@@ -8174,7 +8140,7 @@ type instance
 _contrib_quantized_elemwise_add ::
                                 forall args .
                                   Fullfilled "_contrib_quantized_elemwise_add(symbol)" args =>
-                                  String ->
+                                  Text ->
                                     ArgsHMap "_contrib_quantized_elemwise_add(symbol)" args ->
                                       IO SymbolHandle
 _contrib_quantized_elemwise_add name args
@@ -8209,7 +8175,7 @@ type instance ParameterList "_contrib_quantized_flatten(symbol)" =
 _contrib_quantized_flatten ::
                            forall args .
                              Fullfilled "_contrib_quantized_flatten(symbol)" args =>
-                             String ->
+                             Text ->
                                ArgsHMap "_contrib_quantized_flatten(symbol)" args ->
                                  IO SymbolHandle
 _contrib_quantized_flatten name args
@@ -8243,7 +8209,7 @@ type instance
 _contrib_quantized_fully_connected ::
                                    forall args .
                                      Fullfilled "_contrib_quantized_fully_connected(symbol)" args =>
-                                     String ->
+                                     Text ->
                                        ArgsHMap "_contrib_quantized_fully_connected(symbol)" args ->
                                          IO SymbolHandle
 _contrib_quantized_fully_connected name args
@@ -8293,7 +8259,7 @@ type instance ParameterList "_contrib_quantized_pooling(symbol)" =
 _contrib_quantized_pooling ::
                            forall args .
                              Fullfilled "_contrib_quantized_pooling(symbol)" args =>
-                             String ->
+                             Text ->
                                ArgsHMap "_contrib_quantized_pooling(symbol)" args ->
                                  IO SymbolHandle
 _contrib_quantized_pooling name args
@@ -8344,7 +8310,7 @@ type instance ParameterList "_contrib_requantize(symbol)" =
 
 _contrib_requantize ::
                     forall args . Fullfilled "_contrib_requantize(symbol)" args =>
-                      String ->
+                      Text ->
                         ArgsHMap "_contrib_requantize(symbol)" args -> IO SymbolHandle
 _contrib_requantize name args
   = let scalarArgs
@@ -8374,7 +8340,7 @@ type instance ParameterList "_contrib_round_ste(symbol)" =
 
 _contrib_round_ste ::
                    forall args . Fullfilled "_contrib_round_ste(symbol)" args =>
-                     String ->
+                     Text ->
                        ArgsHMap "_contrib_round_ste(symbol)" args -> IO SymbolHandle
 _contrib_round_ste name args
   = let scalarArgs = catMaybes []
@@ -8394,7 +8360,7 @@ type instance ParameterList "_contrib_sign_ste(symbol)" =
 
 _contrib_sign_ste ::
                   forall args . Fullfilled "_contrib_sign_ste(symbol)" args =>
-                    String ->
+                    Text ->
                       ArgsHMap "_contrib_sign_ste(symbol)" args -> IO SymbolHandle
 _contrib_sign_ste name args
   = let scalarArgs = catMaybes []
@@ -8414,7 +8380,7 @@ type instance ParameterList "_copy(symbol)" =
 
 _copy ::
       forall args . Fullfilled "_copy(symbol)" args =>
-        String -> ArgsHMap "_copy(symbol)" args -> IO SymbolHandle
+        Text -> ArgsHMap "_copy(symbol)" args -> IO SymbolHandle
 _copy name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -8429,16 +8395,16 @@ _copy name args
          return sym
 
 type instance ParameterList "_cvimread(symbol)" =
-     '[ '("filename", AttrReq String), '("flag", AttrOpt Int),
+     '[ '("filename", AttrReq Text), '("flag", AttrOpt Int),
         '("to_rgb", AttrOpt Bool)]
 
 _cvimread ::
           forall args . Fullfilled "_cvimread(symbol)" args =>
-            String -> ArgsHMap "_cvimread(symbol)" args -> IO SymbolHandle
+            Text -> ArgsHMap "_cvimread(symbol)" args -> IO SymbolHandle
 _cvimread name args
   = let scalarArgs
           = catMaybes
-              [("filename",) . showValue <$> (args !? #filename :: Maybe String),
+              [("filename",) . showValue <$> (args !? #filename :: Maybe Text),
                ("flag",) . showValue <$> (args !? #flag :: Maybe Int),
                ("to_rgb",) . showValue <$> (args !? #to_rgb :: Maybe Bool)]
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -8456,7 +8422,7 @@ type instance ParameterList "_div_scalar(symbol)" =
 
 _div_scalar ::
             forall args . Fullfilled "_div_scalar(symbol)" args =>
-              String -> ArgsHMap "_div_scalar(symbol)" args -> IO SymbolHandle
+              Text -> ArgsHMap "_div_scalar(symbol)" args -> IO SymbolHandle
 _div_scalar name args
   = let scalarArgs
           = catMaybes
@@ -8477,7 +8443,7 @@ type instance ParameterList "_equal(symbol)" =
 
 _equal ::
        forall args . Fullfilled "_equal(symbol)" args =>
-         String -> ArgsHMap "_equal(symbol)" args -> IO SymbolHandle
+         Text -> ArgsHMap "_equal(symbol)" args -> IO SymbolHandle
 _equal name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -8498,7 +8464,7 @@ type instance ParameterList "_equal_scalar(symbol)" =
 
 _equal_scalar ::
               forall args . Fullfilled "_equal_scalar(symbol)" args =>
-                String -> ArgsHMap "_equal_scalar(symbol)" args -> IO SymbolHandle
+                Text -> ArgsHMap "_equal_scalar(symbol)" args -> IO SymbolHandle
 _equal_scalar name args
   = let scalarArgs
           = catMaybes
@@ -8515,7 +8481,7 @@ _equal_scalar name args
          return sym
 
 type instance ParameterList "_full(symbol)" =
-     '[ '("shape", AttrOpt [Int]), '("ctx", AttrOpt String),
+     '[ '("shape", AttrOpt [Int]), '("ctx", AttrOpt Text),
         '("dtype",
           AttrOpt
             (EnumType
@@ -8525,12 +8491,12 @@ type instance ParameterList "_full(symbol)" =
 
 _full ::
       forall args . Fullfilled "_full(symbol)" args =>
-        String -> ArgsHMap "_full(symbol)" args -> IO SymbolHandle
+        Text -> ArgsHMap "_full(symbol)" args -> IO SymbolHandle
 _full name args
   = let scalarArgs
           = catMaybes
               [("shape",) . showValue <$> (args !? #shape :: Maybe [Int]),
-               ("ctx",) . showValue <$> (args !? #ctx :: Maybe String),
+               ("ctx",) . showValue <$> (args !? #ctx :: Maybe Text),
                ("dtype",) . showValue <$>
                  (args !? #dtype ::
                     Maybe
@@ -8553,7 +8519,7 @@ type instance ParameterList "_grad_add(symbol)" =
 
 _grad_add ::
           forall args . Fullfilled "_grad_add(symbol)" args =>
-            String -> ArgsHMap "_grad_add(symbol)" args -> IO SymbolHandle
+            Text -> ArgsHMap "_grad_add(symbol)" args -> IO SymbolHandle
 _grad_add name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -8574,7 +8540,7 @@ type instance ParameterList "_greater(symbol)" =
 
 _greater ::
          forall args . Fullfilled "_greater(symbol)" args =>
-           String -> ArgsHMap "_greater(symbol)" args -> IO SymbolHandle
+           Text -> ArgsHMap "_greater(symbol)" args -> IO SymbolHandle
 _greater name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -8595,7 +8561,7 @@ type instance ParameterList "_greater_equal(symbol)" =
 
 _greater_equal ::
                forall args . Fullfilled "_greater_equal(symbol)" args =>
-                 String -> ArgsHMap "_greater_equal(symbol)" args -> IO SymbolHandle
+                 Text -> ArgsHMap "_greater_equal(symbol)" args -> IO SymbolHandle
 _greater_equal name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -8616,7 +8582,7 @@ type instance ParameterList "_greater_equal_scalar(symbol)" =
 
 _greater_equal_scalar ::
                       forall args . Fullfilled "_greater_equal_scalar(symbol)" args =>
-                        String ->
+                        Text ->
                           ArgsHMap "_greater_equal_scalar(symbol)" args -> IO SymbolHandle
 _greater_equal_scalar name args
   = let scalarArgs
@@ -8638,8 +8604,7 @@ type instance ParameterList "_greater_scalar(symbol)" =
 
 _greater_scalar ::
                 forall args . Fullfilled "_greater_scalar(symbol)" args =>
-                  String ->
-                    ArgsHMap "_greater_scalar(symbol)" args -> IO SymbolHandle
+                  Text -> ArgsHMap "_greater_scalar(symbol)" args -> IO SymbolHandle
 _greater_scalar name args
   = let scalarArgs
           = catMaybes
@@ -8661,7 +8626,7 @@ type instance ParameterList "_histogram(symbol)" =
 
 _histogram ::
            forall args . Fullfilled "_histogram(symbol)" args =>
-             String -> ArgsHMap "_histogram(symbol)" args -> IO SymbolHandle
+             Text -> ArgsHMap "_histogram(symbol)" args -> IO SymbolHandle
 _histogram name args
   = let scalarArgs
           = catMaybes
@@ -8686,7 +8651,7 @@ type instance ParameterList "_hypot(symbol)" =
 
 _hypot ::
        forall args . Fullfilled "_hypot(symbol)" args =>
-         String -> ArgsHMap "_hypot(symbol)" args -> IO SymbolHandle
+         Text -> ArgsHMap "_hypot(symbol)" args -> IO SymbolHandle
 _hypot name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -8707,7 +8672,7 @@ type instance ParameterList "_hypot_scalar(symbol)" =
 
 _hypot_scalar ::
               forall args . Fullfilled "_hypot_scalar(symbol)" args =>
-                String -> ArgsHMap "_hypot_scalar(symbol)" args -> IO SymbolHandle
+                Text -> ArgsHMap "_hypot_scalar(symbol)" args -> IO SymbolHandle
 _hypot_scalar name args
   = let scalarArgs
           = catMaybes
@@ -8730,7 +8695,7 @@ type instance ParameterList "_identity_with_attr_like_rhs(symbol)"
 _identity_with_attr_like_rhs ::
                              forall args .
                                Fullfilled "_identity_with_attr_like_rhs(symbol)" args =>
-                               String ->
+                               Text ->
                                  ArgsHMap "_identity_with_attr_like_rhs(symbol)" args ->
                                    IO SymbolHandle
 _identity_with_attr_like_rhs name args
@@ -8753,7 +8718,7 @@ type instance ParameterList "_image_adjust_lighting(symbol)" =
 
 _image_adjust_lighting ::
                        forall args . Fullfilled "_image_adjust_lighting(symbol)" args =>
-                         String ->
+                         Text ->
                            ArgsHMap "_image_adjust_lighting(symbol)" args -> IO SymbolHandle
 _image_adjust_lighting name args
   = let scalarArgs
@@ -8777,7 +8742,7 @@ type instance ParameterList "_image_crop(symbol)" =
 
 _image_crop ::
             forall args . Fullfilled "_image_crop(symbol)" args =>
-              String -> ArgsHMap "_image_crop(symbol)" args -> IO SymbolHandle
+              Text -> ArgsHMap "_image_crop(symbol)" args -> IO SymbolHandle
 _image_crop name args
   = let scalarArgs
           = catMaybes
@@ -8801,7 +8766,7 @@ type instance ParameterList "_image_flip_left_right(symbol)" =
 
 _image_flip_left_right ::
                        forall args . Fullfilled "_image_flip_left_right(symbol)" args =>
-                         String ->
+                         Text ->
                            ArgsHMap "_image_flip_left_right(symbol)" args -> IO SymbolHandle
 _image_flip_left_right name args
   = let scalarArgs = catMaybes []
@@ -8821,7 +8786,7 @@ type instance ParameterList "_image_flip_top_bottom(symbol)" =
 
 _image_flip_top_bottom ::
                        forall args . Fullfilled "_image_flip_top_bottom(symbol)" args =>
-                         String ->
+                         Text ->
                            ArgsHMap "_image_flip_top_bottom(symbol)" args -> IO SymbolHandle
 _image_flip_top_bottom name args
   = let scalarArgs = catMaybes []
@@ -8842,8 +8807,7 @@ type instance ParameterList "_image_normalize(symbol)" =
 
 _image_normalize ::
                  forall args . Fullfilled "_image_normalize(symbol)" args =>
-                   String ->
-                     ArgsHMap "_image_normalize(symbol)" args -> IO SymbolHandle
+                   Text -> ArgsHMap "_image_normalize(symbol)" args -> IO SymbolHandle
 _image_normalize name args
   = let scalarArgs
           = catMaybes
@@ -8866,7 +8830,7 @@ type instance ParameterList "_image_random_brightness(symbol)" =
 
 _image_random_brightness ::
                          forall args . Fullfilled "_image_random_brightness(symbol)" args =>
-                           String ->
+                           Text ->
                              ArgsHMap "_image_random_brightness(symbol)" args -> IO SymbolHandle
 _image_random_brightness name args
   = let scalarArgs
@@ -8894,7 +8858,7 @@ type instance ParameterList "_image_random_color_jitter(symbol)" =
 _image_random_color_jitter ::
                            forall args .
                              Fullfilled "_image_random_color_jitter(symbol)" args =>
-                             String ->
+                             Text ->
                                ArgsHMap "_image_random_color_jitter(symbol)" args ->
                                  IO SymbolHandle
 _image_random_color_jitter name args
@@ -8923,7 +8887,7 @@ type instance ParameterList "_image_random_contrast(symbol)" =
 
 _image_random_contrast ::
                        forall args . Fullfilled "_image_random_contrast(symbol)" args =>
-                         String ->
+                         Text ->
                            ArgsHMap "_image_random_contrast(symbol)" args -> IO SymbolHandle
 _image_random_contrast name args
   = let scalarArgs
@@ -8949,7 +8913,7 @@ type instance ParameterList "_image_random_flip_left_right(symbol)"
 _image_random_flip_left_right ::
                               forall args .
                                 Fullfilled "_image_random_flip_left_right(symbol)" args =>
-                                String ->
+                                Text ->
                                   ArgsHMap "_image_random_flip_left_right(symbol)" args ->
                                     IO SymbolHandle
 _image_random_flip_left_right name args
@@ -8971,7 +8935,7 @@ type instance ParameterList "_image_random_flip_top_bottom(symbol)"
 _image_random_flip_top_bottom ::
                               forall args .
                                 Fullfilled "_image_random_flip_top_bottom(symbol)" args =>
-                                String ->
+                                Text ->
                                   ArgsHMap "_image_random_flip_top_bottom(symbol)" args ->
                                     IO SymbolHandle
 _image_random_flip_top_bottom name args
@@ -8993,7 +8957,7 @@ type instance ParameterList "_image_random_hue(symbol)" =
 
 _image_random_hue ::
                   forall args . Fullfilled "_image_random_hue(symbol)" args =>
-                    String ->
+                    Text ->
                       ArgsHMap "_image_random_hue(symbol)" args -> IO SymbolHandle
 _image_random_hue name args
   = let scalarArgs
@@ -9018,7 +8982,7 @@ type instance ParameterList "_image_random_lighting(symbol)" =
 
 _image_random_lighting ::
                        forall args . Fullfilled "_image_random_lighting(symbol)" args =>
-                         String ->
+                         Text ->
                            ArgsHMap "_image_random_lighting(symbol)" args -> IO SymbolHandle
 _image_random_lighting name args
   = let scalarArgs
@@ -9042,7 +9006,7 @@ type instance ParameterList "_image_random_saturation(symbol)" =
 
 _image_random_saturation ::
                          forall args . Fullfilled "_image_random_saturation(symbol)" args =>
-                           String ->
+                           Text ->
                              ArgsHMap "_image_random_saturation(symbol)" args -> IO SymbolHandle
 _image_random_saturation name args
   = let scalarArgs
@@ -9068,7 +9032,7 @@ type instance ParameterList "_image_resize(symbol)" =
 
 _image_resize ::
               forall args . Fullfilled "_image_resize(symbol)" args =>
-                String -> ArgsHMap "_image_resize(symbol)" args -> IO SymbolHandle
+                Text -> ArgsHMap "_image_resize(symbol)" args -> IO SymbolHandle
 _image_resize name args
   = let scalarArgs
           = catMaybes
@@ -9092,8 +9056,7 @@ type instance ParameterList "_image_to_tensor(symbol)" =
 
 _image_to_tensor ::
                  forall args . Fullfilled "_image_to_tensor(symbol)" args =>
-                   String ->
-                     ArgsHMap "_image_to_tensor(symbol)" args -> IO SymbolHandle
+                   Text -> ArgsHMap "_image_to_tensor(symbol)" args -> IO SymbolHandle
 _image_to_tensor name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -9115,7 +9078,7 @@ type instance ParameterList "_imdecode(symbol)" =
 
 _imdecode ::
           forall args . Fullfilled "_imdecode(symbol)" args =>
-            String -> ArgsHMap "_imdecode(symbol)" args -> IO SymbolHandle
+            Text -> ArgsHMap "_imdecode(symbol)" args -> IO SymbolHandle
 _imdecode name args
   = let scalarArgs
           = catMaybes
@@ -9142,7 +9105,7 @@ type instance ParameterList "_lesser(symbol)" =
 
 _lesser ::
         forall args . Fullfilled "_lesser(symbol)" args =>
-          String -> ArgsHMap "_lesser(symbol)" args -> IO SymbolHandle
+          Text -> ArgsHMap "_lesser(symbol)" args -> IO SymbolHandle
 _lesser name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -9163,7 +9126,7 @@ type instance ParameterList "_lesser_equal(symbol)" =
 
 _lesser_equal ::
               forall args . Fullfilled "_lesser_equal(symbol)" args =>
-                String -> ArgsHMap "_lesser_equal(symbol)" args -> IO SymbolHandle
+                Text -> ArgsHMap "_lesser_equal(symbol)" args -> IO SymbolHandle
 _lesser_equal name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -9184,7 +9147,7 @@ type instance ParameterList "_lesser_equal_scalar(symbol)" =
 
 _lesser_equal_scalar ::
                      forall args . Fullfilled "_lesser_equal_scalar(symbol)" args =>
-                       String ->
+                       Text ->
                          ArgsHMap "_lesser_equal_scalar(symbol)" args -> IO SymbolHandle
 _lesser_equal_scalar name args
   = let scalarArgs
@@ -9206,7 +9169,7 @@ type instance ParameterList "_lesser_scalar(symbol)" =
 
 _lesser_scalar ::
                forall args . Fullfilled "_lesser_scalar(symbol)" args =>
-                 String -> ArgsHMap "_lesser_scalar(symbol)" args -> IO SymbolHandle
+                 Text -> ArgsHMap "_lesser_scalar(symbol)" args -> IO SymbolHandle
 _lesser_scalar name args
   = let scalarArgs
           = catMaybes
@@ -9227,7 +9190,7 @@ type instance ParameterList "_linalg_det(symbol)" =
 
 _linalg_det ::
             forall args . Fullfilled "_linalg_det(symbol)" args =>
-              String -> ArgsHMap "_linalg_det(symbol)" args -> IO SymbolHandle
+              Text -> ArgsHMap "_linalg_det(symbol)" args -> IO SymbolHandle
 _linalg_det name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -9246,7 +9209,7 @@ type instance ParameterList "_linalg_extractdiag(symbol)" =
 
 _linalg_extractdiag ::
                     forall args . Fullfilled "_linalg_extractdiag(symbol)" args =>
-                      String ->
+                      Text ->
                         ArgsHMap "_linalg_extractdiag(symbol)" args -> IO SymbolHandle
 _linalg_extractdiag name args
   = let scalarArgs
@@ -9269,7 +9232,7 @@ type instance ParameterList "_linalg_extracttrian(symbol)" =
 
 _linalg_extracttrian ::
                      forall args . Fullfilled "_linalg_extracttrian(symbol)" args =>
-                       String ->
+                       Text ->
                          ArgsHMap "_linalg_extracttrian(symbol)" args -> IO SymbolHandle
 _linalg_extracttrian name args
   = let scalarArgs
@@ -9292,7 +9255,7 @@ type instance ParameterList "_linalg_gelqf(symbol)" =
 
 _linalg_gelqf ::
               forall args . Fullfilled "_linalg_gelqf(symbol)" args =>
-                String -> ArgsHMap "_linalg_gelqf(symbol)" args -> IO SymbolHandle
+                Text -> ArgsHMap "_linalg_gelqf(symbol)" args -> IO SymbolHandle
 _linalg_gelqf name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -9314,7 +9277,7 @@ type instance ParameterList "_linalg_gemm(symbol)" =
 
 _linalg_gemm ::
              forall args . Fullfilled "_linalg_gemm(symbol)" args =>
-               String -> ArgsHMap "_linalg_gemm(symbol)" args -> IO SymbolHandle
+               Text -> ArgsHMap "_linalg_gemm(symbol)" args -> IO SymbolHandle
 _linalg_gemm name args
   = let scalarArgs
           = catMaybes
@@ -9346,7 +9309,7 @@ type instance ParameterList "_linalg_gemm2(symbol)" =
 
 _linalg_gemm2 ::
               forall args . Fullfilled "_linalg_gemm2(symbol)" args =>
-                String -> ArgsHMap "_linalg_gemm2(symbol)" args -> IO SymbolHandle
+                Text -> ArgsHMap "_linalg_gemm2(symbol)" args -> IO SymbolHandle
 _linalg_gemm2 name args
   = let scalarArgs
           = catMaybes
@@ -9374,8 +9337,7 @@ type instance ParameterList "_linalg_inverse(symbol)" =
 
 _linalg_inverse ::
                 forall args . Fullfilled "_linalg_inverse(symbol)" args =>
-                  String ->
-                    ArgsHMap "_linalg_inverse(symbol)" args -> IO SymbolHandle
+                  Text -> ArgsHMap "_linalg_inverse(symbol)" args -> IO SymbolHandle
 _linalg_inverse name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -9394,8 +9356,7 @@ type instance ParameterList "_linalg_makediag(symbol)" =
 
 _linalg_makediag ::
                  forall args . Fullfilled "_linalg_makediag(symbol)" args =>
-                   String ->
-                     ArgsHMap "_linalg_makediag(symbol)" args -> IO SymbolHandle
+                   Text -> ArgsHMap "_linalg_makediag(symbol)" args -> IO SymbolHandle
 _linalg_makediag name args
   = let scalarArgs
           = catMaybes
@@ -9417,7 +9378,7 @@ type instance ParameterList "_linalg_maketrian(symbol)" =
 
 _linalg_maketrian ::
                   forall args . Fullfilled "_linalg_maketrian(symbol)" args =>
-                    String ->
+                    Text ->
                       ArgsHMap "_linalg_maketrian(symbol)" args -> IO SymbolHandle
 _linalg_maketrian name args
   = let scalarArgs
@@ -9440,7 +9401,7 @@ type instance ParameterList "_linalg_potrf(symbol)" =
 
 _linalg_potrf ::
               forall args . Fullfilled "_linalg_potrf(symbol)" args =>
-                String -> ArgsHMap "_linalg_potrf(symbol)" args -> IO SymbolHandle
+                Text -> ArgsHMap "_linalg_potrf(symbol)" args -> IO SymbolHandle
 _linalg_potrf name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -9459,7 +9420,7 @@ type instance ParameterList "_linalg_potri(symbol)" =
 
 _linalg_potri ::
               forall args . Fullfilled "_linalg_potri(symbol)" args =>
-                String -> ArgsHMap "_linalg_potri(symbol)" args -> IO SymbolHandle
+                Text -> ArgsHMap "_linalg_potri(symbol)" args -> IO SymbolHandle
 _linalg_potri name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -9478,8 +9439,7 @@ type instance ParameterList "_linalg_slogdet(symbol)" =
 
 _linalg_slogdet ::
                 forall args . Fullfilled "_linalg_slogdet(symbol)" args =>
-                  String ->
-                    ArgsHMap "_linalg_slogdet(symbol)" args -> IO SymbolHandle
+                  Text -> ArgsHMap "_linalg_slogdet(symbol)" args -> IO SymbolHandle
 _linalg_slogdet name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -9498,7 +9458,7 @@ type instance ParameterList "_linalg_sumlogdiag(symbol)" =
 
 _linalg_sumlogdiag ::
                    forall args . Fullfilled "_linalg_sumlogdiag(symbol)" args =>
-                     String ->
+                     Text ->
                        ArgsHMap "_linalg_sumlogdiag(symbol)" args -> IO SymbolHandle
 _linalg_sumlogdiag name args
   = let scalarArgs = catMaybes []
@@ -9518,7 +9478,7 @@ type instance ParameterList "_linalg_syevd(symbol)" =
 
 _linalg_syevd ::
               forall args . Fullfilled "_linalg_syevd(symbol)" args =>
-                String -> ArgsHMap "_linalg_syevd(symbol)" args -> IO SymbolHandle
+                Text -> ArgsHMap "_linalg_syevd(symbol)" args -> IO SymbolHandle
 _linalg_syevd name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -9538,7 +9498,7 @@ type instance ParameterList "_linalg_syrk(symbol)" =
 
 _linalg_syrk ::
              forall args . Fullfilled "_linalg_syrk(symbol)" args =>
-               String -> ArgsHMap "_linalg_syrk(symbol)" args -> IO SymbolHandle
+               Text -> ArgsHMap "_linalg_syrk(symbol)" args -> IO SymbolHandle
 _linalg_syrk name args
   = let scalarArgs
           = catMaybes
@@ -9562,7 +9522,7 @@ type instance ParameterList "_linalg_trmm(symbol)" =
 
 _linalg_trmm ::
              forall args . Fullfilled "_linalg_trmm(symbol)" args =>
-               String -> ArgsHMap "_linalg_trmm(symbol)" args -> IO SymbolHandle
+               Text -> ArgsHMap "_linalg_trmm(symbol)" args -> IO SymbolHandle
 _linalg_trmm name args
   = let scalarArgs
           = catMaybes
@@ -9590,7 +9550,7 @@ type instance ParameterList "_linalg_trsm(symbol)" =
 
 _linalg_trsm ::
              forall args . Fullfilled "_linalg_trsm(symbol)" args =>
-               String -> ArgsHMap "_linalg_trsm(symbol)" args -> IO SymbolHandle
+               Text -> ArgsHMap "_linalg_trsm(symbol)" args -> IO SymbolHandle
 _linalg_trsm name args
   = let scalarArgs
           = catMaybes
@@ -9614,7 +9574,7 @@ _linalg_trsm name args
 type instance ParameterList "_linspace(symbol)" =
      '[ '("start", AttrReq Double), '("stop", AttrOpt (Maybe Double)),
         '("step", AttrOpt Double), '("repeat", AttrOpt Int),
-        '("infer_range", AttrOpt Bool), '("ctx", AttrOpt String),
+        '("infer_range", AttrOpt Bool), '("ctx", AttrOpt Text),
         '("dtype",
           AttrOpt
             (EnumType
@@ -9623,7 +9583,7 @@ type instance ParameterList "_linspace(symbol)" =
 
 _linspace ::
           forall args . Fullfilled "_linspace(symbol)" args =>
-            String -> ArgsHMap "_linspace(symbol)" args -> IO SymbolHandle
+            Text -> ArgsHMap "_linspace(symbol)" args -> IO SymbolHandle
 _linspace name args
   = let scalarArgs
           = catMaybes
@@ -9633,7 +9593,7 @@ _linspace name args
                ("repeat",) . showValue <$> (args !? #repeat :: Maybe Int),
                ("infer_range",) . showValue <$>
                  (args !? #infer_range :: Maybe Bool),
-               ("ctx",) . showValue <$> (args !? #ctx :: Maybe String),
+               ("ctx",) . showValue <$> (args !? #ctx :: Maybe Text),
                ("dtype",) . showValue <$>
                  (args !? #dtype ::
                     Maybe
@@ -9655,7 +9615,7 @@ type instance ParameterList "_logical_and(symbol)" =
 
 _logical_and ::
              forall args . Fullfilled "_logical_and(symbol)" args =>
-               String -> ArgsHMap "_logical_and(symbol)" args -> IO SymbolHandle
+               Text -> ArgsHMap "_logical_and(symbol)" args -> IO SymbolHandle
 _logical_and name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -9676,7 +9636,7 @@ type instance ParameterList "_logical_and_scalar(symbol)" =
 
 _logical_and_scalar ::
                     forall args . Fullfilled "_logical_and_scalar(symbol)" args =>
-                      String ->
+                      Text ->
                         ArgsHMap "_logical_and_scalar(symbol)" args -> IO SymbolHandle
 _logical_and_scalar name args
   = let scalarArgs
@@ -9698,7 +9658,7 @@ type instance ParameterList "_logical_or(symbol)" =
 
 _logical_or ::
             forall args . Fullfilled "_logical_or(symbol)" args =>
-              String -> ArgsHMap "_logical_or(symbol)" args -> IO SymbolHandle
+              Text -> ArgsHMap "_logical_or(symbol)" args -> IO SymbolHandle
 _logical_or name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -9719,7 +9679,7 @@ type instance ParameterList "_logical_or_scalar(symbol)" =
 
 _logical_or_scalar ::
                    forall args . Fullfilled "_logical_or_scalar(symbol)" args =>
-                     String ->
+                     Text ->
                        ArgsHMap "_logical_or_scalar(symbol)" args -> IO SymbolHandle
 _logical_or_scalar name args
   = let scalarArgs
@@ -9741,7 +9701,7 @@ type instance ParameterList "_logical_xor(symbol)" =
 
 _logical_xor ::
              forall args . Fullfilled "_logical_xor(symbol)" args =>
-               String -> ArgsHMap "_logical_xor(symbol)" args -> IO SymbolHandle
+               Text -> ArgsHMap "_logical_xor(symbol)" args -> IO SymbolHandle
 _logical_xor name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -9762,7 +9722,7 @@ type instance ParameterList "_logical_xor_scalar(symbol)" =
 
 _logical_xor_scalar ::
                     forall args . Fullfilled "_logical_xor_scalar(symbol)" args =>
-                      String ->
+                      Text ->
                         ArgsHMap "_logical_xor_scalar(symbol)" args -> IO SymbolHandle
 _logical_xor_scalar name args
   = let scalarArgs
@@ -9784,7 +9744,7 @@ type instance ParameterList "_maximum(symbol)" =
 
 _maximum ::
          forall args . Fullfilled "_maximum(symbol)" args =>
-           String -> ArgsHMap "_maximum(symbol)" args -> IO SymbolHandle
+           Text -> ArgsHMap "_maximum(symbol)" args -> IO SymbolHandle
 _maximum name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -9805,8 +9765,7 @@ type instance ParameterList "_maximum_scalar(symbol)" =
 
 _maximum_scalar ::
                 forall args . Fullfilled "_maximum_scalar(symbol)" args =>
-                  String ->
-                    ArgsHMap "_maximum_scalar(symbol)" args -> IO SymbolHandle
+                  Text -> ArgsHMap "_maximum_scalar(symbol)" args -> IO SymbolHandle
 _maximum_scalar name args
   = let scalarArgs
           = catMaybes
@@ -9827,7 +9786,7 @@ type instance ParameterList "_minimum(symbol)" =
 
 _minimum ::
          forall args . Fullfilled "_minimum(symbol)" args =>
-           String -> ArgsHMap "_minimum(symbol)" args -> IO SymbolHandle
+           Text -> ArgsHMap "_minimum(symbol)" args -> IO SymbolHandle
 _minimum name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -9848,8 +9807,7 @@ type instance ParameterList "_minimum_scalar(symbol)" =
 
 _minimum_scalar ::
                 forall args . Fullfilled "_minimum_scalar(symbol)" args =>
-                  String ->
-                    ArgsHMap "_minimum_scalar(symbol)" args -> IO SymbolHandle
+                  Text -> ArgsHMap "_minimum_scalar(symbol)" args -> IO SymbolHandle
 _minimum_scalar name args
   = let scalarArgs
           = catMaybes
@@ -9870,7 +9828,7 @@ type instance ParameterList "_minus_scalar(symbol)" =
 
 _minus_scalar ::
               forall args . Fullfilled "_minus_scalar(symbol)" args =>
-                String -> ArgsHMap "_minus_scalar(symbol)" args -> IO SymbolHandle
+                Text -> ArgsHMap "_minus_scalar(symbol)" args -> IO SymbolHandle
 _minus_scalar name args
   = let scalarArgs
           = catMaybes
@@ -9891,7 +9849,7 @@ type instance ParameterList "_mod(symbol)" =
 
 _mod ::
      forall args . Fullfilled "_mod(symbol)" args =>
-       String -> ArgsHMap "_mod(symbol)" args -> IO SymbolHandle
+       Text -> ArgsHMap "_mod(symbol)" args -> IO SymbolHandle
 _mod name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -9912,7 +9870,7 @@ type instance ParameterList "_mod_scalar(symbol)" =
 
 _mod_scalar ::
             forall args . Fullfilled "_mod_scalar(symbol)" args =>
-              String -> ArgsHMap "_mod_scalar(symbol)" args -> IO SymbolHandle
+              Text -> ArgsHMap "_mod_scalar(symbol)" args -> IO SymbolHandle
 _mod_scalar name args
   = let scalarArgs
           = catMaybes
@@ -9940,8 +9898,7 @@ type instance ParameterList "_mp_adamw_update(symbol)" =
 
 _mp_adamw_update ::
                  forall args . Fullfilled "_mp_adamw_update(symbol)" args =>
-                   String ->
-                     ArgsHMap "_mp_adamw_update(symbol)" args -> IO SymbolHandle
+                   Text -> ArgsHMap "_mp_adamw_update(symbol)" args -> IO SymbolHandle
 _mp_adamw_update name args
   = let scalarArgs
           = catMaybes
@@ -9976,7 +9933,7 @@ type instance ParameterList "_mul_scalar(symbol)" =
 
 _mul_scalar ::
             forall args . Fullfilled "_mul_scalar(symbol)" args =>
-              String -> ArgsHMap "_mul_scalar(symbol)" args -> IO SymbolHandle
+              Text -> ArgsHMap "_mul_scalar(symbol)" args -> IO SymbolHandle
 _mul_scalar name args
   = let scalarArgs
           = catMaybes
@@ -10001,7 +9958,7 @@ type instance ParameterList "_multi_adamw_update(symbol)" =
 
 _multi_adamw_update ::
                     forall args . Fullfilled "_multi_adamw_update(symbol)" args =>
-                      String ->
+                      Text ->
                         ArgsHMap "_multi_adamw_update(symbol)" args -> IO SymbolHandle
 _multi_adamw_update name args
   = let scalarArgs
@@ -10036,7 +9993,7 @@ type instance ParameterList "_multi_mp_adamw_update(symbol)" =
 
 _multi_mp_adamw_update ::
                        forall args . Fullfilled "_multi_mp_adamw_update(symbol)" args =>
-                         String ->
+                         Text ->
                            ArgsHMap "_multi_mp_adamw_update(symbol)" args -> IO SymbolHandle
 _multi_mp_adamw_update name args
   = let scalarArgs
@@ -10067,7 +10024,7 @@ type instance ParameterList "_not_equal(symbol)" =
 
 _not_equal ::
            forall args . Fullfilled "_not_equal(symbol)" args =>
-             String -> ArgsHMap "_not_equal(symbol)" args -> IO SymbolHandle
+             Text -> ArgsHMap "_not_equal(symbol)" args -> IO SymbolHandle
 _not_equal name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -10088,7 +10045,7 @@ type instance ParameterList "_not_equal_scalar(symbol)" =
 
 _not_equal_scalar ::
                   forall args . Fullfilled "_not_equal_scalar(symbol)" args =>
-                    String ->
+                    Text ->
                       ArgsHMap "_not_equal_scalar(symbol)" args -> IO SymbolHandle
 _not_equal_scalar name args
   = let scalarArgs
@@ -10110,8 +10067,7 @@ type instance ParameterList "_np_broadcast_to(symbol)" =
 
 _np_broadcast_to ::
                  forall args . Fullfilled "_np_broadcast_to(symbol)" args =>
-                   String ->
-                     ArgsHMap "_np_broadcast_to(symbol)" args -> IO SymbolHandle
+                   Text -> ArgsHMap "_np_broadcast_to(symbol)" args -> IO SymbolHandle
 _np_broadcast_to name args
   = let scalarArgs
           = catMaybes
@@ -10132,7 +10088,7 @@ type instance ParameterList "_np_copy(symbol)" =
 
 _np_copy ::
          forall args . Fullfilled "_np_copy(symbol)" args =>
-           String -> ArgsHMap "_np_copy(symbol)" args -> IO SymbolHandle
+           Text -> ArgsHMap "_np_copy(symbol)" args -> IO SymbolHandle
 _np_copy name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -10157,7 +10113,7 @@ type instance ParameterList "_np_cumsum(symbol)" =
 
 _np_cumsum ::
            forall args . Fullfilled "_np_cumsum(symbol)" args =>
-             String -> ArgsHMap "_np_cumsum(symbol)" args -> IO SymbolHandle
+             Text -> ArgsHMap "_np_cumsum(symbol)" args -> IO SymbolHandle
 _np_cumsum name args
   = let scalarArgs
           = catMaybes
@@ -10184,7 +10140,7 @@ type instance ParameterList "_np_dot(symbol)" =
 
 _np_dot ::
         forall args . Fullfilled "_np_dot(symbol)" args =>
-          String -> ArgsHMap "_np_dot(symbol)" args -> IO SymbolHandle
+          Text -> ArgsHMap "_np_dot(symbol)" args -> IO SymbolHandle
 _np_dot name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -10206,7 +10162,7 @@ type instance ParameterList "_np_max(symbol)" =
 
 _np_max ::
         forall args . Fullfilled "_np_max(symbol)" args =>
-          String -> ArgsHMap "_np_max(symbol)" args -> IO SymbolHandle
+          Text -> ArgsHMap "_np_max(symbol)" args -> IO SymbolHandle
 _np_max name args
   = let scalarArgs
           = catMaybes
@@ -10231,7 +10187,7 @@ type instance ParameterList "_np_min(symbol)" =
 
 _np_min ::
         forall args . Fullfilled "_np_min(symbol)" args =>
-          String -> ArgsHMap "_np_min(symbol)" args -> IO SymbolHandle
+          Text -> ArgsHMap "_np_min(symbol)" args -> IO SymbolHandle
 _np_min name args
   = let scalarArgs
           = catMaybes
@@ -10256,7 +10212,7 @@ type instance ParameterList "_np_moveaxis(symbol)" =
 
 _np_moveaxis ::
              forall args . Fullfilled "_np_moveaxis(symbol)" args =>
-               String -> ArgsHMap "_np_moveaxis(symbol)" args -> IO SymbolHandle
+               Text -> ArgsHMap "_np_moveaxis(symbol)" args -> IO SymbolHandle
 _np_moveaxis name args
   = let scalarArgs
           = catMaybes
@@ -10279,7 +10235,7 @@ type instance ParameterList "_np_ones_like(symbol)" =
 
 _np_ones_like ::
               forall args . Fullfilled "_np_ones_like(symbol)" args =>
-                String -> ArgsHMap "_np_ones_like(symbol)" args -> IO SymbolHandle
+                Text -> ArgsHMap "_np_ones_like(symbol)" args -> IO SymbolHandle
 _np_ones_like name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -10306,7 +10262,7 @@ type instance ParameterList "_np_prod(symbol)" =
 
 _np_prod ::
          forall args . Fullfilled "_np_prod(symbol)" args =>
-           String -> ArgsHMap "_np_prod(symbol)" args -> IO SymbolHandle
+           Text -> ArgsHMap "_np_prod(symbol)" args -> IO SymbolHandle
 _np_prod name args
   = let scalarArgs
           = catMaybes
@@ -10333,17 +10289,17 @@ _np_prod name args
          return sym
 
 type instance ParameterList "_np_reshape(symbol)" =
-     '[ '("newshape", AttrReq [Int]), '("order", AttrOpt String),
+     '[ '("newshape", AttrReq [Int]), '("order", AttrOpt Text),
         '("a", AttrOpt SymbolHandle)]
 
 _np_reshape ::
             forall args . Fullfilled "_np_reshape(symbol)" args =>
-              String -> ArgsHMap "_np_reshape(symbol)" args -> IO SymbolHandle
+              Text -> ArgsHMap "_np_reshape(symbol)" args -> IO SymbolHandle
 _np_reshape name args
   = let scalarArgs
           = catMaybes
               [("newshape",) . showValue <$> (args !? #newshape :: Maybe [Int]),
-               ("order",) . showValue <$> (args !? #order :: Maybe String)]
+               ("order",) . showValue <$> (args !? #order :: Maybe Text)]
         (scalarkeys, scalarvals) = unzip scalarArgs
         tensorArgs
           = catMaybes [("a",) <$> (args !? #a :: Maybe SymbolHandle)]
@@ -10361,7 +10317,7 @@ type instance ParameterList "_np_roll(symbol)" =
 
 _np_roll ::
          forall args . Fullfilled "_np_roll(symbol)" args =>
-           String -> ArgsHMap "_np_roll(symbol)" args -> IO SymbolHandle
+           Text -> ArgsHMap "_np_roll(symbol)" args -> IO SymbolHandle
 _np_roll name args
   = let scalarArgs
           = catMaybes
@@ -10384,7 +10340,7 @@ type instance ParameterList "_np_squeeze(symbol)" =
 
 _np_squeeze ::
             forall args . Fullfilled "_np_squeeze(symbol)" args =>
-              String -> ArgsHMap "_np_squeeze(symbol)" args -> IO SymbolHandle
+              Text -> ArgsHMap "_np_squeeze(symbol)" args -> IO SymbolHandle
 _np_squeeze name args
   = let scalarArgs
           = catMaybes
@@ -10413,7 +10369,7 @@ type instance ParameterList "_np_sum(symbol)" =
 
 _np_sum ::
         forall args . Fullfilled "_np_sum(symbol)" args =>
-          String -> ArgsHMap "_np_sum(symbol)" args -> IO SymbolHandle
+          Text -> ArgsHMap "_np_sum(symbol)" args -> IO SymbolHandle
 _np_sum name args
   = let scalarArgs
           = catMaybes
@@ -10445,7 +10401,7 @@ type instance ParameterList "_np_trace(symbol)" =
 
 _np_trace ::
           forall args . Fullfilled "_np_trace(symbol)" args =>
-            String -> ArgsHMap "_np_trace(symbol)" args -> IO SymbolHandle
+            Text -> ArgsHMap "_np_trace(symbol)" args -> IO SymbolHandle
 _np_trace name args
   = let scalarArgs
           = catMaybes
@@ -10468,7 +10424,7 @@ type instance ParameterList "_np_transpose(symbol)" =
 
 _np_transpose ::
               forall args . Fullfilled "_np_transpose(symbol)" args =>
-                String -> ArgsHMap "_np_transpose(symbol)" args -> IO SymbolHandle
+                Text -> ArgsHMap "_np_transpose(symbol)" args -> IO SymbolHandle
 _np_transpose name args
   = let scalarArgs
           = catMaybes
@@ -10489,7 +10445,7 @@ type instance ParameterList "_np_zeros_like(symbol)" =
 
 _np_zeros_like ::
                forall args . Fullfilled "_np_zeros_like(symbol)" args =>
-                 String -> ArgsHMap "_np_zeros_like(symbol)" args -> IO SymbolHandle
+                 Text -> ArgsHMap "_np_zeros_like(symbol)" args -> IO SymbolHandle
 _np_zeros_like name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -10508,7 +10464,7 @@ type instance ParameterList "_npi_absolute(symbol)" =
 
 _npi_absolute ::
               forall args . Fullfilled "_npi_absolute(symbol)" args =>
-                String -> ArgsHMap "_npi_absolute(symbol)" args -> IO SymbolHandle
+                Text -> ArgsHMap "_npi_absolute(symbol)" args -> IO SymbolHandle
 _npi_absolute name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -10527,7 +10483,7 @@ type instance ParameterList "_npi_add(symbol)" =
 
 _npi_add ::
          forall args . Fullfilled "_npi_add(symbol)" args =>
-           String -> ArgsHMap "_npi_add(symbol)" args -> IO SymbolHandle
+           Text -> ArgsHMap "_npi_add(symbol)" args -> IO SymbolHandle
 _npi_add name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -10548,8 +10504,7 @@ type instance ParameterList "_npi_add_scalar(symbol)" =
 
 _npi_add_scalar ::
                 forall args . Fullfilled "_npi_add_scalar(symbol)" args =>
-                  String ->
-                    ArgsHMap "_npi_add_scalar(symbol)" args -> IO SymbolHandle
+                  Text -> ArgsHMap "_npi_add_scalar(symbol)" args -> IO SymbolHandle
 _npi_add_scalar name args
   = let scalarArgs
           = catMaybes
@@ -10568,7 +10523,7 @@ _npi_add_scalar name args
 type instance ParameterList "_npi_arange(symbol)" =
      '[ '("start", AttrReq Double), '("stop", AttrOpt (Maybe Double)),
         '("step", AttrOpt Double), '("repeat", AttrOpt Int),
-        '("infer_range", AttrOpt Bool), '("ctx", AttrOpt String),
+        '("infer_range", AttrOpt Bool), '("ctx", AttrOpt Text),
         '("dtype",
           AttrOpt
             (EnumType
@@ -10577,7 +10532,7 @@ type instance ParameterList "_npi_arange(symbol)" =
 
 _npi_arange ::
             forall args . Fullfilled "_npi_arange(symbol)" args =>
-              String -> ArgsHMap "_npi_arange(symbol)" args -> IO SymbolHandle
+              Text -> ArgsHMap "_npi_arange(symbol)" args -> IO SymbolHandle
 _npi_arange name args
   = let scalarArgs
           = catMaybes
@@ -10587,7 +10542,7 @@ _npi_arange name args
                ("repeat",) . showValue <$> (args !? #repeat :: Maybe Int),
                ("infer_range",) . showValue <$>
                  (args !? #infer_range :: Maybe Bool),
-               ("ctx",) . showValue <$> (args !? #ctx :: Maybe String),
+               ("ctx",) . showValue <$> (args !? #ctx :: Maybe Text),
                ("dtype",) . showValue <$>
                  (args !? #dtype ::
                     Maybe
@@ -10609,7 +10564,7 @@ type instance ParameterList "_npi_arccos(symbol)" =
 
 _npi_arccos ::
             forall args . Fullfilled "_npi_arccos(symbol)" args =>
-              String -> ArgsHMap "_npi_arccos(symbol)" args -> IO SymbolHandle
+              Text -> ArgsHMap "_npi_arccos(symbol)" args -> IO SymbolHandle
 _npi_arccos name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -10628,7 +10583,7 @@ type instance ParameterList "_npi_arccosh(symbol)" =
 
 _npi_arccosh ::
              forall args . Fullfilled "_npi_arccosh(symbol)" args =>
-               String -> ArgsHMap "_npi_arccosh(symbol)" args -> IO SymbolHandle
+               Text -> ArgsHMap "_npi_arccosh(symbol)" args -> IO SymbolHandle
 _npi_arccosh name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -10647,7 +10602,7 @@ type instance ParameterList "_npi_arcsin(symbol)" =
 
 _npi_arcsin ::
             forall args . Fullfilled "_npi_arcsin(symbol)" args =>
-              String -> ArgsHMap "_npi_arcsin(symbol)" args -> IO SymbolHandle
+              Text -> ArgsHMap "_npi_arcsin(symbol)" args -> IO SymbolHandle
 _npi_arcsin name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -10666,7 +10621,7 @@ type instance ParameterList "_npi_arcsinh(symbol)" =
 
 _npi_arcsinh ::
              forall args . Fullfilled "_npi_arcsinh(symbol)" args =>
-               String -> ArgsHMap "_npi_arcsinh(symbol)" args -> IO SymbolHandle
+               Text -> ArgsHMap "_npi_arcsinh(symbol)" args -> IO SymbolHandle
 _npi_arcsinh name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -10685,7 +10640,7 @@ type instance ParameterList "_npi_arctan(symbol)" =
 
 _npi_arctan ::
             forall args . Fullfilled "_npi_arctan(symbol)" args =>
-              String -> ArgsHMap "_npi_arctan(symbol)" args -> IO SymbolHandle
+              Text -> ArgsHMap "_npi_arctan(symbol)" args -> IO SymbolHandle
 _npi_arctan name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -10704,7 +10659,7 @@ type instance ParameterList "_npi_arctan2(symbol)" =
 
 _npi_arctan2 ::
              forall args . Fullfilled "_npi_arctan2(symbol)" args =>
-               String -> ArgsHMap "_npi_arctan2(symbol)" args -> IO SymbolHandle
+               Text -> ArgsHMap "_npi_arctan2(symbol)" args -> IO SymbolHandle
 _npi_arctan2 name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -10725,7 +10680,7 @@ type instance ParameterList "_npi_arctan2_scalar(symbol)" =
 
 _npi_arctan2_scalar ::
                     forall args . Fullfilled "_npi_arctan2_scalar(symbol)" args =>
-                      String ->
+                      Text ->
                         ArgsHMap "_npi_arctan2_scalar(symbol)" args -> IO SymbolHandle
 _npi_arctan2_scalar name args
   = let scalarArgs
@@ -10747,7 +10702,7 @@ type instance ParameterList "_npi_arctanh(symbol)" =
 
 _npi_arctanh ::
              forall args . Fullfilled "_npi_arctanh(symbol)" args =>
-               String -> ArgsHMap "_npi_arctanh(symbol)" args -> IO SymbolHandle
+               Text -> ArgsHMap "_npi_arctanh(symbol)" args -> IO SymbolHandle
 _npi_arctanh name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -10767,7 +10722,7 @@ type instance ParameterList "_npi_argmax(symbol)" =
 
 _npi_argmax ::
             forall args . Fullfilled "_npi_argmax(symbol)" args =>
-              String -> ArgsHMap "_npi_argmax(symbol)" args -> IO SymbolHandle
+              Text -> ArgsHMap "_npi_argmax(symbol)" args -> IO SymbolHandle
 _npi_argmax name args
   = let scalarArgs
           = catMaybes
@@ -10790,7 +10745,7 @@ type instance ParameterList "_npi_argmin(symbol)" =
 
 _npi_argmin ::
             forall args . Fullfilled "_npi_argmin(symbol)" args =>
-              String -> ArgsHMap "_npi_argmin(symbol)" args -> IO SymbolHandle
+              Text -> ArgsHMap "_npi_argmin(symbol)" args -> IO SymbolHandle
 _npi_argmin name args
   = let scalarArgs
           = catMaybes
@@ -10812,7 +10767,7 @@ type instance ParameterList "_npi_around(symbol)" =
 
 _npi_around ::
             forall args . Fullfilled "_npi_around(symbol)" args =>
-              String -> ArgsHMap "_npi_around(symbol)" args -> IO SymbolHandle
+              Text -> ArgsHMap "_npi_around(symbol)" args -> IO SymbolHandle
 _npi_around name args
   = let scalarArgs
           = catMaybes
@@ -10833,8 +10788,7 @@ type instance ParameterList "_npi_bitwise_xor(symbol)" =
 
 _npi_bitwise_xor ::
                  forall args . Fullfilled "_npi_bitwise_xor(symbol)" args =>
-                   String ->
-                     ArgsHMap "_npi_bitwise_xor(symbol)" args -> IO SymbolHandle
+                   Text -> ArgsHMap "_npi_bitwise_xor(symbol)" args -> IO SymbolHandle
 _npi_bitwise_xor name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -10855,7 +10809,7 @@ type instance ParameterList "_npi_bitwise_xor_scalar(symbol)" =
 
 _npi_bitwise_xor_scalar ::
                         forall args . Fullfilled "_npi_bitwise_xor_scalar(symbol)" args =>
-                          String ->
+                          Text ->
                             ArgsHMap "_npi_bitwise_xor_scalar(symbol)" args -> IO SymbolHandle
 _npi_bitwise_xor_scalar name args
   = let scalarArgs
@@ -10873,7 +10827,7 @@ _npi_bitwise_xor_scalar name args
          return sym
 
 type instance ParameterList "_npi_blackman(symbol)" =
-     '[ '("_M", AttrOpt Int), '("ctx", AttrOpt String),
+     '[ '("_M", AttrOpt Int), '("ctx", AttrOpt Text),
         '("dtype",
           AttrOpt
             (EnumType
@@ -10882,12 +10836,12 @@ type instance ParameterList "_npi_blackman(symbol)" =
 
 _npi_blackman ::
               forall args . Fullfilled "_npi_blackman(symbol)" args =>
-                String -> ArgsHMap "_npi_blackman(symbol)" args -> IO SymbolHandle
+                Text -> ArgsHMap "_npi_blackman(symbol)" args -> IO SymbolHandle
 _npi_blackman name args
   = let scalarArgs
           = catMaybes
               [("_M",) . showValue <$> (args !? #_M :: Maybe Int),
-               ("ctx",) . showValue <$> (args !? #ctx :: Maybe String),
+               ("ctx",) . showValue <$> (args !? #ctx :: Maybe Text),
                ("dtype",) . showValue <$>
                  (args !? #dtype ::
                     Maybe
@@ -10912,7 +10866,7 @@ type instance
 _npi_boolean_mask_assign_scalar ::
                                 forall args .
                                   Fullfilled "_npi_boolean_mask_assign_scalar(symbol)" args =>
-                                  String ->
+                                  Text ->
                                     ArgsHMap "_npi_boolean_mask_assign_scalar(symbol)" args ->
                                       IO SymbolHandle
 _npi_boolean_mask_assign_scalar name args
@@ -10940,7 +10894,7 @@ type instance
 _npi_boolean_mask_assign_tensor ::
                                 forall args .
                                   Fullfilled "_npi_boolean_mask_assign_tensor(symbol)" args =>
-                                  String ->
+                                  Text ->
                                     ArgsHMap "_npi_boolean_mask_assign_tensor(symbol)" args ->
                                       IO SymbolHandle
 _npi_boolean_mask_assign_tensor name args
@@ -10964,7 +10918,7 @@ type instance ParameterList "_npi_cbrt(symbol)" =
 
 _npi_cbrt ::
           forall args . Fullfilled "_npi_cbrt(symbol)" args =>
-            String -> ArgsHMap "_npi_cbrt(symbol)" args -> IO SymbolHandle
+            Text -> ArgsHMap "_npi_cbrt(symbol)" args -> IO SymbolHandle
 _npi_cbrt name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -10983,7 +10937,7 @@ type instance ParameterList "_npi_ceil(symbol)" =
 
 _npi_ceil ::
           forall args . Fullfilled "_npi_ceil(symbol)" args =>
-            String -> ArgsHMap "_npi_ceil(symbol)" args -> IO SymbolHandle
+            Text -> ArgsHMap "_npi_ceil(symbol)" args -> IO SymbolHandle
 _npi_ceil name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -10999,19 +10953,19 @@ _npi_ceil name args
 
 type instance ParameterList "_npi_choice(symbol)" =
      '[ '("a", AttrReq Int), '("size", AttrReq Int),
-        '("ctx", AttrOpt String), '("replace", AttrOpt Bool),
+        '("ctx", AttrOpt Text), '("replace", AttrOpt Bool),
         '("weighted", AttrOpt Bool), '("input1", AttrOpt SymbolHandle),
         '("input2", AttrOpt SymbolHandle)]
 
 _npi_choice ::
             forall args . Fullfilled "_npi_choice(symbol)" args =>
-              String -> ArgsHMap "_npi_choice(symbol)" args -> IO SymbolHandle
+              Text -> ArgsHMap "_npi_choice(symbol)" args -> IO SymbolHandle
 _npi_choice name args
   = let scalarArgs
           = catMaybes
               [("a",) . showValue <$> (args !? #a :: Maybe Int),
                ("size",) . showValue <$> (args !? #size :: Maybe Int),
-               ("ctx",) . showValue <$> (args !? #ctx :: Maybe String),
+               ("ctx",) . showValue <$> (args !? #ctx :: Maybe Text),
                ("replace",) . showValue <$> (args !? #replace :: Maybe Bool),
                ("weighted",) . showValue <$> (args !? #weighted :: Maybe Bool)]
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -11032,7 +10986,7 @@ type instance ParameterList "_npi_column_stack(symbol)" =
 
 _npi_column_stack ::
                   forall args . Fullfilled "_npi_column_stack(symbol)" args =>
-                    String ->
+                    Text ->
                       ArgsHMap "_npi_column_stack(symbol)" args -> IO SymbolHandle
 _npi_column_stack name args
   = let scalarArgs
@@ -11059,8 +11013,7 @@ type instance ParameterList "_npi_concatenate(symbol)" =
 
 _npi_concatenate ::
                  forall args . Fullfilled "_npi_concatenate(symbol)" args =>
-                   String ->
-                     ArgsHMap "_npi_concatenate(symbol)" args -> IO SymbolHandle
+                   Text -> ArgsHMap "_npi_concatenate(symbol)" args -> IO SymbolHandle
 _npi_concatenate name args
   = let scalarArgs
           = catMaybes
@@ -11086,7 +11039,7 @@ type instance ParameterList "_npi_copysign(symbol)" =
 
 _npi_copysign ::
               forall args . Fullfilled "_npi_copysign(symbol)" args =>
-                String -> ArgsHMap "_npi_copysign(symbol)" args -> IO SymbolHandle
+                Text -> ArgsHMap "_npi_copysign(symbol)" args -> IO SymbolHandle
 _npi_copysign name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -11107,7 +11060,7 @@ type instance ParameterList "_npi_copysign_scalar(symbol)" =
 
 _npi_copysign_scalar ::
                      forall args . Fullfilled "_npi_copysign_scalar(symbol)" args =>
-                       String ->
+                       Text ->
                          ArgsHMap "_npi_copysign_scalar(symbol)" args -> IO SymbolHandle
 _npi_copysign_scalar name args
   = let scalarArgs
@@ -11129,7 +11082,7 @@ type instance ParameterList "_npi_cos(symbol)" =
 
 _npi_cos ::
          forall args . Fullfilled "_npi_cos(symbol)" args =>
-           String -> ArgsHMap "_npi_cos(symbol)" args -> IO SymbolHandle
+           Text -> ArgsHMap "_npi_cos(symbol)" args -> IO SymbolHandle
 _npi_cos name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -11148,7 +11101,7 @@ type instance ParameterList "_npi_cosh(symbol)" =
 
 _npi_cosh ::
           forall args . Fullfilled "_npi_cosh(symbol)" args =>
-            String -> ArgsHMap "_npi_cosh(symbol)" args -> IO SymbolHandle
+            Text -> ArgsHMap "_npi_cosh(symbol)" args -> IO SymbolHandle
 _npi_cosh name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -11167,7 +11120,7 @@ type instance ParameterList "_npi_degrees(symbol)" =
 
 _npi_degrees ::
              forall args . Fullfilled "_npi_degrees(symbol)" args =>
-               String -> ArgsHMap "_npi_degrees(symbol)" args -> IO SymbolHandle
+               Text -> ArgsHMap "_npi_degrees(symbol)" args -> IO SymbolHandle
 _npi_degrees name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -11187,7 +11140,7 @@ type instance ParameterList "_npi_diff(symbol)" =
 
 _npi_diff ::
           forall args . Fullfilled "_npi_diff(symbol)" args =>
-            String -> ArgsHMap "_npi_diff(symbol)" args -> IO SymbolHandle
+            Text -> ArgsHMap "_npi_diff(symbol)" args -> IO SymbolHandle
 _npi_diff name args
   = let scalarArgs
           = catMaybes
@@ -11210,7 +11163,7 @@ type instance ParameterList "_npi_dstack(symbol)" =
 
 _npi_dstack ::
             forall args . Fullfilled "_npi_dstack(symbol)" args =>
-              String -> ArgsHMap "_npi_dstack(symbol)" args -> IO SymbolHandle
+              Text -> ArgsHMap "_npi_dstack(symbol)" args -> IO SymbolHandle
 _npi_dstack name args
   = let scalarArgs
           = catMaybes
@@ -11232,18 +11185,18 @@ _npi_dstack name args
          return sym
 
 type instance ParameterList "_npi_einsum(symbol)" =
-     '[ '("num_args", AttrReq Int), '("subscripts", AttrOpt String),
+     '[ '("num_args", AttrReq Int), '("subscripts", AttrOpt Text),
         '("optimize", AttrOpt Int), '("data", AttrOpt [SymbolHandle])]
 
 _npi_einsum ::
             forall args . Fullfilled "_npi_einsum(symbol)" args =>
-              String -> ArgsHMap "_npi_einsum(symbol)" args -> IO SymbolHandle
+              Text -> ArgsHMap "_npi_einsum(symbol)" args -> IO SymbolHandle
 _npi_einsum name args
   = let scalarArgs
           = catMaybes
               [("num_args",) . showValue <$> (args !? #num_args :: Maybe Int),
                ("subscripts",) . showValue <$>
-                 (args !? #subscripts :: Maybe String),
+                 (args !? #subscripts :: Maybe Text),
                ("optimize",) . showValue <$> (args !? #optimize :: Maybe Int)]
         (scalarkeys, scalarvals) = unzip scalarArgs
         tensorArgs = catMaybes []
@@ -11265,7 +11218,7 @@ type instance ParameterList "_npi_equal(symbol)" =
 
 _npi_equal ::
            forall args . Fullfilled "_npi_equal(symbol)" args =>
-             String -> ArgsHMap "_npi_equal(symbol)" args -> IO SymbolHandle
+             Text -> ArgsHMap "_npi_equal(symbol)" args -> IO SymbolHandle
 _npi_equal name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -11286,7 +11239,7 @@ type instance ParameterList "_npi_equal_scalar(symbol)" =
 
 _npi_equal_scalar ::
                   forall args . Fullfilled "_npi_equal_scalar(symbol)" args =>
-                    String ->
+                    Text ->
                       ArgsHMap "_npi_equal_scalar(symbol)" args -> IO SymbolHandle
 _npi_equal_scalar name args
   = let scalarArgs
@@ -11308,7 +11261,7 @@ type instance ParameterList "_npi_exp(symbol)" =
 
 _npi_exp ::
          forall args . Fullfilled "_npi_exp(symbol)" args =>
-           String -> ArgsHMap "_npi_exp(symbol)" args -> IO SymbolHandle
+           Text -> ArgsHMap "_npi_exp(symbol)" args -> IO SymbolHandle
 _npi_exp name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -11327,7 +11280,7 @@ type instance ParameterList "_npi_expm1(symbol)" =
 
 _npi_expm1 ::
            forall args . Fullfilled "_npi_expm1(symbol)" args =>
-             String -> ArgsHMap "_npi_expm1(symbol)" args -> IO SymbolHandle
+             Text -> ArgsHMap "_npi_expm1(symbol)" args -> IO SymbolHandle
 _npi_expm1 name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -11346,7 +11299,7 @@ type instance ParameterList "_npi_fix(symbol)" =
 
 _npi_fix ::
          forall args . Fullfilled "_npi_fix(symbol)" args =>
-           String -> ArgsHMap "_npi_fix(symbol)" args -> IO SymbolHandle
+           Text -> ArgsHMap "_npi_fix(symbol)" args -> IO SymbolHandle
 _npi_fix name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -11365,7 +11318,7 @@ type instance ParameterList "_npi_flip(symbol)" =
 
 _npi_flip ::
           forall args . Fullfilled "_npi_flip(symbol)" args =>
-            String -> ArgsHMap "_npi_flip(symbol)" args -> IO SymbolHandle
+            Text -> ArgsHMap "_npi_flip(symbol)" args -> IO SymbolHandle
 _npi_flip name args
   = let scalarArgs
           = catMaybes
@@ -11386,7 +11339,7 @@ type instance ParameterList "_npi_floor(symbol)" =
 
 _npi_floor ::
            forall args . Fullfilled "_npi_floor(symbol)" args =>
-             String -> ArgsHMap "_npi_floor(symbol)" args -> IO SymbolHandle
+             Text -> ArgsHMap "_npi_floor(symbol)" args -> IO SymbolHandle
 _npi_floor name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -11405,7 +11358,7 @@ type instance ParameterList "_npi_greater(symbol)" =
 
 _npi_greater ::
              forall args . Fullfilled "_npi_greater(symbol)" args =>
-               String -> ArgsHMap "_npi_greater(symbol)" args -> IO SymbolHandle
+               Text -> ArgsHMap "_npi_greater(symbol)" args -> IO SymbolHandle
 _npi_greater name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -11426,7 +11379,7 @@ type instance ParameterList "_npi_greater_equal(symbol)" =
 
 _npi_greater_equal ::
                    forall args . Fullfilled "_npi_greater_equal(symbol)" args =>
-                     String ->
+                     Text ->
                        ArgsHMap "_npi_greater_equal(symbol)" args -> IO SymbolHandle
 _npi_greater_equal name args
   = let scalarArgs = catMaybes []
@@ -11449,7 +11402,7 @@ type instance ParameterList "_npi_greater_equal_scalar(symbol)" =
 _npi_greater_equal_scalar ::
                           forall args .
                             Fullfilled "_npi_greater_equal_scalar(symbol)" args =>
-                            String ->
+                            Text ->
                               ArgsHMap "_npi_greater_equal_scalar(symbol)" args ->
                                 IO SymbolHandle
 _npi_greater_equal_scalar name args
@@ -11472,7 +11425,7 @@ type instance ParameterList "_npi_greater_scalar(symbol)" =
 
 _npi_greater_scalar ::
                     forall args . Fullfilled "_npi_greater_scalar(symbol)" args =>
-                      String ->
+                      Text ->
                         ArgsHMap "_npi_greater_scalar(symbol)" args -> IO SymbolHandle
 _npi_greater_scalar name args
   = let scalarArgs
@@ -11490,7 +11443,7 @@ _npi_greater_scalar name args
          return sym
 
 type instance ParameterList "_npi_hamming(symbol)" =
-     '[ '("_M", AttrOpt Int), '("ctx", AttrOpt String),
+     '[ '("_M", AttrOpt Int), '("ctx", AttrOpt Text),
         '("dtype",
           AttrOpt
             (EnumType
@@ -11499,12 +11452,12 @@ type instance ParameterList "_npi_hamming(symbol)" =
 
 _npi_hamming ::
              forall args . Fullfilled "_npi_hamming(symbol)" args =>
-               String -> ArgsHMap "_npi_hamming(symbol)" args -> IO SymbolHandle
+               Text -> ArgsHMap "_npi_hamming(symbol)" args -> IO SymbolHandle
 _npi_hamming name args
   = let scalarArgs
           = catMaybes
               [("_M",) . showValue <$> (args !? #_M :: Maybe Int),
-               ("ctx",) . showValue <$> (args !? #ctx :: Maybe String),
+               ("ctx",) . showValue <$> (args !? #ctx :: Maybe Text),
                ("dtype",) . showValue <$>
                  (args !? #dtype ::
                     Maybe
@@ -11522,7 +11475,7 @@ _npi_hamming name args
          return sym
 
 type instance ParameterList "_npi_hanning(symbol)" =
-     '[ '("_M", AttrOpt Int), '("ctx", AttrOpt String),
+     '[ '("_M", AttrOpt Int), '("ctx", AttrOpt Text),
         '("dtype",
           AttrOpt
             (EnumType
@@ -11531,12 +11484,12 @@ type instance ParameterList "_npi_hanning(symbol)" =
 
 _npi_hanning ::
              forall args . Fullfilled "_npi_hanning(symbol)" args =>
-               String -> ArgsHMap "_npi_hanning(symbol)" args -> IO SymbolHandle
+               Text -> ArgsHMap "_npi_hanning(symbol)" args -> IO SymbolHandle
 _npi_hanning name args
   = let scalarArgs
           = catMaybes
               [("_M",) . showValue <$> (args !? #_M :: Maybe Int),
-               ("ctx",) . showValue <$> (args !? #ctx :: Maybe String),
+               ("ctx",) . showValue <$> (args !? #ctx :: Maybe Text),
                ("dtype",) . showValue <$>
                  (args !? #dtype ::
                     Maybe
@@ -11560,7 +11513,7 @@ type instance ParameterList "_npi_hsplit(symbol)" =
 
 _npi_hsplit ::
             forall args . Fullfilled "_npi_hsplit(symbol)" args =>
-              String -> ArgsHMap "_npi_hsplit(symbol)" args -> IO SymbolHandle
+              Text -> ArgsHMap "_npi_hsplit(symbol)" args -> IO SymbolHandle
 _npi_hsplit name args
   = let scalarArgs
           = catMaybes
@@ -11584,7 +11537,7 @@ type instance ParameterList "_npi_hsplit_backward(symbol)" = '[]
 
 _npi_hsplit_backward ::
                      forall args . Fullfilled "_npi_hsplit_backward(symbol)" args =>
-                       String ->
+                       Text ->
                          ArgsHMap "_npi_hsplit_backward(symbol)" args -> IO SymbolHandle
 _npi_hsplit_backward name args
   = let scalarArgs = catMaybes []
@@ -11603,7 +11556,7 @@ type instance ParameterList "_npi_hypot(symbol)" =
 
 _npi_hypot ::
            forall args . Fullfilled "_npi_hypot(symbol)" args =>
-             String -> ArgsHMap "_npi_hypot(symbol)" args -> IO SymbolHandle
+             Text -> ArgsHMap "_npi_hypot(symbol)" args -> IO SymbolHandle
 _npi_hypot name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -11620,7 +11573,7 @@ _npi_hypot name args
          return sym
 
 type instance ParameterList "_npi_identity(symbol)" =
-     '[ '("shape", AttrOpt [Int]), '("ctx", AttrOpt String),
+     '[ '("shape", AttrOpt [Int]), '("ctx", AttrOpt Text),
         '("dtype",
           AttrOpt
             (EnumType
@@ -11629,12 +11582,12 @@ type instance ParameterList "_npi_identity(symbol)" =
 
 _npi_identity ::
               forall args . Fullfilled "_npi_identity(symbol)" args =>
-                String -> ArgsHMap "_npi_identity(symbol)" args -> IO SymbolHandle
+                Text -> ArgsHMap "_npi_identity(symbol)" args -> IO SymbolHandle
 _npi_identity name args
   = let scalarArgs
           = catMaybes
               [("shape",) . showValue <$> (args !? #shape :: Maybe [Int]),
-               ("ctx",) . showValue <$> (args !? #ctx :: Maybe String),
+               ("ctx",) . showValue <$> (args !? #ctx :: Maybe Text),
                ("dtype",) . showValue <$>
                  (args !? #dtype ::
                     Maybe
@@ -11658,11 +11611,11 @@ type instance ParameterList "_npi_indices(symbol)" =
             (EnumType
                '["float16", "float32", "float64", "int32", "int64", "int8",
                  "uint8"])),
-        '("ctx", AttrOpt String)]
+        '("ctx", AttrOpt Text)]
 
 _npi_indices ::
              forall args . Fullfilled "_npi_indices(symbol)" args =>
-               String -> ArgsHMap "_npi_indices(symbol)" args -> IO SymbolHandle
+               Text -> ArgsHMap "_npi_indices(symbol)" args -> IO SymbolHandle
 _npi_indices name args
   = let scalarArgs
           = catMaybes
@@ -11674,7 +11627,7 @@ _npi_indices name args
                       (EnumType
                          '["float16", "float32", "float64", "int32", "int64", "int8",
                            "uint8"])),
-               ("ctx",) . showValue <$> (args !? #ctx :: Maybe String)]
+               ("ctx",) . showValue <$> (args !? #ctx :: Maybe Text)]
         (scalarkeys, scalarvals) = unzip scalarArgs
         tensorArgs = catMaybes []
         (tensorkeys, tensorvals) = unzip tensorArgs
@@ -11690,7 +11643,7 @@ type instance ParameterList "_npi_lcm(symbol)" =
 
 _npi_lcm ::
          forall args . Fullfilled "_npi_lcm(symbol)" args =>
-           String -> ArgsHMap "_npi_lcm(symbol)" args -> IO SymbolHandle
+           Text -> ArgsHMap "_npi_lcm(symbol)" args -> IO SymbolHandle
 _npi_lcm name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -11711,8 +11664,7 @@ type instance ParameterList "_npi_lcm_scalar(symbol)" =
 
 _npi_lcm_scalar ::
                 forall args . Fullfilled "_npi_lcm_scalar(symbol)" args =>
-                  String ->
-                    ArgsHMap "_npi_lcm_scalar(symbol)" args -> IO SymbolHandle
+                  Text -> ArgsHMap "_npi_lcm_scalar(symbol)" args -> IO SymbolHandle
 _npi_lcm_scalar name args
   = let scalarArgs
           = catMaybes
@@ -11733,7 +11685,7 @@ type instance ParameterList "_npi_ldexp(symbol)" =
 
 _npi_ldexp ::
            forall args . Fullfilled "_npi_ldexp(symbol)" args =>
-             String -> ArgsHMap "_npi_ldexp(symbol)" args -> IO SymbolHandle
+             Text -> ArgsHMap "_npi_ldexp(symbol)" args -> IO SymbolHandle
 _npi_ldexp name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -11754,7 +11706,7 @@ type instance ParameterList "_npi_ldexp_scalar(symbol)" =
 
 _npi_ldexp_scalar ::
                   forall args . Fullfilled "_npi_ldexp_scalar(symbol)" args =>
-                    String ->
+                    Text ->
                       ArgsHMap "_npi_ldexp_scalar(symbol)" args -> IO SymbolHandle
 _npi_ldexp_scalar name args
   = let scalarArgs
@@ -11776,7 +11728,7 @@ type instance ParameterList "_npi_less(symbol)" =
 
 _npi_less ::
           forall args . Fullfilled "_npi_less(symbol)" args =>
-            String -> ArgsHMap "_npi_less(symbol)" args -> IO SymbolHandle
+            Text -> ArgsHMap "_npi_less(symbol)" args -> IO SymbolHandle
 _npi_less name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -11797,8 +11749,7 @@ type instance ParameterList "_npi_less_equal(symbol)" =
 
 _npi_less_equal ::
                 forall args . Fullfilled "_npi_less_equal(symbol)" args =>
-                  String ->
-                    ArgsHMap "_npi_less_equal(symbol)" args -> IO SymbolHandle
+                  Text -> ArgsHMap "_npi_less_equal(symbol)" args -> IO SymbolHandle
 _npi_less_equal name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -11819,7 +11770,7 @@ type instance ParameterList "_npi_less_equal_scalar(symbol)" =
 
 _npi_less_equal_scalar ::
                        forall args . Fullfilled "_npi_less_equal_scalar(symbol)" args =>
-                         String ->
+                         Text ->
                            ArgsHMap "_npi_less_equal_scalar(symbol)" args -> IO SymbolHandle
 _npi_less_equal_scalar name args
   = let scalarArgs
@@ -11841,8 +11792,7 @@ type instance ParameterList "_npi_less_scalar(symbol)" =
 
 _npi_less_scalar ::
                  forall args . Fullfilled "_npi_less_scalar(symbol)" args =>
-                   String ->
-                     ArgsHMap "_npi_less_scalar(symbol)" args -> IO SymbolHandle
+                   Text -> ArgsHMap "_npi_less_scalar(symbol)" args -> IO SymbolHandle
 _npi_less_scalar name args
   = let scalarArgs
           = catMaybes
@@ -11863,7 +11813,7 @@ type instance ParameterList "_npi_log(symbol)" =
 
 _npi_log ::
          forall args . Fullfilled "_npi_log(symbol)" args =>
-           String -> ArgsHMap "_npi_log(symbol)" args -> IO SymbolHandle
+           Text -> ArgsHMap "_npi_log(symbol)" args -> IO SymbolHandle
 _npi_log name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -11882,7 +11832,7 @@ type instance ParameterList "_npi_log10(symbol)" =
 
 _npi_log10 ::
            forall args . Fullfilled "_npi_log10(symbol)" args =>
-             String -> ArgsHMap "_npi_log10(symbol)" args -> IO SymbolHandle
+             Text -> ArgsHMap "_npi_log10(symbol)" args -> IO SymbolHandle
 _npi_log10 name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -11901,7 +11851,7 @@ type instance ParameterList "_npi_log1p(symbol)" =
 
 _npi_log1p ::
            forall args . Fullfilled "_npi_log1p(symbol)" args =>
-             String -> ArgsHMap "_npi_log1p(symbol)" args -> IO SymbolHandle
+             Text -> ArgsHMap "_npi_log1p(symbol)" args -> IO SymbolHandle
 _npi_log1p name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -11920,7 +11870,7 @@ type instance ParameterList "_npi_log2(symbol)" =
 
 _npi_log2 ::
           forall args . Fullfilled "_npi_log2(symbol)" args =>
-            String -> ArgsHMap "_npi_log2(symbol)" args -> IO SymbolHandle
+            Text -> ArgsHMap "_npi_log2(symbol)" args -> IO SymbolHandle
 _npi_log2 name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -11939,8 +11889,7 @@ type instance ParameterList "_npi_logical_not(symbol)" =
 
 _npi_logical_not ::
                  forall args . Fullfilled "_npi_logical_not(symbol)" args =>
-                   String ->
-                     ArgsHMap "_npi_logical_not(symbol)" args -> IO SymbolHandle
+                   Text -> ArgsHMap "_npi_logical_not(symbol)" args -> IO SymbolHandle
 _npi_logical_not name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -11957,7 +11906,7 @@ _npi_logical_not name args
 type instance ParameterList "_npi_logspace(symbol)" =
      '[ '("start", AttrReq Double), '("stop", AttrReq Double),
         '("num", AttrReq Int), '("endpoint", AttrOpt Bool),
-        '("base", AttrOpt Double), '("ctx", AttrOpt String),
+        '("base", AttrOpt Double), '("ctx", AttrOpt Text),
         '("dtype",
           AttrOpt
             (EnumType
@@ -11966,7 +11915,7 @@ type instance ParameterList "_npi_logspace(symbol)" =
 
 _npi_logspace ::
               forall args . Fullfilled "_npi_logspace(symbol)" args =>
-                String -> ArgsHMap "_npi_logspace(symbol)" args -> IO SymbolHandle
+                Text -> ArgsHMap "_npi_logspace(symbol)" args -> IO SymbolHandle
 _npi_logspace name args
   = let scalarArgs
           = catMaybes
@@ -11975,7 +11924,7 @@ _npi_logspace name args
                ("num",) . showValue <$> (args !? #num :: Maybe Int),
                ("endpoint",) . showValue <$> (args !? #endpoint :: Maybe Bool),
                ("base",) . showValue <$> (args !? #base :: Maybe Double),
-               ("ctx",) . showValue <$> (args !? #ctx :: Maybe String),
+               ("ctx",) . showValue <$> (args !? #ctx :: Maybe Text),
                ("dtype",) . showValue <$>
                  (args !? #dtype ::
                     Maybe
@@ -12005,7 +11954,7 @@ type instance ParameterList "_npi_mean(symbol)" =
 
 _npi_mean ::
           forall args . Fullfilled "_npi_mean(symbol)" args =>
-            String -> ArgsHMap "_npi_mean(symbol)" args -> IO SymbolHandle
+            Text -> ArgsHMap "_npi_mean(symbol)" args -> IO SymbolHandle
 _npi_mean name args
   = let scalarArgs
           = catMaybes
@@ -12036,7 +11985,7 @@ type instance ParameterList "_npi_mod(symbol)" =
 
 _npi_mod ::
          forall args . Fullfilled "_npi_mod(symbol)" args =>
-           String -> ArgsHMap "_npi_mod(symbol)" args -> IO SymbolHandle
+           Text -> ArgsHMap "_npi_mod(symbol)" args -> IO SymbolHandle
 _npi_mod name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -12057,8 +12006,7 @@ type instance ParameterList "_npi_mod_scalar(symbol)" =
 
 _npi_mod_scalar ::
                 forall args . Fullfilled "_npi_mod_scalar(symbol)" args =>
-                  String ->
-                    ArgsHMap "_npi_mod_scalar(symbol)" args -> IO SymbolHandle
+                  Text -> ArgsHMap "_npi_mod_scalar(symbol)" args -> IO SymbolHandle
 _npi_mod_scalar name args
   = let scalarArgs
           = catMaybes
@@ -12080,8 +12028,7 @@ type instance ParameterList "_npi_multinomial(symbol)" =
 
 _npi_multinomial ::
                  forall args . Fullfilled "_npi_multinomial(symbol)" args =>
-                   String ->
-                     ArgsHMap "_npi_multinomial(symbol)" args -> IO SymbolHandle
+                   Text -> ArgsHMap "_npi_multinomial(symbol)" args -> IO SymbolHandle
 _npi_multinomial name args
   = let scalarArgs
           = catMaybes
@@ -12104,7 +12051,7 @@ type instance ParameterList "_npi_multiply(symbol)" =
 
 _npi_multiply ::
               forall args . Fullfilled "_npi_multiply(symbol)" args =>
-                String -> ArgsHMap "_npi_multiply(symbol)" args -> IO SymbolHandle
+                Text -> ArgsHMap "_npi_multiply(symbol)" args -> IO SymbolHandle
 _npi_multiply name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -12125,7 +12072,7 @@ type instance ParameterList "_npi_multiply_scalar(symbol)" =
 
 _npi_multiply_scalar ::
                      forall args . Fullfilled "_npi_multiply_scalar(symbol)" args =>
-                       String ->
+                       Text ->
                          ArgsHMap "_npi_multiply_scalar(symbol)" args -> IO SymbolHandle
 _npi_multiply_scalar name args
   = let scalarArgs
@@ -12147,7 +12094,7 @@ type instance ParameterList "_npi_negative(symbol)" =
 
 _npi_negative ::
               forall args . Fullfilled "_npi_negative(symbol)" args =>
-                String -> ArgsHMap "_npi_negative(symbol)" args -> IO SymbolHandle
+                Text -> ArgsHMap "_npi_negative(symbol)" args -> IO SymbolHandle
 _npi_negative name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -12164,21 +12111,21 @@ _npi_negative name args
 type instance ParameterList "_npi_normal(symbol)" =
      '[ '("loc", AttrReq (Maybe Float)),
         '("scale", AttrReq (Maybe Float)),
-        '("size", AttrOpt (Maybe [Int])), '("ctx", AttrOpt String),
+        '("size", AttrOpt (Maybe [Int])), '("ctx", AttrOpt Text),
         '("dtype", AttrOpt (EnumType '["float16", "float32", "float64"])),
         '("input1", AttrOpt SymbolHandle),
         '("input2", AttrOpt SymbolHandle)]
 
 _npi_normal ::
             forall args . Fullfilled "_npi_normal(symbol)" args =>
-              String -> ArgsHMap "_npi_normal(symbol)" args -> IO SymbolHandle
+              Text -> ArgsHMap "_npi_normal(symbol)" args -> IO SymbolHandle
 _npi_normal name args
   = let scalarArgs
           = catMaybes
               [("loc",) . showValue <$> (args !? #loc :: Maybe (Maybe Float)),
                ("scale",) . showValue <$> (args !? #scale :: Maybe (Maybe Float)),
                ("size",) . showValue <$> (args !? #size :: Maybe (Maybe [Int])),
-               ("ctx",) . showValue <$> (args !? #ctx :: Maybe String),
+               ("ctx",) . showValue <$> (args !? #ctx :: Maybe Text),
                ("dtype",) . showValue <$>
                  (args !? #dtype ::
                     Maybe (EnumType '["float16", "float32", "float64"]))]
@@ -12200,7 +12147,7 @@ type instance ParameterList "_npi_not_equal(symbol)" =
 
 _npi_not_equal ::
                forall args . Fullfilled "_npi_not_equal(symbol)" args =>
-                 String -> ArgsHMap "_npi_not_equal(symbol)" args -> IO SymbolHandle
+                 Text -> ArgsHMap "_npi_not_equal(symbol)" args -> IO SymbolHandle
 _npi_not_equal name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -12221,7 +12168,7 @@ type instance ParameterList "_npi_not_equal_scalar(symbol)" =
 
 _npi_not_equal_scalar ::
                       forall args . Fullfilled "_npi_not_equal_scalar(symbol)" args =>
-                        String ->
+                        Text ->
                           ArgsHMap "_npi_not_equal_scalar(symbol)" args -> IO SymbolHandle
 _npi_not_equal_scalar name args
   = let scalarArgs
@@ -12239,7 +12186,7 @@ _npi_not_equal_scalar name args
          return sym
 
 type instance ParameterList "_npi_ones(symbol)" =
-     '[ '("shape", AttrOpt [Int]), '("ctx", AttrOpt String),
+     '[ '("shape", AttrOpt [Int]), '("ctx", AttrOpt Text),
         '("dtype",
           AttrOpt
             (EnumType
@@ -12248,12 +12195,12 @@ type instance ParameterList "_npi_ones(symbol)" =
 
 _npi_ones ::
           forall args . Fullfilled "_npi_ones(symbol)" args =>
-            String -> ArgsHMap "_npi_ones(symbol)" args -> IO SymbolHandle
+            Text -> ArgsHMap "_npi_ones(symbol)" args -> IO SymbolHandle
 _npi_ones name args
   = let scalarArgs
           = catMaybes
               [("shape",) . showValue <$> (args !? #shape :: Maybe [Int]),
-               ("ctx",) . showValue <$> (args !? #ctx :: Maybe String),
+               ("ctx",) . showValue <$> (args !? #ctx :: Maybe Text),
                ("dtype",) . showValue <$>
                  (args !? #dtype ::
                     Maybe
@@ -12275,7 +12222,7 @@ type instance ParameterList "_npi_power(symbol)" =
 
 _npi_power ::
            forall args . Fullfilled "_npi_power(symbol)" args =>
-             String -> ArgsHMap "_npi_power(symbol)" args -> IO SymbolHandle
+             Text -> ArgsHMap "_npi_power(symbol)" args -> IO SymbolHandle
 _npi_power name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -12296,7 +12243,7 @@ type instance ParameterList "_npi_power_scalar(symbol)" =
 
 _npi_power_scalar ::
                   forall args . Fullfilled "_npi_power_scalar(symbol)" args =>
-                    String ->
+                    Text ->
                       ArgsHMap "_npi_power_scalar(symbol)" args -> IO SymbolHandle
 _npi_power_scalar name args
   = let scalarArgs
@@ -12318,7 +12265,7 @@ type instance ParameterList "_npi_radians(symbol)" =
 
 _npi_radians ::
              forall args . Fullfilled "_npi_radians(symbol)" args =>
-               String -> ArgsHMap "_npi_radians(symbol)" args -> IO SymbolHandle
+               Text -> ArgsHMap "_npi_radians(symbol)" args -> IO SymbolHandle
 _npi_radians name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -12337,7 +12284,7 @@ type instance ParameterList "_npi_rarctan2_scalar(symbol)" =
 
 _npi_rarctan2_scalar ::
                      forall args . Fullfilled "_npi_rarctan2_scalar(symbol)" args =>
-                       String ->
+                       Text ->
                          ArgsHMap "_npi_rarctan2_scalar(symbol)" args -> IO SymbolHandle
 _npi_rarctan2_scalar name args
   = let scalarArgs
@@ -12359,7 +12306,7 @@ type instance ParameterList "_npi_rcopysign_scalar(symbol)" =
 
 _npi_rcopysign_scalar ::
                       forall args . Fullfilled "_npi_rcopysign_scalar(symbol)" args =>
-                        String ->
+                        Text ->
                           ArgsHMap "_npi_rcopysign_scalar(symbol)" args -> IO SymbolHandle
 _npi_rcopysign_scalar name args
   = let scalarArgs
@@ -12381,8 +12328,7 @@ type instance ParameterList "_npi_reciprocal(symbol)" =
 
 _npi_reciprocal ::
                 forall args . Fullfilled "_npi_reciprocal(symbol)" args =>
-                  String ->
-                    ArgsHMap "_npi_reciprocal(symbol)" args -> IO SymbolHandle
+                  Text -> ArgsHMap "_npi_reciprocal(symbol)" args -> IO SymbolHandle
 _npi_reciprocal name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -12401,7 +12347,7 @@ type instance ParameterList "_npi_rint(symbol)" =
 
 _npi_rint ::
           forall args . Fullfilled "_npi_rint(symbol)" args =>
-            String -> ArgsHMap "_npi_rint(symbol)" args -> IO SymbolHandle
+            Text -> ArgsHMap "_npi_rint(symbol)" args -> IO SymbolHandle
 _npi_rint name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -12420,7 +12366,7 @@ type instance ParameterList "_npi_rldexp_scalar(symbol)" =
 
 _npi_rldexp_scalar ::
                    forall args . Fullfilled "_npi_rldexp_scalar(symbol)" args =>
-                     String ->
+                     Text ->
                        ArgsHMap "_npi_rldexp_scalar(symbol)" args -> IO SymbolHandle
 _npi_rldexp_scalar name args
   = let scalarArgs
@@ -12442,8 +12388,7 @@ type instance ParameterList "_npi_rmod_scalar(symbol)" =
 
 _npi_rmod_scalar ::
                  forall args . Fullfilled "_npi_rmod_scalar(symbol)" args =>
-                   String ->
-                     ArgsHMap "_npi_rmod_scalar(symbol)" args -> IO SymbolHandle
+                   Text -> ArgsHMap "_npi_rmod_scalar(symbol)" args -> IO SymbolHandle
 _npi_rmod_scalar name args
   = let scalarArgs
           = catMaybes
@@ -12465,7 +12410,7 @@ type instance ParameterList "_npi_rot90(symbol)" =
 
 _npi_rot90 ::
            forall args . Fullfilled "_npi_rot90(symbol)" args =>
-             String -> ArgsHMap "_npi_rot90(symbol)" args -> IO SymbolHandle
+             Text -> ArgsHMap "_npi_rot90(symbol)" args -> IO SymbolHandle
 _npi_rot90 name args
   = let scalarArgs
           = catMaybes
@@ -12487,7 +12432,7 @@ type instance ParameterList "_npi_rpower_scalar(symbol)" =
 
 _npi_rpower_scalar ::
                    forall args . Fullfilled "_npi_rpower_scalar(symbol)" args =>
-                     String ->
+                     Text ->
                        ArgsHMap "_npi_rpower_scalar(symbol)" args -> IO SymbolHandle
 _npi_rpower_scalar name args
   = let scalarArgs
@@ -12509,7 +12454,7 @@ type instance ParameterList "_npi_rsubtract_scalar(symbol)" =
 
 _npi_rsubtract_scalar ::
                       forall args . Fullfilled "_npi_rsubtract_scalar(symbol)" args =>
-                        String ->
+                        Text ->
                           ArgsHMap "_npi_rsubtract_scalar(symbol)" args -> IO SymbolHandle
 _npi_rsubtract_scalar name args
   = let scalarArgs
@@ -12531,7 +12476,7 @@ type instance ParameterList "_npi_rtrue_divide_scalar(symbol)" =
 
 _npi_rtrue_divide_scalar ::
                          forall args . Fullfilled "_npi_rtrue_divide_scalar(symbol)" args =>
-                           String ->
+                           Text ->
                              ArgsHMap "_npi_rtrue_divide_scalar(symbol)" args -> IO SymbolHandle
 _npi_rtrue_divide_scalar name args
   = let scalarArgs
@@ -12553,7 +12498,7 @@ type instance ParameterList "_npi_share_memory(symbol)" =
 
 _npi_share_memory ::
                   forall args . Fullfilled "_npi_share_memory(symbol)" args =>
-                    String ->
+                    Text ->
                       ArgsHMap "_npi_share_memory(symbol)" args -> IO SymbolHandle
 _npi_share_memory name args
   = let scalarArgs = catMaybes []
@@ -12575,7 +12520,7 @@ type instance ParameterList "_npi_sign(symbol)" =
 
 _npi_sign ::
           forall args . Fullfilled "_npi_sign(symbol)" args =>
-            String -> ArgsHMap "_npi_sign(symbol)" args -> IO SymbolHandle
+            Text -> ArgsHMap "_npi_sign(symbol)" args -> IO SymbolHandle
 _npi_sign name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -12594,7 +12539,7 @@ type instance ParameterList "_npi_sin(symbol)" =
 
 _npi_sin ::
          forall args . Fullfilled "_npi_sin(symbol)" args =>
-           String -> ArgsHMap "_npi_sin(symbol)" args -> IO SymbolHandle
+           Text -> ArgsHMap "_npi_sin(symbol)" args -> IO SymbolHandle
 _npi_sin name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -12613,7 +12558,7 @@ type instance ParameterList "_npi_sinh(symbol)" =
 
 _npi_sinh ::
           forall args . Fullfilled "_npi_sinh(symbol)" args =>
-            String -> ArgsHMap "_npi_sinh(symbol)" args -> IO SymbolHandle
+            Text -> ArgsHMap "_npi_sinh(symbol)" args -> IO SymbolHandle
 _npi_sinh name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -12632,7 +12577,7 @@ type instance ParameterList "_npi_sqrt(symbol)" =
 
 _npi_sqrt ::
           forall args . Fullfilled "_npi_sqrt(symbol)" args =>
-            String -> ArgsHMap "_npi_sqrt(symbol)" args -> IO SymbolHandle
+            Text -> ArgsHMap "_npi_sqrt(symbol)" args -> IO SymbolHandle
 _npi_sqrt name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -12651,7 +12596,7 @@ type instance ParameterList "_npi_square(symbol)" =
 
 _npi_square ::
             forall args . Fullfilled "_npi_square(symbol)" args =>
-              String -> ArgsHMap "_npi_square(symbol)" args -> IO SymbolHandle
+              Text -> ArgsHMap "_npi_square(symbol)" args -> IO SymbolHandle
 _npi_square name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -12671,7 +12616,7 @@ type instance ParameterList "_npi_stack(symbol)" =
 
 _npi_stack ::
            forall args . Fullfilled "_npi_stack(symbol)" args =>
-             String -> ArgsHMap "_npi_stack(symbol)" args -> IO SymbolHandle
+             Text -> ArgsHMap "_npi_stack(symbol)" args -> IO SymbolHandle
 _npi_stack name args
   = let scalarArgs
           = catMaybes
@@ -12704,7 +12649,7 @@ type instance ParameterList "_npi_std(symbol)" =
 
 _npi_std ::
          forall args . Fullfilled "_npi_std(symbol)" args =>
-           String -> ArgsHMap "_npi_std(symbol)" args -> IO SymbolHandle
+           Text -> ArgsHMap "_npi_std(symbol)" args -> IO SymbolHandle
 _npi_std name args
   = let scalarArgs
           = catMaybes
@@ -12733,7 +12678,7 @@ type instance ParameterList "_npi_subtract(symbol)" =
 
 _npi_subtract ::
               forall args . Fullfilled "_npi_subtract(symbol)" args =>
-                String -> ArgsHMap "_npi_subtract(symbol)" args -> IO SymbolHandle
+                Text -> ArgsHMap "_npi_subtract(symbol)" args -> IO SymbolHandle
 _npi_subtract name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -12754,7 +12699,7 @@ type instance ParameterList "_npi_subtract_scalar(symbol)" =
 
 _npi_subtract_scalar ::
                      forall args . Fullfilled "_npi_subtract_scalar(symbol)" args =>
-                       String ->
+                       Text ->
                          ArgsHMap "_npi_subtract_scalar(symbol)" args -> IO SymbolHandle
 _npi_subtract_scalar name args
   = let scalarArgs
@@ -12776,7 +12721,7 @@ type instance ParameterList "_npi_svd(symbol)" =
 
 _npi_svd ::
          forall args . Fullfilled "_npi_svd(symbol)" args =>
-           String -> ArgsHMap "_npi_svd(symbol)" args -> IO SymbolHandle
+           Text -> ArgsHMap "_npi_svd(symbol)" args -> IO SymbolHandle
 _npi_svd name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -12795,7 +12740,7 @@ type instance ParameterList "_npi_tan(symbol)" =
 
 _npi_tan ::
          forall args . Fullfilled "_npi_tan(symbol)" args =>
-           String -> ArgsHMap "_npi_tan(symbol)" args -> IO SymbolHandle
+           Text -> ArgsHMap "_npi_tan(symbol)" args -> IO SymbolHandle
 _npi_tan name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -12814,7 +12759,7 @@ type instance ParameterList "_npi_tanh(symbol)" =
 
 _npi_tanh ::
           forall args . Fullfilled "_npi_tanh(symbol)" args =>
-            String -> ArgsHMap "_npi_tanh(symbol)" args -> IO SymbolHandle
+            Text -> ArgsHMap "_npi_tanh(symbol)" args -> IO SymbolHandle
 _npi_tanh name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -12835,7 +12780,7 @@ type instance ParameterList "_npi_tensordot(symbol)" =
 
 _npi_tensordot ::
                forall args . Fullfilled "_npi_tensordot(symbol)" args =>
-                 String -> ArgsHMap "_npi_tensordot(symbol)" args -> IO SymbolHandle
+                 Text -> ArgsHMap "_npi_tensordot(symbol)" args -> IO SymbolHandle
 _npi_tensordot name args
   = let scalarArgs
           = catMaybes
@@ -12862,7 +12807,7 @@ type instance ParameterList "_npi_tensordot_int_axes(symbol)" =
 
 _npi_tensordot_int_axes ::
                         forall args . Fullfilled "_npi_tensordot_int_axes(symbol)" args =>
-                          String ->
+                          Text ->
                             ArgsHMap "_npi_tensordot_int_axes(symbol)" args -> IO SymbolHandle
 _npi_tensordot_int_axes name args
   = let scalarArgs
@@ -12886,7 +12831,7 @@ type instance ParameterList "_npi_tril(symbol)" =
 
 _npi_tril ::
           forall args . Fullfilled "_npi_tril(symbol)" args =>
-            String -> ArgsHMap "_npi_tril(symbol)" args -> IO SymbolHandle
+            Text -> ArgsHMap "_npi_tril(symbol)" args -> IO SymbolHandle
 _npi_tril name args
   = let scalarArgs
           = catMaybes [("k",) . showValue <$> (args !? #k :: Maybe Int)]
@@ -12906,8 +12851,7 @@ type instance ParameterList "_npi_true_divide(symbol)" =
 
 _npi_true_divide ::
                  forall args . Fullfilled "_npi_true_divide(symbol)" args =>
-                   String ->
-                     ArgsHMap "_npi_true_divide(symbol)" args -> IO SymbolHandle
+                   Text -> ArgsHMap "_npi_true_divide(symbol)" args -> IO SymbolHandle
 _npi_true_divide name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -12928,7 +12872,7 @@ type instance ParameterList "_npi_true_divide_scalar(symbol)" =
 
 _npi_true_divide_scalar ::
                         forall args . Fullfilled "_npi_true_divide_scalar(symbol)" args =>
-                          String ->
+                          Text ->
                             ArgsHMap "_npi_true_divide_scalar(symbol)" args -> IO SymbolHandle
 _npi_true_divide_scalar name args
   = let scalarArgs
@@ -12950,7 +12894,7 @@ type instance ParameterList "_npi_trunc(symbol)" =
 
 _npi_trunc ::
            forall args . Fullfilled "_npi_trunc(symbol)" args =>
-             String -> ArgsHMap "_npi_trunc(symbol)" args -> IO SymbolHandle
+             Text -> ArgsHMap "_npi_trunc(symbol)" args -> IO SymbolHandle
 _npi_trunc name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -12967,21 +12911,21 @@ _npi_trunc name args
 type instance ParameterList "_npi_uniform(symbol)" =
      '[ '("low", AttrReq (Maybe Float)),
         '("high", AttrReq (Maybe Float)), '("size", AttrOpt (Maybe [Int])),
-        '("ctx", AttrOpt String),
+        '("ctx", AttrOpt Text),
         '("dtype", AttrOpt (EnumType '["float16", "float32", "float64"])),
         '("input1", AttrOpt SymbolHandle),
         '("input2", AttrOpt SymbolHandle)]
 
 _npi_uniform ::
              forall args . Fullfilled "_npi_uniform(symbol)" args =>
-               String -> ArgsHMap "_npi_uniform(symbol)" args -> IO SymbolHandle
+               Text -> ArgsHMap "_npi_uniform(symbol)" args -> IO SymbolHandle
 _npi_uniform name args
   = let scalarArgs
           = catMaybes
               [("low",) . showValue <$> (args !? #low :: Maybe (Maybe Float)),
                ("high",) . showValue <$> (args !? #high :: Maybe (Maybe Float)),
                ("size",) . showValue <$> (args !? #size :: Maybe (Maybe [Int])),
-               ("ctx",) . showValue <$> (args !? #ctx :: Maybe String),
+               ("ctx",) . showValue <$> (args !? #ctx :: Maybe Text),
                ("dtype",) . showValue <$>
                  (args !? #dtype ::
                     Maybe (EnumType '["float16", "float32", "float64"]))]
@@ -13006,7 +12950,7 @@ type instance ParameterList "_npi_unique(symbol)" =
 
 _npi_unique ::
             forall args . Fullfilled "_npi_unique(symbol)" args =>
-              String -> ArgsHMap "_npi_unique(symbol)" args -> IO SymbolHandle
+              Text -> ArgsHMap "_npi_unique(symbol)" args -> IO SymbolHandle
 _npi_unique name args
   = let scalarArgs
           = catMaybes
@@ -13040,7 +12984,7 @@ type instance ParameterList "_npi_var(symbol)" =
 
 _npi_var ::
          forall args . Fullfilled "_npi_var(symbol)" args =>
-           String -> ArgsHMap "_npi_var(symbol)" args -> IO SymbolHandle
+           Text -> ArgsHMap "_npi_var(symbol)" args -> IO SymbolHandle
 _npi_var name args
   = let scalarArgs
           = catMaybes
@@ -13069,7 +13013,7 @@ type instance ParameterList "_npi_vstack(symbol)" =
 
 _npi_vstack ::
             forall args . Fullfilled "_npi_vstack(symbol)" args =>
-              String -> ArgsHMap "_npi_vstack(symbol)" args -> IO SymbolHandle
+              Text -> ArgsHMap "_npi_vstack(symbol)" args -> IO SymbolHandle
 _npi_vstack name args
   = let scalarArgs
           = catMaybes
@@ -13090,7 +13034,7 @@ _npi_vstack name args
          return sym
 
 type instance ParameterList "_npi_zeros(symbol)" =
-     '[ '("shape", AttrOpt [Int]), '("ctx", AttrOpt String),
+     '[ '("shape", AttrOpt [Int]), '("ctx", AttrOpt Text),
         '("dtype",
           AttrOpt
             (EnumType
@@ -13099,12 +13043,12 @@ type instance ParameterList "_npi_zeros(symbol)" =
 
 _npi_zeros ::
            forall args . Fullfilled "_npi_zeros(symbol)" args =>
-             String -> ArgsHMap "_npi_zeros(symbol)" args -> IO SymbolHandle
+             Text -> ArgsHMap "_npi_zeros(symbol)" args -> IO SymbolHandle
 _npi_zeros name args
   = let scalarArgs
           = catMaybes
               [("shape",) . showValue <$> (args !? #shape :: Maybe [Int]),
-               ("ctx",) . showValue <$> (args !? #ctx :: Maybe String),
+               ("ctx",) . showValue <$> (args !? #ctx :: Maybe Text),
                ("dtype",) . showValue <$>
                  (args !? #dtype ::
                     Maybe
@@ -13126,7 +13070,7 @@ type instance ParameterList "_npx_nonzero(symbol)" =
 
 _npx_nonzero ::
              forall args . Fullfilled "_npx_nonzero(symbol)" args =>
-               String -> ArgsHMap "_npx_nonzero(symbol)" args -> IO SymbolHandle
+               Text -> ArgsHMap "_npx_nonzero(symbol)" args -> IO SymbolHandle
 _npx_nonzero name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -13145,7 +13089,7 @@ type instance ParameterList "_npx_relu(symbol)" =
 
 _npx_relu ::
           forall args . Fullfilled "_npx_relu(symbol)" args =>
-            String -> ArgsHMap "_npx_relu(symbol)" args -> IO SymbolHandle
+            Text -> ArgsHMap "_npx_relu(symbol)" args -> IO SymbolHandle
 _npx_relu name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -13161,17 +13105,17 @@ _npx_relu name args
 
 type instance ParameterList "_npx_reshape(symbol)" =
      '[ '("newshape", AttrReq [Int]), '("reverse", AttrOpt Bool),
-        '("order", AttrOpt String), '("a", AttrOpt SymbolHandle)]
+        '("order", AttrOpt Text), '("a", AttrOpt SymbolHandle)]
 
 _npx_reshape ::
              forall args . Fullfilled "_npx_reshape(symbol)" args =>
-               String -> ArgsHMap "_npx_reshape(symbol)" args -> IO SymbolHandle
+               Text -> ArgsHMap "_npx_reshape(symbol)" args -> IO SymbolHandle
 _npx_reshape name args
   = let scalarArgs
           = catMaybes
               [("newshape",) . showValue <$> (args !? #newshape :: Maybe [Int]),
                ("reverse",) . showValue <$> (args !? #reverse :: Maybe Bool),
-               ("order",) . showValue <$> (args !? #order :: Maybe String)]
+               ("order",) . showValue <$> (args !? #order :: Maybe Text)]
         (scalarkeys, scalarvals) = unzip scalarArgs
         tensorArgs
           = catMaybes [("a",) <$> (args !? #a :: Maybe SymbolHandle)]
@@ -13188,7 +13132,7 @@ type instance ParameterList "_npx_sigmoid(symbol)" =
 
 _npx_sigmoid ::
              forall args . Fullfilled "_npx_sigmoid(symbol)" args =>
-               String -> ArgsHMap "_npx_sigmoid(symbol)" args -> IO SymbolHandle
+               Text -> ArgsHMap "_npx_sigmoid(symbol)" args -> IO SymbolHandle
 _npx_sigmoid name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -13203,7 +13147,7 @@ _npx_sigmoid name args
          return sym
 
 type instance ParameterList "_ones(symbol)" =
-     '[ '("shape", AttrOpt [Int]), '("ctx", AttrOpt String),
+     '[ '("shape", AttrOpt [Int]), '("ctx", AttrOpt Text),
         '("dtype",
           AttrOpt
             (EnumType
@@ -13212,12 +13156,12 @@ type instance ParameterList "_ones(symbol)" =
 
 _ones ::
       forall args . Fullfilled "_ones(symbol)" args =>
-        String -> ArgsHMap "_ones(symbol)" args -> IO SymbolHandle
+        Text -> ArgsHMap "_ones(symbol)" args -> IO SymbolHandle
 _ones name args
   = let scalarArgs
           = catMaybes
               [("shape",) . showValue <$> (args !? #shape :: Maybe [Int]),
-               ("ctx",) . showValue <$> (args !? #ctx :: Maybe String),
+               ("ctx",) . showValue <$> (args !? #ctx :: Maybe Text),
                ("dtype",) . showValue <$>
                  (args !? #dtype ::
                     Maybe
@@ -13239,7 +13183,7 @@ type instance ParameterList "_plus_scalar(symbol)" =
 
 _plus_scalar ::
              forall args . Fullfilled "_plus_scalar(symbol)" args =>
-               String -> ArgsHMap "_plus_scalar(symbol)" args -> IO SymbolHandle
+               Text -> ArgsHMap "_plus_scalar(symbol)" args -> IO SymbolHandle
 _plus_scalar name args
   = let scalarArgs
           = catMaybes
@@ -13260,7 +13204,7 @@ type instance ParameterList "_power(symbol)" =
 
 _power ::
        forall args . Fullfilled "_power(symbol)" args =>
-         String -> ArgsHMap "_power(symbol)" args -> IO SymbolHandle
+         Text -> ArgsHMap "_power(symbol)" args -> IO SymbolHandle
 _power name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -13281,7 +13225,7 @@ type instance ParameterList "_power_scalar(symbol)" =
 
 _power_scalar ::
               forall args . Fullfilled "_power_scalar(symbol)" args =>
-                String -> ArgsHMap "_power_scalar(symbol)" args -> IO SymbolHandle
+                Text -> ArgsHMap "_power_scalar(symbol)" args -> IO SymbolHandle
 _power_scalar name args
   = let scalarArgs
           = catMaybes
@@ -13299,20 +13243,20 @@ _power_scalar name args
 
 type instance ParameterList "_random_exponential(symbol)" =
      '[ '("lam", AttrOpt Float), '("shape", AttrOpt [Int]),
-        '("ctx", AttrOpt String),
+        '("ctx", AttrOpt Text),
         '("dtype",
           AttrOpt (EnumType '["None", "float16", "float32", "float64"]))]
 
 _random_exponential ::
                     forall args . Fullfilled "_random_exponential(symbol)" args =>
-                      String ->
+                      Text ->
                         ArgsHMap "_random_exponential(symbol)" args -> IO SymbolHandle
 _random_exponential name args
   = let scalarArgs
           = catMaybes
               [("lam",) . showValue <$> (args !? #lam :: Maybe Float),
                ("shape",) . showValue <$> (args !? #shape :: Maybe [Int]),
-               ("ctx",) . showValue <$> (args !? #ctx :: Maybe String),
+               ("ctx",) . showValue <$> (args !? #ctx :: Maybe Text),
                ("dtype",) . showValue <$>
                  (args !? #dtype ::
                     Maybe (EnumType '["None", "float16", "float32", "float64"]))]
@@ -13331,7 +13275,7 @@ type instance ParameterList "_random_exponential_like(symbol)" =
 
 _random_exponential_like ::
                          forall args . Fullfilled "_random_exponential_like(symbol)" args =>
-                           String ->
+                           Text ->
                              ArgsHMap "_random_exponential_like(symbol)" args -> IO SymbolHandle
 _random_exponential_like name args
   = let scalarArgs
@@ -13350,20 +13294,20 @@ _random_exponential_like name args
 
 type instance ParameterList "_random_gamma(symbol)" =
      '[ '("alpha", AttrOpt Float), '("beta", AttrOpt Float),
-        '("shape", AttrOpt [Int]), '("ctx", AttrOpt String),
+        '("shape", AttrOpt [Int]), '("ctx", AttrOpt Text),
         '("dtype",
           AttrOpt (EnumType '["None", "float16", "float32", "float64"]))]
 
 _random_gamma ::
               forall args . Fullfilled "_random_gamma(symbol)" args =>
-                String -> ArgsHMap "_random_gamma(symbol)" args -> IO SymbolHandle
+                Text -> ArgsHMap "_random_gamma(symbol)" args -> IO SymbolHandle
 _random_gamma name args
   = let scalarArgs
           = catMaybes
               [("alpha",) . showValue <$> (args !? #alpha :: Maybe Float),
                ("beta",) . showValue <$> (args !? #beta :: Maybe Float),
                ("shape",) . showValue <$> (args !? #shape :: Maybe [Int]),
-               ("ctx",) . showValue <$> (args !? #ctx :: Maybe String),
+               ("ctx",) . showValue <$> (args !? #ctx :: Maybe Text),
                ("dtype",) . showValue <$>
                  (args !? #dtype ::
                     Maybe (EnumType '["None", "float16", "float32", "float64"]))]
@@ -13383,7 +13327,7 @@ type instance ParameterList "_random_gamma_like(symbol)" =
 
 _random_gamma_like ::
                    forall args . Fullfilled "_random_gamma_like(symbol)" args =>
-                     String ->
+                     Text ->
                        ArgsHMap "_random_gamma_like(symbol)" args -> IO SymbolHandle
 _random_gamma_like name args
   = let scalarArgs
@@ -13404,7 +13348,7 @@ _random_gamma_like name args
 type instance
      ParameterList "_random_generalized_negative_binomial(symbol)" =
      '[ '("mu", AttrOpt Float), '("alpha", AttrOpt Float),
-        '("shape", AttrOpt [Int]), '("ctx", AttrOpt String),
+        '("shape", AttrOpt [Int]), '("ctx", AttrOpt Text),
         '("dtype",
           AttrOpt (EnumType '["None", "float16", "float32", "float64"]))]
 
@@ -13412,7 +13356,7 @@ _random_generalized_negative_binomial ::
                                       forall args .
                                         Fullfilled "_random_generalized_negative_binomial(symbol)"
                                           args =>
-                                        String ->
+                                        Text ->
                                           ArgsHMap "_random_generalized_negative_binomial(symbol)"
                                             args
                                             -> IO SymbolHandle
@@ -13422,7 +13366,7 @@ _random_generalized_negative_binomial name args
               [("mu",) . showValue <$> (args !? #mu :: Maybe Float),
                ("alpha",) . showValue <$> (args !? #alpha :: Maybe Float),
                ("shape",) . showValue <$> (args !? #shape :: Maybe [Int]),
-               ("ctx",) . showValue <$> (args !? #ctx :: Maybe String),
+               ("ctx",) . showValue <$> (args !? #ctx :: Maybe Text),
                ("dtype",) . showValue <$>
                  (args !? #dtype ::
                     Maybe (EnumType '["None", "float16", "float32", "float64"]))]
@@ -13447,7 +13391,7 @@ _random_generalized_negative_binomial_like ::
                                              Fullfilled
                                                "_random_generalized_negative_binomial_like(symbol)"
                                                args =>
-                                             String ->
+                                             Text ->
                                                ArgsHMap
                                                  "_random_generalized_negative_binomial_like(symbol)"
                                                  args
@@ -13470,14 +13414,14 @@ _random_generalized_negative_binomial_like name args
 
 type instance ParameterList "_random_negative_binomial(symbol)" =
      '[ '("k", AttrOpt Int), '("p", AttrOpt Float),
-        '("shape", AttrOpt [Int]), '("ctx", AttrOpt String),
+        '("shape", AttrOpt [Int]), '("ctx", AttrOpt Text),
         '("dtype",
           AttrOpt (EnumType '["None", "float16", "float32", "float64"]))]
 
 _random_negative_binomial ::
                           forall args .
                             Fullfilled "_random_negative_binomial(symbol)" args =>
-                            String ->
+                            Text ->
                               ArgsHMap "_random_negative_binomial(symbol)" args ->
                                 IO SymbolHandle
 _random_negative_binomial name args
@@ -13486,7 +13430,7 @@ _random_negative_binomial name args
               [("k",) . showValue <$> (args !? #k :: Maybe Int),
                ("p",) . showValue <$> (args !? #p :: Maybe Float),
                ("shape",) . showValue <$> (args !? #shape :: Maybe [Int]),
-               ("ctx",) . showValue <$> (args !? #ctx :: Maybe String),
+               ("ctx",) . showValue <$> (args !? #ctx :: Maybe Text),
                ("dtype",) . showValue <$>
                  (args !? #dtype ::
                     Maybe (EnumType '["None", "float16", "float32", "float64"]))]
@@ -13508,7 +13452,7 @@ type instance
 _random_negative_binomial_like ::
                                forall args .
                                  Fullfilled "_random_negative_binomial_like(symbol)" args =>
-                                 String ->
+                                 Text ->
                                    ArgsHMap "_random_negative_binomial_like(symbol)" args ->
                                      IO SymbolHandle
 _random_negative_binomial_like name args
@@ -13529,20 +13473,20 @@ _random_negative_binomial_like name args
 
 type instance ParameterList "_random_normal(symbol)" =
      '[ '("loc", AttrOpt Float), '("scale", AttrOpt Float),
-        '("shape", AttrOpt [Int]), '("ctx", AttrOpt String),
+        '("shape", AttrOpt [Int]), '("ctx", AttrOpt Text),
         '("dtype",
           AttrOpt (EnumType '["None", "float16", "float32", "float64"]))]
 
 _random_normal ::
                forall args . Fullfilled "_random_normal(symbol)" args =>
-                 String -> ArgsHMap "_random_normal(symbol)" args -> IO SymbolHandle
+                 Text -> ArgsHMap "_random_normal(symbol)" args -> IO SymbolHandle
 _random_normal name args
   = let scalarArgs
           = catMaybes
               [("loc",) . showValue <$> (args !? #loc :: Maybe Float),
                ("scale",) . showValue <$> (args !? #scale :: Maybe Float),
                ("shape",) . showValue <$> (args !? #shape :: Maybe [Int]),
-               ("ctx",) . showValue <$> (args !? #ctx :: Maybe String),
+               ("ctx",) . showValue <$> (args !? #ctx :: Maybe Text),
                ("dtype",) . showValue <$>
                  (args !? #dtype ::
                     Maybe (EnumType '["None", "float16", "float32", "float64"]))]
@@ -13562,7 +13506,7 @@ type instance ParameterList "_random_normal_like(symbol)" =
 
 _random_normal_like ::
                     forall args . Fullfilled "_random_normal_like(symbol)" args =>
-                      String ->
+                      Text ->
                         ArgsHMap "_random_normal_like(symbol)" args -> IO SymbolHandle
 _random_normal_like name args
   = let scalarArgs
@@ -13586,7 +13530,7 @@ type instance ParameterList "_random_pdf_dirichlet(symbol)" =
 
 _random_pdf_dirichlet ::
                       forall args . Fullfilled "_random_pdf_dirichlet(symbol)" args =>
-                        String ->
+                        Text ->
                           ArgsHMap "_random_pdf_dirichlet(symbol)" args -> IO SymbolHandle
 _random_pdf_dirichlet name args
   = let scalarArgs
@@ -13611,7 +13555,7 @@ type instance ParameterList "_random_pdf_exponential(symbol)" =
 
 _random_pdf_exponential ::
                         forall args . Fullfilled "_random_pdf_exponential(symbol)" args =>
-                          String ->
+                          Text ->
                             ArgsHMap "_random_pdf_exponential(symbol)" args -> IO SymbolHandle
 _random_pdf_exponential name args
   = let scalarArgs
@@ -13636,7 +13580,7 @@ type instance ParameterList "_random_pdf_gamma(symbol)" =
 
 _random_pdf_gamma ::
                   forall args . Fullfilled "_random_pdf_gamma(symbol)" args =>
-                    String ->
+                    Text ->
                       ArgsHMap "_random_pdf_gamma(symbol)" args -> IO SymbolHandle
 _random_pdf_gamma name args
   = let scalarArgs
@@ -13666,7 +13610,7 @@ _random_pdf_generalized_negative_binomial ::
                                             Fullfilled
                                               "_random_pdf_generalized_negative_binomial(symbol)"
                                               args =>
-                                            String ->
+                                            Text ->
                                               ArgsHMap
                                                 "_random_pdf_generalized_negative_binomial(symbol)"
                                                 args
@@ -13697,7 +13641,7 @@ type instance ParameterList "_random_pdf_negative_binomial(symbol)"
 _random_pdf_negative_binomial ::
                               forall args .
                                 Fullfilled "_random_pdf_negative_binomial(symbol)" args =>
-                                String ->
+                                Text ->
                                   ArgsHMap "_random_pdf_negative_binomial(symbol)" args ->
                                     IO SymbolHandle
 _random_pdf_negative_binomial name args
@@ -13724,7 +13668,7 @@ type instance ParameterList "_random_pdf_normal(symbol)" =
 
 _random_pdf_normal ::
                    forall args . Fullfilled "_random_pdf_normal(symbol)" args =>
-                     String ->
+                     Text ->
                        ArgsHMap "_random_pdf_normal(symbol)" args -> IO SymbolHandle
 _random_pdf_normal name args
   = let scalarArgs
@@ -13750,7 +13694,7 @@ type instance ParameterList "_random_pdf_poisson(symbol)" =
 
 _random_pdf_poisson ::
                     forall args . Fullfilled "_random_pdf_poisson(symbol)" args =>
-                      String ->
+                      Text ->
                         ArgsHMap "_random_pdf_poisson(symbol)" args -> IO SymbolHandle
 _random_pdf_poisson name args
   = let scalarArgs
@@ -13775,7 +13719,7 @@ type instance ParameterList "_random_pdf_uniform(symbol)" =
 
 _random_pdf_uniform ::
                     forall args . Fullfilled "_random_pdf_uniform(symbol)" args =>
-                      String ->
+                      Text ->
                         ArgsHMap "_random_pdf_uniform(symbol)" args -> IO SymbolHandle
 _random_pdf_uniform name args
   = let scalarArgs
@@ -13797,20 +13741,19 @@ _random_pdf_uniform name args
 
 type instance ParameterList "_random_poisson(symbol)" =
      '[ '("lam", AttrOpt Float), '("shape", AttrOpt [Int]),
-        '("ctx", AttrOpt String),
+        '("ctx", AttrOpt Text),
         '("dtype",
           AttrOpt (EnumType '["None", "float16", "float32", "float64"]))]
 
 _random_poisson ::
                 forall args . Fullfilled "_random_poisson(symbol)" args =>
-                  String ->
-                    ArgsHMap "_random_poisson(symbol)" args -> IO SymbolHandle
+                  Text -> ArgsHMap "_random_poisson(symbol)" args -> IO SymbolHandle
 _random_poisson name args
   = let scalarArgs
           = catMaybes
               [("lam",) . showValue <$> (args !? #lam :: Maybe Float),
                ("shape",) . showValue <$> (args !? #shape :: Maybe [Int]),
-               ("ctx",) . showValue <$> (args !? #ctx :: Maybe String),
+               ("ctx",) . showValue <$> (args !? #ctx :: Maybe Text),
                ("dtype",) . showValue <$>
                  (args !? #dtype ::
                     Maybe (EnumType '["None", "float16", "float32", "float64"]))]
@@ -13829,7 +13772,7 @@ type instance ParameterList "_random_poisson_like(symbol)" =
 
 _random_poisson_like ::
                      forall args . Fullfilled "_random_poisson_like(symbol)" args =>
-                       String ->
+                       Text ->
                          ArgsHMap "_random_poisson_like(symbol)" args -> IO SymbolHandle
 _random_poisson_like name args
   = let scalarArgs
@@ -13848,21 +13791,20 @@ _random_poisson_like name args
 
 type instance ParameterList "_random_uniform(symbol)" =
      '[ '("low", AttrOpt Float), '("high", AttrOpt Float),
-        '("shape", AttrOpt [Int]), '("ctx", AttrOpt String),
+        '("shape", AttrOpt [Int]), '("ctx", AttrOpt Text),
         '("dtype",
           AttrOpt (EnumType '["None", "float16", "float32", "float64"]))]
 
 _random_uniform ::
                 forall args . Fullfilled "_random_uniform(symbol)" args =>
-                  String ->
-                    ArgsHMap "_random_uniform(symbol)" args -> IO SymbolHandle
+                  Text -> ArgsHMap "_random_uniform(symbol)" args -> IO SymbolHandle
 _random_uniform name args
   = let scalarArgs
           = catMaybes
               [("low",) . showValue <$> (args !? #low :: Maybe Float),
                ("high",) . showValue <$> (args !? #high :: Maybe Float),
                ("shape",) . showValue <$> (args !? #shape :: Maybe [Int]),
-               ("ctx",) . showValue <$> (args !? #ctx :: Maybe String),
+               ("ctx",) . showValue <$> (args !? #ctx :: Maybe Text),
                ("dtype",) . showValue <$>
                  (args !? #dtype ::
                     Maybe (EnumType '["None", "float16", "float32", "float64"]))]
@@ -13882,7 +13824,7 @@ type instance ParameterList "_random_uniform_like(symbol)" =
 
 _random_uniform_like ::
                      forall args . Fullfilled "_random_uniform_like(symbol)" args =>
-                       String ->
+                       Text ->
                          ArgsHMap "_random_uniform_like(symbol)" args -> IO SymbolHandle
 _random_uniform_like name args
   = let scalarArgs
@@ -13905,7 +13847,7 @@ type instance ParameterList "_ravel_multi_index(symbol)" =
 
 _ravel_multi_index ::
                    forall args . Fullfilled "_ravel_multi_index(symbol)" args =>
-                     String ->
+                     Text ->
                        ArgsHMap "_ravel_multi_index(symbol)" args -> IO SymbolHandle
 _ravel_multi_index name args
   = let scalarArgs
@@ -13927,7 +13869,7 @@ type instance ParameterList "_rdiv_scalar(symbol)" =
 
 _rdiv_scalar ::
              forall args . Fullfilled "_rdiv_scalar(symbol)" args =>
-               String -> ArgsHMap "_rdiv_scalar(symbol)" args -> IO SymbolHandle
+               Text -> ArgsHMap "_rdiv_scalar(symbol)" args -> IO SymbolHandle
 _rdiv_scalar name args
   = let scalarArgs
           = catMaybes
@@ -13948,7 +13890,7 @@ type instance ParameterList "_rminus_scalar(symbol)" =
 
 _rminus_scalar ::
                forall args . Fullfilled "_rminus_scalar(symbol)" args =>
-                 String -> ArgsHMap "_rminus_scalar(symbol)" args -> IO SymbolHandle
+                 Text -> ArgsHMap "_rminus_scalar(symbol)" args -> IO SymbolHandle
 _rminus_scalar name args
   = let scalarArgs
           = catMaybes
@@ -13969,7 +13911,7 @@ type instance ParameterList "_rmod_scalar(symbol)" =
 
 _rmod_scalar ::
              forall args . Fullfilled "_rmod_scalar(symbol)" args =>
-               String -> ArgsHMap "_rmod_scalar(symbol)" args -> IO SymbolHandle
+               Text -> ArgsHMap "_rmod_scalar(symbol)" args -> IO SymbolHandle
 _rmod_scalar name args
   = let scalarArgs
           = catMaybes
@@ -13991,7 +13933,7 @@ type instance ParameterList "_rnn_param_concat(symbol)" =
 
 _rnn_param_concat ::
                   forall args . Fullfilled "_rnn_param_concat(symbol)" args =>
-                    String ->
+                    Text ->
                       ArgsHMap "_rnn_param_concat(symbol)" args -> IO SymbolHandle
 _rnn_param_concat name args
   = let scalarArgs
@@ -14018,7 +13960,7 @@ type instance ParameterList "_rpower_scalar(symbol)" =
 
 _rpower_scalar ::
                forall args . Fullfilled "_rpower_scalar(symbol)" args =>
-                 String -> ArgsHMap "_rpower_scalar(symbol)" args -> IO SymbolHandle
+                 Text -> ArgsHMap "_rpower_scalar(symbol)" args -> IO SymbolHandle
 _rpower_scalar name args
   = let scalarArgs
           = catMaybes
@@ -14042,7 +13984,7 @@ type instance ParameterList "_sample_exponential(symbol)" =
 
 _sample_exponential ::
                     forall args . Fullfilled "_sample_exponential(symbol)" args =>
-                      String ->
+                      Text ->
                         ArgsHMap "_sample_exponential(symbol)" args -> IO SymbolHandle
 _sample_exponential name args
   = let scalarArgs
@@ -14070,7 +14012,7 @@ type instance ParameterList "_sample_gamma(symbol)" =
 
 _sample_gamma ::
               forall args . Fullfilled "_sample_gamma(symbol)" args =>
-                String -> ArgsHMap "_sample_gamma(symbol)" args -> IO SymbolHandle
+                Text -> ArgsHMap "_sample_gamma(symbol)" args -> IO SymbolHandle
 _sample_gamma name args
   = let scalarArgs
           = catMaybes
@@ -14102,7 +14044,7 @@ _sample_generalized_negative_binomial ::
                                       forall args .
                                         Fullfilled "_sample_generalized_negative_binomial(symbol)"
                                           args =>
-                                        String ->
+                                        Text ->
                                           ArgsHMap "_sample_generalized_negative_binomial(symbol)"
                                             args
                                             -> IO SymbolHandle
@@ -14135,7 +14077,7 @@ type instance ParameterList "_sample_multinomial(symbol)" =
 
 _sample_multinomial ::
                     forall args . Fullfilled "_sample_multinomial(symbol)" args =>
-                      String ->
+                      Text ->
                         ArgsHMap "_sample_multinomial(symbol)" args -> IO SymbolHandle
 _sample_multinomial name args
   = let scalarArgs
@@ -14166,7 +14108,7 @@ type instance ParameterList "_sample_negative_binomial(symbol)" =
 _sample_negative_binomial ::
                           forall args .
                             Fullfilled "_sample_negative_binomial(symbol)" args =>
-                            String ->
+                            Text ->
                               ArgsHMap "_sample_negative_binomial(symbol)" args ->
                                 IO SymbolHandle
 _sample_negative_binomial name args
@@ -14197,7 +14139,7 @@ type instance ParameterList "_sample_normal(symbol)" =
 
 _sample_normal ::
                forall args . Fullfilled "_sample_normal(symbol)" args =>
-                 String -> ArgsHMap "_sample_normal(symbol)" args -> IO SymbolHandle
+                 Text -> ArgsHMap "_sample_normal(symbol)" args -> IO SymbolHandle
 _sample_normal name args
   = let scalarArgs
           = catMaybes
@@ -14226,8 +14168,7 @@ type instance ParameterList "_sample_poisson(symbol)" =
 
 _sample_poisson ::
                 forall args . Fullfilled "_sample_poisson(symbol)" args =>
-                  String ->
-                    ArgsHMap "_sample_poisson(symbol)" args -> IO SymbolHandle
+                  Text -> ArgsHMap "_sample_poisson(symbol)" args -> IO SymbolHandle
 _sample_poisson name args
   = let scalarArgs
           = catMaybes
@@ -14254,8 +14195,7 @@ type instance ParameterList "_sample_uniform(symbol)" =
 
 _sample_uniform ::
                 forall args . Fullfilled "_sample_uniform(symbol)" args =>
-                  String ->
-                    ArgsHMap "_sample_uniform(symbol)" args -> IO SymbolHandle
+                  Text -> ArgsHMap "_sample_uniform(symbol)" args -> IO SymbolHandle
 _sample_uniform name args
   = let scalarArgs
           = catMaybes
@@ -14281,7 +14221,7 @@ type instance ParameterList "_sample_unique_zipfian(symbol)" =
 
 _sample_unique_zipfian ::
                        forall args . Fullfilled "_sample_unique_zipfian(symbol)" args =>
-                         String ->
+                         Text ->
                            ArgsHMap "_sample_unique_zipfian(symbol)" args -> IO SymbolHandle
 _sample_unique_zipfian name args
   = let scalarArgs
@@ -14303,7 +14243,7 @@ type instance ParameterList "_scatter_elemwise_div(symbol)" =
 
 _scatter_elemwise_div ::
                       forall args . Fullfilled "_scatter_elemwise_div(symbol)" args =>
-                        String ->
+                        Text ->
                           ArgsHMap "_scatter_elemwise_div(symbol)" args -> IO SymbolHandle
 _scatter_elemwise_div name args
   = let scalarArgs = catMaybes []
@@ -14325,7 +14265,7 @@ type instance ParameterList "_scatter_minus_scalar(symbol)" =
 
 _scatter_minus_scalar ::
                       forall args . Fullfilled "_scatter_minus_scalar(symbol)" args =>
-                        String ->
+                        Text ->
                           ArgsHMap "_scatter_minus_scalar(symbol)" args -> IO SymbolHandle
 _scatter_minus_scalar name args
   = let scalarArgs
@@ -14347,7 +14287,7 @@ type instance ParameterList "_scatter_plus_scalar(symbol)" =
 
 _scatter_plus_scalar ::
                      forall args . Fullfilled "_scatter_plus_scalar(symbol)" args =>
-                       String ->
+                       Text ->
                          ArgsHMap "_scatter_plus_scalar(symbol)" args -> IO SymbolHandle
 _scatter_plus_scalar name args
   = let scalarArgs
@@ -14370,8 +14310,7 @@ type instance ParameterList "_scatter_set_nd(symbol)" =
 
 _scatter_set_nd ::
                 forall args . Fullfilled "_scatter_set_nd(symbol)" args =>
-                  String ->
-                    ArgsHMap "_scatter_set_nd(symbol)" args -> IO SymbolHandle
+                  Text -> ArgsHMap "_scatter_set_nd(symbol)" args -> IO SymbolHandle
 _scatter_set_nd name args
   = let scalarArgs
           = catMaybes
@@ -14395,7 +14334,7 @@ type instance ParameterList "_set_value(symbol)" =
 
 _set_value ::
            forall args . Fullfilled "_set_value(symbol)" args =>
-             String -> ArgsHMap "_set_value(symbol)" args -> IO SymbolHandle
+             Text -> ArgsHMap "_set_value(symbol)" args -> IO SymbolHandle
 _set_value name args
   = let scalarArgs
           = catMaybes
@@ -14414,8 +14353,7 @@ type instance ParameterList "_sg_mkldnn_conv(symbol)" = '[]
 
 _sg_mkldnn_conv ::
                 forall args . Fullfilled "_sg_mkldnn_conv(symbol)" args =>
-                  String ->
-                    ArgsHMap "_sg_mkldnn_conv(symbol)" args -> IO SymbolHandle
+                  Text -> ArgsHMap "_sg_mkldnn_conv(symbol)" args -> IO SymbolHandle
 _sg_mkldnn_conv name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -14434,7 +14372,7 @@ type instance ParameterList "_sg_mkldnn_fully_connected(symbol)" =
 _sg_mkldnn_fully_connected ::
                            forall args .
                              Fullfilled "_sg_mkldnn_fully_connected(symbol)" args =>
-                             String ->
+                             Text ->
                                ArgsHMap "_sg_mkldnn_fully_connected(symbol)" args ->
                                  IO SymbolHandle
 _sg_mkldnn_fully_connected name args
@@ -14454,7 +14392,7 @@ type instance ParameterList "_shuffle(symbol)" =
 
 _shuffle ::
          forall args . Fullfilled "_shuffle(symbol)" args =>
-           String -> ArgsHMap "_shuffle(symbol)" args -> IO SymbolHandle
+           Text -> ArgsHMap "_shuffle(symbol)" args -> IO SymbolHandle
 _shuffle name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -14475,7 +14413,7 @@ type instance ParameterList "_slice_assign(symbol)" =
 
 _slice_assign ::
               forall args . Fullfilled "_slice_assign(symbol)" args =>
-                String -> ArgsHMap "_slice_assign(symbol)" args -> IO SymbolHandle
+                Text -> ArgsHMap "_slice_assign(symbol)" args -> IO SymbolHandle
 _slice_assign name args
   = let scalarArgs
           = catMaybes
@@ -14502,7 +14440,7 @@ type instance ParameterList "_slice_assign_scalar(symbol)" =
 
 _slice_assign_scalar ::
                      forall args . Fullfilled "_slice_assign_scalar(symbol)" args =>
-                       String ->
+                       Text ->
                          ArgsHMap "_slice_assign_scalar(symbol)" args -> IO SymbolHandle
 _slice_assign_scalar name args
   = let scalarArgs
@@ -14531,7 +14469,7 @@ type instance ParameterList "_sparse_adagrad_update(symbol)" =
 
 _sparse_adagrad_update ::
                        forall args . Fullfilled "_sparse_adagrad_update(symbol)" args =>
-                         String ->
+                         Text ->
                            ArgsHMap "_sparse_adagrad_update(symbol)" args -> IO SymbolHandle
 _sparse_adagrad_update name args
   = let scalarArgs
@@ -14563,7 +14501,7 @@ type instance ParameterList "_sparse_retain(symbol)" =
 
 _sparse_retain ::
                forall args . Fullfilled "_sparse_retain(symbol)" args =>
-                 String -> ArgsHMap "_sparse_retain(symbol)" args -> IO SymbolHandle
+                 Text -> ArgsHMap "_sparse_retain(symbol)" args -> IO SymbolHandle
 _sparse_retain name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -14586,7 +14524,7 @@ type instance ParameterList "_split_v2(symbol)" =
 
 _split_v2 ::
           forall args . Fullfilled "_split_v2(symbol)" args =>
-            String -> ArgsHMap "_split_v2(symbol)" args -> IO SymbolHandle
+            Text -> ArgsHMap "_split_v2(symbol)" args -> IO SymbolHandle
 _split_v2 name args
   = let scalarArgs
           = catMaybes
@@ -14610,7 +14548,7 @@ type instance ParameterList "_split_v2_backward(symbol)" = '[]
 
 _split_v2_backward ::
                    forall args . Fullfilled "_split_v2_backward(symbol)" args =>
-                     String ->
+                     Text ->
                        ArgsHMap "_split_v2_backward(symbol)" args -> IO SymbolHandle
 _split_v2_backward name args
   = let scalarArgs = catMaybes []
@@ -14630,7 +14568,7 @@ type instance ParameterList "_square_sum(symbol)" =
 
 _square_sum ::
             forall args . Fullfilled "_square_sum(symbol)" args =>
-              String -> ArgsHMap "_square_sum(symbol)" args -> IO SymbolHandle
+              Text -> ArgsHMap "_square_sum(symbol)" args -> IO SymbolHandle
 _square_sum name args
   = let scalarArgs
           = catMaybes
@@ -14653,7 +14591,7 @@ type instance ParameterList "_unravel_index(symbol)" =
 
 _unravel_index ::
                forall args . Fullfilled "_unravel_index(symbol)" args =>
-                 String -> ArgsHMap "_unravel_index(symbol)" args -> IO SymbolHandle
+                 Text -> ArgsHMap "_unravel_index(symbol)" args -> IO SymbolHandle
 _unravel_index name args
   = let scalarArgs
           = catMaybes
@@ -14670,7 +14608,7 @@ _unravel_index name args
          return sym
 
 type instance ParameterList "_zeros(symbol)" =
-     '[ '("shape", AttrOpt [Int]), '("ctx", AttrOpt String),
+     '[ '("shape", AttrOpt [Int]), '("ctx", AttrOpt Text),
         '("dtype",
           AttrOpt
             (EnumType
@@ -14679,12 +14617,12 @@ type instance ParameterList "_zeros(symbol)" =
 
 _zeros ::
        forall args . Fullfilled "_zeros(symbol)" args =>
-         String -> ArgsHMap "_zeros(symbol)" args -> IO SymbolHandle
+         Text -> ArgsHMap "_zeros(symbol)" args -> IO SymbolHandle
 _zeros name args
   = let scalarArgs
           = catMaybes
               [("shape",) . showValue <$> (args !? #shape :: Maybe [Int]),
-               ("ctx",) . showValue <$> (args !? #ctx :: Maybe String),
+               ("ctx",) . showValue <$> (args !? #ctx :: Maybe Text),
                ("dtype",) . showValue <$>
                  (args !? #dtype ::
                     Maybe
@@ -14702,18 +14640,18 @@ _zeros name args
          return sym
 
 type instance ParameterList "_zeros_without_dtype(symbol)" =
-     '[ '("shape", AttrOpt [Int]), '("ctx", AttrOpt String),
+     '[ '("shape", AttrOpt [Int]), '("ctx", AttrOpt Text),
         '("dtype", AttrOpt Int)]
 
 _zeros_without_dtype ::
                      forall args . Fullfilled "_zeros_without_dtype(symbol)" args =>
-                       String ->
+                       Text ->
                          ArgsHMap "_zeros_without_dtype(symbol)" args -> IO SymbolHandle
 _zeros_without_dtype name args
   = let scalarArgs
           = catMaybes
               [("shape",) . showValue <$> (args !? #shape :: Maybe [Int]),
-               ("ctx",) . showValue <$> (args !? #ctx :: Maybe String),
+               ("ctx",) . showValue <$> (args !? #ctx :: Maybe Text),
                ("dtype",) . showValue <$> (args !? #dtype :: Maybe Int)]
         (scalarkeys, scalarvals) = unzip scalarArgs
         tensorArgs = catMaybes []
@@ -14730,7 +14668,7 @@ type instance ParameterList "abs(symbol)" =
 
 abs ::
     forall args . Fullfilled "abs(symbol)" args =>
-      String -> ArgsHMap "abs(symbol)" args -> IO SymbolHandle
+      Text -> ArgsHMap "abs(symbol)" args -> IO SymbolHandle
 abs name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -14754,7 +14692,7 @@ type instance ParameterList "adam_update(symbol)" =
 
 adam_update ::
             forall args . Fullfilled "adam_update(symbol)" args =>
-              String -> ArgsHMap "adam_update(symbol)" args -> IO SymbolHandle
+              Text -> ArgsHMap "adam_update(symbol)" args -> IO SymbolHandle
 adam_update name args
   = let scalarArgs
           = catMaybes
@@ -14789,7 +14727,7 @@ type instance ParameterList "add_n(symbol)" =
 
 add_n ::
       forall args . Fullfilled "add_n(symbol)" args =>
-        String -> ArgsHMap "add_n(symbol)" args -> IO SymbolHandle
+        Text -> ArgsHMap "add_n(symbol)" args -> IO SymbolHandle
 add_n name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -14817,7 +14755,7 @@ type instance ParameterList "amp_cast(symbol)" =
 
 amp_cast ::
          forall args . Fullfilled "amp_cast(symbol)" args =>
-           String -> ArgsHMap "amp_cast(symbol)" args -> IO SymbolHandle
+           Text -> ArgsHMap "amp_cast(symbol)" args -> IO SymbolHandle
 amp_cast name args
   = let scalarArgs
           = catMaybes
@@ -14844,7 +14782,7 @@ type instance ParameterList "amp_multicast(symbol)" =
 
 amp_multicast ::
               forall args . Fullfilled "amp_multicast(symbol)" args =>
-                String -> ArgsHMap "amp_multicast(symbol)" args -> IO SymbolHandle
+                Text -> ArgsHMap "amp_multicast(symbol)" args -> IO SymbolHandle
 amp_multicast name args
   = let scalarArgs
           = catMaybes
@@ -14868,7 +14806,7 @@ type instance ParameterList "arccos(symbol)" =
 
 arccos ::
        forall args . Fullfilled "arccos(symbol)" args =>
-         String -> ArgsHMap "arccos(symbol)" args -> IO SymbolHandle
+         Text -> ArgsHMap "arccos(symbol)" args -> IO SymbolHandle
 arccos name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -14887,7 +14825,7 @@ type instance ParameterList "arccosh(symbol)" =
 
 arccosh ::
         forall args . Fullfilled "arccosh(symbol)" args =>
-          String -> ArgsHMap "arccosh(symbol)" args -> IO SymbolHandle
+          Text -> ArgsHMap "arccosh(symbol)" args -> IO SymbolHandle
 arccosh name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -14906,7 +14844,7 @@ type instance ParameterList "arcsin(symbol)" =
 
 arcsin ::
        forall args . Fullfilled "arcsin(symbol)" args =>
-         String -> ArgsHMap "arcsin(symbol)" args -> IO SymbolHandle
+         Text -> ArgsHMap "arcsin(symbol)" args -> IO SymbolHandle
 arcsin name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -14925,7 +14863,7 @@ type instance ParameterList "arcsinh(symbol)" =
 
 arcsinh ::
         forall args . Fullfilled "arcsinh(symbol)" args =>
-          String -> ArgsHMap "arcsinh(symbol)" args -> IO SymbolHandle
+          Text -> ArgsHMap "arcsinh(symbol)" args -> IO SymbolHandle
 arcsinh name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -14944,7 +14882,7 @@ type instance ParameterList "arctan(symbol)" =
 
 arctan ::
        forall args . Fullfilled "arctan(symbol)" args =>
-         String -> ArgsHMap "arctan(symbol)" args -> IO SymbolHandle
+         Text -> ArgsHMap "arctan(symbol)" args -> IO SymbolHandle
 arctan name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -14963,7 +14901,7 @@ type instance ParameterList "arctanh(symbol)" =
 
 arctanh ::
         forall args . Fullfilled "arctanh(symbol)" args =>
-          String -> ArgsHMap "arctanh(symbol)" args -> IO SymbolHandle
+          Text -> ArgsHMap "arctanh(symbol)" args -> IO SymbolHandle
 arctanh name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -14983,7 +14921,7 @@ type instance ParameterList "argmax(symbol)" =
 
 argmax ::
        forall args . Fullfilled "argmax(symbol)" args =>
-         String -> ArgsHMap "argmax(symbol)" args -> IO SymbolHandle
+         Text -> ArgsHMap "argmax(symbol)" args -> IO SymbolHandle
 argmax name args
   = let scalarArgs
           = catMaybes
@@ -15005,7 +14943,7 @@ type instance ParameterList "argmax_channel(symbol)" =
 
 argmax_channel ::
                forall args . Fullfilled "argmax_channel(symbol)" args =>
-                 String -> ArgsHMap "argmax_channel(symbol)" args -> IO SymbolHandle
+                 Text -> ArgsHMap "argmax_channel(symbol)" args -> IO SymbolHandle
 argmax_channel name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -15025,7 +14963,7 @@ type instance ParameterList "argmin(symbol)" =
 
 argmin ::
        forall args . Fullfilled "argmin(symbol)" args =>
-         String -> ArgsHMap "argmin(symbol)" args -> IO SymbolHandle
+         Text -> ArgsHMap "argmin(symbol)" args -> IO SymbolHandle
 argmin name args
   = let scalarArgs
           = catMaybes
@@ -15052,7 +14990,7 @@ type instance ParameterList "argsort(symbol)" =
 
 argsort ::
         forall args . Fullfilled "argsort(symbol)" args =>
-          String -> ArgsHMap "argsort(symbol)" args -> IO SymbolHandle
+          Text -> ArgsHMap "argsort(symbol)" args -> IO SymbolHandle
 argsort name args
   = let scalarArgs
           = catMaybes
@@ -15082,7 +15020,7 @@ type instance ParameterList "batch_dot(symbol)" =
 
 batch_dot ::
           forall args . Fullfilled "batch_dot(symbol)" args =>
-            String -> ArgsHMap "batch_dot(symbol)" args -> IO SymbolHandle
+            Text -> ArgsHMap "batch_dot(symbol)" args -> IO SymbolHandle
 batch_dot name args
   = let scalarArgs
           = catMaybes
@@ -15112,7 +15050,7 @@ type instance ParameterList "batch_take(symbol)" =
 
 batch_take ::
            forall args . Fullfilled "batch_take(symbol)" args =>
-             String -> ArgsHMap "batch_take(symbol)" args -> IO SymbolHandle
+             Text -> ArgsHMap "batch_take(symbol)" args -> IO SymbolHandle
 batch_take name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -15133,7 +15071,7 @@ type instance ParameterList "broadcast_add(symbol)" =
 
 broadcast_add ::
               forall args . Fullfilled "broadcast_add(symbol)" args =>
-                String -> ArgsHMap "broadcast_add(symbol)" args -> IO SymbolHandle
+                Text -> ArgsHMap "broadcast_add(symbol)" args -> IO SymbolHandle
 broadcast_add name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -15155,7 +15093,7 @@ type instance ParameterList "broadcast_axis(symbol)" =
 
 broadcast_axis ::
                forall args . Fullfilled "broadcast_axis(symbol)" args =>
-                 String -> ArgsHMap "broadcast_axis(symbol)" args -> IO SymbolHandle
+                 Text -> ArgsHMap "broadcast_axis(symbol)" args -> IO SymbolHandle
 broadcast_axis name args
   = let scalarArgs
           = catMaybes
@@ -15177,7 +15115,7 @@ type instance ParameterList "broadcast_div(symbol)" =
 
 broadcast_div ::
               forall args . Fullfilled "broadcast_div(symbol)" args =>
-                String -> ArgsHMap "broadcast_div(symbol)" args -> IO SymbolHandle
+                Text -> ArgsHMap "broadcast_div(symbol)" args -> IO SymbolHandle
 broadcast_div name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -15198,8 +15136,7 @@ type instance ParameterList "broadcast_equal(symbol)" =
 
 broadcast_equal ::
                 forall args . Fullfilled "broadcast_equal(symbol)" args =>
-                  String ->
-                    ArgsHMap "broadcast_equal(symbol)" args -> IO SymbolHandle
+                  Text -> ArgsHMap "broadcast_equal(symbol)" args -> IO SymbolHandle
 broadcast_equal name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -15220,7 +15157,7 @@ type instance ParameterList "broadcast_greater(symbol)" =
 
 broadcast_greater ::
                   forall args . Fullfilled "broadcast_greater(symbol)" args =>
-                    String ->
+                    Text ->
                       ArgsHMap "broadcast_greater(symbol)" args -> IO SymbolHandle
 broadcast_greater name args
   = let scalarArgs = catMaybes []
@@ -15242,7 +15179,7 @@ type instance ParameterList "broadcast_greater_equal(symbol)" =
 
 broadcast_greater_equal ::
                         forall args . Fullfilled "broadcast_greater_equal(symbol)" args =>
-                          String ->
+                          Text ->
                             ArgsHMap "broadcast_greater_equal(symbol)" args -> IO SymbolHandle
 broadcast_greater_equal name args
   = let scalarArgs = catMaybes []
@@ -15264,8 +15201,7 @@ type instance ParameterList "broadcast_hypot(symbol)" =
 
 broadcast_hypot ::
                 forall args . Fullfilled "broadcast_hypot(symbol)" args =>
-                  String ->
-                    ArgsHMap "broadcast_hypot(symbol)" args -> IO SymbolHandle
+                  Text -> ArgsHMap "broadcast_hypot(symbol)" args -> IO SymbolHandle
 broadcast_hypot name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -15286,8 +15222,7 @@ type instance ParameterList "broadcast_lesser(symbol)" =
 
 broadcast_lesser ::
                  forall args . Fullfilled "broadcast_lesser(symbol)" args =>
-                   String ->
-                     ArgsHMap "broadcast_lesser(symbol)" args -> IO SymbolHandle
+                   Text -> ArgsHMap "broadcast_lesser(symbol)" args -> IO SymbolHandle
 broadcast_lesser name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -15308,7 +15243,7 @@ type instance ParameterList "broadcast_lesser_equal(symbol)" =
 
 broadcast_lesser_equal ::
                        forall args . Fullfilled "broadcast_lesser_equal(symbol)" args =>
-                         String ->
+                         Text ->
                            ArgsHMap "broadcast_lesser_equal(symbol)" args -> IO SymbolHandle
 broadcast_lesser_equal name args
   = let scalarArgs = catMaybes []
@@ -15332,7 +15267,7 @@ type instance ParameterList "broadcast_like(symbol)" =
 
 broadcast_like ::
                forall args . Fullfilled "broadcast_like(symbol)" args =>
-                 String -> ArgsHMap "broadcast_like(symbol)" args -> IO SymbolHandle
+                 Text -> ArgsHMap "broadcast_like(symbol)" args -> IO SymbolHandle
 broadcast_like name args
   = let scalarArgs
           = catMaybes
@@ -15358,7 +15293,7 @@ type instance ParameterList "broadcast_logical_and(symbol)" =
 
 broadcast_logical_and ::
                       forall args . Fullfilled "broadcast_logical_and(symbol)" args =>
-                        String ->
+                        Text ->
                           ArgsHMap "broadcast_logical_and(symbol)" args -> IO SymbolHandle
 broadcast_logical_and name args
   = let scalarArgs = catMaybes []
@@ -15380,7 +15315,7 @@ type instance ParameterList "broadcast_logical_or(symbol)" =
 
 broadcast_logical_or ::
                      forall args . Fullfilled "broadcast_logical_or(symbol)" args =>
-                       String ->
+                       Text ->
                          ArgsHMap "broadcast_logical_or(symbol)" args -> IO SymbolHandle
 broadcast_logical_or name args
   = let scalarArgs = catMaybes []
@@ -15402,7 +15337,7 @@ type instance ParameterList "broadcast_logical_xor(symbol)" =
 
 broadcast_logical_xor ::
                       forall args . Fullfilled "broadcast_logical_xor(symbol)" args =>
-                        String ->
+                        Text ->
                           ArgsHMap "broadcast_logical_xor(symbol)" args -> IO SymbolHandle
 broadcast_logical_xor name args
   = let scalarArgs = catMaybes []
@@ -15424,7 +15359,7 @@ type instance ParameterList "broadcast_maximum(symbol)" =
 
 broadcast_maximum ::
                   forall args . Fullfilled "broadcast_maximum(symbol)" args =>
-                    String ->
+                    Text ->
                       ArgsHMap "broadcast_maximum(symbol)" args -> IO SymbolHandle
 broadcast_maximum name args
   = let scalarArgs = catMaybes []
@@ -15446,7 +15381,7 @@ type instance ParameterList "broadcast_minimum(symbol)" =
 
 broadcast_minimum ::
                   forall args . Fullfilled "broadcast_minimum(symbol)" args =>
-                    String ->
+                    Text ->
                       ArgsHMap "broadcast_minimum(symbol)" args -> IO SymbolHandle
 broadcast_minimum name args
   = let scalarArgs = catMaybes []
@@ -15468,7 +15403,7 @@ type instance ParameterList "broadcast_mod(symbol)" =
 
 broadcast_mod ::
               forall args . Fullfilled "broadcast_mod(symbol)" args =>
-                String -> ArgsHMap "broadcast_mod(symbol)" args -> IO SymbolHandle
+                Text -> ArgsHMap "broadcast_mod(symbol)" args -> IO SymbolHandle
 broadcast_mod name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -15489,7 +15424,7 @@ type instance ParameterList "broadcast_mul(symbol)" =
 
 broadcast_mul ::
               forall args . Fullfilled "broadcast_mul(symbol)" args =>
-                String -> ArgsHMap "broadcast_mul(symbol)" args -> IO SymbolHandle
+                Text -> ArgsHMap "broadcast_mul(symbol)" args -> IO SymbolHandle
 broadcast_mul name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -15510,7 +15445,7 @@ type instance ParameterList "broadcast_not_equal(symbol)" =
 
 broadcast_not_equal ::
                     forall args . Fullfilled "broadcast_not_equal(symbol)" args =>
-                      String ->
+                      Text ->
                         ArgsHMap "broadcast_not_equal(symbol)" args -> IO SymbolHandle
 broadcast_not_equal name args
   = let scalarArgs = catMaybes []
@@ -15532,8 +15467,7 @@ type instance ParameterList "broadcast_power(symbol)" =
 
 broadcast_power ::
                 forall args . Fullfilled "broadcast_power(symbol)" args =>
-                  String ->
-                    ArgsHMap "broadcast_power(symbol)" args -> IO SymbolHandle
+                  Text -> ArgsHMap "broadcast_power(symbol)" args -> IO SymbolHandle
 broadcast_power name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -15554,7 +15488,7 @@ type instance ParameterList "broadcast_sub(symbol)" =
 
 broadcast_sub ::
               forall args . Fullfilled "broadcast_sub(symbol)" args =>
-                String -> ArgsHMap "broadcast_sub(symbol)" args -> IO SymbolHandle
+                Text -> ArgsHMap "broadcast_sub(symbol)" args -> IO SymbolHandle
 broadcast_sub name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -15575,7 +15509,7 @@ type instance ParameterList "broadcast_to(symbol)" =
 
 broadcast_to ::
              forall args . Fullfilled "broadcast_to(symbol)" args =>
-               String -> ArgsHMap "broadcast_to(symbol)" args -> IO SymbolHandle
+               Text -> ArgsHMap "broadcast_to(symbol)" args -> IO SymbolHandle
 broadcast_to name args
   = let scalarArgs
           = catMaybes
@@ -15598,7 +15532,7 @@ type instance ParameterList "cast_storage(symbol)" =
 
 cast_storage ::
              forall args . Fullfilled "cast_storage(symbol)" args =>
-               String -> ArgsHMap "cast_storage(symbol)" args -> IO SymbolHandle
+               Text -> ArgsHMap "cast_storage(symbol)" args -> IO SymbolHandle
 cast_storage name args
   = let scalarArgs
           = catMaybes
@@ -15621,7 +15555,7 @@ type instance ParameterList "cbrt(symbol)" =
 
 cbrt ::
      forall args . Fullfilled "cbrt(symbol)" args =>
-       String -> ArgsHMap "cbrt(symbol)" args -> IO SymbolHandle
+       Text -> ArgsHMap "cbrt(symbol)" args -> IO SymbolHandle
 cbrt name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -15640,7 +15574,7 @@ type instance ParameterList "ceil(symbol)" =
 
 ceil ::
      forall args . Fullfilled "ceil(symbol)" args =>
-       String -> ArgsHMap "ceil(symbol)" args -> IO SymbolHandle
+       Text -> ArgsHMap "ceil(symbol)" args -> IO SymbolHandle
 ceil name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -15660,7 +15594,7 @@ type instance ParameterList "clip(symbol)" =
 
 clip ::
      forall args . Fullfilled "clip(symbol)" args =>
-       String -> ArgsHMap "clip(symbol)" args -> IO SymbolHandle
+       Text -> ArgsHMap "clip(symbol)" args -> IO SymbolHandle
 clip name args
   = let scalarArgs
           = catMaybes
@@ -15682,7 +15616,7 @@ type instance ParameterList "cos(symbol)" =
 
 cos ::
     forall args . Fullfilled "cos(symbol)" args =>
-      String -> ArgsHMap "cos(symbol)" args -> IO SymbolHandle
+      Text -> ArgsHMap "cos(symbol)" args -> IO SymbolHandle
 cos name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -15701,7 +15635,7 @@ type instance ParameterList "cosh(symbol)" =
 
 cosh ::
      forall args . Fullfilled "cosh(symbol)" args =>
-       String -> ArgsHMap "cosh(symbol)" args -> IO SymbolHandle
+       Text -> ArgsHMap "cosh(symbol)" args -> IO SymbolHandle
 cosh name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -15720,7 +15654,7 @@ type instance ParameterList "degrees(symbol)" =
 
 degrees ::
         forall args . Fullfilled "degrees(symbol)" args =>
-          String -> ArgsHMap "degrees(symbol)" args -> IO SymbolHandle
+          Text -> ArgsHMap "degrees(symbol)" args -> IO SymbolHandle
 degrees name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -15739,7 +15673,7 @@ type instance ParameterList "depth_to_space(symbol)" =
 
 depth_to_space ::
                forall args . Fullfilled "depth_to_space(symbol)" args =>
-                 String -> ArgsHMap "depth_to_space(symbol)" args -> IO SymbolHandle
+                 Text -> ArgsHMap "depth_to_space(symbol)" args -> IO SymbolHandle
 depth_to_space name args
   = let scalarArgs
           = catMaybes
@@ -15762,7 +15696,7 @@ type instance ParameterList "diag(symbol)" =
 
 diag ::
      forall args . Fullfilled "diag(symbol)" args =>
-       String -> ArgsHMap "diag(symbol)" args -> IO SymbolHandle
+       Text -> ArgsHMap "diag(symbol)" args -> IO SymbolHandle
 diag name args
   = let scalarArgs
           = catMaybes
@@ -15788,7 +15722,7 @@ type instance ParameterList "dot(symbol)" =
 
 dot ::
     forall args . Fullfilled "dot(symbol)" args =>
-      String -> ArgsHMap "dot(symbol)" args -> IO SymbolHandle
+      Text -> ArgsHMap "dot(symbol)" args -> IO SymbolHandle
 dot name args
   = let scalarArgs
           = catMaybes
@@ -15817,7 +15751,7 @@ type instance ParameterList "elemwise_add(symbol)" =
 
 elemwise_add ::
              forall args . Fullfilled "elemwise_add(symbol)" args =>
-               String -> ArgsHMap "elemwise_add(symbol)" args -> IO SymbolHandle
+               Text -> ArgsHMap "elemwise_add(symbol)" args -> IO SymbolHandle
 elemwise_add name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -15838,7 +15772,7 @@ type instance ParameterList "elemwise_div(symbol)" =
 
 elemwise_div ::
              forall args . Fullfilled "elemwise_div(symbol)" args =>
-               String -> ArgsHMap "elemwise_div(symbol)" args -> IO SymbolHandle
+               Text -> ArgsHMap "elemwise_div(symbol)" args -> IO SymbolHandle
 elemwise_div name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -15859,7 +15793,7 @@ type instance ParameterList "elemwise_mul(symbol)" =
 
 elemwise_mul ::
              forall args . Fullfilled "elemwise_mul(symbol)" args =>
-               String -> ArgsHMap "elemwise_mul(symbol)" args -> IO SymbolHandle
+               Text -> ArgsHMap "elemwise_mul(symbol)" args -> IO SymbolHandle
 elemwise_mul name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -15880,7 +15814,7 @@ type instance ParameterList "elemwise_sub(symbol)" =
 
 elemwise_sub ::
              forall args . Fullfilled "elemwise_sub(symbol)" args =>
-               String -> ArgsHMap "elemwise_sub(symbol)" args -> IO SymbolHandle
+               Text -> ArgsHMap "elemwise_sub(symbol)" args -> IO SymbolHandle
 elemwise_sub name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -15901,7 +15835,7 @@ type instance ParameterList "erf(symbol)" =
 
 erf ::
     forall args . Fullfilled "erf(symbol)" args =>
-      String -> ArgsHMap "erf(symbol)" args -> IO SymbolHandle
+      Text -> ArgsHMap "erf(symbol)" args -> IO SymbolHandle
 erf name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -15920,7 +15854,7 @@ type instance ParameterList "erfinv(symbol)" =
 
 erfinv ::
        forall args . Fullfilled "erfinv(symbol)" args =>
-         String -> ArgsHMap "erfinv(symbol)" args -> IO SymbolHandle
+         Text -> ArgsHMap "erfinv(symbol)" args -> IO SymbolHandle
 erfinv name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -15939,7 +15873,7 @@ type instance ParameterList "exp(symbol)" =
 
 exp ::
     forall args . Fullfilled "exp(symbol)" args =>
-      String -> ArgsHMap "exp(symbol)" args -> IO SymbolHandle
+      Text -> ArgsHMap "exp(symbol)" args -> IO SymbolHandle
 exp name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -15958,7 +15892,7 @@ type instance ParameterList "expand_dims(symbol)" =
 
 expand_dims ::
             forall args . Fullfilled "expand_dims(symbol)" args =>
-              String -> ArgsHMap "expand_dims(symbol)" args -> IO SymbolHandle
+              Text -> ArgsHMap "expand_dims(symbol)" args -> IO SymbolHandle
 expand_dims name args
   = let scalarArgs
           = catMaybes
@@ -15979,7 +15913,7 @@ type instance ParameterList "expm1(symbol)" =
 
 expm1 ::
       forall args . Fullfilled "expm1(symbol)" args =>
-        String -> ArgsHMap "expm1(symbol)" args -> IO SymbolHandle
+        Text -> ArgsHMap "expm1(symbol)" args -> IO SymbolHandle
 expm1 name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -15998,7 +15932,7 @@ type instance ParameterList "fix(symbol)" =
 
 fix ::
     forall args . Fullfilled "fix(symbol)" args =>
-      String -> ArgsHMap "fix(symbol)" args -> IO SymbolHandle
+      Text -> ArgsHMap "fix(symbol)" args -> IO SymbolHandle
 fix name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -16017,7 +15951,7 @@ type instance ParameterList "floor(symbol)" =
 
 floor ::
       forall args . Fullfilled "floor(symbol)" args =>
-        String -> ArgsHMap "floor(symbol)" args -> IO SymbolHandle
+        Text -> ArgsHMap "floor(symbol)" args -> IO SymbolHandle
 floor name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -16042,7 +15976,7 @@ type instance ParameterList "ftml_update(symbol)" =
 
 ftml_update ::
             forall args . Fullfilled "ftml_update(symbol)" args =>
-              String -> ArgsHMap "ftml_update(symbol)" args -> IO SymbolHandle
+              Text -> ArgsHMap "ftml_update(symbol)" args -> IO SymbolHandle
 ftml_update name args
   = let scalarArgs
           = catMaybes
@@ -16081,7 +16015,7 @@ type instance ParameterList "ftrl_update(symbol)" =
 
 ftrl_update ::
             forall args . Fullfilled "ftrl_update(symbol)" args =>
-              String -> ArgsHMap "ftrl_update(symbol)" args -> IO SymbolHandle
+              Text -> ArgsHMap "ftrl_update(symbol)" args -> IO SymbolHandle
 ftrl_update name args
   = let scalarArgs
           = catMaybes
@@ -16113,7 +16047,7 @@ type instance ParameterList "gamma(symbol)" =
 
 gamma ::
       forall args . Fullfilled "gamma(symbol)" args =>
-        String -> ArgsHMap "gamma(symbol)" args -> IO SymbolHandle
+        Text -> ArgsHMap "gamma(symbol)" args -> IO SymbolHandle
 gamma name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -16132,7 +16066,7 @@ type instance ParameterList "gammaln(symbol)" =
 
 gammaln ::
         forall args . Fullfilled "gammaln(symbol)" args =>
-          String -> ArgsHMap "gammaln(symbol)" args -> IO SymbolHandle
+          Text -> ArgsHMap "gammaln(symbol)" args -> IO SymbolHandle
 gammaln name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -16152,7 +16086,7 @@ type instance ParameterList "gather_nd(symbol)" =
 
 gather_nd ::
           forall args . Fullfilled "gather_nd(symbol)" args =>
-            String -> ArgsHMap "gather_nd(symbol)" args -> IO SymbolHandle
+            Text -> ArgsHMap "gather_nd(symbol)" args -> IO SymbolHandle
 gather_nd name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -16174,7 +16108,7 @@ type instance ParameterList "hard_sigmoid(symbol)" =
 
 hard_sigmoid ::
              forall args . Fullfilled "hard_sigmoid(symbol)" args =>
-               String -> ArgsHMap "hard_sigmoid(symbol)" args -> IO SymbolHandle
+               Text -> ArgsHMap "hard_sigmoid(symbol)" args -> IO SymbolHandle
 hard_sigmoid name args
   = let scalarArgs
           = catMaybes
@@ -16196,7 +16130,7 @@ type instance ParameterList "khatri_rao(symbol)" =
 
 khatri_rao ::
            forall args . Fullfilled "khatri_rao(symbol)" args =>
-             String -> ArgsHMap "khatri_rao(symbol)" args -> IO SymbolHandle
+             Text -> ArgsHMap "khatri_rao(symbol)" args -> IO SymbolHandle
 khatri_rao name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -16225,7 +16159,7 @@ type instance ParameterList "lamb_update_phase1(symbol)" =
 
 lamb_update_phase1 ::
                    forall args . Fullfilled "lamb_update_phase1(symbol)" args =>
-                     String ->
+                     Text ->
                        ArgsHMap "lamb_update_phase1(symbol)" args -> IO SymbolHandle
 lamb_update_phase1 name args
   = let scalarArgs
@@ -16264,7 +16198,7 @@ type instance ParameterList "lamb_update_phase2(symbol)" =
 
 lamb_update_phase2 ::
                    forall args . Fullfilled "lamb_update_phase2(symbol)" args =>
-                     String ->
+                     Text ->
                        ArgsHMap "lamb_update_phase2(symbol)" args -> IO SymbolHandle
 lamb_update_phase2 name args
   = let scalarArgs
@@ -16294,7 +16228,7 @@ type instance ParameterList "log(symbol)" =
 
 log ::
     forall args . Fullfilled "log(symbol)" args =>
-      String -> ArgsHMap "log(symbol)" args -> IO SymbolHandle
+      Text -> ArgsHMap "log(symbol)" args -> IO SymbolHandle
 log name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -16313,7 +16247,7 @@ type instance ParameterList "log10(symbol)" =
 
 log10 ::
       forall args . Fullfilled "log10(symbol)" args =>
-        String -> ArgsHMap "log10(symbol)" args -> IO SymbolHandle
+        Text -> ArgsHMap "log10(symbol)" args -> IO SymbolHandle
 log10 name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -16332,7 +16266,7 @@ type instance ParameterList "log1p(symbol)" =
 
 log1p ::
       forall args . Fullfilled "log1p(symbol)" args =>
-        String -> ArgsHMap "log1p(symbol)" args -> IO SymbolHandle
+        Text -> ArgsHMap "log1p(symbol)" args -> IO SymbolHandle
 log1p name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -16351,7 +16285,7 @@ type instance ParameterList "log2(symbol)" =
 
 log2 ::
      forall args . Fullfilled "log2(symbol)" args =>
-       String -> ArgsHMap "log2(symbol)" args -> IO SymbolHandle
+       Text -> ArgsHMap "log2(symbol)" args -> IO SymbolHandle
 log2 name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -16375,7 +16309,7 @@ type instance ParameterList "log_softmax(symbol)" =
 
 log_softmax ::
             forall args . Fullfilled "log_softmax(symbol)" args =>
-              String -> ArgsHMap "log_softmax(symbol)" args -> IO SymbolHandle
+              Text -> ArgsHMap "log_softmax(symbol)" args -> IO SymbolHandle
 log_softmax name args
   = let scalarArgs
           = catMaybes
@@ -16403,7 +16337,7 @@ type instance ParameterList "logical_not(symbol)" =
 
 logical_not ::
             forall args . Fullfilled "logical_not(symbol)" args =>
-              String -> ArgsHMap "logical_not(symbol)" args -> IO SymbolHandle
+              Text -> ArgsHMap "logical_not(symbol)" args -> IO SymbolHandle
 logical_not name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -16422,7 +16356,7 @@ type instance ParameterList "make_loss(symbol)" =
 
 make_loss ::
           forall args . Fullfilled "make_loss(symbol)" args =>
-            String -> ArgsHMap "make_loss(symbol)" args -> IO SymbolHandle
+            Text -> ArgsHMap "make_loss(symbol)" args -> IO SymbolHandle
 make_loss name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -16442,7 +16376,7 @@ type instance ParameterList "max(symbol)" =
 
 max ::
     forall args . Fullfilled "max(symbol)" args =>
-      String -> ArgsHMap "max(symbol)" args -> IO SymbolHandle
+      Text -> ArgsHMap "max(symbol)" args -> IO SymbolHandle
 max name args
   = let scalarArgs
           = catMaybes
@@ -16466,7 +16400,7 @@ type instance ParameterList "mean(symbol)" =
 
 mean ::
      forall args . Fullfilled "mean(symbol)" args =>
-       String -> ArgsHMap "mean(symbol)" args -> IO SymbolHandle
+       Text -> ArgsHMap "mean(symbol)" args -> IO SymbolHandle
 mean name args
   = let scalarArgs
           = catMaybes
@@ -16490,7 +16424,7 @@ type instance ParameterList "min(symbol)" =
 
 min ::
     forall args . Fullfilled "min(symbol)" args =>
-      String -> ArgsHMap "min(symbol)" args -> IO SymbolHandle
+      Text -> ArgsHMap "min(symbol)" args -> IO SymbolHandle
 min name args
   = let scalarArgs
           = catMaybes
@@ -16514,7 +16448,7 @@ type instance ParameterList "moments(symbol)" =
 
 moments ::
         forall args . Fullfilled "moments(symbol)" args =>
-          String -> ArgsHMap "moments(symbol)" args -> IO SymbolHandle
+          Text -> ArgsHMap "moments(symbol)" args -> IO SymbolHandle
 moments name args
   = let scalarArgs
           = catMaybes
@@ -16543,7 +16477,7 @@ type instance ParameterList "mp_lamb_update_phase1(symbol)" =
 
 mp_lamb_update_phase1 ::
                       forall args . Fullfilled "mp_lamb_update_phase1(symbol)" args =>
-                        String ->
+                        Text ->
                           ArgsHMap "mp_lamb_update_phase1(symbol)" args -> IO SymbolHandle
 mp_lamb_update_phase1 name args
   = let scalarArgs
@@ -16583,7 +16517,7 @@ type instance ParameterList "mp_lamb_update_phase2(symbol)" =
 
 mp_lamb_update_phase2 ::
                       forall args . Fullfilled "mp_lamb_update_phase2(symbol)" args =>
-                        String ->
+                        Text ->
                           ArgsHMap "mp_lamb_update_phase2(symbol)" args -> IO SymbolHandle
 mp_lamb_update_phase2 name args
   = let scalarArgs
@@ -16619,7 +16553,7 @@ type instance ParameterList "mp_nag_mom_update(symbol)" =
 
 mp_nag_mom_update ::
                   forall args . Fullfilled "mp_nag_mom_update(symbol)" args =>
-                    String ->
+                    Text ->
                       ArgsHMap "mp_nag_mom_update(symbol)" args -> IO SymbolHandle
 mp_nag_mom_update name args
   = let scalarArgs
@@ -16656,7 +16590,7 @@ type instance ParameterList "mp_sgd_mom_update(symbol)" =
 
 mp_sgd_mom_update ::
                   forall args . Fullfilled "mp_sgd_mom_update(symbol)" args =>
-                    String ->
+                    Text ->
                       ArgsHMap "mp_sgd_mom_update(symbol)" args -> IO SymbolHandle
 mp_sgd_mom_update name args
   = let scalarArgs
@@ -16694,7 +16628,7 @@ type instance ParameterList "mp_sgd_update(symbol)" =
 
 mp_sgd_update ::
               forall args . Fullfilled "mp_sgd_update(symbol)" args =>
-                String -> ArgsHMap "mp_sgd_update(symbol)" args -> IO SymbolHandle
+                Text -> ArgsHMap "mp_sgd_update(symbol)" args -> IO SymbolHandle
 mp_sgd_update name args
   = let scalarArgs
           = catMaybes
@@ -16726,8 +16660,7 @@ type instance ParameterList "multi_all_finite(symbol)" =
 
 multi_all_finite ::
                  forall args . Fullfilled "multi_all_finite(symbol)" args =>
-                   String ->
-                     ArgsHMap "multi_all_finite(symbol)" args -> IO SymbolHandle
+                   Text -> ArgsHMap "multi_all_finite(symbol)" args -> IO SymbolHandle
 multi_all_finite name args
   = let scalarArgs
           = catMaybes
@@ -16755,7 +16688,7 @@ type instance ParameterList "multi_lars(symbol)" =
 
 multi_lars ::
            forall args . Fullfilled "multi_lars(symbol)" args =>
-             String -> ArgsHMap "multi_lars(symbol)" args -> IO SymbolHandle
+             Text -> ArgsHMap "multi_lars(symbol)" args -> IO SymbolHandle
 multi_lars name args
   = let scalarArgs
           = catMaybes
@@ -16788,7 +16721,7 @@ type instance ParameterList "multi_mp_sgd_mom_update(symbol)" =
 
 multi_mp_sgd_mom_update ::
                         forall args . Fullfilled "multi_mp_sgd_mom_update(symbol)" args =>
-                          String ->
+                          Text ->
                             ArgsHMap "multi_mp_sgd_mom_update(symbol)" args -> IO SymbolHandle
 multi_mp_sgd_mom_update name args
   = let scalarArgs
@@ -16821,7 +16754,7 @@ type instance ParameterList "multi_mp_sgd_update(symbol)" =
 
 multi_mp_sgd_update ::
                     forall args . Fullfilled "multi_mp_sgd_update(symbol)" args =>
-                      String ->
+                      Text ->
                         ArgsHMap "multi_mp_sgd_update(symbol)" args -> IO SymbolHandle
 multi_mp_sgd_update name args
   = let scalarArgs
@@ -16853,7 +16786,7 @@ type instance ParameterList "multi_sgd_mom_update(symbol)" =
 
 multi_sgd_mom_update ::
                      forall args . Fullfilled "multi_sgd_mom_update(symbol)" args =>
-                       String ->
+                       Text ->
                          ArgsHMap "multi_sgd_mom_update(symbol)" args -> IO SymbolHandle
 multi_sgd_mom_update name args
   = let scalarArgs
@@ -16886,8 +16819,7 @@ type instance ParameterList "multi_sgd_update(symbol)" =
 
 multi_sgd_update ::
                  forall args . Fullfilled "multi_sgd_update(symbol)" args =>
-                   String ->
-                     ArgsHMap "multi_sgd_update(symbol)" args -> IO SymbolHandle
+                   Text -> ArgsHMap "multi_sgd_update(symbol)" args -> IO SymbolHandle
 multi_sgd_update name args
   = let scalarArgs
           = catMaybes
@@ -16915,7 +16847,7 @@ type instance ParameterList "multi_sum_sq(symbol)" =
 
 multi_sum_sq ::
              forall args . Fullfilled "multi_sum_sq(symbol)" args =>
-               String -> ArgsHMap "multi_sum_sq(symbol)" args -> IO SymbolHandle
+               Text -> ArgsHMap "multi_sum_sq(symbol)" args -> IO SymbolHandle
 multi_sum_sq name args
   = let scalarArgs
           = catMaybes
@@ -16941,7 +16873,7 @@ type instance ParameterList "nag_mom_update(symbol)" =
 
 nag_mom_update ::
                forall args . Fullfilled "nag_mom_update(symbol)" args =>
-                 String -> ArgsHMap "nag_mom_update(symbol)" args -> IO SymbolHandle
+                 Text -> ArgsHMap "nag_mom_update(symbol)" args -> IO SymbolHandle
 nag_mom_update name args
   = let scalarArgs
           = catMaybes
@@ -16972,7 +16904,7 @@ type instance ParameterList "nanprod(symbol)" =
 
 nanprod ::
         forall args . Fullfilled "nanprod(symbol)" args =>
-          String -> ArgsHMap "nanprod(symbol)" args -> IO SymbolHandle
+          Text -> ArgsHMap "nanprod(symbol)" args -> IO SymbolHandle
 nanprod name args
   = let scalarArgs
           = catMaybes
@@ -16996,7 +16928,7 @@ type instance ParameterList "nansum(symbol)" =
 
 nansum ::
        forall args . Fullfilled "nansum(symbol)" args =>
-         String -> ArgsHMap "nansum(symbol)" args -> IO SymbolHandle
+         Text -> ArgsHMap "nansum(symbol)" args -> IO SymbolHandle
 nansum name args
   = let scalarArgs
           = catMaybes
@@ -17019,7 +16951,7 @@ type instance ParameterList "negative(symbol)" =
 
 negative ::
          forall args . Fullfilled "negative(symbol)" args =>
-           String -> ArgsHMap "negative(symbol)" args -> IO SymbolHandle
+           Text -> ArgsHMap "negative(symbol)" args -> IO SymbolHandle
 negative name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -17044,7 +16976,7 @@ type instance ParameterList "norm(symbol)" =
 
 norm ::
      forall args . Fullfilled "norm(symbol)" args =>
-       String -> ArgsHMap "norm(symbol)" args -> IO SymbolHandle
+       Text -> ArgsHMap "norm(symbol)" args -> IO SymbolHandle
 norm name args
   = let scalarArgs
           = catMaybes
@@ -17080,7 +17012,7 @@ type instance ParameterList "one_hot(symbol)" =
 
 one_hot ::
         forall args . Fullfilled "one_hot(symbol)" args =>
-          String -> ArgsHMap "one_hot(symbol)" args -> IO SymbolHandle
+          Text -> ArgsHMap "one_hot(symbol)" args -> IO SymbolHandle
 one_hot name args
   = let scalarArgs
           = catMaybes
@@ -17111,7 +17043,7 @@ type instance ParameterList "ones_like(symbol)" =
 
 ones_like ::
           forall args . Fullfilled "ones_like(symbol)" args =>
-            String -> ArgsHMap "ones_like(symbol)" args -> IO SymbolHandle
+            Text -> ArgsHMap "ones_like(symbol)" args -> IO SymbolHandle
 ones_like name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -17132,7 +17064,7 @@ type instance ParameterList "pick(symbol)" =
 
 pick ::
      forall args . Fullfilled "pick(symbol)" args =>
-       String -> ArgsHMap "pick(symbol)" args -> IO SymbolHandle
+       Text -> ArgsHMap "pick(symbol)" args -> IO SymbolHandle
 pick name args
   = let scalarArgs
           = catMaybes
@@ -17162,7 +17094,7 @@ type instance
 preloaded_multi_mp_sgd_mom_update ::
                                   forall args .
                                     Fullfilled "preloaded_multi_mp_sgd_mom_update(symbol)" args =>
-                                    String ->
+                                    Text ->
                                       ArgsHMap "preloaded_multi_mp_sgd_mom_update(symbol)" args ->
                                         IO SymbolHandle
 preloaded_multi_mp_sgd_mom_update name args
@@ -17195,7 +17127,7 @@ type instance ParameterList "preloaded_multi_mp_sgd_update(symbol)"
 preloaded_multi_mp_sgd_update ::
                               forall args .
                                 Fullfilled "preloaded_multi_mp_sgd_update(symbol)" args =>
-                                String ->
+                                Text ->
                                   ArgsHMap "preloaded_multi_mp_sgd_update(symbol)" args ->
                                     IO SymbolHandle
 preloaded_multi_mp_sgd_update name args
@@ -17227,7 +17159,7 @@ type instance
 preloaded_multi_sgd_mom_update ::
                                forall args .
                                  Fullfilled "preloaded_multi_sgd_mom_update(symbol)" args =>
-                                 String ->
+                                 Text ->
                                    ArgsHMap "preloaded_multi_sgd_mom_update(symbol)" args ->
                                      IO SymbolHandle
 preloaded_multi_sgd_mom_update name args
@@ -17259,7 +17191,7 @@ type instance ParameterList "preloaded_multi_sgd_update(symbol)" =
 preloaded_multi_sgd_update ::
                            forall args .
                              Fullfilled "preloaded_multi_sgd_update(symbol)" args =>
-                             String ->
+                             Text ->
                                ArgsHMap "preloaded_multi_sgd_update(symbol)" args ->
                                  IO SymbolHandle
 preloaded_multi_sgd_update name args
@@ -17288,7 +17220,7 @@ type instance ParameterList "prod(symbol)" =
 
 prod ::
      forall args . Fullfilled "prod(symbol)" args =>
-       String -> ArgsHMap "prod(symbol)" args -> IO SymbolHandle
+       Text -> ArgsHMap "prod(symbol)" args -> IO SymbolHandle
 prod name args
   = let scalarArgs
           = catMaybes
@@ -17311,7 +17243,7 @@ type instance ParameterList "radians(symbol)" =
 
 radians ::
         forall args . Fullfilled "radians(symbol)" args =>
-          String -> ArgsHMap "radians(symbol)" args -> IO SymbolHandle
+          Text -> ArgsHMap "radians(symbol)" args -> IO SymbolHandle
 radians name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -17330,7 +17262,7 @@ type instance ParameterList "rcbrt(symbol)" =
 
 rcbrt ::
       forall args . Fullfilled "rcbrt(symbol)" args =>
-        String -> ArgsHMap "rcbrt(symbol)" args -> IO SymbolHandle
+        Text -> ArgsHMap "rcbrt(symbol)" args -> IO SymbolHandle
 rcbrt name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -17349,7 +17281,7 @@ type instance ParameterList "reciprocal(symbol)" =
 
 reciprocal ::
            forall args . Fullfilled "reciprocal(symbol)" args =>
-             String -> ArgsHMap "reciprocal(symbol)" args -> IO SymbolHandle
+             Text -> ArgsHMap "reciprocal(symbol)" args -> IO SymbolHandle
 reciprocal name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -17368,7 +17300,7 @@ type instance ParameterList "relu(symbol)" =
 
 relu ::
      forall args . Fullfilled "relu(symbol)" args =>
-       String -> ArgsHMap "relu(symbol)" args -> IO SymbolHandle
+       Text -> ArgsHMap "relu(symbol)" args -> IO SymbolHandle
 relu name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -17388,7 +17320,7 @@ type instance ParameterList "repeat(symbol)" =
 
 repeat ::
        forall args . Fullfilled "repeat(symbol)" args =>
-         String -> ArgsHMap "repeat(symbol)" args -> IO SymbolHandle
+         Text -> ArgsHMap "repeat(symbol)" args -> IO SymbolHandle
 repeat name args
   = let scalarArgs
           = catMaybes
@@ -17410,7 +17342,7 @@ type instance ParameterList "reset_arrays(symbol)" =
 
 reset_arrays ::
              forall args . Fullfilled "reset_arrays(symbol)" args =>
-               String -> ArgsHMap "reset_arrays(symbol)" args -> IO SymbolHandle
+               Text -> ArgsHMap "reset_arrays(symbol)" args -> IO SymbolHandle
 reset_arrays name args
   = let scalarArgs
           = catMaybes
@@ -17436,7 +17368,7 @@ type instance ParameterList "reshape_like(symbol)" =
 
 reshape_like ::
              forall args . Fullfilled "reshape_like(symbol)" args =>
-               String -> ArgsHMap "reshape_like(symbol)" args -> IO SymbolHandle
+               Text -> ArgsHMap "reshape_like(symbol)" args -> IO SymbolHandle
 reshape_like name args
   = let scalarArgs
           = catMaybes
@@ -17466,7 +17398,7 @@ type instance ParameterList "reverse(symbol)" =
 
 reverse ::
         forall args . Fullfilled "reverse(symbol)" args =>
-          String -> ArgsHMap "reverse(symbol)" args -> IO SymbolHandle
+          Text -> ArgsHMap "reverse(symbol)" args -> IO SymbolHandle
 reverse name args
   = let scalarArgs
           = catMaybes
@@ -17487,7 +17419,7 @@ type instance ParameterList "rint(symbol)" =
 
 rint ::
      forall args . Fullfilled "rint(symbol)" args =>
-       String -> ArgsHMap "rint(symbol)" args -> IO SymbolHandle
+       Text -> ArgsHMap "rint(symbol)" args -> IO SymbolHandle
 rint name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -17512,7 +17444,7 @@ type instance ParameterList "rmsprop_update(symbol)" =
 
 rmsprop_update ::
                forall args . Fullfilled "rmsprop_update(symbol)" args =>
-                 String -> ArgsHMap "rmsprop_update(symbol)" args -> IO SymbolHandle
+                 Text -> ArgsHMap "rmsprop_update(symbol)" args -> IO SymbolHandle
 rmsprop_update name args
   = let scalarArgs
           = catMaybes
@@ -17552,7 +17484,7 @@ type instance ParameterList "rmspropalex_update(symbol)" =
 
 rmspropalex_update ::
                    forall args . Fullfilled "rmspropalex_update(symbol)" args =>
-                     String ->
+                     Text ->
                        ArgsHMap "rmspropalex_update(symbol)" args -> IO SymbolHandle
 rmspropalex_update name args
   = let scalarArgs
@@ -17589,7 +17521,7 @@ type instance ParameterList "round(symbol)" =
 
 round ::
       forall args . Fullfilled "round(symbol)" args =>
-        String -> ArgsHMap "round(symbol)" args -> IO SymbolHandle
+        Text -> ArgsHMap "round(symbol)" args -> IO SymbolHandle
 round name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -17608,7 +17540,7 @@ type instance ParameterList "rsqrt(symbol)" =
 
 rsqrt ::
       forall args . Fullfilled "rsqrt(symbol)" args =>
-        String -> ArgsHMap "rsqrt(symbol)" args -> IO SymbolHandle
+        Text -> ArgsHMap "rsqrt(symbol)" args -> IO SymbolHandle
 rsqrt name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -17628,7 +17560,7 @@ type instance ParameterList "scatter_nd(symbol)" =
 
 scatter_nd ::
            forall args . Fullfilled "scatter_nd(symbol)" args =>
-             String -> ArgsHMap "scatter_nd(symbol)" args -> IO SymbolHandle
+             Text -> ArgsHMap "scatter_nd(symbol)" args -> IO SymbolHandle
 scatter_nd name args
   = let scalarArgs
           = catMaybes
@@ -17655,7 +17587,7 @@ type instance ParameterList "sgd_mom_update(symbol)" =
 
 sgd_mom_update ::
                forall args . Fullfilled "sgd_mom_update(symbol)" args =>
-                 String -> ArgsHMap "sgd_mom_update(symbol)" args -> IO SymbolHandle
+                 Text -> ArgsHMap "sgd_mom_update(symbol)" args -> IO SymbolHandle
 sgd_mom_update name args
   = let scalarArgs
           = catMaybes
@@ -17690,7 +17622,7 @@ type instance ParameterList "sgd_update(symbol)" =
 
 sgd_update ::
            forall args . Fullfilled "sgd_update(symbol)" args =>
-             String -> ArgsHMap "sgd_update(symbol)" args -> IO SymbolHandle
+             Text -> ArgsHMap "sgd_update(symbol)" args -> IO SymbolHandle
 sgd_update name args
   = let scalarArgs
           = catMaybes
@@ -17720,7 +17652,7 @@ type instance ParameterList "shape_array(symbol)" =
 
 shape_array ::
             forall args . Fullfilled "shape_array(symbol)" args =>
-              String -> ArgsHMap "shape_array(symbol)" args -> IO SymbolHandle
+              Text -> ArgsHMap "shape_array(symbol)" args -> IO SymbolHandle
 shape_array name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -17739,7 +17671,7 @@ type instance ParameterList "sigmoid(symbol)" =
 
 sigmoid ::
         forall args . Fullfilled "sigmoid(symbol)" args =>
-          String -> ArgsHMap "sigmoid(symbol)" args -> IO SymbolHandle
+          Text -> ArgsHMap "sigmoid(symbol)" args -> IO SymbolHandle
 sigmoid name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -17758,7 +17690,7 @@ type instance ParameterList "sign(symbol)" =
 
 sign ::
      forall args . Fullfilled "sign(symbol)" args =>
-       String -> ArgsHMap "sign(symbol)" args -> IO SymbolHandle
+       Text -> ArgsHMap "sign(symbol)" args -> IO SymbolHandle
 sign name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -17780,7 +17712,7 @@ type instance ParameterList "signsgd_update(symbol)" =
 
 signsgd_update ::
                forall args . Fullfilled "signsgd_update(symbol)" args =>
-                 String -> ArgsHMap "signsgd_update(symbol)" args -> IO SymbolHandle
+                 Text -> ArgsHMap "signsgd_update(symbol)" args -> IO SymbolHandle
 signsgd_update name args
   = let scalarArgs
           = catMaybes
@@ -17812,7 +17744,7 @@ type instance ParameterList "signum_update(symbol)" =
 
 signum_update ::
               forall args . Fullfilled "signum_update(symbol)" args =>
-                String -> ArgsHMap "signum_update(symbol)" args -> IO SymbolHandle
+                Text -> ArgsHMap "signum_update(symbol)" args -> IO SymbolHandle
 signum_update name args
   = let scalarArgs
           = catMaybes
@@ -17843,7 +17775,7 @@ type instance ParameterList "sin(symbol)" =
 
 sin ::
     forall args . Fullfilled "sin(symbol)" args =>
-      String -> ArgsHMap "sin(symbol)" args -> IO SymbolHandle
+      Text -> ArgsHMap "sin(symbol)" args -> IO SymbolHandle
 sin name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -17862,7 +17794,7 @@ type instance ParameterList "sinh(symbol)" =
 
 sinh ::
      forall args . Fullfilled "sinh(symbol)" args =>
-       String -> ArgsHMap "sinh(symbol)" args -> IO SymbolHandle
+       Text -> ArgsHMap "sinh(symbol)" args -> IO SymbolHandle
 sinh name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -17881,7 +17813,7 @@ type instance ParameterList "size_array(symbol)" =
 
 size_array ::
            forall args . Fullfilled "size_array(symbol)" args =>
-             String -> ArgsHMap "size_array(symbol)" args -> IO SymbolHandle
+             Text -> ArgsHMap "size_array(symbol)" args -> IO SymbolHandle
 size_array name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -17901,7 +17833,7 @@ type instance ParameterList "slice(symbol)" =
 
 slice ::
       forall args . Fullfilled "slice(symbol)" args =>
-        String -> ArgsHMap "slice(symbol)" args -> IO SymbolHandle
+        Text -> ArgsHMap "slice(symbol)" args -> IO SymbolHandle
 slice name args
   = let scalarArgs
           = catMaybes
@@ -17925,7 +17857,7 @@ type instance ParameterList "slice_axis(symbol)" =
 
 slice_axis ::
            forall args . Fullfilled "slice_axis(symbol)" args =>
-             String -> ArgsHMap "slice_axis(symbol)" args -> IO SymbolHandle
+             Text -> ArgsHMap "slice_axis(symbol)" args -> IO SymbolHandle
 slice_axis name args
   = let scalarArgs
           = catMaybes
@@ -17949,7 +17881,7 @@ type instance ParameterList "slice_like(symbol)" =
 
 slice_like ::
            forall args . Fullfilled "slice_like(symbol)" args =>
-             String -> ArgsHMap "slice_like(symbol)" args -> IO SymbolHandle
+             Text -> ArgsHMap "slice_like(symbol)" args -> IO SymbolHandle
 slice_like name args
   = let scalarArgs
           = catMaybes
@@ -17972,7 +17904,7 @@ type instance ParameterList "smooth_l1(symbol)" =
 
 smooth_l1 ::
           forall args . Fullfilled "smooth_l1(symbol)" args =>
-            String -> ArgsHMap "smooth_l1(symbol)" args -> IO SymbolHandle
+            Text -> ArgsHMap "smooth_l1(symbol)" args -> IO SymbolHandle
 smooth_l1 name args
   = let scalarArgs
           = catMaybes
@@ -17998,7 +17930,7 @@ type instance ParameterList "softmax(symbol)" =
 
 softmax ::
         forall args . Fullfilled "softmax(symbol)" args =>
-          String -> ArgsHMap "softmax(symbol)" args -> IO SymbolHandle
+          Text -> ArgsHMap "softmax(symbol)" args -> IO SymbolHandle
 softmax name args
   = let scalarArgs
           = catMaybes
@@ -18029,7 +17961,7 @@ type instance ParameterList "softmax_cross_entropy(symbol)" =
 
 softmax_cross_entropy ::
                       forall args . Fullfilled "softmax_cross_entropy(symbol)" args =>
-                        String ->
+                        Text ->
                           ArgsHMap "softmax_cross_entropy(symbol)" args -> IO SymbolHandle
 softmax_cross_entropy name args
   = let scalarArgs = catMaybes []
@@ -18056,7 +17988,7 @@ type instance ParameterList "softmin(symbol)" =
 
 softmin ::
         forall args . Fullfilled "softmin(symbol)" args =>
-          String -> ArgsHMap "softmin(symbol)" args -> IO SymbolHandle
+          Text -> ArgsHMap "softmin(symbol)" args -> IO SymbolHandle
 softmin name args
   = let scalarArgs
           = catMaybes
@@ -18084,7 +18016,7 @@ type instance ParameterList "softsign(symbol)" =
 
 softsign ::
          forall args . Fullfilled "softsign(symbol)" args =>
-           String -> ArgsHMap "softsign(symbol)" args -> IO SymbolHandle
+           Text -> ArgsHMap "softsign(symbol)" args -> IO SymbolHandle
 softsign name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -18104,7 +18036,7 @@ type instance ParameterList "sort(symbol)" =
 
 sort ::
      forall args . Fullfilled "sort(symbol)" args =>
-       String -> ArgsHMap "sort(symbol)" args -> IO SymbolHandle
+       Text -> ArgsHMap "sort(symbol)" args -> IO SymbolHandle
 sort name args
   = let scalarArgs
           = catMaybes
@@ -18126,7 +18058,7 @@ type instance ParameterList "space_to_depth(symbol)" =
 
 space_to_depth ::
                forall args . Fullfilled "space_to_depth(symbol)" args =>
-                 String -> ArgsHMap "space_to_depth(symbol)" args -> IO SymbolHandle
+                 Text -> ArgsHMap "space_to_depth(symbol)" args -> IO SymbolHandle
 space_to_depth name args
   = let scalarArgs
           = catMaybes
@@ -18148,7 +18080,7 @@ type instance ParameterList "sqrt(symbol)" =
 
 sqrt ::
      forall args . Fullfilled "sqrt(symbol)" args =>
-       String -> ArgsHMap "sqrt(symbol)" args -> IO SymbolHandle
+       Text -> ArgsHMap "sqrt(symbol)" args -> IO SymbolHandle
 sqrt name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -18167,7 +18099,7 @@ type instance ParameterList "square(symbol)" =
 
 square ::
        forall args . Fullfilled "square(symbol)" args =>
-         String -> ArgsHMap "square(symbol)" args -> IO SymbolHandle
+         Text -> ArgsHMap "square(symbol)" args -> IO SymbolHandle
 square name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -18187,7 +18119,7 @@ type instance ParameterList "squeeze(symbol)" =
 
 squeeze ::
         forall args . Fullfilled "squeeze(symbol)" args =>
-          String -> ArgsHMap "squeeze(symbol)" args -> IO SymbolHandle
+          Text -> ArgsHMap "squeeze(symbol)" args -> IO SymbolHandle
 squeeze name args
   = let scalarArgs
           = catMaybes
@@ -18209,7 +18141,7 @@ type instance ParameterList "stack(symbol)" =
 
 stack ::
       forall args . Fullfilled "stack(symbol)" args =>
-        String -> ArgsHMap "stack(symbol)" args -> IO SymbolHandle
+        Text -> ArgsHMap "stack(symbol)" args -> IO SymbolHandle
 stack name args
   = let scalarArgs
           = catMaybes
@@ -18236,7 +18168,7 @@ type instance ParameterList "sum(symbol)" =
 
 sum ::
     forall args . Fullfilled "sum(symbol)" args =>
-      String -> ArgsHMap "sum(symbol)" args -> IO SymbolHandle
+      Text -> ArgsHMap "sum(symbol)" args -> IO SymbolHandle
 sum name args
   = let scalarArgs
           = catMaybes
@@ -18261,7 +18193,7 @@ type instance ParameterList "take(symbol)" =
 
 take ::
      forall args . Fullfilled "take(symbol)" args =>
-       String -> ArgsHMap "take(symbol)" args -> IO SymbolHandle
+       Text -> ArgsHMap "take(symbol)" args -> IO SymbolHandle
 take name args
   = let scalarArgs
           = catMaybes
@@ -18286,7 +18218,7 @@ type instance ParameterList "tan(symbol)" =
 
 tan ::
     forall args . Fullfilled "tan(symbol)" args =>
-      String -> ArgsHMap "tan(symbol)" args -> IO SymbolHandle
+      Text -> ArgsHMap "tan(symbol)" args -> IO SymbolHandle
 tan name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -18305,7 +18237,7 @@ type instance ParameterList "tanh(symbol)" =
 
 tanh ::
      forall args . Fullfilled "tanh(symbol)" args =>
-       String -> ArgsHMap "tanh(symbol)" args -> IO SymbolHandle
+       Text -> ArgsHMap "tanh(symbol)" args -> IO SymbolHandle
 tanh name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -18324,7 +18256,7 @@ type instance ParameterList "tile(symbol)" =
 
 tile ::
      forall args . Fullfilled "tile(symbol)" args =>
-       String -> ArgsHMap "tile(symbol)" args -> IO SymbolHandle
+       Text -> ArgsHMap "tile(symbol)" args -> IO SymbolHandle
 tile name args
   = let scalarArgs
           = catMaybes
@@ -18353,7 +18285,7 @@ type instance ParameterList "topk(symbol)" =
 
 topk ::
      forall args . Fullfilled "topk(symbol)" args =>
-       String -> ArgsHMap "topk(symbol)" args -> IO SymbolHandle
+       Text -> ArgsHMap "topk(symbol)" args -> IO SymbolHandle
 topk name args
   = let scalarArgs
           = catMaybes
@@ -18384,7 +18316,7 @@ type instance ParameterList "transpose(symbol)" =
 
 transpose ::
           forall args . Fullfilled "transpose(symbol)" args =>
-            String -> ArgsHMap "transpose(symbol)" args -> IO SymbolHandle
+            Text -> ArgsHMap "transpose(symbol)" args -> IO SymbolHandle
 transpose name args
   = let scalarArgs
           = catMaybes
@@ -18405,7 +18337,7 @@ type instance ParameterList "trunc(symbol)" =
 
 trunc ::
       forall args . Fullfilled "trunc(symbol)" args =>
-        String -> ArgsHMap "trunc(symbol)" args -> IO SymbolHandle
+        Text -> ArgsHMap "trunc(symbol)" args -> IO SymbolHandle
 trunc name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -18425,7 +18357,7 @@ type instance ParameterList "_where(symbol)" =
 
 _where ::
        forall args . Fullfilled "_where(symbol)" args =>
-         String -> ArgsHMap "_where(symbol)" args -> IO SymbolHandle
+         Text -> ArgsHMap "_where(symbol)" args -> IO SymbolHandle
 _where name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
@@ -18447,7 +18379,7 @@ type instance ParameterList "zeros_like(symbol)" =
 
 zeros_like ::
            forall args . Fullfilled "zeros_like(symbol)" args =>
-             String -> ArgsHMap "zeros_like(symbol)" args -> IO SymbolHandle
+             Text -> ArgsHMap "zeros_like(symbol)" args -> IO SymbolHandle
 zeros_like name args
   = let scalarArgs = catMaybes []
         (scalarkeys, scalarvals) = unzip scalarArgs
