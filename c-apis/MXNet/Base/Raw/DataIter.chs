@@ -1,16 +1,14 @@
 module MXNet.Base.Raw.DataIter where
 
+import RIO
 import Data.Typeable (Typeable)
 import Foreign.Marshal (alloca, peekArray)
 import Foreign.Storable (Storable(..))
 import Foreign.Concurrent (newForeignPtr)
 import Foreign.ForeignPtr (finalizeForeignPtr)
 import Foreign.C.Types
+import Foreign.C.String (CString)
 import Foreign.Ptr
-import Data.Word (Word64)
-import C2HS.C.Extra.Marshal (peekString, peekStringArray, peekIntegralArray)
-import GHC.Generics (Generic)
-import Control.Monad ((>=>))
 
 {# import MXNet.Base.Raw.Common #}
 {# import MXNet.Base.Raw.NDArray #}
@@ -74,22 +72,22 @@ mxListDataIters = do
 fun MXDataIterGetIterInfo as mxDataIterGetIterInfo_
     {
         `DataIterCreator',
-        alloca- `String' peekString*,
-        alloca- `String' peekString*,
+        alloca- `Text' peekCStringPtrT*,
+        alloca- `Text' peekCStringPtrT*,
         alloca- `MX_UINT' peek*,
-        alloca- `Ptr (Ptr CChar)' peek*,
-        alloca- `Ptr (Ptr CChar)' peek*,
-        alloca- `Ptr (Ptr CChar)' peek*
+        alloca- `Ptr CString' peek*,
+        alloca- `Ptr CString' peek*,
+        alloca- `Ptr CString' peek*
     } -> `CInt'
 #}
 
-mxDataIterGetIterInfo :: DataIterCreator -> IO (String, String, [String], [String], [String])
+mxDataIterGetIterInfo :: DataIterCreator -> IO (Text, Text, [Text], [Text], [Text])
 mxDataIterGetIterInfo dataitercreator = do
     (name, descr, num_args, arg_names, arg_type_infos, arg_descs) <- checked $ mxDataIterGetIterInfo_ dataitercreator
     let num_args_ = fromIntegral num_args
-    arg_names_ <- peekStringArray num_args_ arg_names
-    arg_type_infos_ <- peekStringArray num_args_ arg_type_infos
-    arg_descs_ <- peekStringArray num_args_ arg_descs
+    arg_names_ <- peekCStringArrayT num_args_ arg_names
+    arg_type_infos_ <- peekCStringArrayT num_args_ arg_type_infos
+    arg_descs_ <- peekCStringArrayT num_args_ arg_descs
     return (name, descr, arg_names_, arg_type_infos_, arg_descs_)
 
 #if MXNet_MAJOR==1 && MXNet_MINOR<6
@@ -98,8 +96,8 @@ fun MXDataIterCreateIter as mxDataIterCreateIter_
     {
         `DataIterCreator',
         `MX_UINT',
-        withStringArray* `[String]',
-        withStringArray* `[String]',
+        withCStringArrayT* `[Text]',
+        withCStringArrayT* `[Text]',
         alloca- `DataIterHandle' peekDataIterHandle*
     } -> `CInt'
 #}
@@ -109,14 +107,14 @@ fun MXDataIterCreateIter as mxDataIterCreateIter_
     {
         `DataIterCreator',
         `CUInt',
-        withStringArray* `[String]',
-        withStringArray* `[String]',
+        withCStringArrayT* `[Text]',
+        withCStringArrayT* `[Text]',
         alloca- `DataIterHandle' peekDataIterHandle*
     } -> `CInt'
 #}
 #endif
 
-mxDataIterCreateIter :: DataIterCreator -> [String] -> [String] -> IO DataIterHandle
+mxDataIterCreateIter :: DataIterCreator -> [Text] -> [Text] -> IO DataIterHandle
 mxDataIterCreateIter dataitercreator keys vals = do
     let num_args = fromIntegral (length keys)
     checked $ mxDataIterCreateIter_ dataitercreator num_args keys vals
@@ -167,7 +165,7 @@ fun MXDataIterGetIndex as mxDataIterGetIndex_
 mxDataIterGetIndex :: DataIterHandle -> IO [Integer]
 mxDataIterGetIndex dataiter = do
     (ptr, cnt) <- checked $ mxDataIterGetIndex_ dataiter
-    peekIntegralArray (fromIntegral cnt) ptr
+    map fromIntegral <$> peekArray (fromIntegral cnt) ptr
 
 {#
 fun MXDataIterGetPadNum as mxDataIterGetPadNum_

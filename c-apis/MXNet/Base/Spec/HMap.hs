@@ -8,10 +8,10 @@
 {-# LANGUAGE ConstraintKinds #-}
 module MXNet.Base.Spec.HMap where
 
+import RIO
 import GHC.TypeLits
 import Data.Proxy
 import Data.Typeable (Typeable)
-import Data.Maybe
 import Data.Constraint (Dict(..))
 import Type.Reflection (someTypeRep)
 import Unsafe.Coerce (unsafeCoerce)
@@ -24,7 +24,7 @@ data HMap (p :: Symbol -> * -> *) (kvs :: [*]) where
   Nil  :: Pair p => HMap p '[]
   Cons :: Pair p => p k v -> HMap p kvs -> HMap p (p k v ': kvs)
 
-infixr 0 .& 
+infixr 0 .&
 kv .& other = Cons kv other
 
 class Access (b :: Bool) p k v kvs | k kvs -> v where
@@ -34,7 +34,7 @@ instance Access True p k v (p k v ': kvs) where
   get' _ (Cons pair _) _ = value pair
 
 instance Access (MatchHead p k v kvs) p k v kvs => Access False p k v (kv ': kvs) where
-  get' _ (Cons _ n) k = get' (Proxy :: Proxy (MatchHead p k v kvs)) n k  
+  get' _ (Cons _ n) k = get' (Proxy :: Proxy (MatchHead p k v kvs)) n k
 
 get :: forall p k v kvs. Access (MatchHead p k v kvs) p k v kvs => HMap p kvs -> Proxy k -> v
 get = get' (Proxy :: Proxy (MatchHead p k v kvs))
