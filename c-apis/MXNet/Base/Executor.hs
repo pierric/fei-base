@@ -1,16 +1,15 @@
-{-# Language RecordWildCards #-}
-{-# Language LambdaCase #-}
+{-# LANGUAGE LambdaCase      #-}
+{-# LANGUAGE RecordWildCards #-}
 module MXNet.Base.Executor where
 
-import RIO
-import RIO.List (unzip, scanl)
-import qualified RIO.NonEmpty as RNE
-import GHC.Generics (Generic, Generic1)
+import           GHC.Generics       (Generic, Generic1)
+import           RIO
+import           RIO.List           (scanl, unzip)
+import qualified RIO.NonEmpty       as RNE
 
-import qualified MXNet.Base.Raw as I
-import MXNet.Base.Types (ForeignData(..), Context(..))
-import MXNet.Base.NDArray (NDArray(..))
-import MXNet.Base.Symbol (Symbol(..))
+import           MXNet.Base.NDArray (NDArray (..))
+import qualified MXNet.Base.Raw     as I
+import           MXNet.Base.Types   (Context (..), ForeignData (..))
 
 newtype Executor a = Executor { unExecutor :: I.ExecutorHandle }
     deriving (Generic, Generic1, Show)
@@ -48,12 +47,12 @@ execReshapeEx (Executor hdl) partial_shaping allow_up_sizing Context{..} input_s
         new_exec      = Executor new_hdl
     return $!! (new_arg_in', new_arg_grad', new_arg_aux', new_exec)
 
-execBind :: Symbol a -> Context -> [NDArray a] -> [Maybe (NDArray a, Int)] -> [NDArray a] ->  IO (Executor a)
+execBind :: I.SymbolHandle -> Context -> [NDArray a] -> [Maybe (NDArray a, Int)] -> [NDArray a] ->  IO (Executor a)
 execBind symbol Context{..} arg_in arg_gr_with_req arg_aux = do
-    let (arg_gr, arg_gr_req) = unzip $ flip map arg_gr_with_req $ \case 
+    let (arg_gr, arg_gr_req) = unzip $ flip map arg_gr_with_req $ \case
                                  Nothing -> (Nothing, 0)
                                  Just (arr, req) -> (Just $ unNDArray arr, req)
-    hdl <- I.mxExecutorBind (unSymbol symbol)
+    hdl <- I.mxExecutorBind symbol
                             _device_type _device_id
                             (map unNDArray arg_in)
                             arg_gr
