@@ -1,28 +1,29 @@
 module Main where
 
-import Prelude
-import RIO (on, first, (<>), forM, zipWithM_)
-import qualified RIO.Text as T
-import RIO.List (sortBy)
-import RIO.Char (toLower, isUpper, isSpace, isAlphaNum)
-import RIO.Directory
-import RIO.FilePath ((</>), FilePath)
-import RIO.Writer (Writer, execWriter, tell)
+import           Prelude
+import           RIO                          (first, forM, on, zipWithM_, (<>))
+import           RIO.Char                     (isAlphaNum, isSpace, isUpper,
+                                               toLower)
+import           RIO.Directory
+import           RIO.FilePath                 (FilePath, (</>))
+import           RIO.List                     (sortBy)
+import qualified RIO.Text                     as T
+import           RIO.Writer                   (Writer, execWriter, tell)
 
-import Options.Applicative hiding (optional)
-import Language.Haskell.Exts
-import System.Log.Logger
-import Text.Printf (printf)
-import Text.ParserCombinators.ReadP
-import Data.Tuple.Ops (uncons)
+import           Data.Tuple.Ops               (uncons)
+import           Language.Haskell.Exts
+import           Options.Applicative          hiding (optional)
+import           System.Log.Logger
+import           Text.ParserCombinators.ReadP
+import           Text.Printf                  (printf)
 
-import MXNet.Base.Raw
+import           MXNet.Base.Raw
 
 _module_ = "Main"
 
-data Arguments = Arguments {
-    output_dir :: FilePath
-}
+data Arguments = Arguments
+    { output_dir :: FilePath
+    }
 
 args_spec = Arguments
          <$> strOption (long "output" <> short 'o' <> value "operators" <> metavar "OUTPUT-DIR")
@@ -87,7 +88,9 @@ makeParamInst symname typs symbolapi =
     symname_with_appendix = symname ++ (if symbolapi then "(symbol)" else "(ndarray)")
     paramList = map (\(name, typ1, typ2) -> tyPromotedTuple [tyPromotedStr name, tyApp typ1 typ2]) typs
 
-data GenFlag = GenSymbolOp | GenNDArrayReturn | GenNDArrayUpdate
+data GenFlag = GenSymbolOp
+    | GenNDArrayReturn
+    | GenNDArrayUpdate
 
 makeSignature :: String -> GenFlag -> [Asst ()]-> Decl ()
 makeSignature symname flag extra_constraints =
@@ -357,8 +360,13 @@ normalizeName name@(c:cs)
     | name == "where" = "_where"
     | otherwise = name
 
-data ParamDesc = ParamDescItem String | ParamDescList Bool [String] deriving (Eq, Show)
-data ResolveMode = ResolveNDArray | ResolveSymbol | ResolveDataIter deriving Eq
+data ParamDesc = ParamDescItem String
+    | ParamDescList Bool [String]
+    deriving (Eq, Show)
+data ResolveMode = ResolveNDArray
+    | ResolveSymbol
+    | ResolveDataIter
+    deriving Eq
 
 type ResolvedType = (String, Type (), Type ())
 resolveHaskellType :: ResolveMode -> String -> String -> Writer ([(String, String)], [ResolvedType], [ResolvedType], [ResolvedType]) ()
@@ -437,8 +445,10 @@ typedesc = do
   where
     list1 = ParamDescList True  <$> between (string "{None,") (char '}') (sepBy (skipSpaces >> strItem) (char ','))
     list2 = ParamDescList False <$> between (string "{") (char '}') (sepBy (skipSpaces >> strItem) (char ','))
-    strItem = between (char '\'') (char '\'') (munch1 (\c -> isAlphaNum c || c `elem` "_-+-./"))
-    item = ParamDescItem <$> munch1 (\c -> isAlphaNum c || c `elem` " _-+()=[]<>./'")
+    strItem = between (char '\'') (char '\'') (munch1 (\c -> isAlphaNum c || oneOf c "_-+-./"))
+    item = ParamDescItem <$> munch1 (\c -> isAlphaNum c || oneOf c " _-+()=[]<>./'")
+    oneOf :: Eq a => a -> [a] -> Bool
+    oneOf c wl = c `elem` wl
 
 unQual = UnQual ()
 unkindedVar = UnkindedVar ()
