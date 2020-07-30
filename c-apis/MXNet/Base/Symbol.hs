@@ -47,18 +47,19 @@ shapeCons a (STensor s) = STensor $ a RNE.<| s
 shapeCons a SScalar     = STensor $ a RNE.:| []
 
 class SymbolClass s where
-    getName             :: MonadIO m => s -> m (Maybe Text)
-    listArguments       :: MonadIO m => s -> m [Text]
-    listOutputs         :: MonadIO m => s -> m [Text]
-    listAuxiliaryStates :: MonadIO m => s -> m [Text]
-    numOutputs          :: MonadIO m => s -> m Int
-    at                  :: MonadIO m => s -> Int -> m s
-    group               :: MonadIO m => [s] -> m s
-    internals           :: MonadIO m => s -> m s
-    inferShape          :: MonadIO m => s -> [(Text, FShape)] ->
-                                        m ([(Text, FShape)], [(Text, FShape)], [(Text, FShape)], Bool)
+    getName             :: (HasCallStack, MonadIO m) => s -> m (Maybe Text)
+    listArguments       :: (HasCallStack, MonadIO m) => s -> m [Text]
+    listOutputs         :: (HasCallStack, MonadIO m) => s -> m [Text]
+    listAuxiliaryStates :: (HasCallStack, MonadIO m) => s -> m [Text]
+    numOutputs          :: (HasCallStack, MonadIO m) => s -> m Int
+    at                  :: (HasCallStack, MonadIO m) => s -> Int -> m s
+    group               :: (HasCallStack, MonadIO m) => [s] -> m s
+    internals           :: (HasCallStack, MonadIO m) => s -> m s
+    inferShape          :: (HasCallStack, MonadIO m)
+                        => s -> [(Text, FShape)]
+                        -> m ([(Text, FShape)], [(Text, FShape)], [(Text, FShape)], Bool)
 
-    at'                 :: MonadIO m => s -> Text -> m s
+    at'                 :: (HasCallStack, MonadIO m) => s -> Text -> m s
     at' sym name = do
         all_names <- listOutputs sym
         case V.findIndex (== name) $ V.fromList all_names of

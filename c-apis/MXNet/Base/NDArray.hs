@@ -1,24 +1,26 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 module MXNet.Base.NDArray where
 
-import RIO hiding (Vector)
-import qualified RIO.NonEmpty as RNE
-import RIO.Vector.Storable (Vector)
-import qualified RIO.Vector.Storable as SV
-import qualified RIO.Vector.Storable.Unsafe as SV
-import qualified RIO.Vector.Unboxed as UV
+import qualified Data.Array.Repa              as Repa
+import qualified Data.Array.Repa.Eval         as Repa
+import qualified Data.Store                   as S
 import qualified Data.Vector.Storable.Mutable as VMut
+import           Foreign.Ptr                  (castPtr)
+import           Foreign.Storable             (Storable (..))
+import           GHC.Generics                 (Generic, Generic1)
+import           RIO                          hiding (Vector)
+import qualified RIO.NonEmpty                 as RNE
+import qualified RIO.NonEmpty.Partial         as RNE
+import           RIO.Vector.Storable          (Vector)
+import qualified RIO.Vector.Storable          as SV
+import qualified RIO.Vector.Storable.Unsafe   as SV
+import qualified RIO.Vector.Unboxed           as UV
+import           System.IO.Unsafe
+import           Text.Printf
 
-import qualified Data.Array.Repa as Repa
-import qualified Data.Array.Repa.Eval as Repa
-import Foreign.Ptr (castPtr)
-import Foreign.Storable (Storable(..))
-import GHC.Generics (Generic, Generic1)
-import qualified Data.Store as S
-import System.IO.Unsafe
-
-import qualified MXNet.Base.Raw as I
-import MXNet.Base.Types (Context(..), contextCPU, DType(..), ForeignData(..))
+import qualified MXNet.Base.Raw               as I
+import           MXNet.Base.Types             (Context (..), DType (..),
+                                               ForeignData (..), contextCPU)
 
 newtype NDArray a = NDArray { unNDArray :: I.NDArrayHandle}
     deriving (Generic, Generic1, Show)
@@ -73,7 +75,7 @@ ndshape :: DType a => NDArray a -> IO (NonEmpty Int)
 ndshape arr = do
     shape <- I.mxNDArrayGetShape $ unNDArray arr
     case RNE.nonEmpty shape of
-        Just s -> return s
+        Just s  -> return s
         Nothing -> error "impossible shape"
 
 ndsize :: DType a => NDArray a -> IO Int
@@ -91,16 +93,22 @@ zeros = full 1
 fromVector :: DType a => NonEmpty Int -> Vector a -> IO (NDArray a)
 fromVector shape = makeNDArray shape contextCPU
 
-copyFromVector :: DType a => NDArray a -> Vector a -> IO ()
+fromRepa :: (HasCallStack, Repa.Shape sh, DType a, UV.Unbox a) => Repa.Array Repa.U sh a -> IO (NDArray a)
+fromRepa arr = do
+    let shp = RNE.fromList $ reverse $ Repa.listOfShape $ Repa.extent arr
+        vec = UV.convert $ Repa.toUnboxed arr
+    makeNDArray shp contextCPU vec
+
+copyFromVector :: (HasCallStack, DType a) => NDArray a -> Vector a -> IO ()
 copyFromVector arr vec = do
     sz <- ndsize arr
     if (sz /= SV.length vec)
-      then error ""
+      then error $ printf "cannot copy from Vector: size mismatch (%d vs. %d)" sz (SV.length vec)
       else do
         SV.unsafeWith vec $ \p -> do
             I.mxNDArraySyncCopyFromCPU (unNDArray arr) (castPtr p) sz
 
-copyFromRepa :: (Repa.Shape sh, DType a, UV.Unbox a) => NDArray a -> Repa.Array Repa.U sh a -> IO ()
+copyFromRepa :: (HasCallStack, Repa.Shape sh, DType a, UV.Unbox a) => NDArray a -> Repa.Array Repa.U sh a -> IO ()
 copyFromRepa arr repa = do
     let vec = UV.convert $ Repa.toUnboxed repa
     copyFromVector arr vec
@@ -139,4 +147,4 @@ sing op args = do
     res <- op args
     case res of
       [x] -> return x
-      _ -> error "OP result is not a single NDArray."
+      _   -> error "OP result is not a single NDArray."

@@ -1,22 +1,26 @@
-{-# LANGUAGE OverloadedLabels  #-}
-{-# LANGUAGE PolyKinds, DataKinds, TypeFamilies #-}
-{-# LANGUAGE FlexibleInstances, MultiParamTypeClasses #-}
-{-# LANGUAGE GADTs, TypeOperators #-}
-{-# LANGUAGE UndecidableInstances #-}
+{-# LANGUAGE ConstraintKinds       #-}
+{-# LANGUAGE DataKinds             #-}
+{-# LANGUAGE FlexibleInstances     #-}
+{-# LANGUAGE GADTs                 #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE OverloadedLabels      #-}
 {-# LANGUAGE PartialTypeSignatures #-}
-{-# LANGUAGE ConstraintKinds #-}
-{-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE PolyKinds             #-}
+{-# LANGUAGE ScopedTypeVariables   #-}
+{-# LANGUAGE TypeFamilies          #-}
+{-# LANGUAGE TypeOperators         #-}
+{-# LANGUAGE UndecidableInstances  #-}
 module MXNet.Base.Spec.Operator where
 
-import RIO hiding (Text)
-import qualified RIO.Text as RT
-import RIO.List (intersperse)
-import GHC.OverloadedLabels
-import GHC.TypeLits
-import GHC.Exts (Constraint)
-import Data.Proxy
-import Data.Constraint
-import MXNet.Base.Spec.HMap
+import           Data.Constraint
+import           Data.Proxy
+import           GHC.Exts             (Constraint)
+import           GHC.OverloadedLabels
+import           GHC.TypeLits
+import           MXNet.Base.Spec.HMap
+import           RIO                  hiding (Text)
+import           RIO.List             (intersperse)
+import qualified RIO.Text             as RT
 
 instance a ~ b => IsLabel a (Proxy b) where
   fromLabel = Proxy
@@ -103,8 +107,11 @@ instance Value RT.Text where
   showValue = id
 
 instance Value a => Value (Maybe a) where
-  showValue Nothing = "None"
+  showValue Nothing  = "None"
   showValue (Just a) = showValue a
+
+instance (Value a, Value b) => Value (a, b) where
+  showValue (a, b) = RT.concat $ ["("] ++ [showValue a, ",", showValue b] ++ [")"]
 
 instance ValueList (IsChar a) [a] => Value [a] where
   showValue = showValueList (Proxy :: Proxy (IsChar a))
