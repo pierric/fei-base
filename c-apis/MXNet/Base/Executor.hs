@@ -60,3 +60,5 @@ execBind symbol Context{..} arg_in arg_gr_with_req arg_aux = do
                             (map unNDArray arg_aux)
     return $ Executor hdl
 
+execFree :: Executor a -> IO ()
+execFree (Executor hdl) = I.withExecutorHandle hdl I.mxExecutorFree

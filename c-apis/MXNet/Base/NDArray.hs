@@ -148,3 +148,5 @@ sing op args = do
     case res of
       [x] -> return x
       _   -> error "OP result is not a single NDArray."
+
+emptyCache context = I.mxStorageEmptyCache (_device_type context) (_device_id context)
