@@ -40,7 +40,7 @@ instance (KnownSymbol v, HasEnum v e) => IsLabel v (EnumType e) where
     fromLabel = EnumType (Proxy :: Proxy v)
 
 ----
-type family ParameterList (s :: Symbol) :: [(Symbol, Attr)]
+type family ParameterList (s :: Symbol) (t :: *) :: [(Symbol, Attr)]
 
 data Attr where
   AttrReq :: (a :: *) -> Attr
@@ -50,8 +50,8 @@ type family ParameterType (a :: Attr) :: * where
   ParameterType (AttrReq a) = a
   ParameterType (AttrOpt a) = a
 
-type family ResolveParameter (s :: Symbol) (k :: Symbol) :: Attr where
-  ResolveParameter s k = FindKey k (ParameterList s) (Text "Parameter '" :<>:
+type family ResolveParameter (s :: Symbol) (t :: *) (k :: Symbol) :: Attr where
+  ResolveParameter s t k = FindKey k (ParameterList s t) (Text "Parameter '" :<>:
                               Text k :<>:
                               Text " not found")
 
@@ -62,11 +62,11 @@ type family FindKey (s :: Symbol) (l :: [(Symbol, k)]) (e :: ErrorMessage) :: k 
 
 ----
 
-data ArgOf s k v where
-  (:=) :: (info ~ ResolveParameter s k) => Proxy k -> ParameterType info -> ArgOf s k (ParameterType info)
-  (:≅) :: Proxy k -> a -> ArgOf s k a
+data ArgOf s t k v where
+  (:=) :: (info ~ ResolveParameter s t k) => Proxy k -> ParameterType info -> ArgOf s t k (ParameterType info)
+  (:≅) :: Proxy k -> a -> ArgOf s t k a
 
-instance Pair (ArgOf s) where
+instance Pair (ArgOf s t) where
   key   (k := v) = k
   key   (k :≅ v) = k
   value (k := v) = v
@@ -75,15 +75,15 @@ instance Pair (ArgOf s) where
 infix 5 !, !?
 infix 1 :=, :≅
 
-(!) :: Access (MatchHead (ArgOf s) k v kvs) (ArgOf s) k v kvs
-  => ArgsHMap s kvs -> Proxy k -> v
+(!) :: Access (MatchHead (ArgOf s t) k v kvs) (ArgOf s t) k v kvs
+  => ArgsHMap s t kvs -> Proxy k -> v
 (!) = get
 
-(!?) :: (ParameterType (ResolveParameter s k) ~ v, Query (MatchHead (ArgOf s) k v kvs) (ArgOf s) k v kvs)
-  => ArgsHMap s kvs -> Proxy k -> Maybe v
+(!?) :: (ParameterType (ResolveParameter s t k) ~ v, Query (MatchHead (ArgOf s t) k v kvs) (ArgOf s t) k v kvs)
+  => ArgsHMap s t kvs -> Proxy k -> Maybe v
 (!?) = query
 
-type ArgsHMap s kvs = HMap (ArgOf s) kvs
+type ArgsHMap s t kvs = HMap (ArgOf s t) kvs
 ----
 class Value a where
   showValue :: a -> RT.Text
@@ -132,10 +132,10 @@ type family IsChar a :: Bool where
 class Dump a where
   dump :: a -> [(RT.Text, RT.Text)]
 
-instance Dump (ArgsHMap s '[]) where
+instance Dump (ArgsHMap s t '[]) where
   dump = const []
 
-instance (Dump (ArgsHMap s kvs), KnownSymbol k, Value v) => Dump (ArgsHMap s (ArgOf s k v ': kvs)) where
+instance (Dump (ArgsHMap s t kvs), KnownSymbol k, Value v) => Dump (ArgsHMap s t (ArgOf s t k v ': kvs)) where
   dump (Cons (k := v) kvs) = (RT.pack $ symbolVal k, showValue v) : dump kvs
   dump (Cons (k :≅ v) kvs) = (RT.pack $ symbolVal k, showValue v) : dump kvs
 
@@ -149,16 +149,16 @@ type family Subset (s1 :: [(Symbol, *)]) (s2 :: [(Symbol, *)]) :: Constraint whe
   Subset a b = TypeError (Text "xx")
 
 type family AsKVs (a :: [*]) :: [(Symbol, *)] where
-  AsKVs (ArgOf s k v ': args) = '(k, v) ': AsKVs args
+  AsKVs (ArgOf s t k v ': args) = '(k, v) ': AsKVs args
   AsKVs '[] = '[]
 
-type family GenAccess s kvs (req :: [(Symbol, *)]) :: Constraint where
-  GenAccess s kvs '[] = ()
-  GenAccess s kvs ('(k, v) ': req) = (Access (MatchHead (ArgOf s) k v kvs) (ArgOf s) k v kvs, GenAccess s kvs req)
+type family GenAccess s t kvs (req :: [(Symbol, *)]) :: Constraint where
+  GenAccess s t kvs '[] = ()
+  GenAccess s t kvs ('(k, v) ': req) = (Access (MatchHead (ArgOf s t) k v kvs) (ArgOf s t) k v kvs, GenAccess s t kvs req)
 
-type family GenQuery  s kvs (req :: [(Symbol, *)]) :: Constraint where
-  GenQuery  s kvs '[]  = ()
-  GenQuery  s kvs ('(k, v) ': req) = (Query  (MatchHead (ArgOf s) k v kvs) (ArgOf s) k v kvs, GenQuery  s kvs req)
+type family GenQuery  s t kvs (req :: [(Symbol, *)]) :: Constraint where
+  GenQuery  s t kvs '[]  = ()
+  GenQuery  s t kvs ('(k, v) ': req) = (Query  (MatchHead (ArgOf s t) k v kvs) (ArgOf s t) k v kvs, GenQuery  s t kvs req)
 
 
 type family FilterRequired (pl :: [(k, Attr)]) :: [(k, *)] where
@@ -172,10 +172,10 @@ type family AllArgs (pl :: [(k, Attr)]) :: [(k, *)] where
   AllArgs ('(s, AttrReq t) ': pl) = '(s,t) ': AllArgs pl
   AllArgs ('(s, AttrOpt t) ': pl) = '(s,t) ': AllArgs pl
 
-type family Fullfilled (s :: Symbol) (args :: [*]) :: Constraint where
-  Fullfilled s args = ( Subset ( FilterRequired (ParameterList s)) (AsKVs args)
-                      , GenAccess s args (FilterRequired (ParameterList s))
-                      , GenQuery  s args (AllArgs (ParameterList s)))
+type family Fullfilled (s :: Symbol) t (args :: [*]) :: Constraint where
+  Fullfilled s t args = ( Subset ( FilterRequired (ParameterList s t)) (AsKVs args)
+                        , GenAccess s t args (FilterRequired (ParameterList s t))
+                        , GenQuery  s t args (AllArgs (ParameterList s t)))
 
 -- type family HasOptArg (s :: Symbol) (args :: [*]) (k :: [Symbol]) :: Constraint where
 --   HasOptArg s args '[] = ()
@@ -207,17 +207,17 @@ type family HasArgsGen p i k args :: Constraint where
                                     ,HasElement '(k, t) (AsKVs args) ~ True
                                     ,Query (MatchHead p k t args) p k t args)
 
-type family HasArgs (s :: Symbol) (args :: [*]) (k :: [Symbol]) :: Constraint where
-  HasArgs s args '[] = ()
-  HasArgs s args (k0 ': ks) = (HasArgsGen (ArgOf s) (ResolveParameter s k0) k0 args, HasArgs s args ks)
+type family HasArgs (s :: Symbol) t (args :: [*]) (k :: [Symbol]) :: Constraint where
+  HasArgs s t args '[] = ()
+  HasArgs s t args (k0 ': ks) = (HasArgsGen (ArgOf s t) (ResolveParameter s t k0) k0 args, HasArgs s t args ks)
 
 type family WithoutArgsGen p t k args :: Constraint where
   WithoutArgsGen p t k args = (Query (MatchHead p k t args) p k t args
                               ,HasElement '(k, t) (AsKVs args) ~ False)
 
-type family WithoutArgs (s :: Symbol) (args :: [*]) (k :: [Symbol]) :: Constraint where
-  WithoutArgs s args '[] = ()
-  WithoutArgs s args (k0 ': ks) = (WithoutArgsGen (ArgOf s) (ParameterType (ResolveParameter s k0)) k0 args, WithoutArgs s args ks)
+type family WithoutArgs (s :: Symbol) t (args :: [*]) (k :: [Symbol]) :: Constraint where
+  WithoutArgs s t args '[] = ()
+  WithoutArgs s t args (k0 ': ks) = (WithoutArgsGen (ArgOf s t) (ParameterType (ResolveParameter s t k0)) k0 args, WithoutArgs s t args ks)
 ----
 type family HasElement (s :: k) (l :: [k]) :: Bool where
   HasElement s (s ': _) = True
@@ -230,36 +230,36 @@ type family IfThenElse (b :: Bool) (t :: k) (f :: k) :: k where
 
 -------------------------------------
 
-type instance ParameterList "fn" = [
+type instance ParameterList "fn" t = [
   '("a", AttrReq Int),
   '("b", AttrOpt String),
   '("c", AttrReq (EnumType '["c1","c2"])),
   '("d", AttrOpt (Maybe (EnumType '["c1","c2"])))
   ]
-args1 :: ArgsHMap "fn" _
+args1 :: ArgsHMap "fn" _ _
 args1 = Nil
 
-args2 :: ArgsHMap "fn" _
+args2 :: ArgsHMap "fn" _ _
 args2 = #a := 3 .& Nil
 
-args3 :: ArgsHMap "fn" _
+args3 :: ArgsHMap "fn" _ _
 args3 = #a := 3 .& #b := "Hello" .& Nil
 
-args4 :: ArgsHMap "fn" _
+args4 :: ArgsHMap "fn" _ _
 args4 = #a := 3 .& #c := #c1 .& Nil
 
-args5 :: ArgsHMap "fn" _
+args5 :: ArgsHMap "fn" _ _
 args5 = #a := 3 .& #c := #c1 .& #d := Just #c2 .& Nil
 
-fn1 :: Fullfilled "fn" args => ArgsHMap "fn" args -> _
+fn1 :: Fullfilled "fn" t args => ArgsHMap "fn" t args -> _
 fn1 args = args !? #b
 
-fn2 :: GenQuery "fn" args '[ '("b", String), '("d", (Maybe (EnumType '["c1","c2"])))]
-    => ArgsHMap "fn" args -> _
+fn2 :: GenQuery "fn" t args '[ '("b", String), '("d", (Maybe (EnumType '["c1","c2"])))]
+    => ArgsHMap "fn" t args -> _
 fn2 args = fn1 (#a := 3 .& #c := #c1 .& args)
 
-fn3 :: (HasArgs "fn" args '["b", "c", "d"]) => ArgsHMap "fn" args -> _
+fn3 :: (HasArgs "fn" t args '["b", "c", "d"]) => ArgsHMap "fn" t args -> _
 fn3 args = fn1 (#a := 3 .& args)
 
-fn4 :: (HasArgs "fn" args '["c", "b", "d"], WithoutArgs "fn" args '["a"]) => ArgsHMap "fn" args -> _
+fn4 :: (HasArgs "fn" t args '["c", "b", "d"], WithoutArgs "fn" t args '["a"]) => ArgsHMap "fn" t args -> _
 fn4 args = fn1 (#a := 3 .& args)
