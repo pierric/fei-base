@@ -1,4 +1,5 @@
-{-# LANGUAGE ViewPatterns #-}
+{-# LANGUAGE PartialTypeSignatures #-}
+{-# LANGUAGE ViewPatterns          #-}
 module MXNet.Base.Symbol where
 
 import qualified Data.Vector.Mutable     as VM
@@ -409,7 +410,7 @@ registerCustomOperator (op_type, op_ctor) = do
         let size = 3
         ptr_callbacks <- mallocArray size
         ptr_contexts  <- newArray (replicate size nullPtr)
-        allocList <- newMVar $ [castPtr ptr_callbacks, castPtr ptr_contexts]
+        allocList <- newMVar $ ([castPtr ptr_callbacks, castPtr ptr_contexts] :: [_])
 
         ptr_delete_entry        <- I.mkCustomFunctionDelFunc (delete_entry allocList)
         ptr_func_forward_entry  <- I.mkCustomFunctionBwdFunc (func_forward_entry  op)

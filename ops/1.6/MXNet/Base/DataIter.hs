@@ -7,7 +7,7 @@ import MXNet.Base.Spec.Operator
 import MXNet.Base.Spec.HMap
 import Data.Maybe (catMaybes, fromMaybe)
 
-type instance ParameterList "_CSVIter" =
+type instance ParameterList "_CSVIter" dummy =
      '[ '("data_csv", AttrReq Text), '("data_shape", AttrReq [Int]),
         '("label_csv", AttrOpt Text), '("label_shape", AttrOpt [Int]),
         '("batch_size", AttrReq Int), '("round_batch", AttrOpt Bool),
@@ -21,8 +21,8 @@ type instance ParameterList "_CSVIter" =
                     "uint8"])))]
 
 _CSVIter ::
-         forall args . Fullfilled "_CSVIter" args =>
-           ArgsHMap "_CSVIter" args -> IO DataIterHandle
+         forall a . Fullfilled "_CSVIter" () a =>
+           ArgsHMap "_CSVIter" () a -> IO DataIterHandle
 _CSVIter args
   = let allargs
           = catMaybes
@@ -52,7 +52,7 @@ _CSVIter args
          di <- return (dis !! 0)
          mxDataIterCreateIter di keys vals
 
-type instance ParameterList "_ImageDetRecordIter" =
+type instance ParameterList "_ImageDetRecordIter" dummy =
      '[ '("path_imglist", AttrOpt Text), '("path_imgrec", AttrOpt Text),
         '("aug_seq", AttrOpt Text), '("label_width", AttrOpt Int),
         '("data_shape", AttrReq [Int]),
@@ -108,8 +108,8 @@ type instance ParameterList "_ImageDetRecordIter" =
         '("scale", AttrOpt Float), '("verbose", AttrOpt Bool)]
 
 _ImageDetRecordIter ::
-                    forall args . Fullfilled "_ImageDetRecordIter" args =>
-                      ArgsHMap "_ImageDetRecordIter" args -> IO DataIterHandle
+                    forall a . Fullfilled "_ImageDetRecordIter" () a =>
+                      ArgsHMap "_ImageDetRecordIter" () a -> IO DataIterHandle
 _ImageDetRecordIter args
   = let allargs
           = catMaybes
@@ -232,7 +232,7 @@ _ImageDetRecordIter args
          di <- return (dis !! 1)
          mxDataIterCreateIter di keys vals
 
-type instance ParameterList "_ImageRecordIter_v1" =
+type instance ParameterList "_ImageRecordIter_v1" dummy =
      '[ '("path_imglist", AttrOpt Text), '("path_imgrec", AttrOpt Text),
         '("path_imgidx", AttrOpt Text), '("aug_seq", AttrOpt Text),
         '("label_width", AttrOpt Int), '("data_shape", AttrReq [Int]),
@@ -280,8 +280,8 @@ type instance ParameterList "_ImageRecordIter_v1" =
         '("verbose", AttrOpt Bool)]
 
 _ImageRecordIter_v1 ::
-                    forall args . Fullfilled "_ImageRecordIter_v1" args =>
-                      ArgsHMap "_ImageRecordIter_v1" args -> IO DataIterHandle
+                    forall a . Fullfilled "_ImageRecordIter_v1" () a =>
+                      ArgsHMap "_ImageRecordIter_v1" () a -> IO DataIterHandle
 _ImageRecordIter_v1 args
   = let allargs
           = catMaybes
@@ -394,7 +394,7 @@ _ImageRecordIter_v1 args
          di <- return (dis !! 2)
          mxDataIterCreateIter di keys vals
 
-type instance ParameterList "_ImageRecordUInt8Iter_v1" =
+type instance ParameterList "_ImageRecordUInt8Iter_v1" dummy =
      '[ '("path_imglist", AttrOpt Text), '("path_imgrec", AttrOpt Text),
         '("path_imgidx", AttrOpt Text), '("aug_seq", AttrOpt Text),
         '("label_width", AttrOpt Int), '("data_shape", AttrReq [Int]),
@@ -433,8 +433,8 @@ type instance ParameterList "_ImageRecordUInt8Iter_v1" =
         '("inter_method", AttrOpt Int), '("pad", AttrOpt Int)]
 
 _ImageRecordUInt8Iter_v1 ::
-                         forall args . Fullfilled "_ImageRecordUInt8Iter_v1" args =>
-                           ArgsHMap "_ImageRecordUInt8Iter_v1" args -> IO DataIterHandle
+                         forall a . Fullfilled "_ImageRecordUInt8Iter_v1" () a =>
+                           ArgsHMap "_ImageRecordUInt8Iter_v1" () a -> IO DataIterHandle
 _ImageRecordUInt8Iter_v1 args
   = let allargs
           = catMaybes
@@ -528,7 +528,7 @@ _ImageRecordUInt8Iter_v1 args
          di <- return (dis !! 3)
          mxDataIterCreateIter di keys vals
 
-type instance ParameterList "_ImageRecordIter" =
+type instance ParameterList "_ImageRecordIter" dummy =
      '[ '("path_imglist", AttrOpt Text), '("path_imgrec", AttrOpt Text),
         '("path_imgidx", AttrOpt Text), '("aug_seq", AttrOpt Text),
         '("label_width", AttrOpt Int), '("data_shape", AttrReq [Int]),
@@ -576,8 +576,8 @@ type instance ParameterList "_ImageRecordIter" =
         '("verbose", AttrOpt Bool)]
 
 _ImageRecordIter ::
-                 forall args . Fullfilled "_ImageRecordIter" args =>
-                   ArgsHMap "_ImageRecordIter" args -> IO DataIterHandle
+                 forall a . Fullfilled "_ImageRecordIter" () a =>
+                   ArgsHMap "_ImageRecordIter" () a -> IO DataIterHandle
 _ImageRecordIter args
   = let allargs
           = catMaybes
@@ -690,7 +690,7 @@ _ImageRecordIter args
          di <- return (dis !! 4)
          mxDataIterCreateIter di keys vals
 
-type instance ParameterList "_ImageRecordUInt8Iter" =
+type instance ParameterList "_ImageRecordUInt8Iter" dummy =
      '[ '("path_imglist", AttrOpt Text), '("path_imgrec", AttrOpt Text),
         '("path_imgidx", AttrOpt Text), '("aug_seq", AttrOpt Text),
         '("label_width", AttrOpt Int), '("data_shape", AttrReq [Int]),
@@ -729,8 +729,8 @@ type instance ParameterList "_ImageRecordUInt8Iter" =
         '("inter_method", AttrOpt Int), '("pad", AttrOpt Int)]
 
 _ImageRecordUInt8Iter ::
-                      forall args . Fullfilled "_ImageRecordUInt8Iter" args =>
-                        ArgsHMap "_ImageRecordUInt8Iter" args -> IO DataIterHandle
+                      forall a . Fullfilled "_ImageRecordUInt8Iter" () a =>
+                        ArgsHMap "_ImageRecordUInt8Iter" () a -> IO DataIterHandle
 _ImageRecordUInt8Iter args
   = let allargs
           = catMaybes
@@ -824,7 +824,7 @@ _ImageRecordUInt8Iter args
          di <- return (dis !! 5)
          mxDataIterCreateIter di keys vals
 
-type instance ParameterList "_ImageRecordInt8Iter" =
+type instance ParameterList "_ImageRecordInt8Iter" dummy =
      '[ '("path_imglist", AttrOpt Text), '("path_imgrec", AttrOpt Text),
         '("path_imgidx", AttrOpt Text), '("aug_seq", AttrOpt Text),
         '("label_width", AttrOpt Int), '("data_shape", AttrReq [Int]),
@@ -863,8 +863,8 @@ type instance ParameterList "_ImageRecordInt8Iter" =
         '("inter_method", AttrOpt Int), '("pad", AttrOpt Int)]
 
 _ImageRecordInt8Iter ::
-                     forall args . Fullfilled "_ImageRecordInt8Iter" args =>
-                       ArgsHMap "_ImageRecordInt8Iter" args -> IO DataIterHandle
+                     forall a . Fullfilled "_ImageRecordInt8Iter" () a =>
+                       ArgsHMap "_ImageRecordInt8Iter" () a -> IO DataIterHandle
 _ImageRecordInt8Iter args
   = let allargs
           = catMaybes
@@ -958,7 +958,7 @@ _ImageRecordInt8Iter args
          di <- return (dis !! 6)
          mxDataIterCreateIter di keys vals
 
-type instance ParameterList "_LibSVMIter" =
+type instance ParameterList "_LibSVMIter" dummy =
      '[ '("data_libsvm", AttrReq Text), '("data_shape", AttrReq [Int]),
         '("label_libsvm", AttrOpt Text), '("label_shape", AttrOpt [Int]),
         '("num_parts", AttrOpt Int), '("part_index", AttrOpt Int),
@@ -973,8 +973,8 @@ type instance ParameterList "_LibSVMIter" =
                     "uint8"])))]
 
 _LibSVMIter ::
-            forall args . Fullfilled "_LibSVMIter" args =>
-              ArgsHMap "_LibSVMIter" args -> IO DataIterHandle
+            forall a . Fullfilled "_LibSVMIter" () a =>
+              ArgsHMap "_LibSVMIter" () a -> IO DataIterHandle
 _LibSVMIter args
   = let allargs
           = catMaybes
@@ -1008,7 +1008,7 @@ _LibSVMIter args
          di <- return (dis !! 7)
          mxDataIterCreateIter di keys vals
 
-type instance ParameterList "_MNISTIter" =
+type instance ParameterList "_MNISTIter" dummy =
      '[ '("image", AttrOpt Text), '("label", AttrOpt Text),
         '("batch_size", AttrOpt Int), '("shuffle", AttrOpt Bool),
         '("flat", AttrOpt Bool), '("seed", AttrOpt Int),
@@ -1023,8 +1023,8 @@ type instance ParameterList "_MNISTIter" =
                     "uint8"])))]
 
 _MNISTIter ::
-           forall args . Fullfilled "_MNISTIter" args =>
-             ArgsHMap "_MNISTIter" args -> IO DataIterHandle
+           forall a . Fullfilled "_MNISTIter" () a =>
+             ArgsHMap "_MNISTIter" () a -> IO DataIterHandle
 _MNISTIter args
   = let allargs
           = catMaybes

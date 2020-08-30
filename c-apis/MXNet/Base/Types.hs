@@ -1,16 +1,27 @@
-{-# LANGUAGE DataKinds #-}
+{-# LANGUAGE DataKinds    #-}
 {-# LANGUAGE TypeFamilies #-}
 module MXNet.Base.Types where
 
-import RIO
-import RIO.Vector.Unboxed (Unbox)
-import Data.Proxy (Proxy(..))
-import GHC.TypeLits (Symbol, KnownSymbol)
+import           Data.Proxy         (Proxy (..))
+import           GHC.TypeLits       (KnownSymbol, Symbol)
+import           RIO
+import           RIO.Vector.Unboxed (Unbox)
 
-data Context = Context { _device_type :: Int, _device_id :: Int }
-  deriving (Eq, Show)
+data Context = Context
+    { _device_type :: Int
+    , _device_id   :: Int
+    }
+    deriving (Eq, Show)
 
-class (Storable a, Unbox a, Show a, Num a, Floating a, Real a, RealFrac a, KnownSymbol (DTypeName a)) => DType a where
+class (Storable a,
+       Unbox a,
+       Show a,
+       Num a,
+       Floating a,
+       Real a,
+       RealFloat a,
+       RealFrac a,
+       KnownSymbol (DTypeName a)) => DType a where
   type DTypeName a :: Symbol
   typename :: a -> Proxy (DTypeName a)
   typename a = Proxy

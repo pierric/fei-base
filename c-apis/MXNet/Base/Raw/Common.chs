@@ -251,3 +251,14 @@ fun NNGetLastError as nnGetLastError
     {
     } -> `Text' peekCStringT*
 #}
+
+{#
+fun MXStorageEmptyCache as mxStorageEmptyCache_
+    {
+        `CInt',
+        `CInt'
+    } -> `CInt'
+#}
+
+mxStorageEmptyCache :: Int -> Int -> IO ()
+mxStorageEmptyCache devtype devid = checked $ mxStorageEmptyCache_ (fromIntegral devtype) (fromIntegral devid)
