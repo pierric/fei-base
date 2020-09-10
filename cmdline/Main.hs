@@ -39,7 +39,7 @@ main = do
     let ops_sorted = map snd $ sortBy (compare `on` fst) $ zip op_names ops
 
     infoM _module_ "Generating NDArray/Symbol operators..."
-    ops <- concat <$> mapM genSymOp ops_sorted
+    ops <- concat <$> mapM genTensorOp ops_sorted
     writeFile (base </> "Tensor.hs") $ prettyPrint (modTensor ops)
 
     dataitercreators  <- mxListDataIters
@@ -96,8 +96,8 @@ makeSignature symname extra_constraints =
         vars = [unkindedVar (name "a"), unkindedVar (name "t")]
     in tySig [name symname] $ tyForall vars cx_all fun
 
-genSymOp :: AtomicSymbolCreator -> IO [Decl ()]
-genSymOp sc = do
+genTensorOp :: AtomicSymbolCreator -> IO [Decl ()]
+genTensorOp sc = do
     (symname_t, _, argname_t, argtype_t, _, key_var_num_args_t, rettyp) <- mxSymbolGetAtomicSymbolInfo sc
     let symname = T.unpack symname_t
         argname = map T.unpack argname_t
@@ -187,94 +187,6 @@ genSymOp sc = do
                                       then function "Left" `app` (var $ name "tensorKeyArgs")
                                       else function "Right" `app` (var $ name "tensorVarArgs")))
             return [paramListInst, sig, fun]
-
--- genArrOp :: AtomicSymbolCreator -> IO [Decl ()]
--- genArrOp sc = do
---     (symname_t, _, argname0_t, argtype0_t, _, key_var_num_args_t, rettyp) <- mxSymbolGetAtomicSymbolInfo sc
---     let symname  = T.unpack symname_t
---         argname0 = map T.unpack argname0_t
---         argtype0 = map T.unpack argtype0_t
---         key_var_num_args = T.unpack key_var_num_args_t
---
---     -- some ops (names like *_mkl_*) are malformed. They declare zero args, but actually has the "data" and "num_args"
---     let (argname, argtype) = if not (null key_var_num_args) && null argname0 then
---                                 (["data","num_args"], ["NDArray-or-Symbol[]","int, required"])
---                              else
---                                 (argname0, argtype0)
---
---     if symname `elem` ["_Native", "_NDArray", "Custom"] then
---         return []
---     else do
---         let symname_ = normalizeName symname
---             (errs, scalarTypes, tensorTypes, arrayTypes) = execWriter $ zipWithM_ (resolveHaskellType ResolveNDArray) argname argtype
---
---         if not (null errs) then do
---             forM errs $ \(name, msg) ->
---                 errorM _module_ (printf "Function: %s %s" symname msg)
---             return []
---         else if (length arrayTypes >= 2) then do
---             errorM _module_ (printf "Function: %s has more than Symbol[] argument." symname)
---             return []
---         else if (not (null tensorTypes) && not (null arrayTypes)) then do
---             errorM _module_ (printf "Function: %s is varadic, but it also has Symbol argument." symname)
---             return []
---         else do
---             let paramListInst = makeParamInst symname_ (scalarTypes ++ tensorTypes ++ arrayTypes) False
---                 sig1 = makeSignature symname_ GenNDArrayReturn []
---                 sig2 = makeSignature symname_ GenNDArrayUpdate []
---             let fun1 = sfun (name symname_) [name "args"]
---                         (UnGuardedRhs () (body (lastArgOfInvoke GenNDArrayReturn) True)) Nothing
---                 fun2 = sfun (name $ symname_ ++ "_upd") [name "outputs", name "args"]
---                         (UnGuardedRhs () (body (lastArgOfInvoke GenNDArrayUpdate) False)) Nothing
---                 lastArgOfInvoke GenNDArrayReturn = con $ unQual $ name "Nothing"
---                 lastArgOfInvoke GenNDArrayUpdate = (con $ unQual $ name "Just") `app` (var $ name "outputs")
---                 body lastarg retval =
---                     letE ([
---                           patBind (pvar $ name "scalarArgs") (function "catMaybes"
---                             `app` listE [
---                                 infixApp (infixApp (tupleSection [Just $ strE argkey, Nothing]) (op $ sym ".") (function "showValue")) (op $ sym "<$>") $
---                                 ExpTypeSig () (infixApp (var $ name "args") (op $ sym "!?") (OverloadedLabel () argkey)) (tyApp (tyCon $ unQual $ name "Maybe") typ) | (argkey, _, typ) <- scalarTypes])
---                         -- , patBind (pTuple [pvar $ name "scalarkeys", pvar $ name "scalarvals"]) (app (function "unzip") $ var $ name "scalarArgs")
---                         , patBind (pvar $ name "tensorArgs") (function "catMaybes"
---                             `app` listE [
---                                 infixApp (tupleSection [Just $ strE argkey, Nothing]) (op $ sym "<$>") $
---                                 ExpTypeSig () (infixApp (var $ name "args") (op $ sym "!?") (OverloadedLabel () argkey)) (tyApp (tyCon $ unQual $ name "Maybe") typ) | (argkey, _, typ) <- tensorTypes])
---                         , patBind (pTuple [pvar $ name "tensorkeys", pvar $ name "tensorvals"]) (app (function "unzip") $ var $ name "tensorArgs")]
---                         ++
---                         case arrayTypes of
---                           [(argkey,_,_)] -> [patBind (pvar $ name "array") $ function "fromMaybe"
---                                                 `app` eList
---                                                 `app` ExpTypeSig ()
---                                                         (infixApp (var $ name "args") (op $ sym "!?") (OverloadedLabel () argkey))
---                                                         (tyApp (tyCon $ unQual $ name "Maybe") (tyList $ tyCon $ unQual $ name "NDArrayHandle"))]
---                           _ -> [])
---                         (doE $
---                             [ genStmt (pvar $ name "op") $ function "nnGetOpHandle"`app` strE symname ] ++
---                             ( if null key_var_num_args then
---                                   [ genStmt (pvar $ name "listndarr") $ function "mxImperativeInvoke"
---                                       `app` (function "fromOpHandle" `app` (var $ name "op"))
---                                       `app` (var $ name "tensorvals")
---                                       `app` (var $ name $ "scalarArgs")
---                                       `app` lastarg
---                                   ]
---                               else
---                                   [ letStmt [
---                                         patBind (pvar $ name "scalarArgs'") (
---                                             If () (function "hasKey" `app` (var $ name "args") `app` (OverloadedLabel () key_var_num_args))
---                                                 (var $ name $ "scalarArgs")
---                                                 (let key_var = Con () (Special () (TupleCon () Boxed 2))
---                                                                 `app` (strE key_var_num_args)
---                                                                 `app` (function "showValue" `app` (function "length" `app` (var $ name "array")))
---                                                 in infixApp key_var (QConOp () $ Special () $ Cons ()) (var $ name $ "scalarArgs"))
---                                         )]
---                                   , genStmt (pvar $ name "listndarr") $ function "mxImperativeInvoke"
---                                                   `app` (function "fromOpHandle" `app` (var $ name "op"))
---                                                   `app` (var $ name "array")
---                                                   `app` (var $ name $ "scalarArgs'")
---                                                   `app` lastarg
---                                   ]) ++
---                             [ qualStmt $ function "return" `app` (if retval then var $ name "listndarr" else unit_con ()) ])
---             return [paramListInst, sig1, fun1, sig2, fun2]
 
 genDataIter :: (DataIterCreator, Integer) -> IO [Decl ()]
 genDataIter (dataitercreator, index) = do
