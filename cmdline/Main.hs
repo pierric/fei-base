@@ -71,6 +71,7 @@ getOpName :: AtomicSymbolCreator -> IO String
 getOpName = fmap T.unpack . mxSymbolGetAtomicSymbolName
 
 tensorVar = tyVarIdent "t"
+tensorVar2 = tyVarIdent "o"
 
 makeParamInst :: String -> [ResolvedType] -> Bool -> Decl ()
 makeParamInst symname typs symbolapi =
@@ -83,17 +84,17 @@ data GenFlag = GenSymbolOp
     | GenNDArrayReturn
     | GenNDArrayUpdate
 
-makeSignature :: String -> [Asst ()]-> Decl ()
-makeSignature symname extra_constraints =
-    let cxfullfill = appA (name "Fullfilled") [tyPromotedStr symname, tensorVar, tyVarIdent "a"]
-        cxtensor   = appA (name "Tensor") [tensorVar]
+makeSignature :: String -> Type () -> Type () -> [Asst ()] -> Decl ()
+makeSignature symname ti to extra_constraints =
+    let cxfullfill = appA (name "Fullfilled") [tyPromotedStr symname, ti, tyVarIdent "a"]
+        cxtensor   = appA (name "TensorOp") [ti, to]
         cx_all = cxTuple (cxtensor : cxfullfill : extra_constraints)
         fun = tyFun (let hmap = tyCon $ unQual $ name "ArgsHMap"
                      in hmap `tyApp` tyPromotedStr symname
-                             `tyApp` tensorVar
+                             `tyApp` ti
                              `tyApp` tyVarIdent "a")
-                    (tyApp (tyCon $ unQual $ name "TensorApply") tensorVar)
-        vars = [unkindedVar (name "a"), unkindedVar (name "t")]
+                    ((tyCon $ unQual $ name "TensorApply") `tyApp ` to)
+        vars = map (unkindedVar . name) $ "a" : "t" : if ti == to then [] else ["o"]
     in tySig [name symname] $ tyForall vars cx_all fun
 
 genTensorOp :: AtomicSymbolCreator -> IO [Decl ()]
@@ -108,6 +109,8 @@ genTensorOp sc = do
         return []
     else do
         let symname_ = normalizeName symname
+            out_new = symname `elem` ["Cast"]
+            out_var = if out_new then tensorVar2 else tensorVar
             (errs, scalarTypes, tensorKeyTypes, tensorVarTypes) = execWriter $ zipWithM_ (resolveHaskellType ResolveTensor) argname argtype
 
         if not (null errs) then do
@@ -122,7 +125,7 @@ genTensorOp sc = do
             return []
         else do
             let paramListInst = makeParamInst symname_ (scalarTypes ++ tensorKeyTypes ++ tensorVarTypes) True
-                sig = makeSignature symname_ $
+                sig = makeSignature symname_ tensorVar out_var $
                         -- the "Custom" is a little special, because it allow extra arguments
                         if symname == "Custom"
                             --    PopKey (ArgOf "_Custom(symbol)") args "data",
@@ -184,7 +187,9 @@ genTensorOp sc = do
                             `app` (strE symname)
                             `app` (var $ name "scalarArgs")
                             `app` (if null tensorVarTypes
-                                      then function "Left" `app` (var $ name "tensorKeyArgs")
+                                      then function "Left" `app` (expTypeSig
+                                            (var $ name "tensorKeyArgs")
+                                            (tyList $ tyTuple [tyCon $ unQual $ name "Text", tensorVar]))
                                       else function "Right" `app` (var $ name "tensorVarArgs")))
             return [paramListInst, sig, fun]
 
@@ -346,6 +351,8 @@ appA = AppA ()
 tupleSection = TupleSection () Boxed
 
 con = Con ()
+
+expTypeSig = ExpTypeSig ()
 
 simpleImport mod = ImportDecl {
     importAnn = (),
