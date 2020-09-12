@@ -1,7 +1,9 @@
+{-# LANGUAGE MultiParamTypeClasses  #-}
 {-# LANGUAGE TypeFamilyDependencies #-}
 module MXNet.Base.Tensor where
 
 import           Data.Bifunctor           (bimap)
+import           Data.Kind                (Constraint)
 import           RIO
 import           RIO.List                 (unzip)
 
@@ -20,18 +22,23 @@ type family TensorApply t = c | c -> t where
     TensorApply (NDArray a) = Maybe [NDArray a] -> IO [NDArray a]
     TensorApply SymbolHandle = Text -> IO SymbolHandle
 
-type family TensorM t = m | m -> t
+type family TensorMonad t :: * -> *
 
-type instance TensorM (NDArray a)   = IO (NDArray a)
-type instance TensorM NDArrayHandle = IO NDArrayHandle
+type instance TensorMonad (NDArray a)   = IO
+type instance TensorMonad NDArrayHandle = IO
 
-class Tensor t where
-    apply :: Text -> [(Text, Text)] -> Either [(Text, t)] [t] -> TensorApply t
+type TensorM t = TensorMonad t t
 
-class Tensor t => PrimTensorOp t where
-    prim :: HasCallStack => (ArgsHMap s t a -> TensorApply t) -> ArgsHMap s t a -> TensorM t
 
-instance Tensor NDArrayHandle where
+class TensorOp ti to where
+    apply :: Text -> [(Text, Text)] -> Either [(Text, ti)] [ti] -> TensorApply to
+
+
+class TensorOp ti to => PrimTensorOp ti to where
+    prim :: HasCallStack => (ArgsHMap s ti a -> TensorApply to) -> ArgsHMap s ti a -> TensorM to
+
+
+instance TensorOp NDArrayHandle NDArrayHandle where
     apply opname scalars tensors outputs = do
         let tensors' = case tensors of
                          Left kwargs -> snd $ unzip kwargs
@@ -40,7 +47,7 @@ instance Tensor NDArrayHandle where
         mxImperativeInvoke (fromOpHandle op) tensors' scalars outputs
 
 
-instance DType a => Tensor (NDArray a) where
+instance (DType a, DType b) => TensorOp (NDArray a) (NDArray b) where
     apply opname scalars tensors outputs = do
         let tensors' = bimap (map (second unNDArray)) (map unNDArray) tensors
             outputs' = fmap (map unNDArray) outputs :: Maybe [NDArrayHandle]
@@ -48,7 +55,7 @@ instance DType a => Tensor (NDArray a) where
         return $ map NDArray ret
 
 
-instance Tensor SymbolHandle where
+instance TensorOp SymbolHandle SymbolHandle where
     apply opname scalars tensors name = do
         let (scalarkeys, scalarvals) = unzip scalars
             (tensorkeys, tensorvals) = case tensors of
@@ -61,10 +68,11 @@ instance Tensor SymbolHandle where
         mxSymbolCompose sym name tensorkeys tensorvals
         return sym
 
-instance PrimTensorOp NDArrayHandle where
+instance PrimTensorOp NDArrayHandle NDArrayHandle where
     prim op args = op args Nothing >>= \[x] -> return x
 
-instance DType a => PrimTensorOp (NDArray a) where
+
+instance (DType a, DType b) => PrimTensorOp (NDArray a) (NDArray b) where
     prim op args = op args Nothing >>= \[x] -> return x
 
 
