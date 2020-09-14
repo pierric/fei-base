@@ -1,6 +1,6 @@
-cabal-version:       2.2
+cabal-version:       2.4
 name:                fei-base
-version:             0.4
+version:             0.4.1
 synopsis:            FFI to MXNet
 description:         This package provides a FFI wrap of MXNet, including c-apis and symbol/array/executor operations.
 homepage:
@@ -38,10 +38,15 @@ Flag mxnet_1_0 {
   Default: False
 }
 
+Flag dummy {
+  Description: no operators
+  Default: True
+}
+
 library
   hs-source-dirs:      c-apis
-  if flag(mxnet_1_0) {
-      hs-source-dirs:  ops/1.0
+  if flag(dummy) {
+      hs-source-dirs:  ops/dummy
   }
   elif flag(mxnet_1_3) {
       hs-source-dirs:  ops/1.3
@@ -93,10 +98,8 @@ library
                        MXNet.Base.Executor,
                        MXNet.Base.Spec.Operator,
                        MXNet.Base.Spec.HMap
-  if flag(mxnet_1_0) || flag(mxnet_1_3) || flag(mxnet_1_4) || flag(mxnet_1_5) || flag(mxnet_1_6) {
-    exposed-modules:   MXNet.Base.Operators.Tensor,
+                       MXNet.Base.Operators.Tensor,
                        MXNet.Base.DataIter
-  }
   other-modules:       MXNet.Base.Raw.Common,
                        MXNet.Base.Raw.NDArray,
                        MXNet.Base.Raw.Symbol,
@@ -106,17 +109,30 @@ library
 
 executable mxnet-op-gen
   hs-source-dirs:      cmdline
+  hs-source-dirs:      c-apis
   main-is:             Main.hs
+  other-modules:       MXNet.Base.Raw.Common,
+                       MXNet.Base.Raw.DataIter,
+                       MXNet.Base.Raw.Executor,
+                       MXNet.Base.Raw.NDArray,
+                       MXNet.Base.Raw.Symbol
   build-depends:       base >= 4.7 && < 5,
                        optparse-applicative >= 0.14 && < 0.15,
                        haskell-src-exts >= 1.20,
                        hslogger >= 1.2,
                        tuple-ops == 0.0.0.4,
-                       rio,
-                       fei-base
+                       deepseq,
+                       rio
   default-language:    Haskell2010
-  default-extensions:  FlexibleContexts
+  default-extensions:  FlexibleContexts,
+                       StandaloneDeriving,
+                       DeriveGeneric,
+                       GeneralizedNewtypeDeriving,
+                       GADTs,
+                       OverloadedStrings,
+                       MultiWayIf
   extra-libraries:     mxnet
+  build-tool-depends:  c2hs:c2hs
 
 source-repository head
   type:     git

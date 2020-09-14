@@ -7,7 +7,7 @@ import           Data.Kind                (Constraint)
 import           RIO
 import           RIO.List                 (unzip)
 
-import           MXNet.Base.NDArray
+import {-# SOURCE #-} MXNet.Base.NDArray
 import           MXNet.Base.Raw.Common
 import           MXNet.Base.Raw.NDArray
 import           MXNet.Base.Raw.Symbol

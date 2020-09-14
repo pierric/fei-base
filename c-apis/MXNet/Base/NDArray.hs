@@ -18,7 +18,10 @@ import qualified RIO.Vector.Unboxed           as UV
 import           System.IO.Unsafe
 import           Text.Printf
 
+import           MXNet.Base.Operators.Tensor  (__copyto)
 import qualified MXNet.Base.Raw               as I
+import           MXNet.Base.Spec.HMap         (HMap (..), (.&))
+import           MXNet.Base.Spec.Operator     (ArgOf (..))
 import           MXNet.Base.Types             (Context (..), DType (..),
                                                ForeignData (..), contextCPU)
 
@@ -130,6 +133,19 @@ context :: DType a => NDArray a -> IO Context
 context (NDArray handle) = do
     cxt <- I.mxNDArrayGetContext handle
     return $ uncurry Context cxt
+
+toContext :: DType a => NDArray a -> Context -> IO (NDArray a)
+toContext arr cxt = do
+    ncxt <- context arr
+    if cxt == ncxt
+    then return arr
+    else do
+        narr <- makeNDArrayLike arr cxt
+        void $ __copyto (#data :≅ arr .& Nil) (Just [narr])
+        return narr
+
+toCPU :: DType a => NDArray a -> IO (NDArray a)
+toCPU = flip toContext contextCPU
 
 waitToRead :: DType a => NDArray a -> IO ()
 waitToRead (NDArray hdl) = I.mxNDArrayWaitToRead hdl
