@@ -2,11 +2,9 @@
 module MXNet.Base.NDArray where
 
 import qualified Data.Array.Repa              as Repa
-import qualified Data.Array.Repa.Eval         as Repa
 import qualified Data.Store                   as S
 import qualified Data.Vector.Storable.Mutable as VMut
 import           Foreign.Ptr                  (castPtr)
-import           Foreign.Storable             (Storable (..))
 import           GHC.Generics                 (Generic, Generic1)
 import           RIO                          hiding (Vector)
 import qualified RIO.NonEmpty                 as RNE
@@ -134,14 +132,14 @@ context (NDArray handle) = do
     cxt <- I.mxNDArrayGetContext handle
     return $ uncurry Context cxt
 
-toContext :: DType a => NDArray a -> Context -> IO (NDArray a)
+toContext :: forall a. DType a => NDArray a -> Context -> IO (NDArray a)
 toContext arr cxt = do
     ncxt <- context arr
     if cxt == ncxt
     then return arr
     else do
         narr <- makeNDArrayLike arr cxt
-        void $ __copyto (#data :≅ arr .& Nil) (Just [narr])
+        void $ (__copyto (#data :≅ arr .& Nil) (Just [narr]) :: IO [NDArray a])
         return narr
 
 toCPU :: DType a => NDArray a -> IO (NDArray a)
@@ -153,6 +151,7 @@ waitToRead (NDArray hdl) = I.mxNDArrayWaitToRead hdl
 waitToWrite :: DType a => NDArray a -> IO ()
 waitToWrite (NDArray hdl) = I.mxNDArrayWaitToWrite hdl
 
+waitAll :: IO ()
 waitAll = I.mxNDArrayWaitAll
 
 -- All non-update OP return a list of NDArray, but usually

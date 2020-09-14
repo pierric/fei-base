@@ -45,10 +45,7 @@ Flag dummy {
 
 library
   hs-source-dirs:      c-apis
-  if flag(dummy) {
-      hs-source-dirs:  ops/dummy
-  }
-  elif flag(mxnet_1_3) {
+  if flag(mxnet_1_3) {
       hs-source-dirs:  ops/1.3
   }
   elif flag(mxnet_1_4) {
@@ -59,6 +56,9 @@ library
   }
   elif flag(mxnet_1_6) {
       hs-source-dirs:  ops/1.6
+  }
+  elif flag(dummy) {
+      hs-source-dirs:  ops/dummy
   }
   build-depends:       base >= 4.7 && < 5,
                        tuple-ops == 0.0.0.4,
