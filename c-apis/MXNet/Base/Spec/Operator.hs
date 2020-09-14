@@ -64,6 +64,7 @@ type family FindKey (s :: Symbol) (l :: [(Symbol, k)]) (e :: ErrorMessage) :: k 
 
 data ArgOf s t k v where
   (:=) :: (info ~ ResolveParameter s t k) => Proxy k -> ParameterType info -> ArgOf s t k (ParameterType info)
+  -- | (:≅) is an alternative of (:=) that bypasses the type check
   (:≅) :: Proxy k -> a -> ArgOf s t k a
 
 instance Pair (ArgOf s t) where

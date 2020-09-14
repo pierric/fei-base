@@ -17,7 +17,10 @@ import           System.Log.Logger
 import           Text.ParserCombinators.ReadP
 import           Text.Printf                  (printf)
 
-import           MXNet.Base.Raw
+import           MXNet.Base.Raw.Common
+import           MXNet.Base.Raw.DataIter
+import           MXNet.Base.Raw.NDArray
+import           MXNet.Base.Raw.Symbol
 
 _module_ = "Main"
 
