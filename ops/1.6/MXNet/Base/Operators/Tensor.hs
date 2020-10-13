@@ -14,7 +14,8 @@ type instance ParameterList "_Activation" t =
         '("data", AttrOpt t)]
 
 _Activation ::
-            forall a t . (TensorOp t t, Fullfilled "_Activation" t a) =>
+            forall a t .
+              (TensorOp t t, Fullfilled "_Activation" t a, HasCallStack) =>
               ArgsHMap "_Activation" t a -> TensorApply t
 _Activation args
   = let scalarArgs
@@ -39,7 +40,8 @@ type instance ParameterList "_BatchNorm" t =
         '("moving_mean", AttrOpt t), '("moving_var", AttrOpt t)]
 
 _BatchNorm ::
-           forall a t . (TensorOp t t, Fullfilled "_BatchNorm" t a) =>
+           forall a t .
+             (TensorOp t t, Fullfilled "_BatchNorm" t a, HasCallStack) =>
              ArgsHMap "_BatchNorm" t a -> TensorApply t
 _BatchNorm args
   = let scalarArgs
@@ -74,7 +76,8 @@ type instance ParameterList "_BatchNorm_v1" t =
         '("gamma", AttrOpt t), '("beta", AttrOpt t)]
 
 _BatchNorm_v1 ::
-              forall a t . (TensorOp t t, Fullfilled "_BatchNorm_v1" t a) =>
+              forall a t .
+                (TensorOp t t, Fullfilled "_BatchNorm_v1" t a, HasCallStack) =>
                 ArgsHMap "_BatchNorm_v1" t a -> TensorApply t
 _BatchNorm_v1 args
   = let scalarArgs
@@ -100,7 +103,8 @@ type instance ParameterList "_BilinearSampler" t =
         '("grid", AttrOpt t)]
 
 _BilinearSampler ::
-                 forall a t . (TensorOp t t, Fullfilled "_BilinearSampler" t a) =>
+                 forall a t .
+                   (TensorOp t t, Fullfilled "_BilinearSampler" t a, HasCallStack) =>
                    ArgsHMap "_BilinearSampler" t a -> TensorApply t
 _BilinearSampler args
   = let scalarArgs
@@ -119,7 +123,8 @@ type instance ParameterList "_BlockGrad" t =
      '[ '("data", AttrOpt t)]
 
 _BlockGrad ::
-           forall a t . (TensorOp t t, Fullfilled "_BlockGrad" t a) =>
+           forall a t .
+             (TensorOp t t, Fullfilled "_BlockGrad" t a, HasCallStack) =>
              ArgsHMap "_BlockGrad" t a -> TensorApply t
 _BlockGrad args
   = let scalarArgs = catMaybes []
@@ -136,7 +141,8 @@ type instance ParameterList "_CTCLoss" t =
         '("data_lengths", AttrOpt t), '("label_lengths", AttrOpt t)]
 
 _CTCLoss ::
-         forall a t . (TensorOp t t, Fullfilled "_CTCLoss" t a) =>
+         forall a t .
+           (TensorOp t t, Fullfilled "_CTCLoss" t a, HasCallStack) =>
            ArgsHMap "_CTCLoss" t a -> TensorApply t
 _CTCLoss args
   = let scalarArgs
@@ -164,7 +170,8 @@ type instance ParameterList "_Cast" t =
         '("data", AttrOpt t)]
 
 _Cast ::
-      forall a t o . (TensorOp t o, Fullfilled "_Cast" t a) =>
+      forall a t o .
+        (TensorOp t o, Fullfilled "_Cast" t a, HasCallStack) =>
         ArgsHMap "_Cast" t a -> TensorApply o
 _Cast args
   = let scalarArgs
@@ -184,7 +191,8 @@ type instance ParameterList "_Concat" t =
         '("data", AttrOpt [t])]
 
 _Concat ::
-        forall a t . (TensorOp t t, Fullfilled "_Concat" t a) =>
+        forall a t .
+          (TensorOp t t, Fullfilled "_Concat" t a, HasCallStack) =>
           ArgsHMap "_Concat" t a -> TensorApply t
 _Concat args
   = let scalarArgs
@@ -210,7 +218,8 @@ type instance ParameterList "_Convolution" t =
         '("data", AttrOpt t), '("weight", AttrOpt t), '("bias", AttrOpt t)]
 
 _Convolution ::
-             forall a t . (TensorOp t t, Fullfilled "_Convolution" t a) =>
+             forall a t .
+               (TensorOp t t, Fullfilled "_Convolution" t a, HasCallStack) =>
                ArgsHMap "_Convolution" t a -> TensorApply t
 _Convolution args
   = let scalarArgs
@@ -254,7 +263,8 @@ type instance ParameterList "_Convolution_v1" t =
         '("data", AttrOpt t), '("weight", AttrOpt t), '("bias", AttrOpt t)]
 
 _Convolution_v1 ::
-                forall a t . (TensorOp t t, Fullfilled "_Convolution_v1" t a) =>
+                forall a t .
+                  (TensorOp t t, Fullfilled "_Convolution_v1" t a, HasCallStack) =>
                   ArgsHMap "_Convolution_v1" t a -> TensorApply t
 _Convolution_v1 args
   = let scalarArgs
@@ -291,7 +301,8 @@ type instance ParameterList "_Correlation" t =
         '("data2", AttrOpt t)]
 
 _Correlation ::
-             forall a t . (TensorOp t t, Fullfilled "_Correlation" t a) =>
+             forall a t .
+               (TensorOp t t, Fullfilled "_Correlation" t a, HasCallStack) =>
                ArgsHMap "_Correlation" t a -> TensorApply t
 _Correlation args
   = let scalarArgs
@@ -319,7 +330,8 @@ type instance ParameterList "_Crop" t =
         '("data", AttrOpt [t])]
 
 _Crop ::
-      forall a t . (TensorOp t t, Fullfilled "_Crop" t a) =>
+      forall a t .
+        (TensorOp t t, Fullfilled "_Crop" t a, HasCallStack) =>
         ArgsHMap "_Crop" t a -> TensorApply t
 _Crop args
   = let scalarArgs
@@ -344,7 +356,8 @@ type instance ParameterList "_CuDNNBatchNorm" t =
         '("moving_mean", AttrOpt t), '("moving_var", AttrOpt t)]
 
 _CuDNNBatchNorm ::
-                forall a t . (TensorOp t t, Fullfilled "_CuDNNBatchNorm" t a) =>
+                forall a t .
+                  (TensorOp t t, Fullfilled "_CuDNNBatchNorm" t a, HasCallStack) =>
                   ArgsHMap "_CuDNNBatchNorm" t a -> TensorApply t
 _CuDNNBatchNorm args
   = let scalarArgs
@@ -378,7 +391,7 @@ type instance ParameterList "_Custom" t =
 
 _Custom ::
         forall a t .
-          (TensorOp t t, Fullfilled "_Custom" t a,
+          (TensorOp t t, Fullfilled "_Custom" t a, HasCallStack,
            PopKey (ArgOf "_Custom" t) a "data",
            Dump (PopResult (ArgOf "_Custom" t) a "data")) =>
           ArgsHMap "_Custom" t a -> TensorApply t
@@ -404,7 +417,8 @@ type instance ParameterList "_Deconvolution" t =
         '("data", AttrOpt t), '("weight", AttrOpt t), '("bias", AttrOpt t)]
 
 _Deconvolution ::
-               forall a t . (TensorOp t t, Fullfilled "_Deconvolution" t a) =>
+               forall a t .
+                 (TensorOp t t, Fullfilled "_Deconvolution" t a, HasCallStack) =>
                  ArgsHMap "_Deconvolution" t a -> TensorApply t
 _Deconvolution args
   = let scalarArgs
@@ -444,7 +458,8 @@ type instance ParameterList "_Dropout" t =
         '("data", AttrOpt t)]
 
 _Dropout ::
-         forall a t . (TensorOp t t, Fullfilled "_Dropout" t a) =>
+         forall a t .
+           (TensorOp t t, Fullfilled "_Dropout" t a, HasCallStack) =>
            ArgsHMap "_Dropout" t a -> TensorApply t
 _Dropout args
   = let scalarArgs
@@ -470,7 +485,8 @@ type instance ParameterList "_Embedding" t =
         '("weight", AttrOpt t)]
 
 _Embedding ::
-           forall a t . (TensorOp t t, Fullfilled "_Embedding" t a) =>
+           forall a t .
+             (TensorOp t t, Fullfilled "_Embedding" t a, HasCallStack) =>
              ArgsHMap "_Embedding" t a -> TensorApply t
 _Embedding args
   = let scalarArgs
@@ -495,7 +511,8 @@ _Embedding args
 type instance ParameterList "_Flatten" t = '[ '("data", AttrOpt t)]
 
 _Flatten ::
-         forall a t . (TensorOp t t, Fullfilled "_Flatten" t a) =>
+         forall a t .
+           (TensorOp t t, Fullfilled "_Flatten" t a, HasCallStack) =>
            ArgsHMap "_Flatten" t a -> TensorApply t
 _Flatten args
   = let scalarArgs = catMaybes []
@@ -509,7 +526,8 @@ type instance ParameterList "_FullyConnected" t =
         '("weight", AttrOpt t), '("bias", AttrOpt t)]
 
 _FullyConnected ::
-                forall a t . (TensorOp t t, Fullfilled "_FullyConnected" t a) =>
+                forall a t .
+                  (TensorOp t t, Fullfilled "_FullyConnected" t a, HasCallStack) =>
                   ArgsHMap "_FullyConnected" t a -> TensorApply t
 _FullyConnected args
   = let scalarArgs
@@ -532,7 +550,8 @@ type instance ParameterList "_GridGenerator" t =
         '("target_shape", AttrOpt [Int]), '("data", AttrOpt t)]
 
 _GridGenerator ::
-               forall a t . (TensorOp t t, Fullfilled "_GridGenerator" t a) =>
+               forall a t .
+                 (TensorOp t t, Fullfilled "_GridGenerator" t a, HasCallStack) =>
                  ArgsHMap "_GridGenerator" t a -> TensorApply t
 _GridGenerator args
   = let scalarArgs
@@ -553,7 +572,8 @@ type instance ParameterList "_GroupNorm" t =
         '("gamma", AttrOpt t), '("beta", AttrOpt t)]
 
 _GroupNorm ::
-           forall a t . (TensorOp t t, Fullfilled "_GroupNorm" t a) =>
+           forall a t .
+             (TensorOp t t, Fullfilled "_GroupNorm" t a, HasCallStack) =>
              ArgsHMap "_GroupNorm" t a -> TensorApply t
 _GroupNorm args
   = let scalarArgs
@@ -578,7 +598,8 @@ type instance ParameterList "_IdentityAttachKLSparseReg" t =
 
 _IdentityAttachKLSparseReg ::
                            forall a t .
-                             (TensorOp t t, Fullfilled "_IdentityAttachKLSparseReg" t a) =>
+                             (TensorOp t t, Fullfilled "_IdentityAttachKLSparseReg" t a,
+                              HasCallStack) =>
                              ArgsHMap "_IdentityAttachKLSparseReg" t a -> TensorApply t
 _IdentityAttachKLSparseReg args
   = let scalarArgs
@@ -598,7 +619,8 @@ type instance ParameterList "_InstanceNorm" t =
         '("gamma", AttrOpt t), '("beta", AttrOpt t)]
 
 _InstanceNorm ::
-              forall a t . (TensorOp t t, Fullfilled "_InstanceNorm" t a) =>
+              forall a t .
+                (TensorOp t t, Fullfilled "_InstanceNorm" t a, HasCallStack) =>
                 ArgsHMap "_InstanceNorm" t a -> TensorApply t
 _InstanceNorm args
   = let scalarArgs
@@ -619,7 +641,8 @@ type instance ParameterList "_L2Normalization" t =
         '("data", AttrOpt t)]
 
 _L2Normalization ::
-                 forall a t . (TensorOp t t, Fullfilled "_L2Normalization" t a) =>
+                 forall a t .
+                   (TensorOp t t, Fullfilled "_L2Normalization" t a, HasCallStack) =>
                    ArgsHMap "_L2Normalization" t a -> TensorApply t
 _L2Normalization args
   = let scalarArgs
@@ -640,7 +663,7 @@ type instance ParameterList "_LRN" t =
         '("data", AttrOpt t)]
 
 _LRN ::
-     forall a t . (TensorOp t t, Fullfilled "_LRN" t a) =>
+     forall a t . (TensorOp t t, Fullfilled "_LRN" t a, HasCallStack) =>
        ArgsHMap "_LRN" t a -> TensorApply t
 _LRN args
   = let scalarArgs
@@ -659,7 +682,8 @@ type instance ParameterList "_LayerNorm" t =
         '("gamma", AttrOpt t), '("beta", AttrOpt t)]
 
 _LayerNorm ::
-           forall a t . (TensorOp t t, Fullfilled "_LayerNorm" t a) =>
+           forall a t .
+             (TensorOp t t, Fullfilled "_LayerNorm" t a, HasCallStack) =>
              ArgsHMap "_LayerNorm" t a -> TensorApply t
 _LayerNorm args
   = let scalarArgs
@@ -685,7 +709,8 @@ type instance ParameterList "_LeakyReLU" t =
         '("gamma", AttrOpt t)]
 
 _LeakyReLU ::
-           forall a t . (TensorOp t t, Fullfilled "_LeakyReLU" t a) =>
+           forall a t .
+             (TensorOp t t, Fullfilled "_LeakyReLU" t a, HasCallStack) =>
              ArgsHMap "_LeakyReLU" t a -> TensorApply t
 _LeakyReLU args
   = let scalarArgs
@@ -712,7 +737,8 @@ type instance ParameterList "_LinearRegressionOutput" t =
 
 _LinearRegressionOutput ::
                         forall a t .
-                          (TensorOp t t, Fullfilled "_LinearRegressionOutput" t a) =>
+                          (TensorOp t t, Fullfilled "_LinearRegressionOutput" t a,
+                           HasCallStack) =>
                           ArgsHMap "_LinearRegressionOutput" t a -> TensorApply t
 _LinearRegressionOutput args
   = let scalarArgs
@@ -733,7 +759,8 @@ type instance ParameterList "_LogisticRegressionOutput" t =
 
 _LogisticRegressionOutput ::
                           forall a t .
-                            (TensorOp t t, Fullfilled "_LogisticRegressionOutput" t a) =>
+                            (TensorOp t t, Fullfilled "_LogisticRegressionOutput" t a,
+                             HasCallStack) =>
                             ArgsHMap "_LogisticRegressionOutput" t a -> TensorApply t
 _LogisticRegressionOutput args
   = let scalarArgs
@@ -754,7 +781,8 @@ type instance ParameterList "_MAERegressionOutput" t =
 
 _MAERegressionOutput ::
                      forall a t .
-                       (TensorOp t t, Fullfilled "_MAERegressionOutput" t a) =>
+                       (TensorOp t t, Fullfilled "_MAERegressionOutput" t a,
+                        HasCallStack) =>
                        ArgsHMap "_MAERegressionOutput" t a -> TensorApply t
 _MAERegressionOutput args
   = let scalarArgs
@@ -776,7 +804,8 @@ type instance ParameterList "_MakeLoss" t =
         '("data", AttrOpt t)]
 
 _MakeLoss ::
-          forall a t . (TensorOp t t, Fullfilled "_MakeLoss" t a) =>
+          forall a t .
+            (TensorOp t t, Fullfilled "_MakeLoss" t a, HasCallStack) =>
             ArgsHMap "_MakeLoss" t a -> TensorApply t
 _MakeLoss args
   = let scalarArgs
@@ -799,7 +828,7 @@ type instance ParameterList "_Pad" t =
         '("data", AttrOpt t)]
 
 _Pad ::
-     forall a t . (TensorOp t t, Fullfilled "_Pad" t a) =>
+     forall a t . (TensorOp t t, Fullfilled "_Pad" t a, HasCallStack) =>
        ArgsHMap "_Pad" t a -> TensorApply t
 _Pad args
   = let scalarArgs
@@ -830,7 +859,8 @@ type instance ParameterList "_Pooling" t =
         '("data", AttrOpt t)]
 
 _Pooling ::
-         forall a t . (TensorOp t t, Fullfilled "_Pooling" t a) =>
+         forall a t .
+           (TensorOp t t, Fullfilled "_Pooling" t a, HasCallStack) =>
            ArgsHMap "_Pooling" t a -> TensorApply t
 _Pooling args
   = let scalarArgs
@@ -869,7 +899,8 @@ type instance ParameterList "_Pooling_v1" t =
         '("data", AttrOpt t)]
 
 _Pooling_v1 ::
-            forall a t . (TensorOp t t, Fullfilled "_Pooling_v1" t a) =>
+            forall a t .
+              (TensorOp t t, Fullfilled "_Pooling_v1" t a, HasCallStack) =>
               ArgsHMap "_Pooling_v1" t a -> TensorApply t
 _Pooling_v1 args
   = let scalarArgs
@@ -904,7 +935,7 @@ type instance ParameterList "_RNN" t =
         '("state_cell", AttrOpt t), '("sequence_length", AttrOpt t)]
 
 _RNN ::
-     forall a t . (TensorOp t t, Fullfilled "_RNN" t a) =>
+     forall a t . (TensorOp t t, Fullfilled "_RNN" t a, HasCallStack) =>
        ArgsHMap "_RNN" t a -> TensorApply t
 _RNN args
   = let scalarArgs
@@ -945,7 +976,8 @@ type instance ParameterList "_ROIPooling" t =
         '("rois", AttrOpt t)]
 
 _ROIPooling ::
-            forall a t . (TensorOp t t, Fullfilled "_ROIPooling" t a) =>
+            forall a t .
+              (TensorOp t t, Fullfilled "_ROIPooling" t a, HasCallStack) =>
               ArgsHMap "_ROIPooling" t a -> TensorApply t
 _ROIPooling args
   = let scalarArgs
@@ -967,7 +999,8 @@ type instance ParameterList "_Reshape" t =
         '("data", AttrOpt t)]
 
 _Reshape ::
-         forall a t . (TensorOp t t, Fullfilled "_Reshape" t a) =>
+         forall a t .
+           (TensorOp t t, Fullfilled "_Reshape" t a, HasCallStack) =>
            ArgsHMap "_Reshape" t a -> TensorApply t
 _Reshape args
   = let scalarArgs
@@ -989,7 +1022,8 @@ type instance ParameterList "_SVMOutput" t =
         '("label", AttrOpt t)]
 
 _SVMOutput ::
-           forall a t . (TensorOp t t, Fullfilled "_SVMOutput" t a) =>
+           forall a t .
+             (TensorOp t t, Fullfilled "_SVMOutput" t a, HasCallStack) =>
              ArgsHMap "_SVMOutput" t a -> TensorApply t
 _SVMOutput args
   = let scalarArgs
@@ -1011,7 +1045,8 @@ type instance ParameterList "_SequenceLast" t =
         '("data", AttrOpt t), '("sequence_length", AttrOpt t)]
 
 _SequenceLast ::
-              forall a t . (TensorOp t t, Fullfilled "_SequenceLast" t a) =>
+              forall a t .
+                (TensorOp t t, Fullfilled "_SequenceLast" t a, HasCallStack) =>
                 ArgsHMap "_SequenceLast" t a -> TensorApply t
 _SequenceLast args
   = let scalarArgs
@@ -1033,7 +1068,8 @@ type instance ParameterList "_SequenceMask" t =
         '("data", AttrOpt t), '("sequence_length", AttrOpt t)]
 
 _SequenceMask ::
-              forall a t . (TensorOp t t, Fullfilled "_SequenceMask" t a) =>
+              forall a t .
+                (TensorOp t t, Fullfilled "_SequenceMask" t a, HasCallStack) =>
                 ArgsHMap "_SequenceMask" t a -> TensorApply t
 _SequenceMask args
   = let scalarArgs
@@ -1055,7 +1091,8 @@ type instance ParameterList "_SequenceReverse" t =
         '("data", AttrOpt t), '("sequence_length", AttrOpt t)]
 
 _SequenceReverse ::
-                 forall a t . (TensorOp t t, Fullfilled "_SequenceReverse" t a) =>
+                 forall a t .
+                   (TensorOp t t, Fullfilled "_SequenceReverse" t a, HasCallStack) =>
                    ArgsHMap "_SequenceReverse" t a -> TensorApply t
 _SequenceReverse args
   = let scalarArgs
@@ -1076,7 +1113,8 @@ type instance ParameterList "_SliceChannel" t =
         '("squeeze_axis", AttrOpt Bool), '("data", AttrOpt t)]
 
 _SliceChannel ::
-              forall a t . (TensorOp t t, Fullfilled "_SliceChannel" t a) =>
+              forall a t .
+                (TensorOp t t, Fullfilled "_SliceChannel" t a, HasCallStack) =>
                 ArgsHMap "_SliceChannel" t a -> TensorApply t
 _SliceChannel args
   = let scalarArgs
@@ -1097,7 +1135,9 @@ type instance ParameterList "_SoftmaxActivation" t =
         '("data", AttrOpt t)]
 
 _SoftmaxActivation ::
-                   forall a t . (TensorOp t t, Fullfilled "_SoftmaxActivation" t a) =>
+                   forall a t .
+                     (TensorOp t t, Fullfilled "_SoftmaxActivation" t a,
+                      HasCallStack) =>
                      ArgsHMap "_SoftmaxActivation" t a -> TensorApply t
 _SoftmaxActivation args
   = let scalarArgs
@@ -1119,7 +1159,8 @@ type instance ParameterList "_SoftmaxOutput" t =
         '("data", AttrOpt t), '("label", AttrOpt t)]
 
 _SoftmaxOutput ::
-               forall a t . (TensorOp t t, Fullfilled "_SoftmaxOutput" t a) =>
+               forall a t .
+                 (TensorOp t t, Fullfilled "_SoftmaxOutput" t a, HasCallStack) =>
                  ArgsHMap "_SoftmaxOutput" t a -> TensorApply t
 _SoftmaxOutput args
   = let scalarArgs
@@ -1157,7 +1198,8 @@ type instance ParameterList "_SpatialTransformer" t =
 
 _SpatialTransformer ::
                     forall a t .
-                      (TensorOp t t, Fullfilled "_SpatialTransformer" t a) =>
+                      (TensorOp t t, Fullfilled "_SpatialTransformer" t a,
+                       HasCallStack) =>
                       ArgsHMap "_SpatialTransformer" t a -> TensorApply t
 _SpatialTransformer args
   = let scalarArgs
@@ -1183,7 +1225,8 @@ type instance ParameterList "_SwapAxis" t =
         '("data", AttrOpt t)]
 
 _SwapAxis ::
-          forall a t . (TensorOp t t, Fullfilled "_SwapAxis" t a) =>
+          forall a t .
+            (TensorOp t t, Fullfilled "_SwapAxis" t a, HasCallStack) =>
             ArgsHMap "_SwapAxis" t a -> TensorApply t
 _SwapAxis args
   = let scalarArgs
@@ -1203,7 +1246,8 @@ type instance ParameterList "_UpSampling" t =
         '("data", AttrOpt [t])]
 
 _UpSampling ::
-            forall a t . (TensorOp t t, Fullfilled "_UpSampling" t a) =>
+            forall a t .
+              (TensorOp t t, Fullfilled "_UpSampling" t a, HasCallStack) =>
               ArgsHMap "_UpSampling" t a -> TensorApply t
 _UpSampling args
   = let scalarArgs
@@ -1225,7 +1269,8 @@ type instance ParameterList "__CachedOp" t =
      '[ '("data", AttrOpt [t])]
 
 __CachedOp ::
-           forall a t . (TensorOp t t, Fullfilled "__CachedOp" t a) =>
+           forall a t .
+             (TensorOp t t, Fullfilled "__CachedOp" t a, HasCallStack) =>
              ArgsHMap "__CachedOp" t a -> TensorApply t
 __CachedOp args
   = let scalarArgs = catMaybes []
@@ -1236,7 +1281,8 @@ __CachedOp args
 type instance ParameterList "__CrossDeviceCopy" t = '[]
 
 __CrossDeviceCopy ::
-                  forall a t . (TensorOp t t, Fullfilled "__CrossDeviceCopy" t a) =>
+                  forall a t .
+                    (TensorOp t t, Fullfilled "__CrossDeviceCopy" t a, HasCallStack) =>
                     ArgsHMap "__CrossDeviceCopy" t a -> TensorApply t
 __CrossDeviceCopy args
   = let scalarArgs = catMaybes []
@@ -1248,7 +1294,8 @@ __CrossDeviceCopy args
 type instance ParameterList "__CustomFunction" t = '[]
 
 __CustomFunction ::
-                 forall a t . (TensorOp t t, Fullfilled "__CustomFunction" t a) =>
+                 forall a t .
+                   (TensorOp t t, Fullfilled "__CustomFunction" t a, HasCallStack) =>
                    ArgsHMap "__CustomFunction" t a -> TensorApply t
 __CustomFunction args
   = let scalarArgs = catMaybes []
@@ -1261,7 +1308,8 @@ type instance ParameterList "__FusedOp" t =
      '[ '("data", AttrOpt [t])]
 
 __FusedOp ::
-          forall a t . (TensorOp t t, Fullfilled "__FusedOp" t a) =>
+          forall a t .
+            (TensorOp t t, Fullfilled "__FusedOp" t a, HasCallStack) =>
             ArgsHMap "__FusedOp" t a -> TensorApply t
 __FusedOp args
   = let scalarArgs = catMaybes []
@@ -1272,7 +1320,8 @@ __FusedOp args
 type instance ParameterList "__FusedOpHelper" t = '[]
 
 __FusedOpHelper ::
-                forall a t . (TensorOp t t, Fullfilled "__FusedOpHelper" t a) =>
+                forall a t .
+                  (TensorOp t t, Fullfilled "__FusedOpHelper" t a, HasCallStack) =>
                   ArgsHMap "__FusedOpHelper" t a -> TensorApply t
 __FusedOpHelper args
   = let scalarArgs = catMaybes []
@@ -1284,7 +1333,9 @@ __FusedOpHelper args
 type instance ParameterList "__FusedOpOutHelper" t = '[]
 
 __FusedOpOutHelper ::
-                   forall a t . (TensorOp t t, Fullfilled "__FusedOpOutHelper" t a) =>
+                   forall a t .
+                     (TensorOp t t, Fullfilled "__FusedOpOutHelper" t a,
+                      HasCallStack) =>
                      ArgsHMap "__FusedOpOutHelper" t a -> TensorApply t
 __FusedOpOutHelper args
   = let scalarArgs = catMaybes []
@@ -1296,7 +1347,8 @@ __FusedOpOutHelper args
 type instance ParameterList "__NoGradient" t = '[]
 
 __NoGradient ::
-             forall a t . (TensorOp t t, Fullfilled "__NoGradient" t a) =>
+             forall a t .
+               (TensorOp t t, Fullfilled "__NoGradient" t a, HasCallStack) =>
                ArgsHMap "__NoGradient" t a -> TensorApply t
 __NoGradient args
   = let scalarArgs = catMaybes []
@@ -1314,7 +1366,8 @@ type instance ParameterList "__adamw_update" t =
         '("rescale_grad", AttrOpt t)]
 
 __adamw_update ::
-               forall a t . (TensorOp t t, Fullfilled "__adamw_update" t a) =>
+               forall a t .
+                 (TensorOp t t, Fullfilled "__adamw_update" t a, HasCallStack) =>
                  ArgsHMap "__adamw_update" t a -> TensorApply t
 __adamw_update args
   = let scalarArgs
@@ -1349,7 +1402,8 @@ type instance ParameterList "__arange" t =
                  "uint8"]))]
 
 __arange ::
-         forall a t . (TensorOp t t, Fullfilled "__arange" t a) =>
+         forall a t .
+           (TensorOp t t, Fullfilled "__arange" t a, HasCallStack) =>
            ArgsHMap "__arange" t a -> TensorApply t
 __arange args
   = let scalarArgs
@@ -1374,7 +1428,8 @@ type instance ParameterList "__backward_Activation" t = '[]
 
 __backward_Activation ::
                       forall a t .
-                        (TensorOp t t, Fullfilled "__backward_Activation" t a) =>
+                        (TensorOp t t, Fullfilled "__backward_Activation" t a,
+                         HasCallStack) =>
                         ArgsHMap "__backward_Activation" t a -> TensorApply t
 __backward_Activation args
   = let scalarArgs = catMaybes []
@@ -1387,7 +1442,8 @@ type instance ParameterList "__backward_BatchNorm" t = '[]
 
 __backward_BatchNorm ::
                      forall a t .
-                       (TensorOp t t, Fullfilled "__backward_BatchNorm" t a) =>
+                       (TensorOp t t, Fullfilled "__backward_BatchNorm" t a,
+                        HasCallStack) =>
                        ArgsHMap "__backward_BatchNorm" t a -> TensorApply t
 __backward_BatchNorm args
   = let scalarArgs = catMaybes []
@@ -1400,7 +1456,8 @@ type instance ParameterList "__backward_BatchNorm_v1" t = '[]
 
 __backward_BatchNorm_v1 ::
                         forall a t .
-                          (TensorOp t t, Fullfilled "__backward_BatchNorm_v1" t a) =>
+                          (TensorOp t t, Fullfilled "__backward_BatchNorm_v1" t a,
+                           HasCallStack) =>
                           ArgsHMap "__backward_BatchNorm_v1" t a -> TensorApply t
 __backward_BatchNorm_v1 args
   = let scalarArgs = catMaybes []
@@ -1413,7 +1470,8 @@ type instance ParameterList "__backward_BilinearSampler" t = '[]
 
 __backward_BilinearSampler ::
                            forall a t .
-                             (TensorOp t t, Fullfilled "__backward_BilinearSampler" t a) =>
+                             (TensorOp t t, Fullfilled "__backward_BilinearSampler" t a,
+                              HasCallStack) =>
                              ArgsHMap "__backward_BilinearSampler" t a -> TensorApply t
 __backward_BilinearSampler args
   = let scalarArgs = catMaybes []
@@ -1426,7 +1484,8 @@ type instance ParameterList "__backward_CachedOp" t = '[]
 
 __backward_CachedOp ::
                     forall a t .
-                      (TensorOp t t, Fullfilled "__backward_CachedOp" t a) =>
+                      (TensorOp t t, Fullfilled "__backward_CachedOp" t a,
+                       HasCallStack) =>
                       ArgsHMap "__backward_CachedOp" t a -> TensorApply t
 __backward_CachedOp args
   = let scalarArgs = catMaybes []
@@ -1438,7 +1497,8 @@ __backward_CachedOp args
 type instance ParameterList "__backward_Concat" t = '[]
 
 __backward_Concat ::
-                  forall a t . (TensorOp t t, Fullfilled "__backward_Concat" t a) =>
+                  forall a t .
+                    (TensorOp t t, Fullfilled "__backward_Concat" t a, HasCallStack) =>
                     ArgsHMap "__backward_Concat" t a -> TensorApply t
 __backward_Concat args
   = let scalarArgs = catMaybes []
@@ -1451,7 +1511,8 @@ type instance ParameterList "__backward_Convolution" t = '[]
 
 __backward_Convolution ::
                        forall a t .
-                         (TensorOp t t, Fullfilled "__backward_Convolution" t a) =>
+                         (TensorOp t t, Fullfilled "__backward_Convolution" t a,
+                          HasCallStack) =>
                          ArgsHMap "__backward_Convolution" t a -> TensorApply t
 __backward_Convolution args
   = let scalarArgs = catMaybes []
@@ -1464,7 +1525,8 @@ type instance ParameterList "__backward_Convolution_v1" t = '[]
 
 __backward_Convolution_v1 ::
                           forall a t .
-                            (TensorOp t t, Fullfilled "__backward_Convolution_v1" t a) =>
+                            (TensorOp t t, Fullfilled "__backward_Convolution_v1" t a,
+                             HasCallStack) =>
                             ArgsHMap "__backward_Convolution_v1" t a -> TensorApply t
 __backward_Convolution_v1 args
   = let scalarArgs = catMaybes []
@@ -1477,7 +1539,8 @@ type instance ParameterList "__backward_Correlation" t = '[]
 
 __backward_Correlation ::
                        forall a t .
-                         (TensorOp t t, Fullfilled "__backward_Correlation" t a) =>
+                         (TensorOp t t, Fullfilled "__backward_Correlation" t a,
+                          HasCallStack) =>
                          ArgsHMap "__backward_Correlation" t a -> TensorApply t
 __backward_Correlation args
   = let scalarArgs = catMaybes []
@@ -1489,7 +1552,8 @@ __backward_Correlation args
 type instance ParameterList "__backward_Crop" t = '[]
 
 __backward_Crop ::
-                forall a t . (TensorOp t t, Fullfilled "__backward_Crop" t a) =>
+                forall a t .
+                  (TensorOp t t, Fullfilled "__backward_Crop" t a, HasCallStack) =>
                   ArgsHMap "__backward_Crop" t a -> TensorApply t
 __backward_Crop args
   = let scalarArgs = catMaybes []
@@ -1502,7 +1566,8 @@ type instance ParameterList "__backward_CuDNNBatchNorm" t = '[]
 
 __backward_CuDNNBatchNorm ::
                           forall a t .
-                            (TensorOp t t, Fullfilled "__backward_CuDNNBatchNorm" t a) =>
+                            (TensorOp t t, Fullfilled "__backward_CuDNNBatchNorm" t a,
+                             HasCallStack) =>
                             ArgsHMap "__backward_CuDNNBatchNorm" t a -> TensorApply t
 __backward_CuDNNBatchNorm args
   = let scalarArgs = catMaybes []
@@ -1514,7 +1579,8 @@ __backward_CuDNNBatchNorm args
 type instance ParameterList "__backward_Custom" t = '[]
 
 __backward_Custom ::
-                  forall a t . (TensorOp t t, Fullfilled "__backward_Custom" t a) =>
+                  forall a t .
+                    (TensorOp t t, Fullfilled "__backward_Custom" t a, HasCallStack) =>
                     ArgsHMap "__backward_Custom" t a -> TensorApply t
 __backward_Custom args
   = let scalarArgs = catMaybes []
@@ -1527,7 +1593,8 @@ type instance ParameterList "__backward_CustomFunction" t = '[]
 
 __backward_CustomFunction ::
                           forall a t .
-                            (TensorOp t t, Fullfilled "__backward_CustomFunction" t a) =>
+                            (TensorOp t t, Fullfilled "__backward_CustomFunction" t a,
+                             HasCallStack) =>
                             ArgsHMap "__backward_CustomFunction" t a -> TensorApply t
 __backward_CustomFunction args
   = let scalarArgs = catMaybes []
@@ -1540,7 +1607,8 @@ type instance ParameterList "__backward_Deconvolution" t = '[]
 
 __backward_Deconvolution ::
                          forall a t .
-                           (TensorOp t t, Fullfilled "__backward_Deconvolution" t a) =>
+                           (TensorOp t t, Fullfilled "__backward_Deconvolution" t a,
+                            HasCallStack) =>
                            ArgsHMap "__backward_Deconvolution" t a -> TensorApply t
 __backward_Deconvolution args
   = let scalarArgs = catMaybes []
@@ -1552,7 +1620,9 @@ __backward_Deconvolution args
 type instance ParameterList "__backward_Dropout" t = '[]
 
 __backward_Dropout ::
-                   forall a t . (TensorOp t t, Fullfilled "__backward_Dropout" t a) =>
+                   forall a t .
+                     (TensorOp t t, Fullfilled "__backward_Dropout" t a,
+                      HasCallStack) =>
                      ArgsHMap "__backward_Dropout" t a -> TensorApply t
 __backward_Dropout args
   = let scalarArgs = catMaybes []
@@ -1565,7 +1635,8 @@ type instance ParameterList "__backward_Embedding" t = '[]
 
 __backward_Embedding ::
                      forall a t .
-                       (TensorOp t t, Fullfilled "__backward_Embedding" t a) =>
+                       (TensorOp t t, Fullfilled "__backward_Embedding" t a,
+                        HasCallStack) =>
                        ArgsHMap "__backward_Embedding" t a -> TensorApply t
 __backward_Embedding args
   = let scalarArgs = catMaybes []
@@ -1578,7 +1649,8 @@ type instance ParameterList "__backward_FullyConnected" t = '[]
 
 __backward_FullyConnected ::
                           forall a t .
-                            (TensorOp t t, Fullfilled "__backward_FullyConnected" t a) =>
+                            (TensorOp t t, Fullfilled "__backward_FullyConnected" t a,
+                             HasCallStack) =>
                             ArgsHMap "__backward_FullyConnected" t a -> TensorApply t
 __backward_FullyConnected args
   = let scalarArgs = catMaybes []
@@ -1591,7 +1663,8 @@ type instance ParameterList "__backward_GridGenerator" t = '[]
 
 __backward_GridGenerator ::
                          forall a t .
-                           (TensorOp t t, Fullfilled "__backward_GridGenerator" t a) =>
+                           (TensorOp t t, Fullfilled "__backward_GridGenerator" t a,
+                            HasCallStack) =>
                            ArgsHMap "__backward_GridGenerator" t a -> TensorApply t
 __backward_GridGenerator args
   = let scalarArgs = catMaybes []
@@ -1604,7 +1677,8 @@ type instance ParameterList "__backward_GroupNorm" t = '[]
 
 __backward_GroupNorm ::
                      forall a t .
-                       (TensorOp t t, Fullfilled "__backward_GroupNorm" t a) =>
+                       (TensorOp t t, Fullfilled "__backward_GroupNorm" t a,
+                        HasCallStack) =>
                        ArgsHMap "__backward_GroupNorm" t a -> TensorApply t
 __backward_GroupNorm args
   = let scalarArgs = catMaybes []
@@ -1619,7 +1693,8 @@ type instance
 __backward_IdentityAttachKLSparseReg ::
                                      forall a t .
                                        (TensorOp t t,
-                                        Fullfilled "__backward_IdentityAttachKLSparseReg" t a) =>
+                                        Fullfilled "__backward_IdentityAttachKLSparseReg" t a,
+                                        HasCallStack) =>
                                        ArgsHMap "__backward_IdentityAttachKLSparseReg" t a ->
                                          TensorApply t
 __backward_IdentityAttachKLSparseReg args
@@ -1633,7 +1708,8 @@ type instance ParameterList "__backward_InstanceNorm" t = '[]
 
 __backward_InstanceNorm ::
                         forall a t .
-                          (TensorOp t t, Fullfilled "__backward_InstanceNorm" t a) =>
+                          (TensorOp t t, Fullfilled "__backward_InstanceNorm" t a,
+                           HasCallStack) =>
                           ArgsHMap "__backward_InstanceNorm" t a -> TensorApply t
 __backward_InstanceNorm args
   = let scalarArgs = catMaybes []
@@ -1646,7 +1722,8 @@ type instance ParameterList "__backward_L2Normalization" t = '[]
 
 __backward_L2Normalization ::
                            forall a t .
-                             (TensorOp t t, Fullfilled "__backward_L2Normalization" t a) =>
+                             (TensorOp t t, Fullfilled "__backward_L2Normalization" t a,
+                              HasCallStack) =>
                              ArgsHMap "__backward_L2Normalization" t a -> TensorApply t
 __backward_L2Normalization args
   = let scalarArgs = catMaybes []
@@ -1658,7 +1735,8 @@ __backward_L2Normalization args
 type instance ParameterList "__backward_LRN" t = '[]
 
 __backward_LRN ::
-               forall a t . (TensorOp t t, Fullfilled "__backward_LRN" t a) =>
+               forall a t .
+                 (TensorOp t t, Fullfilled "__backward_LRN" t a, HasCallStack) =>
                  ArgsHMap "__backward_LRN" t a -> TensorApply t
 __backward_LRN args
   = let scalarArgs = catMaybes []
@@ -1671,7 +1749,8 @@ type instance ParameterList "__backward_LayerNorm" t = '[]
 
 __backward_LayerNorm ::
                      forall a t .
-                       (TensorOp t t, Fullfilled "__backward_LayerNorm" t a) =>
+                       (TensorOp t t, Fullfilled "__backward_LayerNorm" t a,
+                        HasCallStack) =>
                        ArgsHMap "__backward_LayerNorm" t a -> TensorApply t
 __backward_LayerNorm args
   = let scalarArgs = catMaybes []
@@ -1684,7 +1763,8 @@ type instance ParameterList "__backward_LeakyReLU" t = '[]
 
 __backward_LeakyReLU ::
                      forall a t .
-                       (TensorOp t t, Fullfilled "__backward_LeakyReLU" t a) =>
+                       (TensorOp t t, Fullfilled "__backward_LeakyReLU" t a,
+                        HasCallStack) =>
                        ArgsHMap "__backward_LeakyReLU" t a -> TensorApply t
 __backward_LeakyReLU args
   = let scalarArgs = catMaybes []
@@ -1697,7 +1777,8 @@ type instance ParameterList "__backward_MakeLoss" t = '[]
 
 __backward_MakeLoss ::
                     forall a t .
-                      (TensorOp t t, Fullfilled "__backward_MakeLoss" t a) =>
+                      (TensorOp t t, Fullfilled "__backward_MakeLoss" t a,
+                       HasCallStack) =>
                       ArgsHMap "__backward_MakeLoss" t a -> TensorApply t
 __backward_MakeLoss args
   = let scalarArgs = catMaybes []
@@ -1709,7 +1790,8 @@ __backward_MakeLoss args
 type instance ParameterList "__backward_Pad" t = '[]
 
 __backward_Pad ::
-               forall a t . (TensorOp t t, Fullfilled "__backward_Pad" t a) =>
+               forall a t .
+                 (TensorOp t t, Fullfilled "__backward_Pad" t a, HasCallStack) =>
                  ArgsHMap "__backward_Pad" t a -> TensorApply t
 __backward_Pad args
   = let scalarArgs = catMaybes []
@@ -1721,7 +1803,9 @@ __backward_Pad args
 type instance ParameterList "__backward_Pooling" t = '[]
 
 __backward_Pooling ::
-                   forall a t . (TensorOp t t, Fullfilled "__backward_Pooling" t a) =>
+                   forall a t .
+                     (TensorOp t t, Fullfilled "__backward_Pooling" t a,
+                      HasCallStack) =>
                      ArgsHMap "__backward_Pooling" t a -> TensorApply t
 __backward_Pooling args
   = let scalarArgs = catMaybes []
@@ -1734,7 +1818,8 @@ type instance ParameterList "__backward_Pooling_v1" t = '[]
 
 __backward_Pooling_v1 ::
                       forall a t .
-                        (TensorOp t t, Fullfilled "__backward_Pooling_v1" t a) =>
+                        (TensorOp t t, Fullfilled "__backward_Pooling_v1" t a,
+                         HasCallStack) =>
                         ArgsHMap "__backward_Pooling_v1" t a -> TensorApply t
 __backward_Pooling_v1 args
   = let scalarArgs = catMaybes []
@@ -1746,7 +1831,8 @@ __backward_Pooling_v1 args
 type instance ParameterList "__backward_RNN" t = '[]
 
 __backward_RNN ::
-               forall a t . (TensorOp t t, Fullfilled "__backward_RNN" t a) =>
+               forall a t .
+                 (TensorOp t t, Fullfilled "__backward_RNN" t a, HasCallStack) =>
                  ArgsHMap "__backward_RNN" t a -> TensorApply t
 __backward_RNN args
   = let scalarArgs = catMaybes []
@@ -1759,7 +1845,8 @@ type instance ParameterList "__backward_ROIAlign" t = '[]
 
 __backward_ROIAlign ::
                     forall a t .
-                      (TensorOp t t, Fullfilled "__backward_ROIAlign" t a) =>
+                      (TensorOp t t, Fullfilled "__backward_ROIAlign" t a,
+                       HasCallStack) =>
                       ArgsHMap "__backward_ROIAlign" t a -> TensorApply t
 __backward_ROIAlign args
   = let scalarArgs = catMaybes []
@@ -1772,7 +1859,8 @@ type instance ParameterList "__backward_ROIPooling" t = '[]
 
 __backward_ROIPooling ::
                       forall a t .
-                        (TensorOp t t, Fullfilled "__backward_ROIPooling" t a) =>
+                        (TensorOp t t, Fullfilled "__backward_ROIPooling" t a,
+                         HasCallStack) =>
                         ArgsHMap "__backward_ROIPooling" t a -> TensorApply t
 __backward_ROIPooling args
   = let scalarArgs = catMaybes []
@@ -1785,7 +1873,8 @@ type instance ParameterList "__backward_RROIAlign" t = '[]
 
 __backward_RROIAlign ::
                      forall a t .
-                       (TensorOp t t, Fullfilled "__backward_RROIAlign" t a) =>
+                       (TensorOp t t, Fullfilled "__backward_RROIAlign" t a,
+                        HasCallStack) =>
                        ArgsHMap "__backward_RROIAlign" t a -> TensorApply t
 __backward_RROIAlign args
   = let scalarArgs = catMaybes []
@@ -1798,7 +1887,8 @@ type instance ParameterList "__backward_SVMOutput" t = '[]
 
 __backward_SVMOutput ::
                      forall a t .
-                       (TensorOp t t, Fullfilled "__backward_SVMOutput" t a) =>
+                       (TensorOp t t, Fullfilled "__backward_SVMOutput" t a,
+                        HasCallStack) =>
                        ArgsHMap "__backward_SVMOutput" t a -> TensorApply t
 __backward_SVMOutput args
   = let scalarArgs = catMaybes []
@@ -1811,7 +1901,8 @@ type instance ParameterList "__backward_SequenceLast" t = '[]
 
 __backward_SequenceLast ::
                         forall a t .
-                          (TensorOp t t, Fullfilled "__backward_SequenceLast" t a) =>
+                          (TensorOp t t, Fullfilled "__backward_SequenceLast" t a,
+                           HasCallStack) =>
                           ArgsHMap "__backward_SequenceLast" t a -> TensorApply t
 __backward_SequenceLast args
   = let scalarArgs = catMaybes []
@@ -1824,7 +1915,8 @@ type instance ParameterList "__backward_SequenceMask" t = '[]
 
 __backward_SequenceMask ::
                         forall a t .
-                          (TensorOp t t, Fullfilled "__backward_SequenceMask" t a) =>
+                          (TensorOp t t, Fullfilled "__backward_SequenceMask" t a,
+                           HasCallStack) =>
                           ArgsHMap "__backward_SequenceMask" t a -> TensorApply t
 __backward_SequenceMask args
   = let scalarArgs = catMaybes []
@@ -1837,7 +1929,8 @@ type instance ParameterList "__backward_SequenceReverse" t = '[]
 
 __backward_SequenceReverse ::
                            forall a t .
-                             (TensorOp t t, Fullfilled "__backward_SequenceReverse" t a) =>
+                             (TensorOp t t, Fullfilled "__backward_SequenceReverse" t a,
+                              HasCallStack) =>
                              ArgsHMap "__backward_SequenceReverse" t a -> TensorApply t
 __backward_SequenceReverse args
   = let scalarArgs = catMaybes []
@@ -1850,7 +1943,8 @@ type instance ParameterList "__backward_SliceChannel" t = '[]
 
 __backward_SliceChannel ::
                         forall a t .
-                          (TensorOp t t, Fullfilled "__backward_SliceChannel" t a) =>
+                          (TensorOp t t, Fullfilled "__backward_SliceChannel" t a,
+                           HasCallStack) =>
                           ArgsHMap "__backward_SliceChannel" t a -> TensorApply t
 __backward_SliceChannel args
   = let scalarArgs = catMaybes []
@@ -1863,7 +1957,8 @@ type instance ParameterList "__backward_SoftmaxActivation" t = '[]
 
 __backward_SoftmaxActivation ::
                              forall a t .
-                               (TensorOp t t, Fullfilled "__backward_SoftmaxActivation" t a) =>
+                               (TensorOp t t, Fullfilled "__backward_SoftmaxActivation" t a,
+                                HasCallStack) =>
                                ArgsHMap "__backward_SoftmaxActivation" t a -> TensorApply t
 __backward_SoftmaxActivation args
   = let scalarArgs = catMaybes []
@@ -1876,7 +1971,8 @@ type instance ParameterList "__backward_SoftmaxOutput" t = '[]
 
 __backward_SoftmaxOutput ::
                          forall a t .
-                           (TensorOp t t, Fullfilled "__backward_SoftmaxOutput" t a) =>
+                           (TensorOp t t, Fullfilled "__backward_SoftmaxOutput" t a,
+                            HasCallStack) =>
                            ArgsHMap "__backward_SoftmaxOutput" t a -> TensorApply t
 __backward_SoftmaxOutput args
   = let scalarArgs = catMaybes []
@@ -1889,7 +1985,8 @@ type instance ParameterList "__backward_SparseEmbedding" t = '[]
 
 __backward_SparseEmbedding ::
                            forall a t .
-                             (TensorOp t t, Fullfilled "__backward_SparseEmbedding" t a) =>
+                             (TensorOp t t, Fullfilled "__backward_SparseEmbedding" t a,
+                              HasCallStack) =>
                              ArgsHMap "__backward_SparseEmbedding" t a -> TensorApply t
 __backward_SparseEmbedding args
   = let scalarArgs = catMaybes []
@@ -1902,7 +1999,8 @@ type instance ParameterList "__backward_SpatialTransformer" t = '[]
 
 __backward_SpatialTransformer ::
                               forall a t .
-                                (TensorOp t t, Fullfilled "__backward_SpatialTransformer" t a) =>
+                                (TensorOp t t, Fullfilled "__backward_SpatialTransformer" t a,
+                                 HasCallStack) =>
                                 ArgsHMap "__backward_SpatialTransformer" t a -> TensorApply t
 __backward_SpatialTransformer args
   = let scalarArgs = catMaybes []
@@ -1915,7 +2013,8 @@ type instance ParameterList "__backward_SwapAxis" t = '[]
 
 __backward_SwapAxis ::
                     forall a t .
-                      (TensorOp t t, Fullfilled "__backward_SwapAxis" t a) =>
+                      (TensorOp t t, Fullfilled "__backward_SwapAxis" t a,
+                       HasCallStack) =>
                       ArgsHMap "__backward_SwapAxis" t a -> TensorApply t
 __backward_SwapAxis args
   = let scalarArgs = catMaybes []
@@ -1928,7 +2027,8 @@ type instance ParameterList "__backward_UpSampling" t = '[]
 
 __backward_UpSampling ::
                       forall a t .
-                        (TensorOp t t, Fullfilled "__backward_UpSampling" t a) =>
+                        (TensorOp t t, Fullfilled "__backward_UpSampling" t a,
+                         HasCallStack) =>
                         ArgsHMap "__backward_UpSampling" t a -> TensorApply t
 __backward_UpSampling args
   = let scalarArgs = catMaybes []
@@ -1941,7 +2041,8 @@ type instance ParameterList "__backward__CrossDeviceCopy" t = '[]
 
 __backward__CrossDeviceCopy ::
                             forall a t .
-                              (TensorOp t t, Fullfilled "__backward__CrossDeviceCopy" t a) =>
+                              (TensorOp t t, Fullfilled "__backward__CrossDeviceCopy" t a,
+                               HasCallStack) =>
                               ArgsHMap "__backward__CrossDeviceCopy" t a -> TensorApply t
 __backward__CrossDeviceCopy args
   = let scalarArgs = catMaybes []
@@ -1954,7 +2055,8 @@ type instance ParameterList "__backward__NDArray" t = '[]
 
 __backward__NDArray ::
                     forall a t .
-                      (TensorOp t t, Fullfilled "__backward__NDArray" t a) =>
+                      (TensorOp t t, Fullfilled "__backward__NDArray" t a,
+                       HasCallStack) =>
                       ArgsHMap "__backward__NDArray" t a -> TensorApply t
 __backward__NDArray args
   = let scalarArgs = catMaybes []
@@ -1966,7 +2068,9 @@ __backward__NDArray args
 type instance ParameterList "__backward__Native" t = '[]
 
 __backward__Native ::
-                   forall a t . (TensorOp t t, Fullfilled "__backward__Native" t a) =>
+                   forall a t .
+                     (TensorOp t t, Fullfilled "__backward__Native" t a,
+                      HasCallStack) =>
                      ArgsHMap "__backward__Native" t a -> TensorApply t
 __backward__Native args
   = let scalarArgs = catMaybes []
@@ -1982,7 +2086,8 @@ __backward__contrib_DeformableConvolution ::
                                           forall a t .
                                             (TensorOp t t,
                                              Fullfilled "__backward__contrib_DeformableConvolution"
-                                               t a) =>
+                                               t a,
+                                             HasCallStack) =>
                                             ArgsHMap "__backward__contrib_DeformableConvolution" t a
                                               -> TensorApply t
 __backward__contrib_DeformableConvolution args
@@ -1999,7 +2104,8 @@ __backward__contrib_DeformablePSROIPooling ::
                                            forall a t .
                                              (TensorOp t t,
                                               Fullfilled
-                                                "__backward__contrib_DeformablePSROIPooling" t a) =>
+                                                "__backward__contrib_DeformablePSROIPooling" t a,
+                                              HasCallStack) =>
                                              ArgsHMap "__backward__contrib_DeformablePSROIPooling" t
                                                a
                                                -> TensorApply t
@@ -2016,7 +2122,8 @@ type instance
 __backward__contrib_MultiBoxDetection ::
                                       forall a t .
                                         (TensorOp t t,
-                                         Fullfilled "__backward__contrib_MultiBoxDetection" t a) =>
+                                         Fullfilled "__backward__contrib_MultiBoxDetection" t a,
+                                         HasCallStack) =>
                                         ArgsHMap "__backward__contrib_MultiBoxDetection" t a ->
                                           TensorApply t
 __backward__contrib_MultiBoxDetection args
@@ -2032,7 +2139,8 @@ type instance ParameterList "__backward__contrib_MultiBoxPrior" t =
 __backward__contrib_MultiBoxPrior ::
                                   forall a t .
                                     (TensorOp t t,
-                                     Fullfilled "__backward__contrib_MultiBoxPrior" t a) =>
+                                     Fullfilled "__backward__contrib_MultiBoxPrior" t a,
+                                     HasCallStack) =>
                                     ArgsHMap "__backward__contrib_MultiBoxPrior" t a ->
                                       TensorApply t
 __backward__contrib_MultiBoxPrior args
@@ -2048,7 +2156,8 @@ type instance ParameterList "__backward__contrib_MultiBoxTarget" t
 __backward__contrib_MultiBoxTarget ::
                                    forall a t .
                                      (TensorOp t t,
-                                      Fullfilled "__backward__contrib_MultiBoxTarget" t a) =>
+                                      Fullfilled "__backward__contrib_MultiBoxTarget" t a,
+                                      HasCallStack) =>
                                      ArgsHMap "__backward__contrib_MultiBoxTarget" t a ->
                                        TensorApply t
 __backward__contrib_MultiBoxTarget args
@@ -2064,7 +2173,8 @@ type instance ParameterList "__backward__contrib_MultiProposal" t =
 __backward__contrib_MultiProposal ::
                                   forall a t .
                                     (TensorOp t t,
-                                     Fullfilled "__backward__contrib_MultiProposal" t a) =>
+                                     Fullfilled "__backward__contrib_MultiProposal" t a,
+                                     HasCallStack) =>
                                     ArgsHMap "__backward__contrib_MultiProposal" t a ->
                                       TensorApply t
 __backward__contrib_MultiProposal args
@@ -2079,8 +2189,8 @@ type instance ParameterList "__backward__contrib_PSROIPooling" t =
 
 __backward__contrib_PSROIPooling ::
                                  forall a t .
-                                   (TensorOp t t,
-                                    Fullfilled "__backward__contrib_PSROIPooling" t a) =>
+                                   (TensorOp t t, Fullfilled "__backward__contrib_PSROIPooling" t a,
+                                    HasCallStack) =>
                                    ArgsHMap "__backward__contrib_PSROIPooling" t a -> TensorApply t
 __backward__contrib_PSROIPooling args
   = let scalarArgs = catMaybes []
@@ -2093,7 +2203,8 @@ type instance ParameterList "__backward__contrib_Proposal" t = '[]
 
 __backward__contrib_Proposal ::
                              forall a t .
-                               (TensorOp t t, Fullfilled "__backward__contrib_Proposal" t a) =>
+                               (TensorOp t t, Fullfilled "__backward__contrib_Proposal" t a,
+                                HasCallStack) =>
                                ArgsHMap "__backward__contrib_Proposal" t a -> TensorApply t
 __backward__contrib_Proposal args
   = let scalarArgs = catMaybes []
@@ -2108,7 +2219,8 @@ type instance ParameterList "__backward__contrib_SyncBatchNorm" t =
 __backward__contrib_SyncBatchNorm ::
                                   forall a t .
                                     (TensorOp t t,
-                                     Fullfilled "__backward__contrib_SyncBatchNorm" t a) =>
+                                     Fullfilled "__backward__contrib_SyncBatchNorm" t a,
+                                     HasCallStack) =>
                                     ArgsHMap "__backward__contrib_SyncBatchNorm" t a ->
                                       TensorApply t
 __backward__contrib_SyncBatchNorm args
@@ -2123,8 +2235,8 @@ type instance ParameterList "__backward__contrib_count_sketch" t =
 
 __backward__contrib_count_sketch ::
                                  forall a t .
-                                   (TensorOp t t,
-                                    Fullfilled "__backward__contrib_count_sketch" t a) =>
+                                   (TensorOp t t, Fullfilled "__backward__contrib_count_sketch" t a,
+                                    HasCallStack) =>
                                    ArgsHMap "__backward__contrib_count_sketch" t a -> TensorApply t
 __backward__contrib_count_sketch args
   = let scalarArgs = catMaybes []
@@ -2137,7 +2249,8 @@ type instance ParameterList "__backward__contrib_fft" t = '[]
 
 __backward__contrib_fft ::
                         forall a t .
-                          (TensorOp t t, Fullfilled "__backward__contrib_fft" t a) =>
+                          (TensorOp t t, Fullfilled "__backward__contrib_fft" t a,
+                           HasCallStack) =>
                           ArgsHMap "__backward__contrib_fft" t a -> TensorApply t
 __backward__contrib_fft args
   = let scalarArgs = catMaybes []
@@ -2150,7 +2263,8 @@ type instance ParameterList "__backward__contrib_ifft" t = '[]
 
 __backward__contrib_ifft ::
                          forall a t .
-                           (TensorOp t t, Fullfilled "__backward__contrib_ifft" t a) =>
+                           (TensorOp t t, Fullfilled "__backward__contrib_ifft" t a,
+                            HasCallStack) =>
                            ArgsHMap "__backward__contrib_ifft" t a -> TensorApply t
 __backward__contrib_ifft args
   = let scalarArgs = catMaybes []
@@ -2163,7 +2277,8 @@ type instance ParameterList "__backward_abs" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 __backward_abs ::
-               forall a t . (TensorOp t t, Fullfilled "__backward_abs" t a) =>
+               forall a t .
+                 (TensorOp t t, Fullfilled "__backward_abs" t a, HasCallStack) =>
                  ArgsHMap "__backward_abs" t a -> TensorApply t
 __backward_abs args
   = let scalarArgs = catMaybes []
@@ -2178,7 +2293,8 @@ __backward_abs args
 type instance ParameterList "__backward_add" t = '[]
 
 __backward_add ::
-               forall a t . (TensorOp t t, Fullfilled "__backward_add" t a) =>
+               forall a t .
+                 (TensorOp t t, Fullfilled "__backward_add" t a, HasCallStack) =>
                  ArgsHMap "__backward_add" t a -> TensorApply t
 __backward_add args
   = let scalarArgs = catMaybes []
@@ -2191,7 +2307,8 @@ type instance ParameterList "__backward_amp_cast" t = '[]
 
 __backward_amp_cast ::
                     forall a t .
-                      (TensorOp t t, Fullfilled "__backward_amp_cast" t a) =>
+                      (TensorOp t t, Fullfilled "__backward_amp_cast" t a,
+                       HasCallStack) =>
                       ArgsHMap "__backward_amp_cast" t a -> TensorApply t
 __backward_amp_cast args
   = let scalarArgs = catMaybes []
@@ -2206,7 +2323,8 @@ type instance ParameterList "__backward_amp_multicast" t =
 
 __backward_amp_multicast ::
                          forall a t .
-                           (TensorOp t t, Fullfilled "__backward_amp_multicast" t a) =>
+                           (TensorOp t t, Fullfilled "__backward_amp_multicast" t a,
+                            HasCallStack) =>
                            ArgsHMap "__backward_amp_multicast" t a -> TensorApply t
 __backward_amp_multicast args
   = let scalarArgs
@@ -2223,7 +2341,8 @@ type instance ParameterList "__backward_arccos" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 __backward_arccos ::
-                  forall a t . (TensorOp t t, Fullfilled "__backward_arccos" t a) =>
+                  forall a t .
+                    (TensorOp t t, Fullfilled "__backward_arccos" t a, HasCallStack) =>
                     ArgsHMap "__backward_arccos" t a -> TensorApply t
 __backward_arccos args
   = let scalarArgs = catMaybes []
@@ -2239,7 +2358,9 @@ type instance ParameterList "__backward_arccosh" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 __backward_arccosh ::
-                   forall a t . (TensorOp t t, Fullfilled "__backward_arccosh" t a) =>
+                   forall a t .
+                     (TensorOp t t, Fullfilled "__backward_arccosh" t a,
+                      HasCallStack) =>
                      ArgsHMap "__backward_arccosh" t a -> TensorApply t
 __backward_arccosh args
   = let scalarArgs = catMaybes []
@@ -2255,7 +2376,8 @@ type instance ParameterList "__backward_arcsin" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 __backward_arcsin ::
-                  forall a t . (TensorOp t t, Fullfilled "__backward_arcsin" t a) =>
+                  forall a t .
+                    (TensorOp t t, Fullfilled "__backward_arcsin" t a, HasCallStack) =>
                     ArgsHMap "__backward_arcsin" t a -> TensorApply t
 __backward_arcsin args
   = let scalarArgs = catMaybes []
@@ -2271,7 +2393,9 @@ type instance ParameterList "__backward_arcsinh" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 __backward_arcsinh ::
-                   forall a t . (TensorOp t t, Fullfilled "__backward_arcsinh" t a) =>
+                   forall a t .
+                     (TensorOp t t, Fullfilled "__backward_arcsinh" t a,
+                      HasCallStack) =>
                      ArgsHMap "__backward_arcsinh" t a -> TensorApply t
 __backward_arcsinh args
   = let scalarArgs = catMaybes []
@@ -2287,7 +2411,8 @@ type instance ParameterList "__backward_arctan" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 __backward_arctan ::
-                  forall a t . (TensorOp t t, Fullfilled "__backward_arctan" t a) =>
+                  forall a t .
+                    (TensorOp t t, Fullfilled "__backward_arctan" t a, HasCallStack) =>
                     ArgsHMap "__backward_arctan" t a -> TensorApply t
 __backward_arctan args
   = let scalarArgs = catMaybes []
@@ -2303,7 +2428,9 @@ type instance ParameterList "__backward_arctanh" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 __backward_arctanh ::
-                   forall a t . (TensorOp t t, Fullfilled "__backward_arctanh" t a) =>
+                   forall a t .
+                     (TensorOp t t, Fullfilled "__backward_arctanh" t a,
+                      HasCallStack) =>
                      ArgsHMap "__backward_arctanh" t a -> TensorApply t
 __backward_arctanh args
   = let scalarArgs = catMaybes []
@@ -2321,7 +2448,8 @@ type instance ParameterList "__backward_backward_FullyConnected" t
 __backward_backward_FullyConnected ::
                                    forall a t .
                                      (TensorOp t t,
-                                      Fullfilled "__backward_backward_FullyConnected" t a) =>
+                                      Fullfilled "__backward_backward_FullyConnected" t a,
+                                      HasCallStack) =>
                                      ArgsHMap "__backward_backward_FullyConnected" t a ->
                                        TensorApply t
 __backward_backward_FullyConnected args
@@ -2335,7 +2463,8 @@ type instance ParameterList "__backward_broadcast_add" t = '[]
 
 __backward_broadcast_add ::
                          forall a t .
-                           (TensorOp t t, Fullfilled "__backward_broadcast_add" t a) =>
+                           (TensorOp t t, Fullfilled "__backward_broadcast_add" t a,
+                            HasCallStack) =>
                            ArgsHMap "__backward_broadcast_add" t a -> TensorApply t
 __backward_broadcast_add args
   = let scalarArgs = catMaybes []
@@ -2348,7 +2477,8 @@ type instance ParameterList "__backward_broadcast_div" t = '[]
 
 __backward_broadcast_div ::
                          forall a t .
-                           (TensorOp t t, Fullfilled "__backward_broadcast_div" t a) =>
+                           (TensorOp t t, Fullfilled "__backward_broadcast_div" t a,
+                            HasCallStack) =>
                            ArgsHMap "__backward_broadcast_div" t a -> TensorApply t
 __backward_broadcast_div args
   = let scalarArgs = catMaybes []
@@ -2361,7 +2491,8 @@ type instance ParameterList "__backward_broadcast_hypot" t = '[]
 
 __backward_broadcast_hypot ::
                            forall a t .
-                             (TensorOp t t, Fullfilled "__backward_broadcast_hypot" t a) =>
+                             (TensorOp t t, Fullfilled "__backward_broadcast_hypot" t a,
+                              HasCallStack) =>
                              ArgsHMap "__backward_broadcast_hypot" t a -> TensorApply t
 __backward_broadcast_hypot args
   = let scalarArgs = catMaybes []
@@ -2374,7 +2505,8 @@ type instance ParameterList "__backward_broadcast_maximum" t = '[]
 
 __backward_broadcast_maximum ::
                              forall a t .
-                               (TensorOp t t, Fullfilled "__backward_broadcast_maximum" t a) =>
+                               (TensorOp t t, Fullfilled "__backward_broadcast_maximum" t a,
+                                HasCallStack) =>
                                ArgsHMap "__backward_broadcast_maximum" t a -> TensorApply t
 __backward_broadcast_maximum args
   = let scalarArgs = catMaybes []
@@ -2387,7 +2519,8 @@ type instance ParameterList "__backward_broadcast_minimum" t = '[]
 
 __backward_broadcast_minimum ::
                              forall a t .
-                               (TensorOp t t, Fullfilled "__backward_broadcast_minimum" t a) =>
+                               (TensorOp t t, Fullfilled "__backward_broadcast_minimum" t a,
+                                HasCallStack) =>
                                ArgsHMap "__backward_broadcast_minimum" t a -> TensorApply t
 __backward_broadcast_minimum args
   = let scalarArgs = catMaybes []
@@ -2400,7 +2533,8 @@ type instance ParameterList "__backward_broadcast_mod" t = '[]
 
 __backward_broadcast_mod ::
                          forall a t .
-                           (TensorOp t t, Fullfilled "__backward_broadcast_mod" t a) =>
+                           (TensorOp t t, Fullfilled "__backward_broadcast_mod" t a,
+                            HasCallStack) =>
                            ArgsHMap "__backward_broadcast_mod" t a -> TensorApply t
 __backward_broadcast_mod args
   = let scalarArgs = catMaybes []
@@ -2413,7 +2547,8 @@ type instance ParameterList "__backward_broadcast_mul" t = '[]
 
 __backward_broadcast_mul ::
                          forall a t .
-                           (TensorOp t t, Fullfilled "__backward_broadcast_mul" t a) =>
+                           (TensorOp t t, Fullfilled "__backward_broadcast_mul" t a,
+                            HasCallStack) =>
                            ArgsHMap "__backward_broadcast_mul" t a -> TensorApply t
 __backward_broadcast_mul args
   = let scalarArgs = catMaybes []
@@ -2426,7 +2561,8 @@ type instance ParameterList "__backward_broadcast_power" t = '[]
 
 __backward_broadcast_power ::
                            forall a t .
-                             (TensorOp t t, Fullfilled "__backward_broadcast_power" t a) =>
+                             (TensorOp t t, Fullfilled "__backward_broadcast_power" t a,
+                              HasCallStack) =>
                              ArgsHMap "__backward_broadcast_power" t a -> TensorApply t
 __backward_broadcast_power args
   = let scalarArgs = catMaybes []
@@ -2439,7 +2575,8 @@ type instance ParameterList "__backward_broadcast_sub" t = '[]
 
 __backward_broadcast_sub ::
                          forall a t .
-                           (TensorOp t t, Fullfilled "__backward_broadcast_sub" t a) =>
+                           (TensorOp t t, Fullfilled "__backward_broadcast_sub" t a,
+                            HasCallStack) =>
                            ArgsHMap "__backward_broadcast_sub" t a -> TensorApply t
 __backward_broadcast_sub args
   = let scalarArgs = catMaybes []
@@ -2451,7 +2588,8 @@ __backward_broadcast_sub args
 type instance ParameterList "__backward_cast" t = '[]
 
 __backward_cast ::
-                forall a t . (TensorOp t t, Fullfilled "__backward_cast" t a) =>
+                forall a t .
+                  (TensorOp t t, Fullfilled "__backward_cast" t a, HasCallStack) =>
                   ArgsHMap "__backward_cast" t a -> TensorApply t
 __backward_cast args
   = let scalarArgs = catMaybes []
@@ -2464,7 +2602,8 @@ type instance ParameterList "__backward_cbrt" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 __backward_cbrt ::
-                forall a t . (TensorOp t t, Fullfilled "__backward_cbrt" t a) =>
+                forall a t .
+                  (TensorOp t t, Fullfilled "__backward_cbrt" t a, HasCallStack) =>
                   ArgsHMap "__backward_cbrt" t a -> TensorApply t
 __backward_cbrt args
   = let scalarArgs = catMaybes []
@@ -2479,7 +2618,8 @@ __backward_cbrt args
 type instance ParameterList "__backward_clip" t = '[]
 
 __backward_clip ::
-                forall a t . (TensorOp t t, Fullfilled "__backward_clip" t a) =>
+                forall a t .
+                  (TensorOp t t, Fullfilled "__backward_clip" t a, HasCallStack) =>
                   ArgsHMap "__backward_clip" t a -> TensorApply t
 __backward_clip args
   = let scalarArgs = catMaybes []
@@ -2491,7 +2631,8 @@ __backward_clip args
 type instance ParameterList "__backward_cond" t = '[]
 
 __backward_cond ::
-                forall a t . (TensorOp t t, Fullfilled "__backward_cond" t a) =>
+                forall a t .
+                  (TensorOp t t, Fullfilled "__backward_cond" t a, HasCallStack) =>
                   ArgsHMap "__backward_cond" t a -> TensorApply t
 __backward_cond args
   = let scalarArgs = catMaybes []
@@ -2506,8 +2647,8 @@ type instance
 __backward_contrib_AdaptiveAvgPooling2D ::
                                         forall a t .
                                           (TensorOp t t,
-                                           Fullfilled "__backward_contrib_AdaptiveAvgPooling2D" t
-                                             a) =>
+                                           Fullfilled "__backward_contrib_AdaptiveAvgPooling2D" t a,
+                                           HasCallStack) =>
                                           ArgsHMap "__backward_contrib_AdaptiveAvgPooling2D" t a ->
                                             TensorApply t
 __backward_contrib_AdaptiveAvgPooling2D args
@@ -2523,7 +2664,8 @@ type instance ParameterList "__backward_contrib_BilinearResize2D" t
 __backward_contrib_BilinearResize2D ::
                                     forall a t .
                                       (TensorOp t t,
-                                       Fullfilled "__backward_contrib_BilinearResize2D" t a) =>
+                                       Fullfilled "__backward_contrib_BilinearResize2D" t a,
+                                       HasCallStack) =>
                                       ArgsHMap "__backward_contrib_BilinearResize2D" t a ->
                                         TensorApply t
 __backward_contrib_BilinearResize2D args
@@ -2541,7 +2683,8 @@ type instance
 __backward_contrib_bipartite_matching ::
                                       forall a t .
                                         (TensorOp t t,
-                                         Fullfilled "__backward_contrib_bipartite_matching" t a) =>
+                                         Fullfilled "__backward_contrib_bipartite_matching" t a,
+                                         HasCallStack) =>
                                         ArgsHMap "__backward_contrib_bipartite_matching" t a ->
                                           TensorApply t
 __backward_contrib_bipartite_matching args
@@ -2560,8 +2703,8 @@ type instance ParameterList "__backward_contrib_boolean_mask" t =
 
 __backward_contrib_boolean_mask ::
                                 forall a t .
-                                  (TensorOp t t,
-                                   Fullfilled "__backward_contrib_boolean_mask" t a) =>
+                                  (TensorOp t t, Fullfilled "__backward_contrib_boolean_mask" t a,
+                                   HasCallStack) =>
                                   ArgsHMap "__backward_contrib_boolean_mask" t a -> TensorApply t
 __backward_contrib_boolean_mask args
   = let scalarArgs
@@ -2577,7 +2720,8 @@ type instance ParameterList "__backward_contrib_box_iou" t =
 
 __backward_contrib_box_iou ::
                            forall a t .
-                             (TensorOp t t, Fullfilled "__backward_contrib_box_iou" t a) =>
+                             (TensorOp t t, Fullfilled "__backward_contrib_box_iou" t a,
+                              HasCallStack) =>
                              ArgsHMap "__backward_contrib_box_iou" t a -> TensorApply t
 __backward_contrib_box_iou args
   = let scalarArgs
@@ -2600,7 +2744,8 @@ type instance ParameterList "__backward_contrib_box_nms" t =
 
 __backward_contrib_box_nms ::
                            forall a t .
-                             (TensorOp t t, Fullfilled "__backward_contrib_box_nms" t a) =>
+                             (TensorOp t t, Fullfilled "__backward_contrib_box_nms" t a,
+                              HasCallStack) =>
                              ArgsHMap "__backward_contrib_box_nms" t a -> TensorApply t
 __backward_contrib_box_nms args
   = let scalarArgs
@@ -2631,7 +2776,8 @@ __backward_contrib_box_nms args
 type instance ParameterList "__backward_copy" t = '[]
 
 __backward_copy ::
-                forall a t . (TensorOp t t, Fullfilled "__backward_copy" t a) =>
+                forall a t .
+                  (TensorOp t t, Fullfilled "__backward_copy" t a, HasCallStack) =>
                   ArgsHMap "__backward_copy" t a -> TensorApply t
 __backward_copy args
   = let scalarArgs = catMaybes []
@@ -2644,7 +2790,8 @@ type instance ParameterList "__backward_cos" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 __backward_cos ::
-               forall a t . (TensorOp t t, Fullfilled "__backward_cos" t a) =>
+               forall a t .
+                 (TensorOp t t, Fullfilled "__backward_cos" t a, HasCallStack) =>
                  ArgsHMap "__backward_cos" t a -> TensorApply t
 __backward_cos args
   = let scalarArgs = catMaybes []
@@ -2660,7 +2807,8 @@ type instance ParameterList "__backward_cosh" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 __backward_cosh ::
-                forall a t . (TensorOp t t, Fullfilled "__backward_cosh" t a) =>
+                forall a t .
+                  (TensorOp t t, Fullfilled "__backward_cosh" t a, HasCallStack) =>
                   ArgsHMap "__backward_cosh" t a -> TensorApply t
 __backward_cosh args
   = let scalarArgs = catMaybes []
@@ -2676,7 +2824,8 @@ type instance ParameterList "__backward_ctc_loss" t = '[]
 
 __backward_ctc_loss ::
                     forall a t .
-                      (TensorOp t t, Fullfilled "__backward_ctc_loss" t a) =>
+                      (TensorOp t t, Fullfilled "__backward_ctc_loss" t a,
+                       HasCallStack) =>
                       ArgsHMap "__backward_ctc_loss" t a -> TensorApply t
 __backward_ctc_loss args
   = let scalarArgs = catMaybes []
@@ -2689,7 +2838,9 @@ type instance ParameterList "__backward_degrees" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 __backward_degrees ::
-                   forall a t . (TensorOp t t, Fullfilled "__backward_degrees" t a) =>
+                   forall a t .
+                     (TensorOp t t, Fullfilled "__backward_degrees" t a,
+                      HasCallStack) =>
                      ArgsHMap "__backward_degrees" t a -> TensorApply t
 __backward_degrees args
   = let scalarArgs = catMaybes []
@@ -2704,7 +2855,8 @@ __backward_degrees args
 type instance ParameterList "__backward_diag" t = '[]
 
 __backward_diag ::
-                forall a t . (TensorOp t t, Fullfilled "__backward_diag" t a) =>
+                forall a t .
+                  (TensorOp t t, Fullfilled "__backward_diag" t a, HasCallStack) =>
                   ArgsHMap "__backward_diag" t a -> TensorApply t
 __backward_diag args
   = let scalarArgs = catMaybes []
@@ -2716,7 +2868,8 @@ __backward_diag args
 type instance ParameterList "__backward_div" t = '[]
 
 __backward_div ::
-               forall a t . (TensorOp t t, Fullfilled "__backward_div" t a) =>
+               forall a t .
+                 (TensorOp t t, Fullfilled "__backward_div" t a, HasCallStack) =>
                  ArgsHMap "__backward_div" t a -> TensorApply t
 __backward_div args
   = let scalarArgs = catMaybes []
@@ -2730,7 +2883,8 @@ type instance ParameterList "__backward_div_scalar" t =
 
 __backward_div_scalar ::
                       forall a t .
-                        (TensorOp t t, Fullfilled "__backward_div_scalar" t a) =>
+                        (TensorOp t t, Fullfilled "__backward_div_scalar" t a,
+                         HasCallStack) =>
                         ArgsHMap "__backward_div_scalar" t a -> TensorApply t
 __backward_div_scalar args
   = let scalarArgs
@@ -2748,7 +2902,8 @@ type instance ParameterList "__backward_dot" t =
           AttrOpt (Maybe (EnumType '["csr", "default", "row_sparse"])))]
 
 __backward_dot ::
-               forall a t . (TensorOp t t, Fullfilled "__backward_dot" t a) =>
+               forall a t .
+                 (TensorOp t t, Fullfilled "__backward_dot" t a, HasCallStack) =>
                  ArgsHMap "__backward_dot" t a -> TensorApply t
 __backward_dot args
   = let scalarArgs
@@ -2769,7 +2924,8 @@ type instance ParameterList "__backward_erf" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 __backward_erf ::
-               forall a t . (TensorOp t t, Fullfilled "__backward_erf" t a) =>
+               forall a t .
+                 (TensorOp t t, Fullfilled "__backward_erf" t a, HasCallStack) =>
                  ArgsHMap "__backward_erf" t a -> TensorApply t
 __backward_erf args
   = let scalarArgs = catMaybes []
@@ -2785,7 +2941,8 @@ type instance ParameterList "__backward_erfinv" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 __backward_erfinv ::
-                  forall a t . (TensorOp t t, Fullfilled "__backward_erfinv" t a) =>
+                  forall a t .
+                    (TensorOp t t, Fullfilled "__backward_erfinv" t a, HasCallStack) =>
                     ArgsHMap "__backward_erfinv" t a -> TensorApply t
 __backward_erfinv args
   = let scalarArgs = catMaybes []
@@ -2801,7 +2958,8 @@ type instance ParameterList "__backward_expm1" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 __backward_expm1 ::
-                 forall a t . (TensorOp t t, Fullfilled "__backward_expm1" t a) =>
+                 forall a t .
+                   (TensorOp t t, Fullfilled "__backward_expm1" t a, HasCallStack) =>
                    ArgsHMap "__backward_expm1" t a -> TensorApply t
 __backward_expm1 args
   = let scalarArgs = catMaybes []
@@ -2816,7 +2974,9 @@ __backward_expm1 args
 type instance ParameterList "__backward_foreach" t = '[]
 
 __backward_foreach ::
-                   forall a t . (TensorOp t t, Fullfilled "__backward_foreach" t a) =>
+                   forall a t .
+                     (TensorOp t t, Fullfilled "__backward_foreach" t a,
+                      HasCallStack) =>
                      ArgsHMap "__backward_foreach" t a -> TensorApply t
 __backward_foreach args
   = let scalarArgs = catMaybes []
@@ -2829,7 +2989,8 @@ type instance ParameterList "__backward_gamma" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 __backward_gamma ::
-                 forall a t . (TensorOp t t, Fullfilled "__backward_gamma" t a) =>
+                 forall a t .
+                   (TensorOp t t, Fullfilled "__backward_gamma" t a, HasCallStack) =>
                    ArgsHMap "__backward_gamma" t a -> TensorApply t
 __backward_gamma args
   = let scalarArgs = catMaybes []
@@ -2845,7 +3006,9 @@ type instance ParameterList "__backward_gammaln" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 __backward_gammaln ::
-                   forall a t . (TensorOp t t, Fullfilled "__backward_gammaln" t a) =>
+                   forall a t .
+                     (TensorOp t t, Fullfilled "__backward_gammaln" t a,
+                      HasCallStack) =>
                      ArgsHMap "__backward_gammaln" t a -> TensorApply t
 __backward_gammaln args
   = let scalarArgs = catMaybes []
@@ -2863,7 +3026,8 @@ type instance ParameterList "__backward_gather_nd" t =
 
 __backward_gather_nd ::
                      forall a t .
-                       (TensorOp t t, Fullfilled "__backward_gather_nd" t a) =>
+                       (TensorOp t t, Fullfilled "__backward_gather_nd" t a,
+                        HasCallStack) =>
                        ArgsHMap "__backward_gather_nd" t a -> TensorApply t
 __backward_gather_nd args
   = let scalarArgs
@@ -2881,7 +3045,8 @@ type instance ParameterList "__backward_hard_sigmoid" t = '[]
 
 __backward_hard_sigmoid ::
                         forall a t .
-                          (TensorOp t t, Fullfilled "__backward_hard_sigmoid" t a) =>
+                          (TensorOp t t, Fullfilled "__backward_hard_sigmoid" t a,
+                           HasCallStack) =>
                           ArgsHMap "__backward_hard_sigmoid" t a -> TensorApply t
 __backward_hard_sigmoid args
   = let scalarArgs = catMaybes []
@@ -2893,7 +3058,8 @@ __backward_hard_sigmoid args
 type instance ParameterList "__backward_hypot" t = '[]
 
 __backward_hypot ::
-                 forall a t . (TensorOp t t, Fullfilled "__backward_hypot" t a) =>
+                 forall a t .
+                   (TensorOp t t, Fullfilled "__backward_hypot" t a, HasCallStack) =>
                    ArgsHMap "__backward_hypot" t a -> TensorApply t
 __backward_hypot args
   = let scalarArgs = catMaybes []
@@ -2908,7 +3074,8 @@ type instance ParameterList "__backward_hypot_scalar" t =
 
 __backward_hypot_scalar ::
                         forall a t .
-                          (TensorOp t t, Fullfilled "__backward_hypot_scalar" t a) =>
+                          (TensorOp t t, Fullfilled "__backward_hypot_scalar" t a,
+                           HasCallStack) =>
                           ArgsHMap "__backward_hypot_scalar" t a -> TensorApply t
 __backward_hypot_scalar args
   = let scalarArgs
@@ -2926,7 +3093,8 @@ type instance ParameterList "__backward_image_crop" t = '[]
 
 __backward_image_crop ::
                       forall a t .
-                        (TensorOp t t, Fullfilled "__backward_image_crop" t a) =>
+                        (TensorOp t t, Fullfilled "__backward_image_crop" t a,
+                         HasCallStack) =>
                         ArgsHMap "__backward_image_crop" t a -> TensorApply t
 __backward_image_crop args
   = let scalarArgs = catMaybes []
@@ -2939,7 +3107,8 @@ type instance ParameterList "__backward_image_normalize" t = '[]
 
 __backward_image_normalize ::
                            forall a t .
-                             (TensorOp t t, Fullfilled "__backward_image_normalize" t a) =>
+                             (TensorOp t t, Fullfilled "__backward_image_normalize" t a,
+                              HasCallStack) =>
                              ArgsHMap "__backward_image_normalize" t a -> TensorApply t
 __backward_image_normalize args
   = let scalarArgs = catMaybes []
@@ -2954,8 +3123,8 @@ type instance
 __backward_interleaved_matmul_encdec_qk ::
                                         forall a t .
                                           (TensorOp t t,
-                                           Fullfilled "__backward_interleaved_matmul_encdec_qk" t
-                                             a) =>
+                                           Fullfilled "__backward_interleaved_matmul_encdec_qk" t a,
+                                           HasCallStack) =>
                                           ArgsHMap "__backward_interleaved_matmul_encdec_qk" t a ->
                                             TensorApply t
 __backward_interleaved_matmul_encdec_qk args
@@ -2972,8 +3141,8 @@ __backward_interleaved_matmul_encdec_valatt ::
                                             forall a t .
                                               (TensorOp t t,
                                                Fullfilled
-                                                 "__backward_interleaved_matmul_encdec_valatt" t
-                                                 a) =>
+                                                 "__backward_interleaved_matmul_encdec_valatt" t a,
+                                               HasCallStack) =>
                                               ArgsHMap "__backward_interleaved_matmul_encdec_valatt"
                                                 t
                                                 a
@@ -2992,7 +3161,8 @@ __backward_interleaved_matmul_selfatt_qk ::
                                          forall a t .
                                            (TensorOp t t,
                                             Fullfilled "__backward_interleaved_matmul_selfatt_qk" t
-                                              a) =>
+                                              a,
+                                            HasCallStack) =>
                                            ArgsHMap "__backward_interleaved_matmul_selfatt_qk" t a
                                              -> TensorApply t
 __backward_interleaved_matmul_selfatt_qk args
@@ -3011,7 +3181,8 @@ __backward_interleaved_matmul_selfatt_valatt ::
                                                (TensorOp t t,
                                                 Fullfilled
                                                   "__backward_interleaved_matmul_selfatt_valatt" t
-                                                  a) =>
+                                                  a,
+                                                HasCallStack) =>
                                                ArgsHMap
                                                  "__backward_interleaved_matmul_selfatt_valatt"
                                                  t
@@ -3028,7 +3199,8 @@ type instance ParameterList "__backward_linalg_det" t = '[]
 
 __backward_linalg_det ::
                       forall a t .
-                        (TensorOp t t, Fullfilled "__backward_linalg_det" t a) =>
+                        (TensorOp t t, Fullfilled "__backward_linalg_det" t a,
+                         HasCallStack) =>
                         ArgsHMap "__backward_linalg_det" t a -> TensorApply t
 __backward_linalg_det args
   = let scalarArgs = catMaybes []
@@ -3041,7 +3213,8 @@ type instance ParameterList "__backward_linalg_extractdiag" t = '[]
 
 __backward_linalg_extractdiag ::
                               forall a t .
-                                (TensorOp t t, Fullfilled "__backward_linalg_extractdiag" t a) =>
+                                (TensorOp t t, Fullfilled "__backward_linalg_extractdiag" t a,
+                                 HasCallStack) =>
                                 ArgsHMap "__backward_linalg_extractdiag" t a -> TensorApply t
 __backward_linalg_extractdiag args
   = let scalarArgs = catMaybes []
@@ -3055,7 +3228,8 @@ type instance ParameterList "__backward_linalg_extracttrian" t =
 
 __backward_linalg_extracttrian ::
                                forall a t .
-                                 (TensorOp t t, Fullfilled "__backward_linalg_extracttrian" t a) =>
+                                 (TensorOp t t, Fullfilled "__backward_linalg_extracttrian" t a,
+                                  HasCallStack) =>
                                  ArgsHMap "__backward_linalg_extracttrian" t a -> TensorApply t
 __backward_linalg_extracttrian args
   = let scalarArgs = catMaybes []
@@ -3068,7 +3242,8 @@ type instance ParameterList "__backward_linalg_gelqf" t = '[]
 
 __backward_linalg_gelqf ::
                         forall a t .
-                          (TensorOp t t, Fullfilled "__backward_linalg_gelqf" t a) =>
+                          (TensorOp t t, Fullfilled "__backward_linalg_gelqf" t a,
+                           HasCallStack) =>
                           ArgsHMap "__backward_linalg_gelqf" t a -> TensorApply t
 __backward_linalg_gelqf args
   = let scalarArgs = catMaybes []
@@ -3081,7 +3256,8 @@ type instance ParameterList "__backward_linalg_gemm" t = '[]
 
 __backward_linalg_gemm ::
                        forall a t .
-                         (TensorOp t t, Fullfilled "__backward_linalg_gemm" t a) =>
+                         (TensorOp t t, Fullfilled "__backward_linalg_gemm" t a,
+                          HasCallStack) =>
                          ArgsHMap "__backward_linalg_gemm" t a -> TensorApply t
 __backward_linalg_gemm args
   = let scalarArgs = catMaybes []
@@ -3094,7 +3270,8 @@ type instance ParameterList "__backward_linalg_gemm2" t = '[]
 
 __backward_linalg_gemm2 ::
                         forall a t .
-                          (TensorOp t t, Fullfilled "__backward_linalg_gemm2" t a) =>
+                          (TensorOp t t, Fullfilled "__backward_linalg_gemm2" t a,
+                           HasCallStack) =>
                           ArgsHMap "__backward_linalg_gemm2" t a -> TensorApply t
 __backward_linalg_gemm2 args
   = let scalarArgs = catMaybes []
@@ -3107,7 +3284,8 @@ type instance ParameterList "__backward_linalg_inverse" t = '[]
 
 __backward_linalg_inverse ::
                           forall a t .
-                            (TensorOp t t, Fullfilled "__backward_linalg_inverse" t a) =>
+                            (TensorOp t t, Fullfilled "__backward_linalg_inverse" t a,
+                             HasCallStack) =>
                             ArgsHMap "__backward_linalg_inverse" t a -> TensorApply t
 __backward_linalg_inverse args
   = let scalarArgs = catMaybes []
@@ -3120,7 +3298,8 @@ type instance ParameterList "__backward_linalg_makediag" t = '[]
 
 __backward_linalg_makediag ::
                            forall a t .
-                             (TensorOp t t, Fullfilled "__backward_linalg_makediag" t a) =>
+                             (TensorOp t t, Fullfilled "__backward_linalg_makediag" t a,
+                              HasCallStack) =>
                              ArgsHMap "__backward_linalg_makediag" t a -> TensorApply t
 __backward_linalg_makediag args
   = let scalarArgs = catMaybes []
@@ -3133,7 +3312,8 @@ type instance ParameterList "__backward_linalg_maketrian" t = '[]
 
 __backward_linalg_maketrian ::
                             forall a t .
-                              (TensorOp t t, Fullfilled "__backward_linalg_maketrian" t a) =>
+                              (TensorOp t t, Fullfilled "__backward_linalg_maketrian" t a,
+                               HasCallStack) =>
                               ArgsHMap "__backward_linalg_maketrian" t a -> TensorApply t
 __backward_linalg_maketrian args
   = let scalarArgs = catMaybes []
@@ -3146,7 +3326,8 @@ type instance ParameterList "__backward_linalg_potrf" t = '[]
 
 __backward_linalg_potrf ::
                         forall a t .
-                          (TensorOp t t, Fullfilled "__backward_linalg_potrf" t a) =>
+                          (TensorOp t t, Fullfilled "__backward_linalg_potrf" t a,
+                           HasCallStack) =>
                           ArgsHMap "__backward_linalg_potrf" t a -> TensorApply t
 __backward_linalg_potrf args
   = let scalarArgs = catMaybes []
@@ -3159,7 +3340,8 @@ type instance ParameterList "__backward_linalg_potri" t = '[]
 
 __backward_linalg_potri ::
                         forall a t .
-                          (TensorOp t t, Fullfilled "__backward_linalg_potri" t a) =>
+                          (TensorOp t t, Fullfilled "__backward_linalg_potri" t a,
+                           HasCallStack) =>
                           ArgsHMap "__backward_linalg_potri" t a -> TensorApply t
 __backward_linalg_potri args
   = let scalarArgs = catMaybes []
@@ -3172,7 +3354,8 @@ type instance ParameterList "__backward_linalg_slogdet" t = '[]
 
 __backward_linalg_slogdet ::
                           forall a t .
-                            (TensorOp t t, Fullfilled "__backward_linalg_slogdet" t a) =>
+                            (TensorOp t t, Fullfilled "__backward_linalg_slogdet" t a,
+                             HasCallStack) =>
                             ArgsHMap "__backward_linalg_slogdet" t a -> TensorApply t
 __backward_linalg_slogdet args
   = let scalarArgs = catMaybes []
@@ -3185,7 +3368,8 @@ type instance ParameterList "__backward_linalg_sumlogdiag" t = '[]
 
 __backward_linalg_sumlogdiag ::
                              forall a t .
-                               (TensorOp t t, Fullfilled "__backward_linalg_sumlogdiag" t a) =>
+                               (TensorOp t t, Fullfilled "__backward_linalg_sumlogdiag" t a,
+                                HasCallStack) =>
                                ArgsHMap "__backward_linalg_sumlogdiag" t a -> TensorApply t
 __backward_linalg_sumlogdiag args
   = let scalarArgs = catMaybes []
@@ -3198,7 +3382,8 @@ type instance ParameterList "__backward_linalg_syevd" t = '[]
 
 __backward_linalg_syevd ::
                         forall a t .
-                          (TensorOp t t, Fullfilled "__backward_linalg_syevd" t a) =>
+                          (TensorOp t t, Fullfilled "__backward_linalg_syevd" t a,
+                           HasCallStack) =>
                           ArgsHMap "__backward_linalg_syevd" t a -> TensorApply t
 __backward_linalg_syevd args
   = let scalarArgs = catMaybes []
@@ -3211,7 +3396,8 @@ type instance ParameterList "__backward_linalg_syrk" t = '[]
 
 __backward_linalg_syrk ::
                        forall a t .
-                         (TensorOp t t, Fullfilled "__backward_linalg_syrk" t a) =>
+                         (TensorOp t t, Fullfilled "__backward_linalg_syrk" t a,
+                          HasCallStack) =>
                          ArgsHMap "__backward_linalg_syrk" t a -> TensorApply t
 __backward_linalg_syrk args
   = let scalarArgs = catMaybes []
@@ -3224,7 +3410,8 @@ type instance ParameterList "__backward_linalg_trmm" t = '[]
 
 __backward_linalg_trmm ::
                        forall a t .
-                         (TensorOp t t, Fullfilled "__backward_linalg_trmm" t a) =>
+                         (TensorOp t t, Fullfilled "__backward_linalg_trmm" t a,
+                          HasCallStack) =>
                          ArgsHMap "__backward_linalg_trmm" t a -> TensorApply t
 __backward_linalg_trmm args
   = let scalarArgs = catMaybes []
@@ -3237,7 +3424,8 @@ type instance ParameterList "__backward_linalg_trsm" t = '[]
 
 __backward_linalg_trsm ::
                        forall a t .
-                         (TensorOp t t, Fullfilled "__backward_linalg_trsm" t a) =>
+                         (TensorOp t t, Fullfilled "__backward_linalg_trsm" t a,
+                          HasCallStack) =>
                          ArgsHMap "__backward_linalg_trsm" t a -> TensorApply t
 __backward_linalg_trsm args
   = let scalarArgs = catMaybes []
@@ -3250,7 +3438,8 @@ type instance ParameterList "__backward_linear_reg_out" t = '[]
 
 __backward_linear_reg_out ::
                           forall a t .
-                            (TensorOp t t, Fullfilled "__backward_linear_reg_out" t a) =>
+                            (TensorOp t t, Fullfilled "__backward_linear_reg_out" t a,
+                             HasCallStack) =>
                             ArgsHMap "__backward_linear_reg_out" t a -> TensorApply t
 __backward_linear_reg_out args
   = let scalarArgs = catMaybes []
@@ -3263,7 +3452,8 @@ type instance ParameterList "__backward_log" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 __backward_log ::
-               forall a t . (TensorOp t t, Fullfilled "__backward_log" t a) =>
+               forall a t .
+                 (TensorOp t t, Fullfilled "__backward_log" t a, HasCallStack) =>
                  ArgsHMap "__backward_log" t a -> TensorApply t
 __backward_log args
   = let scalarArgs = catMaybes []
@@ -3279,7 +3469,8 @@ type instance ParameterList "__backward_log10" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 __backward_log10 ::
-                 forall a t . (TensorOp t t, Fullfilled "__backward_log10" t a) =>
+                 forall a t .
+                   (TensorOp t t, Fullfilled "__backward_log10" t a, HasCallStack) =>
                    ArgsHMap "__backward_log10" t a -> TensorApply t
 __backward_log10 args
   = let scalarArgs = catMaybes []
@@ -3295,7 +3486,8 @@ type instance ParameterList "__backward_log1p" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 __backward_log1p ::
-                 forall a t . (TensorOp t t, Fullfilled "__backward_log1p" t a) =>
+                 forall a t .
+                   (TensorOp t t, Fullfilled "__backward_log1p" t a, HasCallStack) =>
                    ArgsHMap "__backward_log1p" t a -> TensorApply t
 __backward_log1p args
   = let scalarArgs = catMaybes []
@@ -3311,7 +3503,8 @@ type instance ParameterList "__backward_log2" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 __backward_log2 ::
-                forall a t . (TensorOp t t, Fullfilled "__backward_log2" t a) =>
+                forall a t .
+                  (TensorOp t t, Fullfilled "__backward_log2" t a, HasCallStack) =>
                   ArgsHMap "__backward_log2" t a -> TensorApply t
 __backward_log2 args
   = let scalarArgs = catMaybes []
@@ -3328,7 +3521,8 @@ type instance ParameterList "__backward_log_softmax" t =
 
 __backward_log_softmax ::
                        forall a t .
-                         (TensorOp t t, Fullfilled "__backward_log_softmax" t a) =>
+                         (TensorOp t t, Fullfilled "__backward_log_softmax" t a,
+                          HasCallStack) =>
                          ArgsHMap "__backward_log_softmax" t a -> TensorApply t
 __backward_log_softmax args
   = let scalarArgs = catMaybes []
@@ -3340,7 +3534,8 @@ type instance ParameterList "__backward_logistic_reg_out" t = '[]
 
 __backward_logistic_reg_out ::
                             forall a t .
-                              (TensorOp t t, Fullfilled "__backward_logistic_reg_out" t a) =>
+                              (TensorOp t t, Fullfilled "__backward_logistic_reg_out" t a,
+                               HasCallStack) =>
                               ArgsHMap "__backward_logistic_reg_out" t a -> TensorApply t
 __backward_logistic_reg_out args
   = let scalarArgs = catMaybes []
@@ -3353,7 +3548,8 @@ type instance ParameterList "__backward_mae_reg_out" t = '[]
 
 __backward_mae_reg_out ::
                        forall a t .
-                         (TensorOp t t, Fullfilled "__backward_mae_reg_out" t a) =>
+                         (TensorOp t t, Fullfilled "__backward_mae_reg_out" t a,
+                          HasCallStack) =>
                          ArgsHMap "__backward_mae_reg_out" t a -> TensorApply t
 __backward_mae_reg_out args
   = let scalarArgs = catMaybes []
@@ -3365,7 +3561,8 @@ __backward_mae_reg_out args
 type instance ParameterList "__backward_max" t = '[]
 
 __backward_max ::
-               forall a t . (TensorOp t t, Fullfilled "__backward_max" t a) =>
+               forall a t .
+                 (TensorOp t t, Fullfilled "__backward_max" t a, HasCallStack) =>
                  ArgsHMap "__backward_max" t a -> TensorApply t
 __backward_max args
   = let scalarArgs = catMaybes []
@@ -3377,7 +3574,9 @@ __backward_max args
 type instance ParameterList "__backward_maximum" t = '[]
 
 __backward_maximum ::
-                   forall a t . (TensorOp t t, Fullfilled "__backward_maximum" t a) =>
+                   forall a t .
+                     (TensorOp t t, Fullfilled "__backward_maximum" t a,
+                      HasCallStack) =>
                      ArgsHMap "__backward_maximum" t a -> TensorApply t
 __backward_maximum args
   = let scalarArgs = catMaybes []
@@ -3392,7 +3591,8 @@ type instance ParameterList "__backward_maximum_scalar" t =
 
 __backward_maximum_scalar ::
                           forall a t .
-                            (TensorOp t t, Fullfilled "__backward_maximum_scalar" t a) =>
+                            (TensorOp t t, Fullfilled "__backward_maximum_scalar" t a,
+                             HasCallStack) =>
                             ArgsHMap "__backward_maximum_scalar" t a -> TensorApply t
 __backward_maximum_scalar args
   = let scalarArgs
@@ -3409,7 +3609,8 @@ __backward_maximum_scalar args
 type instance ParameterList "__backward_mean" t = '[]
 
 __backward_mean ::
-                forall a t . (TensorOp t t, Fullfilled "__backward_mean" t a) =>
+                forall a t .
+                  (TensorOp t t, Fullfilled "__backward_mean" t a, HasCallStack) =>
                   ArgsHMap "__backward_mean" t a -> TensorApply t
 __backward_mean args
   = let scalarArgs = catMaybes []
@@ -3421,7 +3622,8 @@ __backward_mean args
 type instance ParameterList "__backward_min" t = '[]
 
 __backward_min ::
-               forall a t . (TensorOp t t, Fullfilled "__backward_min" t a) =>
+               forall a t .
+                 (TensorOp t t, Fullfilled "__backward_min" t a, HasCallStack) =>
                  ArgsHMap "__backward_min" t a -> TensorApply t
 __backward_min args
   = let scalarArgs = catMaybes []
@@ -3433,7 +3635,9 @@ __backward_min args
 type instance ParameterList "__backward_minimum" t = '[]
 
 __backward_minimum ::
-                   forall a t . (TensorOp t t, Fullfilled "__backward_minimum" t a) =>
+                   forall a t .
+                     (TensorOp t t, Fullfilled "__backward_minimum" t a,
+                      HasCallStack) =>
                      ArgsHMap "__backward_minimum" t a -> TensorApply t
 __backward_minimum args
   = let scalarArgs = catMaybes []
@@ -3448,7 +3652,8 @@ type instance ParameterList "__backward_minimum_scalar" t =
 
 __backward_minimum_scalar ::
                           forall a t .
-                            (TensorOp t t, Fullfilled "__backward_minimum_scalar" t a) =>
+                            (TensorOp t t, Fullfilled "__backward_minimum_scalar" t a,
+                             HasCallStack) =>
                             ArgsHMap "__backward_minimum_scalar" t a -> TensorApply t
 __backward_minimum_scalar args
   = let scalarArgs
@@ -3465,7 +3670,8 @@ __backward_minimum_scalar args
 type instance ParameterList "__backward_mod" t = '[]
 
 __backward_mod ::
-               forall a t . (TensorOp t t, Fullfilled "__backward_mod" t a) =>
+               forall a t .
+                 (TensorOp t t, Fullfilled "__backward_mod" t a, HasCallStack) =>
                  ArgsHMap "__backward_mod" t a -> TensorApply t
 __backward_mod args
   = let scalarArgs = catMaybes []
@@ -3480,7 +3686,8 @@ type instance ParameterList "__backward_mod_scalar" t =
 
 __backward_mod_scalar ::
                       forall a t .
-                        (TensorOp t t, Fullfilled "__backward_mod_scalar" t a) =>
+                        (TensorOp t t, Fullfilled "__backward_mod_scalar" t a,
+                         HasCallStack) =>
                         ArgsHMap "__backward_mod_scalar" t a -> TensorApply t
 __backward_mod_scalar args
   = let scalarArgs
@@ -3497,7 +3704,9 @@ __backward_mod_scalar args
 type instance ParameterList "__backward_moments" t = '[]
 
 __backward_moments ::
-                   forall a t . (TensorOp t t, Fullfilled "__backward_moments" t a) =>
+                   forall a t .
+                     (TensorOp t t, Fullfilled "__backward_moments" t a,
+                      HasCallStack) =>
                      ArgsHMap "__backward_moments" t a -> TensorApply t
 __backward_moments args
   = let scalarArgs = catMaybes []
@@ -3509,7 +3718,8 @@ __backward_moments args
 type instance ParameterList "__backward_mul" t = '[]
 
 __backward_mul ::
-               forall a t . (TensorOp t t, Fullfilled "__backward_mul" t a) =>
+               forall a t .
+                 (TensorOp t t, Fullfilled "__backward_mul" t a, HasCallStack) =>
                  ArgsHMap "__backward_mul" t a -> TensorApply t
 __backward_mul args
   = let scalarArgs = catMaybes []
@@ -3523,7 +3733,8 @@ type instance ParameterList "__backward_mul_scalar" t =
 
 __backward_mul_scalar ::
                       forall a t .
-                        (TensorOp t t, Fullfilled "__backward_mul_scalar" t a) =>
+                        (TensorOp t t, Fullfilled "__backward_mul_scalar" t a,
+                         HasCallStack) =>
                         ArgsHMap "__backward_mul_scalar" t a -> TensorApply t
 __backward_mul_scalar args
   = let scalarArgs
@@ -3538,7 +3749,9 @@ __backward_mul_scalar args
 type instance ParameterList "__backward_nanprod" t = '[]
 
 __backward_nanprod ::
-                   forall a t . (TensorOp t t, Fullfilled "__backward_nanprod" t a) =>
+                   forall a t .
+                     (TensorOp t t, Fullfilled "__backward_nanprod" t a,
+                      HasCallStack) =>
                      ArgsHMap "__backward_nanprod" t a -> TensorApply t
 __backward_nanprod args
   = let scalarArgs = catMaybes []
@@ -3550,7 +3763,8 @@ __backward_nanprod args
 type instance ParameterList "__backward_nansum" t = '[]
 
 __backward_nansum ::
-                  forall a t . (TensorOp t t, Fullfilled "__backward_nansum" t a) =>
+                  forall a t .
+                    (TensorOp t t, Fullfilled "__backward_nansum" t a, HasCallStack) =>
                     ArgsHMap "__backward_nansum" t a -> TensorApply t
 __backward_nansum args
   = let scalarArgs = catMaybes []
@@ -3562,7 +3776,8 @@ __backward_nansum args
 type instance ParameterList "__backward_norm" t = '[]
 
 __backward_norm ::
-                forall a t . (TensorOp t t, Fullfilled "__backward_norm" t a) =>
+                forall a t .
+                  (TensorOp t t, Fullfilled "__backward_norm" t a, HasCallStack) =>
                   ArgsHMap "__backward_norm" t a -> TensorApply t
 __backward_norm args
   = let scalarArgs = catMaybes []
@@ -3575,7 +3790,8 @@ type instance ParameterList "__backward_np_broadcast_to" t = '[]
 
 __backward_np_broadcast_to ::
                            forall a t .
-                             (TensorOp t t, Fullfilled "__backward_np_broadcast_to" t a) =>
+                             (TensorOp t t, Fullfilled "__backward_np_broadcast_to" t a,
+                              HasCallStack) =>
                              ArgsHMap "__backward_np_broadcast_to" t a -> TensorApply t
 __backward_np_broadcast_to args
   = let scalarArgs = catMaybes []
@@ -3588,7 +3804,8 @@ type instance ParameterList "__backward_np_column_stack" t = '[]
 
 __backward_np_column_stack ::
                            forall a t .
-                             (TensorOp t t, Fullfilled "__backward_np_column_stack" t a) =>
+                             (TensorOp t t, Fullfilled "__backward_np_column_stack" t a,
+                              HasCallStack) =>
                              ArgsHMap "__backward_np_column_stack" t a -> TensorApply t
 __backward_np_column_stack args
   = let scalarArgs = catMaybes []
@@ -3601,7 +3818,8 @@ type instance ParameterList "__backward_np_concat" t = '[]
 
 __backward_np_concat ::
                      forall a t .
-                       (TensorOp t t, Fullfilled "__backward_np_concat" t a) =>
+                       (TensorOp t t, Fullfilled "__backward_np_concat" t a,
+                        HasCallStack) =>
                        ArgsHMap "__backward_np_concat" t a -> TensorApply t
 __backward_np_concat args
   = let scalarArgs = catMaybes []
@@ -3614,7 +3832,8 @@ type instance ParameterList "__backward_np_cumsum" t = '[]
 
 __backward_np_cumsum ::
                      forall a t .
-                       (TensorOp t t, Fullfilled "__backward_np_cumsum" t a) =>
+                       (TensorOp t t, Fullfilled "__backward_np_cumsum" t a,
+                        HasCallStack) =>
                        ArgsHMap "__backward_np_cumsum" t a -> TensorApply t
 __backward_np_cumsum args
   = let scalarArgs = catMaybes []
@@ -3626,7 +3845,8 @@ __backward_np_cumsum args
 type instance ParameterList "__backward_np_dot" t = '[]
 
 __backward_np_dot ::
-                  forall a t . (TensorOp t t, Fullfilled "__backward_np_dot" t a) =>
+                  forall a t .
+                    (TensorOp t t, Fullfilled "__backward_np_dot" t a, HasCallStack) =>
                     ArgsHMap "__backward_np_dot" t a -> TensorApply t
 __backward_np_dot args
   = let scalarArgs = catMaybes []
@@ -3639,7 +3859,8 @@ type instance ParameterList "__backward_np_dstack" t = '[]
 
 __backward_np_dstack ::
                      forall a t .
-                       (TensorOp t t, Fullfilled "__backward_np_dstack" t a) =>
+                       (TensorOp t t, Fullfilled "__backward_np_dstack" t a,
+                        HasCallStack) =>
                        ArgsHMap "__backward_np_dstack" t a -> TensorApply t
 __backward_np_dstack args
   = let scalarArgs = catMaybes []
@@ -3651,7 +3872,8 @@ __backward_np_dstack args
 type instance ParameterList "__backward_np_max" t = '[]
 
 __backward_np_max ::
-                  forall a t . (TensorOp t t, Fullfilled "__backward_np_max" t a) =>
+                  forall a t .
+                    (TensorOp t t, Fullfilled "__backward_np_max" t a, HasCallStack) =>
                     ArgsHMap "__backward_np_max" t a -> TensorApply t
 __backward_np_max args
   = let scalarArgs = catMaybes []
@@ -3663,7 +3885,9 @@ __backward_np_max args
 type instance ParameterList "__backward_np_mean" t = '[]
 
 __backward_np_mean ::
-                   forall a t . (TensorOp t t, Fullfilled "__backward_np_mean" t a) =>
+                   forall a t .
+                     (TensorOp t t, Fullfilled "__backward_np_mean" t a,
+                      HasCallStack) =>
                      ArgsHMap "__backward_np_mean" t a -> TensorApply t
 __backward_np_mean args
   = let scalarArgs = catMaybes []
@@ -3675,7 +3899,8 @@ __backward_np_mean args
 type instance ParameterList "__backward_np_min" t = '[]
 
 __backward_np_min ::
-                  forall a t . (TensorOp t t, Fullfilled "__backward_np_min" t a) =>
+                  forall a t .
+                    (TensorOp t t, Fullfilled "__backward_np_min" t a, HasCallStack) =>
                     ArgsHMap "__backward_np_min" t a -> TensorApply t
 __backward_np_min args
   = let scalarArgs = catMaybes []
@@ -3687,7 +3912,9 @@ __backward_np_min args
 type instance ParameterList "__backward_np_prod" t = '[]
 
 __backward_np_prod ::
-                   forall a t . (TensorOp t t, Fullfilled "__backward_np_prod" t a) =>
+                   forall a t .
+                     (TensorOp t t, Fullfilled "__backward_np_prod" t a,
+                      HasCallStack) =>
                      ArgsHMap "__backward_np_prod" t a -> TensorApply t
 __backward_np_prod args
   = let scalarArgs = catMaybes []
@@ -3699,7 +3926,8 @@ __backward_np_prod args
 type instance ParameterList "__backward_np_sum" t = '[]
 
 __backward_np_sum ::
-                  forall a t . (TensorOp t t, Fullfilled "__backward_np_sum" t a) =>
+                  forall a t .
+                    (TensorOp t t, Fullfilled "__backward_np_sum" t a, HasCallStack) =>
                     ArgsHMap "__backward_np_sum" t a -> TensorApply t
 __backward_np_sum args
   = let scalarArgs = catMaybes []
@@ -3712,7 +3940,8 @@ type instance ParameterList "__backward_np_trace" t = '[]
 
 __backward_np_trace ::
                     forall a t .
-                      (TensorOp t t, Fullfilled "__backward_np_trace" t a) =>
+                      (TensorOp t t, Fullfilled "__backward_np_trace" t a,
+                       HasCallStack) =>
                       ArgsHMap "__backward_np_trace" t a -> TensorApply t
 __backward_np_trace args
   = let scalarArgs = catMaybes []
@@ -3725,7 +3954,8 @@ type instance ParameterList "__backward_np_vstack" t = '[]
 
 __backward_np_vstack ::
                      forall a t .
-                       (TensorOp t t, Fullfilled "__backward_np_vstack" t a) =>
+                       (TensorOp t t, Fullfilled "__backward_np_vstack" t a,
+                        HasCallStack) =>
                        ArgsHMap "__backward_np_vstack" t a -> TensorApply t
 __backward_np_vstack args
   = let scalarArgs = catMaybes []
@@ -3738,7 +3968,8 @@ type instance ParameterList "__backward_npi_arctan2" t = '[]
 
 __backward_npi_arctan2 ::
                        forall a t .
-                         (TensorOp t t, Fullfilled "__backward_npi_arctan2" t a) =>
+                         (TensorOp t t, Fullfilled "__backward_npi_arctan2" t a,
+                          HasCallStack) =>
                          ArgsHMap "__backward_npi_arctan2" t a -> TensorApply t
 __backward_npi_arctan2 args
   = let scalarArgs = catMaybes []
@@ -3753,7 +3984,8 @@ type instance ParameterList "__backward_npi_arctan2_scalar" t =
 
 __backward_npi_arctan2_scalar ::
                               forall a t .
-                                (TensorOp t t, Fullfilled "__backward_npi_arctan2_scalar" t a) =>
+                                (TensorOp t t, Fullfilled "__backward_npi_arctan2_scalar" t a,
+                                 HasCallStack) =>
                                 ArgsHMap "__backward_npi_arctan2_scalar" t a -> TensorApply t
 __backward_npi_arctan2_scalar args
   = let scalarArgs
@@ -3771,7 +4003,8 @@ type instance ParameterList "__backward_npi_broadcast_mul" t = '[]
 
 __backward_npi_broadcast_mul ::
                              forall a t .
-                               (TensorOp t t, Fullfilled "__backward_npi_broadcast_mul" t a) =>
+                               (TensorOp t t, Fullfilled "__backward_npi_broadcast_mul" t a,
+                                HasCallStack) =>
                                ArgsHMap "__backward_npi_broadcast_mul" t a -> TensorApply t
 __backward_npi_broadcast_mul args
   = let scalarArgs = catMaybes []
@@ -3784,7 +4017,8 @@ type instance ParameterList "__backward_npi_copysign" t = '[]
 
 __backward_npi_copysign ::
                         forall a t .
-                          (TensorOp t t, Fullfilled "__backward_npi_copysign" t a) =>
+                          (TensorOp t t, Fullfilled "__backward_npi_copysign" t a,
+                           HasCallStack) =>
                           ArgsHMap "__backward_npi_copysign" t a -> TensorApply t
 __backward_npi_copysign args
   = let scalarArgs = catMaybes []
@@ -3798,7 +4032,8 @@ type instance ParameterList "__backward_npi_copysign_scalar" t =
 
 __backward_npi_copysign_scalar ::
                                forall a t .
-                                 (TensorOp t t, Fullfilled "__backward_npi_copysign_scalar" t a) =>
+                                 (TensorOp t t, Fullfilled "__backward_npi_copysign_scalar" t a,
+                                  HasCallStack) =>
                                  ArgsHMap "__backward_npi_copysign_scalar" t a -> TensorApply t
 __backward_npi_copysign_scalar args
   = let scalarArgs
@@ -3814,7 +4049,8 @@ type instance ParameterList "__backward_npi_diff" t = '[]
 
 __backward_npi_diff ::
                     forall a t .
-                      (TensorOp t t, Fullfilled "__backward_npi_diff" t a) =>
+                      (TensorOp t t, Fullfilled "__backward_npi_diff" t a,
+                       HasCallStack) =>
                       ArgsHMap "__backward_npi_diff" t a -> TensorApply t
 __backward_npi_diff args
   = let scalarArgs = catMaybes []
@@ -3827,7 +4063,8 @@ type instance ParameterList "__backward_npi_einsum" t = '[]
 
 __backward_npi_einsum ::
                       forall a t .
-                        (TensorOp t t, Fullfilled "__backward_npi_einsum" t a) =>
+                        (TensorOp t t, Fullfilled "__backward_npi_einsum" t a,
+                         HasCallStack) =>
                         ArgsHMap "__backward_npi_einsum" t a -> TensorApply t
 __backward_npi_einsum args
   = let scalarArgs = catMaybes []
@@ -3840,7 +4077,8 @@ type instance ParameterList "__backward_npi_flip" t = '[]
 
 __backward_npi_flip ::
                     forall a t .
-                      (TensorOp t t, Fullfilled "__backward_npi_flip" t a) =>
+                      (TensorOp t t, Fullfilled "__backward_npi_flip" t a,
+                       HasCallStack) =>
                       ArgsHMap "__backward_npi_flip" t a -> TensorApply t
 __backward_npi_flip args
   = let scalarArgs = catMaybes []
@@ -3853,7 +4091,8 @@ type instance ParameterList "__backward_npi_hypot" t = '[]
 
 __backward_npi_hypot ::
                      forall a t .
-                       (TensorOp t t, Fullfilled "__backward_npi_hypot" t a) =>
+                       (TensorOp t t, Fullfilled "__backward_npi_hypot" t a,
+                        HasCallStack) =>
                        ArgsHMap "__backward_npi_hypot" t a -> TensorApply t
 __backward_npi_hypot args
   = let scalarArgs = catMaybes []
@@ -3866,7 +4105,8 @@ type instance ParameterList "__backward_npi_ldexp" t = '[]
 
 __backward_npi_ldexp ::
                      forall a t .
-                       (TensorOp t t, Fullfilled "__backward_npi_ldexp" t a) =>
+                       (TensorOp t t, Fullfilled "__backward_npi_ldexp" t a,
+                        HasCallStack) =>
                        ArgsHMap "__backward_npi_ldexp" t a -> TensorApply t
 __backward_npi_ldexp args
   = let scalarArgs = catMaybes []
@@ -3881,7 +4121,8 @@ type instance ParameterList "__backward_npi_ldexp_scalar" t =
 
 __backward_npi_ldexp_scalar ::
                             forall a t .
-                              (TensorOp t t, Fullfilled "__backward_npi_ldexp_scalar" t a) =>
+                              (TensorOp t t, Fullfilled "__backward_npi_ldexp_scalar" t a,
+                               HasCallStack) =>
                               ArgsHMap "__backward_npi_ldexp_scalar" t a -> TensorApply t
 __backward_npi_ldexp_scalar args
   = let scalarArgs
@@ -3901,7 +4142,8 @@ type instance ParameterList "__backward_npi_rarctan2_scalar" t =
 
 __backward_npi_rarctan2_scalar ::
                                forall a t .
-                                 (TensorOp t t, Fullfilled "__backward_npi_rarctan2_scalar" t a) =>
+                                 (TensorOp t t, Fullfilled "__backward_npi_rarctan2_scalar" t a,
+                                  HasCallStack) =>
                                  ArgsHMap "__backward_npi_rarctan2_scalar" t a -> TensorApply t
 __backward_npi_rarctan2_scalar args
   = let scalarArgs
@@ -3920,8 +4162,8 @@ type instance ParameterList "__backward_npi_rcopysign_scalar" t =
 
 __backward_npi_rcopysign_scalar ::
                                 forall a t .
-                                  (TensorOp t t,
-                                   Fullfilled "__backward_npi_rcopysign_scalar" t a) =>
+                                  (TensorOp t t, Fullfilled "__backward_npi_rcopysign_scalar" t a,
+                                   HasCallStack) =>
                                   ArgsHMap "__backward_npi_rcopysign_scalar" t a -> TensorApply t
 __backward_npi_rcopysign_scalar args
   = let scalarArgs
@@ -3939,7 +4181,8 @@ type instance ParameterList "__backward_npi_rldexp_scalar" t =
 
 __backward_npi_rldexp_scalar ::
                              forall a t .
-                               (TensorOp t t, Fullfilled "__backward_npi_rldexp_scalar" t a) =>
+                               (TensorOp t t, Fullfilled "__backward_npi_rldexp_scalar" t a,
+                                HasCallStack) =>
                                ArgsHMap "__backward_npi_rldexp_scalar" t a -> TensorApply t
 __backward_npi_rldexp_scalar args
   = let scalarArgs
@@ -3956,7 +4199,9 @@ __backward_npi_rldexp_scalar args
 type instance ParameterList "__backward_npi_svd" t = '[]
 
 __backward_npi_svd ::
-                   forall a t . (TensorOp t t, Fullfilled "__backward_npi_svd" t a) =>
+                   forall a t .
+                     (TensorOp t t, Fullfilled "__backward_npi_svd" t a,
+                      HasCallStack) =>
                      ArgsHMap "__backward_npi_svd" t a -> TensorApply t
 __backward_npi_svd args
   = let scalarArgs = catMaybes []
@@ -3969,7 +4214,8 @@ type instance ParameterList "__backward_npi_tensordot" t = '[]
 
 __backward_npi_tensordot ::
                          forall a t .
-                           (TensorOp t t, Fullfilled "__backward_npi_tensordot" t a) =>
+                           (TensorOp t t, Fullfilled "__backward_npi_tensordot" t a,
+                            HasCallStack) =>
                            ArgsHMap "__backward_npi_tensordot" t a -> TensorApply t
 __backward_npi_tensordot args
   = let scalarArgs = catMaybes []
@@ -3984,7 +4230,8 @@ type instance ParameterList "__backward_npi_tensordot_int_axes" t =
 __backward_npi_tensordot_int_axes ::
                                   forall a t .
                                     (TensorOp t t,
-                                     Fullfilled "__backward_npi_tensordot_int_axes" t a) =>
+                                     Fullfilled "__backward_npi_tensordot_int_axes" t a,
+                                     HasCallStack) =>
                                     ArgsHMap "__backward_npi_tensordot_int_axes" t a ->
                                       TensorApply t
 __backward_npi_tensordot_int_axes args
@@ -3998,7 +4245,8 @@ type instance ParameterList "__backward_pdf_dirichlet" t = '[]
 
 __backward_pdf_dirichlet ::
                          forall a t .
-                           (TensorOp t t, Fullfilled "__backward_pdf_dirichlet" t a) =>
+                           (TensorOp t t, Fullfilled "__backward_pdf_dirichlet" t a,
+                            HasCallStack) =>
                            ArgsHMap "__backward_pdf_dirichlet" t a -> TensorApply t
 __backward_pdf_dirichlet args
   = let scalarArgs = catMaybes []
@@ -4011,7 +4259,8 @@ type instance ParameterList "__backward_pdf_exponential" t = '[]
 
 __backward_pdf_exponential ::
                            forall a t .
-                             (TensorOp t t, Fullfilled "__backward_pdf_exponential" t a) =>
+                             (TensorOp t t, Fullfilled "__backward_pdf_exponential" t a,
+                              HasCallStack) =>
                              ArgsHMap "__backward_pdf_exponential" t a -> TensorApply t
 __backward_pdf_exponential args
   = let scalarArgs = catMaybes []
@@ -4024,7 +4273,8 @@ type instance ParameterList "__backward_pdf_gamma" t = '[]
 
 __backward_pdf_gamma ::
                      forall a t .
-                       (TensorOp t t, Fullfilled "__backward_pdf_gamma" t a) =>
+                       (TensorOp t t, Fullfilled "__backward_pdf_gamma" t a,
+                        HasCallStack) =>
                        ArgsHMap "__backward_pdf_gamma" t a -> TensorApply t
 __backward_pdf_gamma args
   = let scalarArgs = catMaybes []
@@ -4042,7 +4292,8 @@ __backward_pdf_generalized_negative_binomial ::
                                                (TensorOp t t,
                                                 Fullfilled
                                                   "__backward_pdf_generalized_negative_binomial" t
-                                                  a) =>
+                                                  a,
+                                                HasCallStack) =>
                                                ArgsHMap
                                                  "__backward_pdf_generalized_negative_binomial"
                                                  t
@@ -4060,8 +4311,8 @@ type instance ParameterList "__backward_pdf_negative_binomial" t =
 
 __backward_pdf_negative_binomial ::
                                  forall a t .
-                                   (TensorOp t t,
-                                    Fullfilled "__backward_pdf_negative_binomial" t a) =>
+                                   (TensorOp t t, Fullfilled "__backward_pdf_negative_binomial" t a,
+                                    HasCallStack) =>
                                    ArgsHMap "__backward_pdf_negative_binomial" t a -> TensorApply t
 __backward_pdf_negative_binomial args
   = let scalarArgs = catMaybes []
@@ -4074,7 +4325,8 @@ type instance ParameterList "__backward_pdf_normal" t = '[]
 
 __backward_pdf_normal ::
                       forall a t .
-                        (TensorOp t t, Fullfilled "__backward_pdf_normal" t a) =>
+                        (TensorOp t t, Fullfilled "__backward_pdf_normal" t a,
+                         HasCallStack) =>
                         ArgsHMap "__backward_pdf_normal" t a -> TensorApply t
 __backward_pdf_normal args
   = let scalarArgs = catMaybes []
@@ -4087,7 +4339,8 @@ type instance ParameterList "__backward_pdf_poisson" t = '[]
 
 __backward_pdf_poisson ::
                        forall a t .
-                         (TensorOp t t, Fullfilled "__backward_pdf_poisson" t a) =>
+                         (TensorOp t t, Fullfilled "__backward_pdf_poisson" t a,
+                          HasCallStack) =>
                          ArgsHMap "__backward_pdf_poisson" t a -> TensorApply t
 __backward_pdf_poisson args
   = let scalarArgs = catMaybes []
@@ -4100,7 +4353,8 @@ type instance ParameterList "__backward_pdf_uniform" t = '[]
 
 __backward_pdf_uniform ::
                        forall a t .
-                         (TensorOp t t, Fullfilled "__backward_pdf_uniform" t a) =>
+                         (TensorOp t t, Fullfilled "__backward_pdf_uniform" t a,
+                          HasCallStack) =>
                          ArgsHMap "__backward_pdf_uniform" t a -> TensorApply t
 __backward_pdf_uniform args
   = let scalarArgs = catMaybes []
@@ -4112,7 +4366,8 @@ __backward_pdf_uniform args
 type instance ParameterList "__backward_pick" t = '[]
 
 __backward_pick ::
-                forall a t . (TensorOp t t, Fullfilled "__backward_pick" t a) =>
+                forall a t .
+                  (TensorOp t t, Fullfilled "__backward_pick" t a, HasCallStack) =>
                   ArgsHMap "__backward_pick" t a -> TensorApply t
 __backward_pick args
   = let scalarArgs = catMaybes []
@@ -4124,7 +4379,8 @@ __backward_pick args
 type instance ParameterList "__backward_power" t = '[]
 
 __backward_power ::
-                 forall a t . (TensorOp t t, Fullfilled "__backward_power" t a) =>
+                 forall a t .
+                   (TensorOp t t, Fullfilled "__backward_power" t a, HasCallStack) =>
                    ArgsHMap "__backward_power" t a -> TensorApply t
 __backward_power args
   = let scalarArgs = catMaybes []
@@ -4139,7 +4395,8 @@ type instance ParameterList "__backward_power_scalar" t =
 
 __backward_power_scalar ::
                         forall a t .
-                          (TensorOp t t, Fullfilled "__backward_power_scalar" t a) =>
+                          (TensorOp t t, Fullfilled "__backward_power_scalar" t a,
+                           HasCallStack) =>
                           ArgsHMap "__backward_power_scalar" t a -> TensorApply t
 __backward_power_scalar args
   = let scalarArgs
@@ -4156,7 +4413,8 @@ __backward_power_scalar args
 type instance ParameterList "__backward_prod" t = '[]
 
 __backward_prod ::
-                forall a t . (TensorOp t t, Fullfilled "__backward_prod" t a) =>
+                forall a t .
+                  (TensorOp t t, Fullfilled "__backward_prod" t a, HasCallStack) =>
                   ArgsHMap "__backward_prod" t a -> TensorApply t
 __backward_prod args
   = let scalarArgs = catMaybes []
@@ -4169,7 +4427,9 @@ type instance ParameterList "__backward_radians" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 __backward_radians ::
-                   forall a t . (TensorOp t t, Fullfilled "__backward_radians" t a) =>
+                   forall a t .
+                     (TensorOp t t, Fullfilled "__backward_radians" t a,
+                      HasCallStack) =>
                      ArgsHMap "__backward_radians" t a -> TensorApply t
 __backward_radians args
   = let scalarArgs = catMaybes []
@@ -4185,7 +4445,8 @@ type instance ParameterList "__backward_rcbrt" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 __backward_rcbrt ::
-                 forall a t . (TensorOp t t, Fullfilled "__backward_rcbrt" t a) =>
+                 forall a t .
+                   (TensorOp t t, Fullfilled "__backward_rcbrt" t a, HasCallStack) =>
                    ArgsHMap "__backward_rcbrt" t a -> TensorApply t
 __backward_rcbrt args
   = let scalarArgs = catMaybes []
@@ -4203,7 +4464,8 @@ type instance ParameterList "__backward_rdiv_scalar" t =
 
 __backward_rdiv_scalar ::
                        forall a t .
-                         (TensorOp t t, Fullfilled "__backward_rdiv_scalar" t a) =>
+                         (TensorOp t t, Fullfilled "__backward_rdiv_scalar" t a,
+                          HasCallStack) =>
                          ArgsHMap "__backward_rdiv_scalar" t a -> TensorApply t
 __backward_rdiv_scalar args
   = let scalarArgs
@@ -4222,7 +4484,8 @@ type instance ParameterList "__backward_reciprocal" t =
 
 __backward_reciprocal ::
                       forall a t .
-                        (TensorOp t t, Fullfilled "__backward_reciprocal" t a) =>
+                        (TensorOp t t, Fullfilled "__backward_reciprocal" t a,
+                         HasCallStack) =>
                         ArgsHMap "__backward_reciprocal" t a -> TensorApply t
 __backward_reciprocal args
   = let scalarArgs = catMaybes []
@@ -4238,7 +4501,8 @@ type instance ParameterList "__backward_relu" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 __backward_relu ::
-                forall a t . (TensorOp t t, Fullfilled "__backward_relu" t a) =>
+                forall a t .
+                  (TensorOp t t, Fullfilled "__backward_relu" t a, HasCallStack) =>
                   ArgsHMap "__backward_relu" t a -> TensorApply t
 __backward_relu args
   = let scalarArgs = catMaybes []
@@ -4253,7 +4517,8 @@ __backward_relu args
 type instance ParameterList "__backward_repeat" t = '[]
 
 __backward_repeat ::
-                  forall a t . (TensorOp t t, Fullfilled "__backward_repeat" t a) =>
+                  forall a t .
+                    (TensorOp t t, Fullfilled "__backward_repeat" t a, HasCallStack) =>
                     ArgsHMap "__backward_repeat" t a -> TensorApply t
 __backward_repeat args
   = let scalarArgs = catMaybes []
@@ -4265,7 +4530,9 @@ __backward_repeat args
 type instance ParameterList "__backward_reshape" t = '[]
 
 __backward_reshape ::
-                   forall a t . (TensorOp t t, Fullfilled "__backward_reshape" t a) =>
+                   forall a t .
+                     (TensorOp t t, Fullfilled "__backward_reshape" t a,
+                      HasCallStack) =>
                      ArgsHMap "__backward_reshape" t a -> TensorApply t
 __backward_reshape args
   = let scalarArgs = catMaybes []
@@ -4277,7 +4544,9 @@ __backward_reshape args
 type instance ParameterList "__backward_reverse" t = '[]
 
 __backward_reverse ::
-                   forall a t . (TensorOp t t, Fullfilled "__backward_reverse" t a) =>
+                   forall a t .
+                     (TensorOp t t, Fullfilled "__backward_reverse" t a,
+                      HasCallStack) =>
                      ArgsHMap "__backward_reverse" t a -> TensorApply t
 __backward_reverse args
   = let scalarArgs = catMaybes []
@@ -4292,7 +4561,8 @@ type instance ParameterList "__backward_rmod_scalar" t =
 
 __backward_rmod_scalar ::
                        forall a t .
-                         (TensorOp t t, Fullfilled "__backward_rmod_scalar" t a) =>
+                         (TensorOp t t, Fullfilled "__backward_rmod_scalar" t a,
+                          HasCallStack) =>
                          ArgsHMap "__backward_rmod_scalar" t a -> TensorApply t
 __backward_rmod_scalar args
   = let scalarArgs
@@ -4312,7 +4582,8 @@ type instance ParameterList "__backward_rpower_scalar" t =
 
 __backward_rpower_scalar ::
                          forall a t .
-                           (TensorOp t t, Fullfilled "__backward_rpower_scalar" t a) =>
+                           (TensorOp t t, Fullfilled "__backward_rpower_scalar" t a,
+                            HasCallStack) =>
                            ArgsHMap "__backward_rpower_scalar" t a -> TensorApply t
 __backward_rpower_scalar args
   = let scalarArgs
@@ -4330,7 +4601,8 @@ type instance ParameterList "__backward_rsqrt" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 __backward_rsqrt ::
-                 forall a t . (TensorOp t t, Fullfilled "__backward_rsqrt" t a) =>
+                 forall a t .
+                   (TensorOp t t, Fullfilled "__backward_rsqrt" t a, HasCallStack) =>
                    ArgsHMap "__backward_rsqrt" t a -> TensorApply t
 __backward_rsqrt args
   = let scalarArgs = catMaybes []
@@ -4346,7 +4618,8 @@ type instance ParameterList "__backward_sample_multinomial" t = '[]
 
 __backward_sample_multinomial ::
                               forall a t .
-                                (TensorOp t t, Fullfilled "__backward_sample_multinomial" t a) =>
+                                (TensorOp t t, Fullfilled "__backward_sample_multinomial" t a,
+                                 HasCallStack) =>
                                 ArgsHMap "__backward_sample_multinomial" t a -> TensorApply t
 __backward_sample_multinomial args
   = let scalarArgs = catMaybes []
@@ -4359,7 +4632,9 @@ type instance ParameterList "__backward_sigmoid" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 __backward_sigmoid ::
-                   forall a t . (TensorOp t t, Fullfilled "__backward_sigmoid" t a) =>
+                   forall a t .
+                     (TensorOp t t, Fullfilled "__backward_sigmoid" t a,
+                      HasCallStack) =>
                      ArgsHMap "__backward_sigmoid" t a -> TensorApply t
 __backward_sigmoid args
   = let scalarArgs = catMaybes []
@@ -4375,7 +4650,8 @@ type instance ParameterList "__backward_sign" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 __backward_sign ::
-                forall a t . (TensorOp t t, Fullfilled "__backward_sign" t a) =>
+                forall a t .
+                  (TensorOp t t, Fullfilled "__backward_sign" t a, HasCallStack) =>
                   ArgsHMap "__backward_sign" t a -> TensorApply t
 __backward_sign args
   = let scalarArgs = catMaybes []
@@ -4391,7 +4667,8 @@ type instance ParameterList "__backward_sin" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 __backward_sin ::
-               forall a t . (TensorOp t t, Fullfilled "__backward_sin" t a) =>
+               forall a t .
+                 (TensorOp t t, Fullfilled "__backward_sin" t a, HasCallStack) =>
                  ArgsHMap "__backward_sin" t a -> TensorApply t
 __backward_sin args
   = let scalarArgs = catMaybes []
@@ -4407,7 +4684,8 @@ type instance ParameterList "__backward_sinh" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 __backward_sinh ::
-                forall a t . (TensorOp t t, Fullfilled "__backward_sinh" t a) =>
+                forall a t .
+                  (TensorOp t t, Fullfilled "__backward_sinh" t a, HasCallStack) =>
                   ArgsHMap "__backward_sinh" t a -> TensorApply t
 __backward_sinh args
   = let scalarArgs = catMaybes []
@@ -4422,7 +4700,8 @@ __backward_sinh args
 type instance ParameterList "__backward_slice" t = '[]
 
 __backward_slice ::
-                 forall a t . (TensorOp t t, Fullfilled "__backward_slice" t a) =>
+                 forall a t .
+                   (TensorOp t t, Fullfilled "__backward_slice" t a, HasCallStack) =>
                    ArgsHMap "__backward_slice" t a -> TensorApply t
 __backward_slice args
   = let scalarArgs = catMaybes []
@@ -4435,7 +4714,8 @@ type instance ParameterList "__backward_slice_axis" t = '[]
 
 __backward_slice_axis ::
                       forall a t .
-                        (TensorOp t t, Fullfilled "__backward_slice_axis" t a) =>
+                        (TensorOp t t, Fullfilled "__backward_slice_axis" t a,
+                         HasCallStack) =>
                         ArgsHMap "__backward_slice_axis" t a -> TensorApply t
 __backward_slice_axis args
   = let scalarArgs = catMaybes []
@@ -4448,7 +4728,8 @@ type instance ParameterList "__backward_slice_like" t = '[]
 
 __backward_slice_like ::
                       forall a t .
-                        (TensorOp t t, Fullfilled "__backward_slice_like" t a) =>
+                        (TensorOp t t, Fullfilled "__backward_slice_like" t a,
+                         HasCallStack) =>
                         ArgsHMap "__backward_slice_like" t a -> TensorApply t
 __backward_slice_like args
   = let scalarArgs = catMaybes []
@@ -4462,7 +4743,8 @@ type instance ParameterList "__backward_smooth_l1" t =
 
 __backward_smooth_l1 ::
                      forall a t .
-                       (TensorOp t t, Fullfilled "__backward_smooth_l1" t a) =>
+                       (TensorOp t t, Fullfilled "__backward_smooth_l1" t a,
+                        HasCallStack) =>
                        ArgsHMap "__backward_smooth_l1" t a -> TensorApply t
 __backward_smooth_l1 args
   = let scalarArgs = catMaybes []
@@ -4478,7 +4760,9 @@ type instance ParameterList "__backward_softmax" t =
      '[ '("args", AttrOpt [t])]
 
 __backward_softmax ::
-                   forall a t . (TensorOp t t, Fullfilled "__backward_softmax" t a) =>
+                   forall a t .
+                     (TensorOp t t, Fullfilled "__backward_softmax" t a,
+                      HasCallStack) =>
                      ArgsHMap "__backward_softmax" t a -> TensorApply t
 __backward_softmax args
   = let scalarArgs = catMaybes []
@@ -4491,8 +4775,8 @@ type instance ParameterList "__backward_softmax_cross_entropy" t =
 
 __backward_softmax_cross_entropy ::
                                  forall a t .
-                                   (TensorOp t t,
-                                    Fullfilled "__backward_softmax_cross_entropy" t a) =>
+                                   (TensorOp t t, Fullfilled "__backward_softmax_cross_entropy" t a,
+                                    HasCallStack) =>
                                    ArgsHMap "__backward_softmax_cross_entropy" t a -> TensorApply t
 __backward_softmax_cross_entropy args
   = let scalarArgs = catMaybes []
@@ -4505,7 +4789,9 @@ type instance ParameterList "__backward_softmin" t =
      '[ '("args", AttrOpt [t])]
 
 __backward_softmin ::
-                   forall a t . (TensorOp t t, Fullfilled "__backward_softmin" t a) =>
+                   forall a t .
+                     (TensorOp t t, Fullfilled "__backward_softmin" t a,
+                      HasCallStack) =>
                      ArgsHMap "__backward_softmin" t a -> TensorApply t
 __backward_softmin args
   = let scalarArgs = catMaybes []
@@ -4518,7 +4804,8 @@ type instance ParameterList "__backward_softsign" t =
 
 __backward_softsign ::
                     forall a t .
-                      (TensorOp t t, Fullfilled "__backward_softsign" t a) =>
+                      (TensorOp t t, Fullfilled "__backward_softsign" t a,
+                       HasCallStack) =>
                       ArgsHMap "__backward_softsign" t a -> TensorApply t
 __backward_softsign args
   = let scalarArgs = catMaybes []
@@ -4534,7 +4821,8 @@ type instance ParameterList "__backward_sparse_retain" t = '[]
 
 __backward_sparse_retain ::
                          forall a t .
-                           (TensorOp t t, Fullfilled "__backward_sparse_retain" t a) =>
+                           (TensorOp t t, Fullfilled "__backward_sparse_retain" t a,
+                            HasCallStack) =>
                            ArgsHMap "__backward_sparse_retain" t a -> TensorApply t
 __backward_sparse_retain args
   = let scalarArgs = catMaybes []
@@ -4547,7 +4835,8 @@ type instance ParameterList "__backward_sqrt" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 __backward_sqrt ::
-                forall a t . (TensorOp t t, Fullfilled "__backward_sqrt" t a) =>
+                forall a t .
+                  (TensorOp t t, Fullfilled "__backward_sqrt" t a, HasCallStack) =>
                   ArgsHMap "__backward_sqrt" t a -> TensorApply t
 __backward_sqrt args
   = let scalarArgs = catMaybes []
@@ -4563,7 +4852,8 @@ type instance ParameterList "__backward_square" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 __backward_square ::
-                  forall a t . (TensorOp t t, Fullfilled "__backward_square" t a) =>
+                  forall a t .
+                    (TensorOp t t, Fullfilled "__backward_square" t a, HasCallStack) =>
                     ArgsHMap "__backward_square" t a -> TensorApply t
 __backward_square args
   = let scalarArgs = catMaybes []
@@ -4579,7 +4869,8 @@ type instance ParameterList "__backward_square_sum" t = '[]
 
 __backward_square_sum ::
                       forall a t .
-                        (TensorOp t t, Fullfilled "__backward_square_sum" t a) =>
+                        (TensorOp t t, Fullfilled "__backward_square_sum" t a,
+                         HasCallStack) =>
                         ArgsHMap "__backward_square_sum" t a -> TensorApply t
 __backward_square_sum args
   = let scalarArgs = catMaybes []
@@ -4591,7 +4882,9 @@ __backward_square_sum args
 type instance ParameterList "__backward_squeeze" t = '[]
 
 __backward_squeeze ::
-                   forall a t . (TensorOp t t, Fullfilled "__backward_squeeze" t a) =>
+                   forall a t .
+                     (TensorOp t t, Fullfilled "__backward_squeeze" t a,
+                      HasCallStack) =>
                      ArgsHMap "__backward_squeeze" t a -> TensorApply t
 __backward_squeeze args
   = let scalarArgs = catMaybes []
@@ -4603,7 +4896,8 @@ __backward_squeeze args
 type instance ParameterList "__backward_stack" t = '[]
 
 __backward_stack ::
-                 forall a t . (TensorOp t t, Fullfilled "__backward_stack" t a) =>
+                 forall a t .
+                   (TensorOp t t, Fullfilled "__backward_stack" t a, HasCallStack) =>
                    ArgsHMap "__backward_stack" t a -> TensorApply t
 __backward_stack args
   = let scalarArgs = catMaybes []
@@ -4615,7 +4909,8 @@ __backward_stack args
 type instance ParameterList "__backward_sub" t = '[]
 
 __backward_sub ::
-               forall a t . (TensorOp t t, Fullfilled "__backward_sub" t a) =>
+               forall a t .
+                 (TensorOp t t, Fullfilled "__backward_sub" t a, HasCallStack) =>
                  ArgsHMap "__backward_sub" t a -> TensorApply t
 __backward_sub args
   = let scalarArgs = catMaybes []
@@ -4627,7 +4922,8 @@ __backward_sub args
 type instance ParameterList "__backward_sum" t = '[]
 
 __backward_sum ::
-               forall a t . (TensorOp t t, Fullfilled "__backward_sum" t a) =>
+               forall a t .
+                 (TensorOp t t, Fullfilled "__backward_sum" t a, HasCallStack) =>
                  ArgsHMap "__backward_sum" t a -> TensorApply t
 __backward_sum args
   = let scalarArgs = catMaybes []
@@ -4639,7 +4935,8 @@ __backward_sum args
 type instance ParameterList "__backward_take" t = '[]
 
 __backward_take ::
-                forall a t . (TensorOp t t, Fullfilled "__backward_take" t a) =>
+                forall a t .
+                  (TensorOp t t, Fullfilled "__backward_take" t a, HasCallStack) =>
                   ArgsHMap "__backward_take" t a -> TensorApply t
 __backward_take args
   = let scalarArgs = catMaybes []
@@ -4652,7 +4949,8 @@ type instance ParameterList "__backward_tan" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 __backward_tan ::
-               forall a t . (TensorOp t t, Fullfilled "__backward_tan" t a) =>
+               forall a t .
+                 (TensorOp t t, Fullfilled "__backward_tan" t a, HasCallStack) =>
                  ArgsHMap "__backward_tan" t a -> TensorApply t
 __backward_tan args
   = let scalarArgs = catMaybes []
@@ -4668,7 +4966,8 @@ type instance ParameterList "__backward_tanh" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 __backward_tanh ::
-                forall a t . (TensorOp t t, Fullfilled "__backward_tanh" t a) =>
+                forall a t .
+                  (TensorOp t t, Fullfilled "__backward_tanh" t a, HasCallStack) =>
                   ArgsHMap "__backward_tanh" t a -> TensorApply t
 __backward_tanh args
   = let scalarArgs = catMaybes []
@@ -4683,7 +4982,8 @@ __backward_tanh args
 type instance ParameterList "__backward_tile" t = '[]
 
 __backward_tile ::
-                forall a t . (TensorOp t t, Fullfilled "__backward_tile" t a) =>
+                forall a t .
+                  (TensorOp t t, Fullfilled "__backward_tile" t a, HasCallStack) =>
                   ArgsHMap "__backward_tile" t a -> TensorApply t
 __backward_tile args
   = let scalarArgs = catMaybes []
@@ -4695,7 +4995,8 @@ __backward_tile args
 type instance ParameterList "__backward_topk" t = '[]
 
 __backward_topk ::
-                forall a t . (TensorOp t t, Fullfilled "__backward_topk" t a) =>
+                forall a t .
+                  (TensorOp t t, Fullfilled "__backward_topk" t a, HasCallStack) =>
                   ArgsHMap "__backward_topk" t a -> TensorApply t
 __backward_topk args
   = let scalarArgs = catMaybes []
@@ -4707,7 +5008,8 @@ __backward_topk args
 type instance ParameterList "__backward_tril" t = '[]
 
 __backward_tril ::
-                forall a t . (TensorOp t t, Fullfilled "__backward_tril" t a) =>
+                forall a t .
+                  (TensorOp t t, Fullfilled "__backward_tril" t a, HasCallStack) =>
                   ArgsHMap "__backward_tril" t a -> TensorApply t
 __backward_tril args
   = let scalarArgs = catMaybes []
@@ -4719,7 +5021,8 @@ __backward_tril args
 type instance ParameterList "__backward_where" t = '[]
 
 __backward_where ::
-                 forall a t . (TensorOp t t, Fullfilled "__backward_where" t a) =>
+                 forall a t .
+                   (TensorOp t t, Fullfilled "__backward_where" t a, HasCallStack) =>
                    ArgsHMap "__backward_where" t a -> TensorApply t
 __backward_where args
   = let scalarArgs = catMaybes []
@@ -4732,7 +5035,8 @@ type instance ParameterList "__backward_while_loop" t = '[]
 
 __backward_while_loop ::
                       forall a t .
-                        (TensorOp t t, Fullfilled "__backward_while_loop" t a) =>
+                        (TensorOp t t, Fullfilled "__backward_while_loop" t a,
+                         HasCallStack) =>
                         ArgsHMap "__backward_while_loop" t a -> TensorApply t
 __backward_while_loop args
   = let scalarArgs = catMaybes []
@@ -4745,7 +5049,8 @@ type instance ParameterList "__broadcast_backward" t = '[]
 
 __broadcast_backward ::
                      forall a t .
-                       (TensorOp t t, Fullfilled "__broadcast_backward" t a) =>
+                       (TensorOp t t, Fullfilled "__broadcast_backward" t a,
+                        HasCallStack) =>
                        ArgsHMap "__broadcast_backward" t a -> TensorApply t
 __broadcast_backward args
   = let scalarArgs = catMaybes []
@@ -4759,7 +5064,8 @@ type instance ParameterList "__contrib_AdaptiveAvgPooling2D" t =
 
 __contrib_AdaptiveAvgPooling2D ::
                                forall a t .
-                                 (TensorOp t t, Fullfilled "__contrib_AdaptiveAvgPooling2D" t a) =>
+                                 (TensorOp t t, Fullfilled "__contrib_AdaptiveAvgPooling2D" t a,
+                                  HasCallStack) =>
                                  ArgsHMap "__contrib_AdaptiveAvgPooling2D" t a -> TensorApply t
 __contrib_AdaptiveAvgPooling2D args
   = let scalarArgs
@@ -4785,7 +5091,8 @@ type instance ParameterList "__contrib_BilinearResize2D" t =
 
 __contrib_BilinearResize2D ::
                            forall a t .
-                             (TensorOp t t, Fullfilled "__contrib_BilinearResize2D" t a) =>
+                             (TensorOp t t, Fullfilled "__contrib_BilinearResize2D" t a,
+                              HasCallStack) =>
                              ArgsHMap "__contrib_BilinearResize2D" t a -> TensorApply t
 __contrib_BilinearResize2D args
   = let scalarArgs
@@ -4822,8 +5129,8 @@ type instance ParameterList "__contrib_DeformableConvolution" t =
 
 __contrib_DeformableConvolution ::
                                 forall a t .
-                                  (TensorOp t t,
-                                   Fullfilled "__contrib_DeformableConvolution" t a) =>
+                                  (TensorOp t t, Fullfilled "__contrib_DeformableConvolution" t a,
+                                   HasCallStack) =>
                                   ArgsHMap "__contrib_DeformableConvolution" t a -> TensorApply t
 __contrib_DeformableConvolution args
   = let scalarArgs
@@ -4860,8 +5167,8 @@ type instance ParameterList "__contrib_DeformablePSROIPooling" t =
 
 __contrib_DeformablePSROIPooling ::
                                  forall a t .
-                                   (TensorOp t t,
-                                    Fullfilled "__contrib_DeformablePSROIPooling" t a) =>
+                                   (TensorOp t t, Fullfilled "__contrib_DeformablePSROIPooling" t a,
+                                    HasCallStack) =>
                                    ArgsHMap "__contrib_DeformablePSROIPooling" t a -> TensorApply t
 __contrib_DeformablePSROIPooling args
   = let scalarArgs
@@ -4895,7 +5202,8 @@ type instance ParameterList "__contrib_MultiBoxDetection" t =
 
 __contrib_MultiBoxDetection ::
                             forall a t .
-                              (TensorOp t t, Fullfilled "__contrib_MultiBoxDetection" t a) =>
+                              (TensorOp t t, Fullfilled "__contrib_MultiBoxDetection" t a,
+                               HasCallStack) =>
                               ArgsHMap "__contrib_MultiBoxDetection" t a -> TensorApply t
 __contrib_MultiBoxDetection args
   = let scalarArgs
@@ -4927,7 +5235,8 @@ type instance ParameterList "__contrib_MultiBoxPrior" t =
 
 __contrib_MultiBoxPrior ::
                         forall a t .
-                          (TensorOp t t, Fullfilled "__contrib_MultiBoxPrior" t a) =>
+                          (TensorOp t t, Fullfilled "__contrib_MultiBoxPrior" t a,
+                           HasCallStack) =>
                           ArgsHMap "__contrib_MultiBoxPrior" t a -> TensorApply t
 __contrib_MultiBoxPrior args
   = let scalarArgs
@@ -4954,7 +5263,8 @@ type instance ParameterList "__contrib_MultiBoxTarget" t =
 
 __contrib_MultiBoxTarget ::
                          forall a t .
-                           (TensorOp t t, Fullfilled "__contrib_MultiBoxTarget" t a) =>
+                           (TensorOp t t, Fullfilled "__contrib_MultiBoxTarget" t a,
+                            HasCallStack) =>
                            ArgsHMap "__contrib_MultiBoxTarget" t a -> TensorApply t
 __contrib_MultiBoxTarget args
   = let scalarArgs
@@ -4991,7 +5301,8 @@ type instance ParameterList "__contrib_MultiProposal" t =
 
 __contrib_MultiProposal ::
                         forall a t .
-                          (TensorOp t t, Fullfilled "__contrib_MultiProposal" t a) =>
+                          (TensorOp t t, Fullfilled "__contrib_MultiProposal" t a,
+                           HasCallStack) =>
                           ArgsHMap "__contrib_MultiProposal" t a -> TensorApply t
 __contrib_MultiProposal args
   = let scalarArgs
@@ -5026,7 +5337,8 @@ type instance ParameterList "__contrib_PSROIPooling" t =
 
 __contrib_PSROIPooling ::
                        forall a t .
-                         (TensorOp t t, Fullfilled "__contrib_PSROIPooling" t a) =>
+                         (TensorOp t t, Fullfilled "__contrib_PSROIPooling" t a,
+                          HasCallStack) =>
                          ArgsHMap "__contrib_PSROIPooling" t a -> TensorApply t
 __contrib_PSROIPooling args
   = let scalarArgs
@@ -5055,7 +5367,9 @@ type instance ParameterList "__contrib_Proposal" t =
         '("bbox_pred", AttrOpt t), '("im_info", AttrOpt t)]
 
 __contrib_Proposal ::
-                   forall a t . (TensorOp t t, Fullfilled "__contrib_Proposal" t a) =>
+                   forall a t .
+                     (TensorOp t t, Fullfilled "__contrib_Proposal" t a,
+                      HasCallStack) =>
                      ArgsHMap "__contrib_Proposal" t a -> TensorApply t
 __contrib_Proposal args
   = let scalarArgs
@@ -5090,7 +5404,9 @@ type instance ParameterList "__contrib_ROIAlign" t =
         '("rois", AttrOpt t)]
 
 __contrib_ROIAlign ::
-                   forall a t . (TensorOp t t, Fullfilled "__contrib_ROIAlign" t a) =>
+                   forall a t .
+                     (TensorOp t t, Fullfilled "__contrib_ROIAlign" t a,
+                      HasCallStack) =>
                      ArgsHMap "__contrib_ROIAlign" t a -> TensorApply t
 __contrib_ROIAlign args
   = let scalarArgs
@@ -5119,7 +5435,8 @@ type instance ParameterList "__contrib_RROIAlign" t =
 
 __contrib_RROIAlign ::
                     forall a t .
-                      (TensorOp t t, Fullfilled "__contrib_RROIAlign" t a) =>
+                      (TensorOp t t, Fullfilled "__contrib_RROIAlign" t a,
+                       HasCallStack) =>
                       ArgsHMap "__contrib_RROIAlign" t a -> TensorApply t
 __contrib_RROIAlign args
   = let scalarArgs
@@ -5150,7 +5467,8 @@ type instance ParameterList "__contrib_SparseEmbedding" t =
 
 __contrib_SparseEmbedding ::
                           forall a t .
-                            (TensorOp t t, Fullfilled "__contrib_SparseEmbedding" t a) =>
+                            (TensorOp t t, Fullfilled "__contrib_SparseEmbedding" t a,
+                             HasCallStack) =>
                             ArgsHMap "__contrib_SparseEmbedding" t a -> TensorApply t
 __contrib_SparseEmbedding args
   = let scalarArgs
@@ -5183,7 +5501,8 @@ type instance ParameterList "__contrib_SyncBatchNorm" t =
 
 __contrib_SyncBatchNorm ::
                         forall a t .
-                          (TensorOp t t, Fullfilled "__contrib_SyncBatchNorm" t a) =>
+                          (TensorOp t t, Fullfilled "__contrib_SyncBatchNorm" t a,
+                           HasCallStack) =>
                           ArgsHMap "__contrib_SyncBatchNorm" t a -> TensorApply t
 __contrib_SyncBatchNorm args
   = let scalarArgs
@@ -5213,7 +5532,9 @@ type instance ParameterList "__contrib_allclose" t =
         '("equal_nan", AttrOpt Bool), '("a", AttrOpt t), '("b", AttrOpt t)]
 
 __contrib_allclose ::
-                   forall a t . (TensorOp t t, Fullfilled "__contrib_allclose" t a) =>
+                   forall a t .
+                     (TensorOp t t, Fullfilled "__contrib_allclose" t a,
+                      HasCallStack) =>
                      ArgsHMap "__contrib_allclose" t a -> TensorApply t
 __contrib_allclose args
   = let scalarArgs
@@ -5236,7 +5557,8 @@ type instance ParameterList "__contrib_arange_like" t =
 
 __contrib_arange_like ::
                       forall a t .
-                        (TensorOp t t, Fullfilled "__contrib_arange_like" t a) =>
+                        (TensorOp t t, Fullfilled "__contrib_arange_like" t a,
+                         HasCallStack) =>
                         ArgsHMap "__contrib_arange_like" t a -> TensorApply t
 __contrib_arange_like args
   = let scalarArgs
@@ -5259,7 +5581,8 @@ type instance
 __contrib_backward_gradientmultiplier ::
                                       forall a t .
                                         (TensorOp t t,
-                                         Fullfilled "__contrib_backward_gradientmultiplier" t a) =>
+                                         Fullfilled "__contrib_backward_gradientmultiplier" t a,
+                                         HasCallStack) =>
                                         ArgsHMap "__contrib_backward_gradientmultiplier" t a ->
                                           TensorApply t
 __contrib_backward_gradientmultiplier args
@@ -5276,7 +5599,8 @@ type instance ParameterList "__contrib_backward_hawkesll" t = '[]
 
 __contrib_backward_hawkesll ::
                             forall a t .
-                              (TensorOp t t, Fullfilled "__contrib_backward_hawkesll" t a) =>
+                              (TensorOp t t, Fullfilled "__contrib_backward_hawkesll" t a,
+                               HasCallStack) =>
                               ArgsHMap "__contrib_backward_hawkesll" t a -> TensorApply t
 __contrib_backward_hawkesll args
   = let scalarArgs = catMaybes []
@@ -5289,7 +5613,8 @@ type instance ParameterList "__contrib_backward_index_copy" t = '[]
 
 __contrib_backward_index_copy ::
                               forall a t .
-                                (TensorOp t t, Fullfilled "__contrib_backward_index_copy" t a) =>
+                                (TensorOp t t, Fullfilled "__contrib_backward_index_copy" t a,
+                                 HasCallStack) =>
                                 ArgsHMap "__contrib_backward_index_copy" t a -> TensorApply t
 __contrib_backward_index_copy args
   = let scalarArgs = catMaybes []
@@ -5302,7 +5627,8 @@ type instance ParameterList "__contrib_backward_quadratic" t = '[]
 
 __contrib_backward_quadratic ::
                              forall a t .
-                               (TensorOp t t, Fullfilled "__contrib_backward_quadratic" t a) =>
+                               (TensorOp t t, Fullfilled "__contrib_backward_quadratic" t a,
+                                HasCallStack) =>
                                ArgsHMap "__contrib_backward_quadratic" t a -> TensorApply t
 __contrib_backward_quadratic args
   = let scalarArgs = catMaybes []
@@ -5317,7 +5643,8 @@ type instance ParameterList "__contrib_bipartite_matching" t =
 
 __contrib_bipartite_matching ::
                              forall a t .
-                               (TensorOp t t, Fullfilled "__contrib_bipartite_matching" t a) =>
+                               (TensorOp t t, Fullfilled "__contrib_bipartite_matching" t a,
+                                HasCallStack) =>
                                ArgsHMap "__contrib_bipartite_matching" t a -> TensorApply t
 __contrib_bipartite_matching args
   = let scalarArgs
@@ -5337,7 +5664,8 @@ type instance ParameterList "__contrib_boolean_mask" t =
 
 __contrib_boolean_mask ::
                        forall a t .
-                         (TensorOp t t, Fullfilled "__contrib_boolean_mask" t a) =>
+                         (TensorOp t t, Fullfilled "__contrib_boolean_mask" t a,
+                          HasCallStack) =>
                          ArgsHMap "__contrib_boolean_mask" t a -> TensorApply t
 __contrib_boolean_mask args
   = let scalarArgs
@@ -5360,7 +5688,8 @@ type instance ParameterList "__contrib_box_decode" t =
 
 __contrib_box_decode ::
                      forall a t .
-                       (TensorOp t t, Fullfilled "__contrib_box_decode" t a) =>
+                       (TensorOp t t, Fullfilled "__contrib_box_decode" t a,
+                        HasCallStack) =>
                        ArgsHMap "__contrib_box_decode" t a -> TensorApply t
 __contrib_box_decode args
   = let scalarArgs
@@ -5387,7 +5716,8 @@ type instance ParameterList "__contrib_box_encode" t =
 
 __contrib_box_encode ::
                      forall a t .
-                       (TensorOp t t, Fullfilled "__contrib_box_encode" t a) =>
+                       (TensorOp t t, Fullfilled "__contrib_box_encode" t a,
+                        HasCallStack) =>
                        ArgsHMap "__contrib_box_encode" t a -> TensorApply t
 __contrib_box_encode args
   = let scalarArgs = catMaybes []
@@ -5408,7 +5738,8 @@ type instance ParameterList "__contrib_box_iou" t =
         '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 __contrib_box_iou ::
-                  forall a t . (TensorOp t t, Fullfilled "__contrib_box_iou" t a) =>
+                  forall a t .
+                    (TensorOp t t, Fullfilled "__contrib_box_iou" t a, HasCallStack) =>
                     ArgsHMap "__contrib_box_iou" t a -> TensorApply t
 __contrib_box_iou args
   = let scalarArgs
@@ -5434,7 +5765,8 @@ type instance ParameterList "__contrib_box_nms" t =
         '("data", AttrOpt t)]
 
 __contrib_box_nms ::
-                  forall a t . (TensorOp t t, Fullfilled "__contrib_box_nms" t a) =>
+                  forall a t .
+                    (TensorOp t t, Fullfilled "__contrib_box_nms" t a, HasCallStack) =>
                     ArgsHMap "__contrib_box_nms" t a -> TensorApply t
 __contrib_box_nms args
   = let scalarArgs
@@ -5469,7 +5801,8 @@ type instance ParameterList "__contrib_calibrate_entropy" t =
 
 __contrib_calibrate_entropy ::
                             forall a t .
-                              (TensorOp t t, Fullfilled "__contrib_calibrate_entropy" t a) =>
+                              (TensorOp t t, Fullfilled "__contrib_calibrate_entropy" t a,
+                               HasCallStack) =>
                               ArgsHMap "__contrib_calibrate_entropy" t a -> TensorApply t
 __contrib_calibrate_entropy args
   = let scalarArgs
@@ -5491,7 +5824,8 @@ type instance ParameterList "__contrib_count_sketch" t =
 
 __contrib_count_sketch ::
                        forall a t .
-                         (TensorOp t t, Fullfilled "__contrib_count_sketch" t a) =>
+                         (TensorOp t t, Fullfilled "__contrib_count_sketch" t a,
+                          HasCallStack) =>
                          ArgsHMap "__contrib_count_sketch" t a -> TensorApply t
 __contrib_count_sketch args
   = let scalarArgs
@@ -5515,7 +5849,8 @@ type instance ParameterList "__contrib_dequantize" t =
 
 __contrib_dequantize ::
                      forall a t .
-                       (TensorOp t t, Fullfilled "__contrib_dequantize" t a) =>
+                       (TensorOp t t, Fullfilled "__contrib_dequantize" t a,
+                        HasCallStack) =>
                        ArgsHMap "__contrib_dequantize" t a -> TensorApply t
 __contrib_dequantize args
   = let scalarArgs
@@ -5536,7 +5871,8 @@ type instance ParameterList "__contrib_dgl_adjacency" t =
 
 __contrib_dgl_adjacency ::
                         forall a t .
-                          (TensorOp t t, Fullfilled "__contrib_dgl_adjacency" t a) =>
+                          (TensorOp t t, Fullfilled "__contrib_dgl_adjacency" t a,
+                           HasCallStack) =>
                           ArgsHMap "__contrib_dgl_adjacency" t a -> TensorApply t
 __contrib_dgl_adjacency args
   = let scalarArgs = catMaybes []
@@ -5551,7 +5887,8 @@ type instance ParameterList "__contrib_div_sqrt_dim" t =
 
 __contrib_div_sqrt_dim ::
                        forall a t .
-                         (TensorOp t t, Fullfilled "__contrib_div_sqrt_dim" t a) =>
+                         (TensorOp t t, Fullfilled "__contrib_div_sqrt_dim" t a,
+                          HasCallStack) =>
                          ArgsHMap "__contrib_div_sqrt_dim" t a -> TensorApply t
 __contrib_div_sqrt_dim args
   = let scalarArgs = catMaybes []
@@ -5565,7 +5902,8 @@ type instance ParameterList "__contrib_edge_id" t =
      '[ '("data", AttrOpt t), '("u", AttrOpt t), '("v", AttrOpt t)]
 
 __contrib_edge_id ::
-                  forall a t . (TensorOp t t, Fullfilled "__contrib_edge_id" t a) =>
+                  forall a t .
+                    (TensorOp t t, Fullfilled "__contrib_edge_id" t a, HasCallStack) =>
                     ArgsHMap "__contrib_edge_id" t a -> TensorApply t
 __contrib_edge_id args
   = let scalarArgs = catMaybes []
@@ -5582,7 +5920,8 @@ type instance ParameterList "__contrib_fft" t =
      '[ '("compute_size", AttrOpt Int), '("data", AttrOpt t)]
 
 __contrib_fft ::
-              forall a t . (TensorOp t t, Fullfilled "__contrib_fft" t a) =>
+              forall a t .
+                (TensorOp t t, Fullfilled "__contrib_fft" t a, HasCallStack) =>
                 ArgsHMap "__contrib_fft" t a -> TensorApply t
 __contrib_fft args
   = let scalarArgs
@@ -5599,7 +5938,8 @@ type instance ParameterList "__contrib_getnnz" t =
      '[ '("axis", AttrOpt (Maybe Int)), '("data", AttrOpt t)]
 
 __contrib_getnnz ::
-                 forall a t . (TensorOp t t, Fullfilled "__contrib_getnnz" t a) =>
+                 forall a t .
+                   (TensorOp t t, Fullfilled "__contrib_getnnz" t a, HasCallStack) =>
                    ArgsHMap "__contrib_getnnz" t a -> TensorApply t
 __contrib_getnnz args
   = let scalarArgs
@@ -5616,7 +5956,8 @@ type instance ParameterList "__contrib_gradientmultiplier" t =
 
 __contrib_gradientmultiplier ::
                              forall a t .
-                               (TensorOp t t, Fullfilled "__contrib_gradientmultiplier" t a) =>
+                               (TensorOp t t, Fullfilled "__contrib_gradientmultiplier" t a,
+                                HasCallStack) =>
                                ArgsHMap "__contrib_gradientmultiplier" t a -> TensorApply t
 __contrib_gradientmultiplier args
   = let scalarArgs
@@ -5636,7 +5977,8 @@ type instance ParameterList "__contrib_group_adagrad_update" t =
 
 __contrib_group_adagrad_update ::
                                forall a t .
-                                 (TensorOp t t, Fullfilled "__contrib_group_adagrad_update" t a) =>
+                                 (TensorOp t t, Fullfilled "__contrib_group_adagrad_update" t a,
+                                  HasCallStack) =>
                                  ArgsHMap "__contrib_group_adagrad_update" t a -> TensorApply t
 __contrib_group_adagrad_update args
   = let scalarArgs
@@ -5663,7 +6005,9 @@ type instance ParameterList "__contrib_hawkesll" t =
         '("max_time", AttrOpt t)]
 
 __contrib_hawkesll ::
-                   forall a t . (TensorOp t t, Fullfilled "__contrib_hawkesll" t a) =>
+                   forall a t .
+                     (TensorOp t t, Fullfilled "__contrib_hawkesll" t a,
+                      HasCallStack) =>
                      ArgsHMap "__contrib_hawkesll" t a -> TensorApply t
 __contrib_hawkesll args
   = let scalarArgs = catMaybes []
@@ -5685,7 +6029,8 @@ type instance ParameterList "__contrib_ifft" t =
      '[ '("compute_size", AttrOpt Int), '("data", AttrOpt t)]
 
 __contrib_ifft ::
-               forall a t . (TensorOp t t, Fullfilled "__contrib_ifft" t a) =>
+               forall a t .
+                 (TensorOp t t, Fullfilled "__contrib_ifft" t a, HasCallStack) =>
                  ArgsHMap "__contrib_ifft" t a -> TensorApply t
 __contrib_ifft args
   = let scalarArgs
@@ -5703,7 +6048,8 @@ type instance ParameterList "__contrib_index_array" t =
 
 __contrib_index_array ::
                       forall a t .
-                        (TensorOp t t, Fullfilled "__contrib_index_array" t a) =>
+                        (TensorOp t t, Fullfilled "__contrib_index_array" t a,
+                         HasCallStack) =>
                         ArgsHMap "__contrib_index_array" t a -> TensorApply t
 __contrib_index_array args
   = let scalarArgs
@@ -5721,7 +6067,8 @@ type instance ParameterList "__contrib_index_copy" t =
 
 __contrib_index_copy ::
                      forall a t .
-                       (TensorOp t t, Fullfilled "__contrib_index_copy" t a) =>
+                       (TensorOp t t, Fullfilled "__contrib_index_copy" t a,
+                        HasCallStack) =>
                        ArgsHMap "__contrib_index_copy" t a -> TensorApply t
 __contrib_index_copy args
   = let scalarArgs = catMaybes []
@@ -5742,8 +6089,8 @@ type instance
 __contrib_interleaved_matmul_encdec_qk ::
                                        forall a t .
                                          (TensorOp t t,
-                                          Fullfilled "__contrib_interleaved_matmul_encdec_qk" t
-                                            a) =>
+                                          Fullfilled "__contrib_interleaved_matmul_encdec_qk" t a,
+                                          HasCallStack) =>
                                          ArgsHMap "__contrib_interleaved_matmul_encdec_qk" t a ->
                                            TensorApply t
 __contrib_interleaved_matmul_encdec_qk args
@@ -5767,7 +6114,8 @@ __contrib_interleaved_matmul_encdec_valatt ::
                                            forall a t .
                                              (TensorOp t t,
                                               Fullfilled
-                                                "__contrib_interleaved_matmul_encdec_valatt" t a) =>
+                                                "__contrib_interleaved_matmul_encdec_valatt" t a,
+                                              HasCallStack) =>
                                              ArgsHMap "__contrib_interleaved_matmul_encdec_valatt" t
                                                a
                                                -> TensorApply t
@@ -5790,8 +6138,8 @@ type instance
 __contrib_interleaved_matmul_selfatt_qk ::
                                         forall a t .
                                           (TensorOp t t,
-                                           Fullfilled "__contrib_interleaved_matmul_selfatt_qk" t
-                                             a) =>
+                                           Fullfilled "__contrib_interleaved_matmul_selfatt_qk" t a,
+                                           HasCallStack) =>
                                           ArgsHMap "__contrib_interleaved_matmul_selfatt_qk" t a ->
                                             TensorApply t
 __contrib_interleaved_matmul_selfatt_qk args
@@ -5815,8 +6163,8 @@ __contrib_interleaved_matmul_selfatt_valatt ::
                                             forall a t .
                                               (TensorOp t t,
                                                Fullfilled
-                                                 "__contrib_interleaved_matmul_selfatt_valatt" t
-                                                 a) =>
+                                                 "__contrib_interleaved_matmul_selfatt_valatt" t a,
+                                               HasCallStack) =>
                                               ArgsHMap "__contrib_interleaved_matmul_selfatt_valatt"
                                                 t
                                                 a
@@ -5842,7 +6190,8 @@ type instance ParameterList "__contrib_mrcnn_mask_target" t =
 
 __contrib_mrcnn_mask_target ::
                             forall a t .
-                              (TensorOp t t, Fullfilled "__contrib_mrcnn_mask_target" t a) =>
+                              (TensorOp t t, Fullfilled "__contrib_mrcnn_mask_target" t a,
+                               HasCallStack) =>
                               ArgsHMap "__contrib_mrcnn_mask_target" t a -> TensorApply t
 __contrib_mrcnn_mask_target args
   = let scalarArgs
@@ -5869,7 +6218,8 @@ type instance ParameterList "__contrib_quadratic" t =
 
 __contrib_quadratic ::
                     forall a t .
-                      (TensorOp t t, Fullfilled "__contrib_quadratic" t a) =>
+                      (TensorOp t t, Fullfilled "__contrib_quadratic" t a,
+                       HasCallStack) =>
                       ArgsHMap "__contrib_quadratic" t a -> TensorApply t
 __contrib_quadratic args
   = let scalarArgs
@@ -5889,7 +6239,9 @@ type instance ParameterList "__contrib_quantize" t =
         '("max_range", AttrOpt t)]
 
 __contrib_quantize ::
-                   forall a t . (TensorOp t t, Fullfilled "__contrib_quantize" t a) =>
+                   forall a t .
+                     (TensorOp t t, Fullfilled "__contrib_quantize" t a,
+                      HasCallStack) =>
                      ArgsHMap "__contrib_quantize" t a -> TensorApply t
 __contrib_quantize args
   = let scalarArgs
@@ -5912,7 +6264,8 @@ type instance ParameterList "__contrib_quantize_v2" t =
 
 __contrib_quantize_v2 ::
                       forall a t .
-                        (TensorOp t t, Fullfilled "__contrib_quantize_v2" t a) =>
+                        (TensorOp t t, Fullfilled "__contrib_quantize_v2" t a,
+                         HasCallStack) =>
                         ArgsHMap "__contrib_quantize_v2" t a -> TensorApply t
 __contrib_quantize_v2 args
   = let scalarArgs
@@ -5938,7 +6291,8 @@ type instance ParameterList "__contrib_quantized_act" t =
 
 __contrib_quantized_act ::
                         forall a t .
-                          (TensorOp t t, Fullfilled "__contrib_quantized_act" t a) =>
+                          (TensorOp t t, Fullfilled "__contrib_quantized_act" t a,
+                           HasCallStack) =>
                           ArgsHMap "__contrib_quantized_act" t a -> TensorApply t
 __contrib_quantized_act args
   = let scalarArgs
@@ -5969,7 +6323,8 @@ type instance ParameterList "__contrib_quantized_batch_norm" t =
 
 __contrib_quantized_batch_norm ::
                                forall a t .
-                                 (TensorOp t t, Fullfilled "__contrib_quantized_batch_norm" t a) =>
+                                 (TensorOp t t, Fullfilled "__contrib_quantized_batch_norm" t a,
+                                  HasCallStack) =>
                                  ArgsHMap "__contrib_quantized_batch_norm" t a -> TensorApply t
 __contrib_quantized_batch_norm args
   = let scalarArgs
@@ -6006,7 +6361,8 @@ type instance ParameterList "__contrib_quantized_concat" t =
 
 __contrib_quantized_concat ::
                            forall a t .
-                             (TensorOp t t, Fullfilled "__contrib_quantized_concat" t a) =>
+                             (TensorOp t t, Fullfilled "__contrib_quantized_concat" t a,
+                              HasCallStack) =>
                              ArgsHMap "__contrib_quantized_concat" t a -> TensorApply t
 __contrib_quantized_concat args
   = let scalarArgs
@@ -6037,7 +6393,8 @@ type instance ParameterList "__contrib_quantized_conv" t =
 
 __contrib_quantized_conv ::
                          forall a t .
-                           (TensorOp t t, Fullfilled "__contrib_quantized_conv" t a) =>
+                           (TensorOp t t, Fullfilled "__contrib_quantized_conv" t a,
+                            HasCallStack) =>
                            ArgsHMap "__contrib_quantized_conv" t a -> TensorApply t
 __contrib_quantized_conv args
   = let scalarArgs
@@ -6082,8 +6439,8 @@ type instance ParameterList "__contrib_quantized_elemwise_add" t =
 
 __contrib_quantized_elemwise_add ::
                                  forall a t .
-                                   (TensorOp t t,
-                                    Fullfilled "__contrib_quantized_elemwise_add" t a) =>
+                                   (TensorOp t t, Fullfilled "__contrib_quantized_elemwise_add" t a,
+                                    HasCallStack) =>
                                    ArgsHMap "__contrib_quantized_elemwise_add" t a -> TensorApply t
 __contrib_quantized_elemwise_add args
   = let scalarArgs
@@ -6110,7 +6467,8 @@ type instance ParameterList "__contrib_quantized_flatten" t =
 
 __contrib_quantized_flatten ::
                             forall a t .
-                              (TensorOp t t, Fullfilled "__contrib_quantized_flatten" t a) =>
+                              (TensorOp t t, Fullfilled "__contrib_quantized_flatten" t a,
+                               HasCallStack) =>
                               ArgsHMap "__contrib_quantized_flatten" t a -> TensorApply t
 __contrib_quantized_flatten args
   = let scalarArgs = catMaybes []
@@ -6135,7 +6493,8 @@ type instance ParameterList "__contrib_quantized_fully_connected" t
 __contrib_quantized_fully_connected ::
                                     forall a t .
                                       (TensorOp t t,
-                                       Fullfilled "__contrib_quantized_fully_connected" t a) =>
+                                       Fullfilled "__contrib_quantized_fully_connected" t a,
+                                       HasCallStack) =>
                                       ArgsHMap "__contrib_quantized_fully_connected" t a ->
                                         TensorApply t
 __contrib_quantized_fully_connected args
@@ -6178,7 +6537,8 @@ type instance ParameterList "__contrib_quantized_pooling" t =
 
 __contrib_quantized_pooling ::
                             forall a t .
-                              (TensorOp t t, Fullfilled "__contrib_quantized_pooling" t a) =>
+                              (TensorOp t t, Fullfilled "__contrib_quantized_pooling" t a,
+                               HasCallStack) =>
                               ArgsHMap "__contrib_quantized_pooling" t a -> TensorApply t
 __contrib_quantized_pooling args
   = let scalarArgs
@@ -6221,7 +6581,8 @@ type instance ParameterList "__contrib_requantize" t =
 
 __contrib_requantize ::
                      forall a t .
-                       (TensorOp t t, Fullfilled "__contrib_requantize" t a) =>
+                       (TensorOp t t, Fullfilled "__contrib_requantize" t a,
+                        HasCallStack) =>
                        ArgsHMap "__contrib_requantize" t a -> TensorApply t
 __contrib_requantize args
   = let scalarArgs
@@ -6246,7 +6607,8 @@ type instance ParameterList "__contrib_round_ste" t =
 
 __contrib_round_ste ::
                     forall a t .
-                      (TensorOp t t, Fullfilled "__contrib_round_ste" t a) =>
+                      (TensorOp t t, Fullfilled "__contrib_round_ste" t a,
+                       HasCallStack) =>
                       ArgsHMap "__contrib_round_ste" t a -> TensorApply t
 __contrib_round_ste args
   = let scalarArgs = catMaybes []
@@ -6260,7 +6622,9 @@ type instance ParameterList "__contrib_sign_ste" t =
      '[ '("data", AttrOpt t)]
 
 __contrib_sign_ste ::
-                   forall a t . (TensorOp t t, Fullfilled "__contrib_sign_ste" t a) =>
+                   forall a t .
+                     (TensorOp t t, Fullfilled "__contrib_sign_ste" t a,
+                      HasCallStack) =>
                      ArgsHMap "__contrib_sign_ste" t a -> TensorApply t
 __contrib_sign_ste args
   = let scalarArgs = catMaybes []
@@ -6273,7 +6637,8 @@ __contrib_sign_ste args
 type instance ParameterList "__copy" t = '[ '("data", AttrOpt t)]
 
 __copy ::
-       forall a t . (TensorOp t t, Fullfilled "__copy" t a) =>
+       forall a t .
+         (TensorOp t t, Fullfilled "__copy" t a, HasCallStack) =>
          ArgsHMap "__copy" t a -> TensorApply t
 __copy args
   = let scalarArgs = catMaybes []
@@ -6284,7 +6649,8 @@ __copy args
 type instance ParameterList "__copyto" t = '[ '("data", AttrOpt t)]
 
 __copyto ::
-         forall a t . (TensorOp t t, Fullfilled "__copyto" t a) =>
+         forall a t .
+           (TensorOp t t, Fullfilled "__copyto" t a, HasCallStack) =>
            ArgsHMap "__copyto" t a -> TensorApply t
 __copyto args
   = let scalarArgs = catMaybes []
@@ -6299,7 +6665,9 @@ type instance ParameterList "__cvcopyMakeBorder" t =
         '("values", AttrOpt [Double]), '("src", AttrOpt t)]
 
 __cvcopyMakeBorder ::
-                   forall a t . (TensorOp t t, Fullfilled "__cvcopyMakeBorder" t a) =>
+                   forall a t .
+                     (TensorOp t t, Fullfilled "__cvcopyMakeBorder" t a,
+                      HasCallStack) =>
                      ArgsHMap "__cvcopyMakeBorder" t a -> TensorApply t
 __cvcopyMakeBorder args
   = let scalarArgs
@@ -6321,7 +6689,8 @@ type instance ParameterList "__cvimdecode" t =
         '("buf", AttrOpt t)]
 
 __cvimdecode ::
-             forall a t . (TensorOp t t, Fullfilled "__cvimdecode" t a) =>
+             forall a t .
+               (TensorOp t t, Fullfilled "__cvimdecode" t a, HasCallStack) =>
                ArgsHMap "__cvimdecode" t a -> TensorApply t
 __cvimdecode args
   = let scalarArgs
@@ -6338,7 +6707,8 @@ type instance ParameterList "__cvimread" t =
         '("to_rgb", AttrOpt Bool)]
 
 __cvimread ::
-           forall a t . (TensorOp t t, Fullfilled "__cvimread" t a) =>
+           forall a t .
+             (TensorOp t t, Fullfilled "__cvimread" t a, HasCallStack) =>
              ArgsHMap "__cvimread" t a -> TensorApply t
 __cvimread args
   = let scalarArgs
@@ -6355,7 +6725,8 @@ type instance ParameterList "__cvimresize" t =
         '("interp", AttrOpt Int), '("src", AttrOpt t)]
 
 __cvimresize ::
-             forall a t . (TensorOp t t, Fullfilled "__cvimresize" t a) =>
+             forall a t .
+               (TensorOp t t, Fullfilled "__cvimresize" t a, HasCallStack) =>
                ArgsHMap "__cvimresize" t a -> TensorApply t
 __cvimresize args
   = let scalarArgs
@@ -6372,7 +6743,8 @@ type instance ParameterList "__div_scalar" t =
      '[ '("scalar", AttrOpt Float), '("data", AttrOpt t)]
 
 __div_scalar ::
-             forall a t . (TensorOp t t, Fullfilled "__div_scalar" t a) =>
+             forall a t .
+               (TensorOp t t, Fullfilled "__div_scalar" t a, HasCallStack) =>
                ArgsHMap "__div_scalar" t a -> TensorApply t
 __div_scalar args
   = let scalarArgs
@@ -6388,7 +6760,8 @@ type instance ParameterList "__equal" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 __equal ::
-        forall a t . (TensorOp t t, Fullfilled "__equal" t a) =>
+        forall a t .
+          (TensorOp t t, Fullfilled "__equal" t a, HasCallStack) =>
           ArgsHMap "__equal" t a -> TensorApply t
 __equal args
   = let scalarArgs = catMaybes []
@@ -6402,7 +6775,8 @@ type instance ParameterList "__equal_scalar" t =
      '[ '("scalar", AttrOpt Float), '("data", AttrOpt t)]
 
 __equal_scalar ::
-               forall a t . (TensorOp t t, Fullfilled "__equal_scalar" t a) =>
+               forall a t .
+                 (TensorOp t t, Fullfilled "__equal_scalar" t a, HasCallStack) =>
                  ArgsHMap "__equal_scalar" t a -> TensorApply t
 __equal_scalar args
   = let scalarArgs
@@ -6424,7 +6798,8 @@ type instance ParameterList "__full" t =
         '("value", AttrReq Double)]
 
 __full ::
-       forall a t . (TensorOp t t, Fullfilled "__full" t a) =>
+       forall a t .
+         (TensorOp t t, Fullfilled "__full" t a, HasCallStack) =>
          ArgsHMap "__full" t a -> TensorApply t
 __full args
   = let scalarArgs
@@ -6445,7 +6820,8 @@ type instance ParameterList "__grad_add" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 __grad_add ::
-           forall a t . (TensorOp t t, Fullfilled "__grad_add" t a) =>
+           forall a t .
+             (TensorOp t t, Fullfilled "__grad_add" t a, HasCallStack) =>
              ArgsHMap "__grad_add" t a -> TensorApply t
 __grad_add args
   = let scalarArgs = catMaybes []
@@ -6460,7 +6836,8 @@ type instance ParameterList "__greater" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 __greater ::
-          forall a t . (TensorOp t t, Fullfilled "__greater" t a) =>
+          forall a t .
+            (TensorOp t t, Fullfilled "__greater" t a, HasCallStack) =>
             ArgsHMap "__greater" t a -> TensorApply t
 __greater args
   = let scalarArgs = catMaybes []
@@ -6475,7 +6852,8 @@ type instance ParameterList "__greater_equal" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 __greater_equal ::
-                forall a t . (TensorOp t t, Fullfilled "__greater_equal" t a) =>
+                forall a t .
+                  (TensorOp t t, Fullfilled "__greater_equal" t a, HasCallStack) =>
                   ArgsHMap "__greater_equal" t a -> TensorApply t
 __greater_equal args
   = let scalarArgs = catMaybes []
@@ -6492,7 +6870,8 @@ type instance ParameterList "__greater_equal_scalar" t =
 
 __greater_equal_scalar ::
                        forall a t .
-                         (TensorOp t t, Fullfilled "__greater_equal_scalar" t a) =>
+                         (TensorOp t t, Fullfilled "__greater_equal_scalar" t a,
+                          HasCallStack) =>
                          ArgsHMap "__greater_equal_scalar" t a -> TensorApply t
 __greater_equal_scalar args
   = let scalarArgs
@@ -6508,7 +6887,8 @@ type instance ParameterList "__greater_scalar" t =
      '[ '("scalar", AttrOpt Float), '("data", AttrOpt t)]
 
 __greater_scalar ::
-                 forall a t . (TensorOp t t, Fullfilled "__greater_scalar" t a) =>
+                 forall a t .
+                   (TensorOp t t, Fullfilled "__greater_scalar" t a, HasCallStack) =>
                    ArgsHMap "__greater_scalar" t a -> TensorApply t
 __greater_scalar args
   = let scalarArgs
@@ -6525,7 +6905,8 @@ type instance ParameterList "__histogram" t =
         '("data", AttrOpt t), '("bins", AttrOpt t)]
 
 __histogram ::
-            forall a t . (TensorOp t t, Fullfilled "__histogram" t a) =>
+            forall a t .
+              (TensorOp t t, Fullfilled "__histogram" t a, HasCallStack) =>
               ArgsHMap "__histogram" t a -> TensorApply t
 __histogram args
   = let scalarArgs
@@ -6544,7 +6925,8 @@ type instance ParameterList "__hypot" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 __hypot ::
-        forall a t . (TensorOp t t, Fullfilled "__hypot" t a) =>
+        forall a t .
+          (TensorOp t t, Fullfilled "__hypot" t a, HasCallStack) =>
           ArgsHMap "__hypot" t a -> TensorApply t
 __hypot args
   = let scalarArgs = catMaybes []
@@ -6558,7 +6940,8 @@ type instance ParameterList "__hypot_scalar" t =
      '[ '("scalar", AttrOpt Float), '("data", AttrOpt t)]
 
 __hypot_scalar ::
-               forall a t . (TensorOp t t, Fullfilled "__hypot_scalar" t a) =>
+               forall a t .
+                 (TensorOp t t, Fullfilled "__hypot_scalar" t a, HasCallStack) =>
                  ArgsHMap "__hypot_scalar" t a -> TensorApply t
 __hypot_scalar args
   = let scalarArgs
@@ -6575,7 +6958,8 @@ type instance ParameterList "__identity_with_attr_like_rhs" t =
 
 __identity_with_attr_like_rhs ::
                               forall a t .
-                                (TensorOp t t, Fullfilled "__identity_with_attr_like_rhs" t a) =>
+                                (TensorOp t t, Fullfilled "__identity_with_attr_like_rhs" t a,
+                                 HasCallStack) =>
                                 ArgsHMap "__identity_with_attr_like_rhs" t a -> TensorApply t
 __identity_with_attr_like_rhs args
   = let scalarArgs = catMaybes []
@@ -6592,7 +6976,8 @@ type instance ParameterList "__image_adjust_lighting" t =
 
 __image_adjust_lighting ::
                         forall a t .
-                          (TensorOp t t, Fullfilled "__image_adjust_lighting" t a) =>
+                          (TensorOp t t, Fullfilled "__image_adjust_lighting" t a,
+                           HasCallStack) =>
                           ArgsHMap "__image_adjust_lighting" t a -> TensorApply t
 __image_adjust_lighting args
   = let scalarArgs
@@ -6610,7 +6995,8 @@ type instance ParameterList "__image_crop" t =
         '("data", AttrOpt t)]
 
 __image_crop ::
-             forall a t . (TensorOp t t, Fullfilled "__image_crop" t a) =>
+             forall a t .
+               (TensorOp t t, Fullfilled "__image_crop" t a, HasCallStack) =>
                ArgsHMap "__image_crop" t a -> TensorApply t
 __image_crop args
   = let scalarArgs
@@ -6630,7 +7016,8 @@ type instance ParameterList "__image_flip_left_right" t =
 
 __image_flip_left_right ::
                         forall a t .
-                          (TensorOp t t, Fullfilled "__image_flip_left_right" t a) =>
+                          (TensorOp t t, Fullfilled "__image_flip_left_right" t a,
+                           HasCallStack) =>
                           ArgsHMap "__image_flip_left_right" t a -> TensorApply t
 __image_flip_left_right args
   = let scalarArgs = catMaybes []
@@ -6645,7 +7032,8 @@ type instance ParameterList "__image_flip_top_bottom" t =
 
 __image_flip_top_bottom ::
                         forall a t .
-                          (TensorOp t t, Fullfilled "__image_flip_top_bottom" t a) =>
+                          (TensorOp t t, Fullfilled "__image_flip_top_bottom" t a,
+                           HasCallStack) =>
                           ArgsHMap "__image_flip_top_bottom" t a -> TensorApply t
 __image_flip_top_bottom args
   = let scalarArgs = catMaybes []
@@ -6660,7 +7048,8 @@ type instance ParameterList "__image_normalize" t =
         '("data", AttrOpt t)]
 
 __image_normalize ::
-                  forall a t . (TensorOp t t, Fullfilled "__image_normalize" t a) =>
+                  forall a t .
+                    (TensorOp t t, Fullfilled "__image_normalize" t a, HasCallStack) =>
                     ArgsHMap "__image_normalize" t a -> TensorApply t
 __image_normalize args
   = let scalarArgs
@@ -6679,7 +7068,8 @@ type instance ParameterList "__image_random_brightness" t =
 
 __image_random_brightness ::
                           forall a t .
-                            (TensorOp t t, Fullfilled "__image_random_brightness" t a) =>
+                            (TensorOp t t, Fullfilled "__image_random_brightness" t a,
+                             HasCallStack) =>
                             ArgsHMap "__image_random_brightness" t a -> TensorApply t
 __image_random_brightness args
   = let scalarArgs
@@ -6701,7 +7091,8 @@ type instance ParameterList "__image_random_color_jitter" t =
 
 __image_random_color_jitter ::
                             forall a t .
-                              (TensorOp t t, Fullfilled "__image_random_color_jitter" t a) =>
+                              (TensorOp t t, Fullfilled "__image_random_color_jitter" t a,
+                               HasCallStack) =>
                               ArgsHMap "__image_random_color_jitter" t a -> TensorApply t
 __image_random_color_jitter args
   = let scalarArgs
@@ -6724,7 +7115,8 @@ type instance ParameterList "__image_random_contrast" t =
 
 __image_random_contrast ::
                         forall a t .
-                          (TensorOp t t, Fullfilled "__image_random_contrast" t a) =>
+                          (TensorOp t t, Fullfilled "__image_random_contrast" t a,
+                           HasCallStack) =>
                           ArgsHMap "__image_random_contrast" t a -> TensorApply t
 __image_random_contrast args
   = let scalarArgs
@@ -6744,7 +7136,8 @@ type instance ParameterList "__image_random_flip_left_right" t =
 
 __image_random_flip_left_right ::
                                forall a t .
-                                 (TensorOp t t, Fullfilled "__image_random_flip_left_right" t a) =>
+                                 (TensorOp t t, Fullfilled "__image_random_flip_left_right" t a,
+                                  HasCallStack) =>
                                  ArgsHMap "__image_random_flip_left_right" t a -> TensorApply t
 __image_random_flip_left_right args
   = let scalarArgs = catMaybes []
@@ -6759,7 +7152,8 @@ type instance ParameterList "__image_random_flip_top_bottom" t =
 
 __image_random_flip_top_bottom ::
                                forall a t .
-                                 (TensorOp t t, Fullfilled "__image_random_flip_top_bottom" t a) =>
+                                 (TensorOp t t, Fullfilled "__image_random_flip_top_bottom" t a,
+                                  HasCallStack) =>
                                  ArgsHMap "__image_random_flip_top_bottom" t a -> TensorApply t
 __image_random_flip_top_bottom args
   = let scalarArgs = catMaybes []
@@ -6774,7 +7168,9 @@ type instance ParameterList "__image_random_hue" t =
         '("data", AttrOpt t)]
 
 __image_random_hue ::
-                   forall a t . (TensorOp t t, Fullfilled "__image_random_hue" t a) =>
+                   forall a t .
+                     (TensorOp t t, Fullfilled "__image_random_hue" t a,
+                      HasCallStack) =>
                      ArgsHMap "__image_random_hue" t a -> TensorApply t
 __image_random_hue args
   = let scalarArgs
@@ -6794,7 +7190,8 @@ type instance ParameterList "__image_random_lighting" t =
 
 __image_random_lighting ::
                         forall a t .
-                          (TensorOp t t, Fullfilled "__image_random_lighting" t a) =>
+                          (TensorOp t t, Fullfilled "__image_random_lighting" t a,
+                           HasCallStack) =>
                           ArgsHMap "__image_random_lighting" t a -> TensorApply t
 __image_random_lighting args
   = let scalarArgs
@@ -6813,7 +7210,8 @@ type instance ParameterList "__image_random_saturation" t =
 
 __image_random_saturation ::
                           forall a t .
-                            (TensorOp t t, Fullfilled "__image_random_saturation" t a) =>
+                            (TensorOp t t, Fullfilled "__image_random_saturation" t a,
+                             HasCallStack) =>
                             ArgsHMap "__image_random_saturation" t a -> TensorApply t
 __image_random_saturation args
   = let scalarArgs
@@ -6833,7 +7231,8 @@ type instance ParameterList "__image_resize" t =
         '("interp", AttrOpt Int), '("data", AttrOpt t)]
 
 __image_resize ::
-               forall a t . (TensorOp t t, Fullfilled "__image_resize" t a) =>
+               forall a t .
+                 (TensorOp t t, Fullfilled "__image_resize" t a, HasCallStack) =>
                  ArgsHMap "__image_resize" t a -> TensorApply t
 __image_resize args
   = let scalarArgs
@@ -6852,7 +7251,8 @@ type instance ParameterList "__image_to_tensor" t =
      '[ '("data", AttrOpt t)]
 
 __image_to_tensor ::
-                  forall a t . (TensorOp t t, Fullfilled "__image_to_tensor" t a) =>
+                  forall a t .
+                    (TensorOp t t, Fullfilled "__image_to_tensor" t a, HasCallStack) =>
                     ArgsHMap "__image_to_tensor" t a -> TensorApply t
 __image_to_tensor args
   = let scalarArgs = catMaybes []
@@ -6868,7 +7268,8 @@ type instance ParameterList "__imdecode" t =
         '("c", AttrOpt Int), '("size", AttrOpt Int), '("mean", AttrOpt t)]
 
 __imdecode ::
-           forall a t . (TensorOp t t, Fullfilled "__imdecode" t a) =>
+           forall a t .
+             (TensorOp t t, Fullfilled "__imdecode" t a, HasCallStack) =>
              ArgsHMap "__imdecode" t a -> TensorApply t
 __imdecode args
   = let scalarArgs
@@ -6889,7 +7290,8 @@ type instance ParameterList "__lesser" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 __lesser ::
-         forall a t . (TensorOp t t, Fullfilled "__lesser" t a) =>
+         forall a t .
+           (TensorOp t t, Fullfilled "__lesser" t a, HasCallStack) =>
            ArgsHMap "__lesser" t a -> TensorApply t
 __lesser args
   = let scalarArgs = catMaybes []
@@ -6903,7 +7305,8 @@ type instance ParameterList "__lesser_equal" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 __lesser_equal ::
-               forall a t . (TensorOp t t, Fullfilled "__lesser_equal" t a) =>
+               forall a t .
+                 (TensorOp t t, Fullfilled "__lesser_equal" t a, HasCallStack) =>
                  ArgsHMap "__lesser_equal" t a -> TensorApply t
 __lesser_equal args
   = let scalarArgs = catMaybes []
@@ -6920,7 +7323,8 @@ type instance ParameterList "__lesser_equal_scalar" t =
 
 __lesser_equal_scalar ::
                       forall a t .
-                        (TensorOp t t, Fullfilled "__lesser_equal_scalar" t a) =>
+                        (TensorOp t t, Fullfilled "__lesser_equal_scalar" t a,
+                         HasCallStack) =>
                         ArgsHMap "__lesser_equal_scalar" t a -> TensorApply t
 __lesser_equal_scalar args
   = let scalarArgs
@@ -6936,7 +7340,8 @@ type instance ParameterList "__lesser_scalar" t =
      '[ '("scalar", AttrOpt Float), '("data", AttrOpt t)]
 
 __lesser_scalar ::
-                forall a t . (TensorOp t t, Fullfilled "__lesser_scalar" t a) =>
+                forall a t .
+                  (TensorOp t t, Fullfilled "__lesser_scalar" t a, HasCallStack) =>
                   ArgsHMap "__lesser_scalar" t a -> TensorApply t
 __lesser_scalar args
   = let scalarArgs
@@ -6952,7 +7357,8 @@ type instance ParameterList "__linalg_det" t =
      '[ '("a", AttrOpt t)]
 
 __linalg_det ::
-             forall a t . (TensorOp t t, Fullfilled "__linalg_det" t a) =>
+             forall a t .
+               (TensorOp t t, Fullfilled "__linalg_det" t a, HasCallStack) =>
                ArgsHMap "__linalg_det" t a -> TensorApply t
 __linalg_det args
   = let scalarArgs = catMaybes []
@@ -6966,7 +7372,8 @@ type instance ParameterList "__linalg_extractdiag" t =
 
 __linalg_extractdiag ::
                      forall a t .
-                       (TensorOp t t, Fullfilled "__linalg_extractdiag" t a) =>
+                       (TensorOp t t, Fullfilled "__linalg_extractdiag" t a,
+                        HasCallStack) =>
                        ArgsHMap "__linalg_extractdiag" t a -> TensorApply t
 __linalg_extractdiag args
   = let scalarArgs
@@ -6983,7 +7390,8 @@ type instance ParameterList "__linalg_extracttrian" t =
 
 __linalg_extracttrian ::
                       forall a t .
-                        (TensorOp t t, Fullfilled "__linalg_extracttrian" t a) =>
+                        (TensorOp t t, Fullfilled "__linalg_extracttrian" t a,
+                         HasCallStack) =>
                         ArgsHMap "__linalg_extracttrian" t a -> TensorApply t
 __linalg_extracttrian args
   = let scalarArgs
@@ -6999,7 +7407,8 @@ type instance ParameterList "__linalg_gelqf" t =
      '[ '("a", AttrOpt t)]
 
 __linalg_gelqf ::
-               forall a t . (TensorOp t t, Fullfilled "__linalg_gelqf" t a) =>
+               forall a t .
+                 (TensorOp t t, Fullfilled "__linalg_gelqf" t a, HasCallStack) =>
                  ArgsHMap "__linalg_gelqf" t a -> TensorApply t
 __linalg_gelqf args
   = let scalarArgs = catMaybes []
@@ -7015,7 +7424,8 @@ type instance ParameterList "__linalg_gemm" t =
         '("c", AttrOpt t)]
 
 __linalg_gemm ::
-              forall a t . (TensorOp t t, Fullfilled "__linalg_gemm" t a) =>
+              forall a t .
+                (TensorOp t t, Fullfilled "__linalg_gemm" t a, HasCallStack) =>
                 ArgsHMap "__linalg_gemm" t a -> TensorApply t
 __linalg_gemm args
   = let scalarArgs
@@ -7042,7 +7452,8 @@ type instance ParameterList "__linalg_gemm2" t =
         '("a", AttrOpt t), '("b", AttrOpt t)]
 
 __linalg_gemm2 ::
-               forall a t . (TensorOp t t, Fullfilled "__linalg_gemm2" t a) =>
+               forall a t .
+                 (TensorOp t t, Fullfilled "__linalg_gemm2" t a, HasCallStack) =>
                  ArgsHMap "__linalg_gemm2" t a -> TensorApply t
 __linalg_gemm2 args
   = let scalarArgs
@@ -7065,7 +7476,8 @@ type instance ParameterList "__linalg_inverse" t =
      '[ '("a", AttrOpt t)]
 
 __linalg_inverse ::
-                 forall a t . (TensorOp t t, Fullfilled "__linalg_inverse" t a) =>
+                 forall a t .
+                   (TensorOp t t, Fullfilled "__linalg_inverse" t a, HasCallStack) =>
                    ArgsHMap "__linalg_inverse" t a -> TensorApply t
 __linalg_inverse args
   = let scalarArgs = catMaybes []
@@ -7078,7 +7490,8 @@ type instance ParameterList "__linalg_makediag" t =
      '[ '("offset", AttrOpt Int), '("a", AttrOpt t)]
 
 __linalg_makediag ::
-                  forall a t . (TensorOp t t, Fullfilled "__linalg_makediag" t a) =>
+                  forall a t .
+                    (TensorOp t t, Fullfilled "__linalg_makediag" t a, HasCallStack) =>
                     ArgsHMap "__linalg_makediag" t a -> TensorApply t
 __linalg_makediag args
   = let scalarArgs
@@ -7094,7 +7507,9 @@ type instance ParameterList "__linalg_maketrian" t =
         '("a", AttrOpt t)]
 
 __linalg_maketrian ::
-                   forall a t . (TensorOp t t, Fullfilled "__linalg_maketrian" t a) =>
+                   forall a t .
+                     (TensorOp t t, Fullfilled "__linalg_maketrian" t a,
+                      HasCallStack) =>
                      ArgsHMap "__linalg_maketrian" t a -> TensorApply t
 __linalg_maketrian args
   = let scalarArgs
@@ -7110,7 +7525,8 @@ type instance ParameterList "__linalg_potrf" t =
      '[ '("a", AttrOpt t)]
 
 __linalg_potrf ::
-               forall a t . (TensorOp t t, Fullfilled "__linalg_potrf" t a) =>
+               forall a t .
+                 (TensorOp t t, Fullfilled "__linalg_potrf" t a, HasCallStack) =>
                  ArgsHMap "__linalg_potrf" t a -> TensorApply t
 __linalg_potrf args
   = let scalarArgs = catMaybes []
@@ -7123,7 +7539,8 @@ type instance ParameterList "__linalg_potri" t =
      '[ '("a", AttrOpt t)]
 
 __linalg_potri ::
-               forall a t . (TensorOp t t, Fullfilled "__linalg_potri" t a) =>
+               forall a t .
+                 (TensorOp t t, Fullfilled "__linalg_potri" t a, HasCallStack) =>
                  ArgsHMap "__linalg_potri" t a -> TensorApply t
 __linalg_potri args
   = let scalarArgs = catMaybes []
@@ -7136,7 +7553,8 @@ type instance ParameterList "__linalg_slogdet" t =
      '[ '("a", AttrOpt t)]
 
 __linalg_slogdet ::
-                 forall a t . (TensorOp t t, Fullfilled "__linalg_slogdet" t a) =>
+                 forall a t .
+                   (TensorOp t t, Fullfilled "__linalg_slogdet" t a, HasCallStack) =>
                    ArgsHMap "__linalg_slogdet" t a -> TensorApply t
 __linalg_slogdet args
   = let scalarArgs = catMaybes []
@@ -7150,7 +7568,8 @@ type instance ParameterList "__linalg_sumlogdiag" t =
 
 __linalg_sumlogdiag ::
                     forall a t .
-                      (TensorOp t t, Fullfilled "__linalg_sumlogdiag" t a) =>
+                      (TensorOp t t, Fullfilled "__linalg_sumlogdiag" t a,
+                       HasCallStack) =>
                       ArgsHMap "__linalg_sumlogdiag" t a -> TensorApply t
 __linalg_sumlogdiag args
   = let scalarArgs = catMaybes []
@@ -7163,7 +7582,8 @@ type instance ParameterList "__linalg_syevd" t =
      '[ '("a", AttrOpt t)]
 
 __linalg_syevd ::
-               forall a t . (TensorOp t t, Fullfilled "__linalg_syevd" t a) =>
+               forall a t .
+                 (TensorOp t t, Fullfilled "__linalg_syevd" t a, HasCallStack) =>
                  ArgsHMap "__linalg_syevd" t a -> TensorApply t
 __linalg_syevd args
   = let scalarArgs = catMaybes []
@@ -7177,7 +7597,8 @@ type instance ParameterList "__linalg_syrk" t =
         '("a", AttrOpt t)]
 
 __linalg_syrk ::
-              forall a t . (TensorOp t t, Fullfilled "__linalg_syrk" t a) =>
+              forall a t .
+                (TensorOp t t, Fullfilled "__linalg_syrk" t a, HasCallStack) =>
                 ArgsHMap "__linalg_syrk" t a -> TensorApply t
 __linalg_syrk args
   = let scalarArgs
@@ -7195,7 +7616,8 @@ type instance ParameterList "__linalg_trmm" t =
         '("a", AttrOpt t), '("b", AttrOpt t)]
 
 __linalg_trmm ::
-              forall a t . (TensorOp t t, Fullfilled "__linalg_trmm" t a) =>
+              forall a t .
+                (TensorOp t t, Fullfilled "__linalg_trmm" t a, HasCallStack) =>
                 ArgsHMap "__linalg_trmm" t a -> TensorApply t
 __linalg_trmm args
   = let scalarArgs
@@ -7218,7 +7640,8 @@ type instance ParameterList "__linalg_trsm" t =
         '("a", AttrOpt t), '("b", AttrOpt t)]
 
 __linalg_trsm ::
-              forall a t . (TensorOp t t, Fullfilled "__linalg_trsm" t a) =>
+              forall a t .
+                (TensorOp t t, Fullfilled "__linalg_trsm" t a, HasCallStack) =>
                 ArgsHMap "__linalg_trsm" t a -> TensorApply t
 __linalg_trsm args
   = let scalarArgs
@@ -7246,7 +7669,8 @@ type instance ParameterList "__linspace" t =
                  "uint8"]))]
 
 __linspace ::
-           forall a t . (TensorOp t t, Fullfilled "__linspace" t a) =>
+           forall a t .
+             (TensorOp t t, Fullfilled "__linspace" t a, HasCallStack) =>
              ArgsHMap "__linspace" t a -> TensorApply t
 __linspace args
   = let scalarArgs
@@ -7272,7 +7696,8 @@ type instance ParameterList "__logical_and" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 __logical_and ::
-              forall a t . (TensorOp t t, Fullfilled "__logical_and" t a) =>
+              forall a t .
+                (TensorOp t t, Fullfilled "__logical_and" t a, HasCallStack) =>
                 ArgsHMap "__logical_and" t a -> TensorApply t
 __logical_and args
   = let scalarArgs = catMaybes []
@@ -7289,7 +7714,8 @@ type instance ParameterList "__logical_and_scalar" t =
 
 __logical_and_scalar ::
                      forall a t .
-                       (TensorOp t t, Fullfilled "__logical_and_scalar" t a) =>
+                       (TensorOp t t, Fullfilled "__logical_and_scalar" t a,
+                        HasCallStack) =>
                        ArgsHMap "__logical_and_scalar" t a -> TensorApply t
 __logical_and_scalar args
   = let scalarArgs
@@ -7305,7 +7731,8 @@ type instance ParameterList "__logical_or" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 __logical_or ::
-             forall a t . (TensorOp t t, Fullfilled "__logical_or" t a) =>
+             forall a t .
+               (TensorOp t t, Fullfilled "__logical_or" t a, HasCallStack) =>
                ArgsHMap "__logical_or" t a -> TensorApply t
 __logical_or args
   = let scalarArgs = catMaybes []
@@ -7322,7 +7749,8 @@ type instance ParameterList "__logical_or_scalar" t =
 
 __logical_or_scalar ::
                     forall a t .
-                      (TensorOp t t, Fullfilled "__logical_or_scalar" t a) =>
+                      (TensorOp t t, Fullfilled "__logical_or_scalar" t a,
+                       HasCallStack) =>
                       ArgsHMap "__logical_or_scalar" t a -> TensorApply t
 __logical_or_scalar args
   = let scalarArgs
@@ -7338,7 +7766,8 @@ type instance ParameterList "__logical_xor" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 __logical_xor ::
-              forall a t . (TensorOp t t, Fullfilled "__logical_xor" t a) =>
+              forall a t .
+                (TensorOp t t, Fullfilled "__logical_xor" t a, HasCallStack) =>
                 ArgsHMap "__logical_xor" t a -> TensorApply t
 __logical_xor args
   = let scalarArgs = catMaybes []
@@ -7355,7 +7784,8 @@ type instance ParameterList "__logical_xor_scalar" t =
 
 __logical_xor_scalar ::
                      forall a t .
-                       (TensorOp t t, Fullfilled "__logical_xor_scalar" t a) =>
+                       (TensorOp t t, Fullfilled "__logical_xor_scalar" t a,
+                        HasCallStack) =>
                        ArgsHMap "__logical_xor_scalar" t a -> TensorApply t
 __logical_xor_scalar args
   = let scalarArgs
@@ -7371,7 +7801,8 @@ type instance ParameterList "__maximum" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 __maximum ::
-          forall a t . (TensorOp t t, Fullfilled "__maximum" t a) =>
+          forall a t .
+            (TensorOp t t, Fullfilled "__maximum" t a, HasCallStack) =>
             ArgsHMap "__maximum" t a -> TensorApply t
 __maximum args
   = let scalarArgs = catMaybes []
@@ -7386,7 +7817,8 @@ type instance ParameterList "__maximum_scalar" t =
      '[ '("scalar", AttrOpt Float), '("data", AttrOpt t)]
 
 __maximum_scalar ::
-                 forall a t . (TensorOp t t, Fullfilled "__maximum_scalar" t a) =>
+                 forall a t .
+                   (TensorOp t t, Fullfilled "__maximum_scalar" t a, HasCallStack) =>
                    ArgsHMap "__maximum_scalar" t a -> TensorApply t
 __maximum_scalar args
   = let scalarArgs
@@ -7402,7 +7834,8 @@ type instance ParameterList "__minimum" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 __minimum ::
-          forall a t . (TensorOp t t, Fullfilled "__minimum" t a) =>
+          forall a t .
+            (TensorOp t t, Fullfilled "__minimum" t a, HasCallStack) =>
             ArgsHMap "__minimum" t a -> TensorApply t
 __minimum args
   = let scalarArgs = catMaybes []
@@ -7417,7 +7850,8 @@ type instance ParameterList "__minimum_scalar" t =
      '[ '("scalar", AttrOpt Float), '("data", AttrOpt t)]
 
 __minimum_scalar ::
-                 forall a t . (TensorOp t t, Fullfilled "__minimum_scalar" t a) =>
+                 forall a t .
+                   (TensorOp t t, Fullfilled "__minimum_scalar" t a, HasCallStack) =>
                    ArgsHMap "__minimum_scalar" t a -> TensorApply t
 __minimum_scalar args
   = let scalarArgs
@@ -7433,7 +7867,8 @@ type instance ParameterList "__minus_scalar" t =
      '[ '("scalar", AttrOpt Float), '("data", AttrOpt t)]
 
 __minus_scalar ::
-               forall a t . (TensorOp t t, Fullfilled "__minus_scalar" t a) =>
+               forall a t .
+                 (TensorOp t t, Fullfilled "__minus_scalar" t a, HasCallStack) =>
                  ArgsHMap "__minus_scalar" t a -> TensorApply t
 __minus_scalar args
   = let scalarArgs
@@ -7449,7 +7884,8 @@ type instance ParameterList "__mod" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 __mod ::
-      forall a t . (TensorOp t t, Fullfilled "__mod" t a) =>
+      forall a t .
+        (TensorOp t t, Fullfilled "__mod" t a, HasCallStack) =>
         ArgsHMap "__mod" t a -> TensorApply t
 __mod args
   = let scalarArgs = catMaybes []
@@ -7463,7 +7899,8 @@ type instance ParameterList "__mod_scalar" t =
      '[ '("scalar", AttrOpt Float), '("data", AttrOpt t)]
 
 __mod_scalar ::
-             forall a t . (TensorOp t t, Fullfilled "__mod_scalar" t a) =>
+             forall a t .
+               (TensorOp t t, Fullfilled "__mod_scalar" t a, HasCallStack) =>
                ArgsHMap "__mod_scalar" t a -> TensorApply t
 __mod_scalar args
   = let scalarArgs
@@ -7484,7 +7921,8 @@ type instance ParameterList "__mp_adamw_update" t =
         '("weight32", AttrOpt t), '("rescale_grad", AttrOpt t)]
 
 __mp_adamw_update ::
-                  forall a t . (TensorOp t t, Fullfilled "__mp_adamw_update" t a) =>
+                  forall a t .
+                    (TensorOp t t, Fullfilled "__mp_adamw_update" t a, HasCallStack) =>
                     ArgsHMap "__mp_adamw_update" t a -> TensorApply t
 __mp_adamw_update args
   = let scalarArgs
@@ -7513,7 +7951,8 @@ type instance ParameterList "__mul_scalar" t =
      '[ '("scalar", AttrOpt Float), '("data", AttrOpt t)]
 
 __mul_scalar ::
-             forall a t . (TensorOp t t, Fullfilled "__mul_scalar" t a) =>
+             forall a t .
+               (TensorOp t t, Fullfilled "__mul_scalar" t a, HasCallStack) =>
                ArgsHMap "__mul_scalar" t a -> TensorApply t
 __mul_scalar args
   = let scalarArgs
@@ -7534,7 +7973,8 @@ type instance ParameterList "__multi_adamw_update" t =
 
 __multi_adamw_update ::
                      forall a t .
-                       (TensorOp t t, Fullfilled "__multi_adamw_update" t a) =>
+                       (TensorOp t t, Fullfilled "__multi_adamw_update" t a,
+                        HasCallStack) =>
                        ArgsHMap "__multi_adamw_update" t a -> TensorApply t
 __multi_adamw_update args
   = let scalarArgs
@@ -7562,7 +8002,8 @@ type instance ParameterList "__multi_mp_adamw_update" t =
 
 __multi_mp_adamw_update ::
                         forall a t .
-                          (TensorOp t t, Fullfilled "__multi_mp_adamw_update" t a) =>
+                          (TensorOp t t, Fullfilled "__multi_mp_adamw_update" t a,
+                           HasCallStack) =>
                           ArgsHMap "__multi_mp_adamw_update" t a -> TensorApply t
 __multi_mp_adamw_update args
   = let scalarArgs
@@ -7585,7 +8026,8 @@ type instance ParameterList "__not_equal" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 __not_equal ::
-            forall a t . (TensorOp t t, Fullfilled "__not_equal" t a) =>
+            forall a t .
+              (TensorOp t t, Fullfilled "__not_equal" t a, HasCallStack) =>
               ArgsHMap "__not_equal" t a -> TensorApply t
 __not_equal args
   = let scalarArgs = catMaybes []
@@ -7600,7 +8042,9 @@ type instance ParameterList "__not_equal_scalar" t =
      '[ '("scalar", AttrOpt Float), '("data", AttrOpt t)]
 
 __not_equal_scalar ::
-                   forall a t . (TensorOp t t, Fullfilled "__not_equal_scalar" t a) =>
+                   forall a t .
+                     (TensorOp t t, Fullfilled "__not_equal_scalar" t a,
+                      HasCallStack) =>
                      ArgsHMap "__not_equal_scalar" t a -> TensorApply t
 __not_equal_scalar args
   = let scalarArgs
@@ -7616,7 +8060,8 @@ type instance ParameterList "__np_broadcast_to" t =
      '[ '("shape", AttrOpt [Int]), '("array", AttrOpt t)]
 
 __np_broadcast_to ::
-                  forall a t . (TensorOp t t, Fullfilled "__np_broadcast_to" t a) =>
+                  forall a t .
+                    (TensorOp t t, Fullfilled "__np_broadcast_to" t a, HasCallStack) =>
                     ArgsHMap "__np_broadcast_to" t a -> TensorApply t
 __np_broadcast_to args
   = let scalarArgs
@@ -7631,7 +8076,8 @@ __np_broadcast_to args
 type instance ParameterList "__np_copy" t = '[ '("a", AttrOpt t)]
 
 __np_copy ::
-          forall a t . (TensorOp t t, Fullfilled "__np_copy" t a) =>
+          forall a t .
+            (TensorOp t t, Fullfilled "__np_copy" t a, HasCallStack) =>
             ArgsHMap "__np_copy" t a -> TensorApply t
 __np_copy args
   = let scalarArgs = catMaybes []
@@ -7649,7 +8095,8 @@ type instance ParameterList "__np_cumsum" t =
         '("a", AttrOpt t)]
 
 __np_cumsum ::
-            forall a t . (TensorOp t t, Fullfilled "__np_cumsum" t a) =>
+            forall a t .
+              (TensorOp t t, Fullfilled "__np_cumsum" t a, HasCallStack) =>
               ArgsHMap "__np_cumsum" t a -> TensorApply t
 __np_cumsum args
   = let scalarArgs
@@ -7669,7 +8116,8 @@ type instance ParameterList "__np_dot" t =
      '[ '("a", AttrOpt t), '("b", AttrOpt t)]
 
 __np_dot ::
-         forall a t . (TensorOp t t, Fullfilled "__np_dot" t a) =>
+         forall a t .
+           (TensorOp t t, Fullfilled "__np_dot" t a, HasCallStack) =>
            ArgsHMap "__np_dot" t a -> TensorApply t
 __np_dot args
   = let scalarArgs = catMaybes []
@@ -7684,7 +8132,8 @@ type instance ParameterList "__np_max" t =
         '("initial", AttrOpt (Maybe Double)), '("a", AttrOpt t)]
 
 __np_max ::
-         forall a t . (TensorOp t t, Fullfilled "__np_max" t a) =>
+         forall a t .
+           (TensorOp t t, Fullfilled "__np_max" t a, HasCallStack) =>
            ArgsHMap "__np_max" t a -> TensorApply t
 __np_max args
   = let scalarArgs
@@ -7701,7 +8150,8 @@ type instance ParameterList "__np_min" t =
         '("initial", AttrOpt (Maybe Double)), '("a", AttrOpt t)]
 
 __np_min ::
-         forall a t . (TensorOp t t, Fullfilled "__np_min" t a) =>
+         forall a t .
+           (TensorOp t t, Fullfilled "__np_min" t a, HasCallStack) =>
            ArgsHMap "__np_min" t a -> TensorApply t
 __np_min args
   = let scalarArgs
@@ -7718,7 +8168,8 @@ type instance ParameterList "__np_moveaxis" t =
         '("a", AttrOpt t)]
 
 __np_moveaxis ::
-              forall a t . (TensorOp t t, Fullfilled "__np_moveaxis" t a) =>
+              forall a t .
+                (TensorOp t t, Fullfilled "__np_moveaxis" t a, HasCallStack) =>
                 ArgsHMap "__np_moveaxis" t a -> TensorApply t
 __np_moveaxis args
   = let scalarArgs
@@ -7735,7 +8186,8 @@ type instance ParameterList "__np_ones_like" t =
      '[ '("a", AttrOpt t)]
 
 __np_ones_like ::
-               forall a t . (TensorOp t t, Fullfilled "__np_ones_like" t a) =>
+               forall a t .
+                 (TensorOp t t, Fullfilled "__np_ones_like" t a, HasCallStack) =>
                  ArgsHMap "__np_ones_like" t a -> TensorApply t
 __np_ones_like args
   = let scalarArgs = catMaybes []
@@ -7756,7 +8208,8 @@ type instance ParameterList "__np_prod" t =
         '("a", AttrOpt t)]
 
 __np_prod ::
-          forall a t . (TensorOp t t, Fullfilled "__np_prod" t a) =>
+          forall a t .
+            (TensorOp t t, Fullfilled "__np_prod" t a, HasCallStack) =>
             ArgsHMap "__np_prod" t a -> TensorApply t
 __np_prod args
   = let scalarArgs
@@ -7781,7 +8234,8 @@ type instance ParameterList "__np_reshape" t =
         '("a", AttrOpt t)]
 
 __np_reshape ::
-             forall a t . (TensorOp t t, Fullfilled "__np_reshape" t a) =>
+             forall a t .
+               (TensorOp t t, Fullfilled "__np_reshape" t a, HasCallStack) =>
                ArgsHMap "__np_reshape" t a -> TensorApply t
 __np_reshape args
   = let scalarArgs
@@ -7798,7 +8252,8 @@ type instance ParameterList "__np_roll" t =
         '("axis", AttrOpt (Maybe [Int])), '("data", AttrOpt t)]
 
 __np_roll ::
-          forall a t . (TensorOp t t, Fullfilled "__np_roll" t a) =>
+          forall a t .
+            (TensorOp t t, Fullfilled "__np_roll" t a, HasCallStack) =>
             ArgsHMap "__np_roll" t a -> TensorApply t
 __np_roll args
   = let scalarArgs
@@ -7815,7 +8270,8 @@ type instance ParameterList "__np_squeeze" t =
      '[ '("axis", AttrOpt (Maybe [Int])), '("a", AttrOpt t)]
 
 __np_squeeze ::
-             forall a t . (TensorOp t t, Fullfilled "__np_squeeze" t a) =>
+             forall a t .
+               (TensorOp t t, Fullfilled "__np_squeeze" t a, HasCallStack) =>
                ArgsHMap "__np_squeeze" t a -> TensorApply t
 __np_squeeze args
   = let scalarArgs
@@ -7838,7 +8294,8 @@ type instance ParameterList "__np_sum" t =
         '("a", AttrOpt t)]
 
 __np_sum ::
-         forall a t . (TensorOp t t, Fullfilled "__np_sum" t a) =>
+         forall a t .
+           (TensorOp t t, Fullfilled "__np_sum" t a, HasCallStack) =>
            ArgsHMap "__np_sum" t a -> TensorApply t
 __np_sum args
   = let scalarArgs
@@ -7862,7 +8319,8 @@ type instance ParameterList "__np_trace" t =
         '("axis2", AttrOpt Int), '("data", AttrOpt t)]
 
 __np_trace ::
-           forall a t . (TensorOp t t, Fullfilled "__np_trace" t a) =>
+           forall a t .
+             (TensorOp t t, Fullfilled "__np_trace" t a, HasCallStack) =>
              ArgsHMap "__np_trace" t a -> TensorApply t
 __np_trace args
   = let scalarArgs
@@ -7879,7 +8337,8 @@ type instance ParameterList "__np_transpose" t =
      '[ '("axes", AttrOpt [Int]), '("a", AttrOpt t)]
 
 __np_transpose ::
-               forall a t . (TensorOp t t, Fullfilled "__np_transpose" t a) =>
+               forall a t .
+                 (TensorOp t t, Fullfilled "__np_transpose" t a, HasCallStack) =>
                  ArgsHMap "__np_transpose" t a -> TensorApply t
 __np_transpose args
   = let scalarArgs
@@ -7894,7 +8353,8 @@ type instance ParameterList "__np_zeros_like" t =
      '[ '("a", AttrOpt t)]
 
 __np_zeros_like ::
-                forall a t . (TensorOp t t, Fullfilled "__np_zeros_like" t a) =>
+                forall a t .
+                  (TensorOp t t, Fullfilled "__np_zeros_like" t a, HasCallStack) =>
                   ArgsHMap "__np_zeros_like" t a -> TensorApply t
 __np_zeros_like args
   = let scalarArgs = catMaybes []
@@ -7907,7 +8367,8 @@ type instance ParameterList "__npi_absolute" t =
      '[ '("x", AttrOpt t)]
 
 __npi_absolute ::
-               forall a t . (TensorOp t t, Fullfilled "__npi_absolute" t a) =>
+               forall a t .
+                 (TensorOp t t, Fullfilled "__npi_absolute" t a, HasCallStack) =>
                  ArgsHMap "__npi_absolute" t a -> TensorApply t
 __npi_absolute args
   = let scalarArgs = catMaybes []
@@ -7920,7 +8381,8 @@ type instance ParameterList "__npi_add" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 __npi_add ::
-          forall a t . (TensorOp t t, Fullfilled "__npi_add" t a) =>
+          forall a t .
+            (TensorOp t t, Fullfilled "__npi_add" t a, HasCallStack) =>
             ArgsHMap "__npi_add" t a -> TensorApply t
 __npi_add args
   = let scalarArgs = catMaybes []
@@ -7935,7 +8397,8 @@ type instance ParameterList "__npi_add_scalar" t =
      '[ '("scalar", AttrOpt Float), '("data", AttrOpt t)]
 
 __npi_add_scalar ::
-                 forall a t . (TensorOp t t, Fullfilled "__npi_add_scalar" t a) =>
+                 forall a t .
+                   (TensorOp t t, Fullfilled "__npi_add_scalar" t a, HasCallStack) =>
                    ArgsHMap "__npi_add_scalar" t a -> TensorApply t
 __npi_add_scalar args
   = let scalarArgs
@@ -7958,7 +8421,8 @@ type instance ParameterList "__npi_arange" t =
                  "uint8"]))]
 
 __npi_arange ::
-             forall a t . (TensorOp t t, Fullfilled "__npi_arange" t a) =>
+             forall a t .
+               (TensorOp t t, Fullfilled "__npi_arange" t a, HasCallStack) =>
                ArgsHMap "__npi_arange" t a -> TensorApply t
 __npi_arange args
   = let scalarArgs
@@ -7985,7 +8449,8 @@ type instance ParameterList "__npi_arccos" t =
      '[ '("x", AttrOpt t)]
 
 __npi_arccos ::
-             forall a t . (TensorOp t t, Fullfilled "__npi_arccos" t a) =>
+             forall a t .
+               (TensorOp t t, Fullfilled "__npi_arccos" t a, HasCallStack) =>
                ArgsHMap "__npi_arccos" t a -> TensorApply t
 __npi_arccos args
   = let scalarArgs = catMaybes []
@@ -7998,7 +8463,8 @@ type instance ParameterList "__npi_arccosh" t =
      '[ '("x", AttrOpt t)]
 
 __npi_arccosh ::
-              forall a t . (TensorOp t t, Fullfilled "__npi_arccosh" t a) =>
+              forall a t .
+                (TensorOp t t, Fullfilled "__npi_arccosh" t a, HasCallStack) =>
                 ArgsHMap "__npi_arccosh" t a -> TensorApply t
 __npi_arccosh args
   = let scalarArgs = catMaybes []
@@ -8011,7 +8477,8 @@ type instance ParameterList "__npi_arcsin" t =
      '[ '("x", AttrOpt t)]
 
 __npi_arcsin ::
-             forall a t . (TensorOp t t, Fullfilled "__npi_arcsin" t a) =>
+             forall a t .
+               (TensorOp t t, Fullfilled "__npi_arcsin" t a, HasCallStack) =>
                ArgsHMap "__npi_arcsin" t a -> TensorApply t
 __npi_arcsin args
   = let scalarArgs = catMaybes []
@@ -8024,7 +8491,8 @@ type instance ParameterList "__npi_arcsinh" t =
      '[ '("x", AttrOpt t)]
 
 __npi_arcsinh ::
-              forall a t . (TensorOp t t, Fullfilled "__npi_arcsinh" t a) =>
+              forall a t .
+                (TensorOp t t, Fullfilled "__npi_arcsinh" t a, HasCallStack) =>
                 ArgsHMap "__npi_arcsinh" t a -> TensorApply t
 __npi_arcsinh args
   = let scalarArgs = catMaybes []
@@ -8037,7 +8505,8 @@ type instance ParameterList "__npi_arctan" t =
      '[ '("x", AttrOpt t)]
 
 __npi_arctan ::
-             forall a t . (TensorOp t t, Fullfilled "__npi_arctan" t a) =>
+             forall a t .
+               (TensorOp t t, Fullfilled "__npi_arctan" t a, HasCallStack) =>
                ArgsHMap "__npi_arctan" t a -> TensorApply t
 __npi_arctan args
   = let scalarArgs = catMaybes []
@@ -8050,7 +8519,8 @@ type instance ParameterList "__npi_arctan2" t =
      '[ '("x1", AttrOpt t), '("x2", AttrOpt t)]
 
 __npi_arctan2 ::
-              forall a t . (TensorOp t t, Fullfilled "__npi_arctan2" t a) =>
+              forall a t .
+                (TensorOp t t, Fullfilled "__npi_arctan2" t a, HasCallStack) =>
                 ArgsHMap "__npi_arctan2" t a -> TensorApply t
 __npi_arctan2 args
   = let scalarArgs = catMaybes []
@@ -8067,7 +8537,8 @@ type instance ParameterList "__npi_arctan2_scalar" t =
 
 __npi_arctan2_scalar ::
                      forall a t .
-                       (TensorOp t t, Fullfilled "__npi_arctan2_scalar" t a) =>
+                       (TensorOp t t, Fullfilled "__npi_arctan2_scalar" t a,
+                        HasCallStack) =>
                        ArgsHMap "__npi_arctan2_scalar" t a -> TensorApply t
 __npi_arctan2_scalar args
   = let scalarArgs
@@ -8083,7 +8554,8 @@ type instance ParameterList "__npi_arctanh" t =
      '[ '("x", AttrOpt t)]
 
 __npi_arctanh ::
-              forall a t . (TensorOp t t, Fullfilled "__npi_arctanh" t a) =>
+              forall a t .
+                (TensorOp t t, Fullfilled "__npi_arctanh" t a, HasCallStack) =>
                 ArgsHMap "__npi_arctanh" t a -> TensorApply t
 __npi_arctanh args
   = let scalarArgs = catMaybes []
@@ -8097,7 +8569,8 @@ type instance ParameterList "__npi_argmax" t =
         '("data", AttrOpt t)]
 
 __npi_argmax ::
-             forall a t . (TensorOp t t, Fullfilled "__npi_argmax" t a) =>
+             forall a t .
+               (TensorOp t t, Fullfilled "__npi_argmax" t a, HasCallStack) =>
                ArgsHMap "__npi_argmax" t a -> TensorApply t
 __npi_argmax args
   = let scalarArgs
@@ -8115,7 +8588,8 @@ type instance ParameterList "__npi_argmin" t =
         '("data", AttrOpt t)]
 
 __npi_argmin ::
-             forall a t . (TensorOp t t, Fullfilled "__npi_argmin" t a) =>
+             forall a t .
+               (TensorOp t t, Fullfilled "__npi_argmin" t a, HasCallStack) =>
                ArgsHMap "__npi_argmin" t a -> TensorApply t
 __npi_argmin args
   = let scalarArgs
@@ -8132,7 +8606,8 @@ type instance ParameterList "__npi_around" t =
      '[ '("decimals", AttrOpt Int), '("x", AttrOpt t)]
 
 __npi_around ::
-             forall a t . (TensorOp t t, Fullfilled "__npi_around" t a) =>
+             forall a t .
+               (TensorOp t t, Fullfilled "__npi_around" t a, HasCallStack) =>
                ArgsHMap "__npi_around" t a -> TensorApply t
 __npi_around args
   = let scalarArgs
@@ -8147,7 +8622,8 @@ type instance ParameterList "__npi_bitwise_xor" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 __npi_bitwise_xor ::
-                  forall a t . (TensorOp t t, Fullfilled "__npi_bitwise_xor" t a) =>
+                  forall a t .
+                    (TensorOp t t, Fullfilled "__npi_bitwise_xor" t a, HasCallStack) =>
                     ArgsHMap "__npi_bitwise_xor" t a -> TensorApply t
 __npi_bitwise_xor args
   = let scalarArgs = catMaybes []
@@ -8164,7 +8640,8 @@ type instance ParameterList "__npi_bitwise_xor_scalar" t =
 
 __npi_bitwise_xor_scalar ::
                          forall a t .
-                           (TensorOp t t, Fullfilled "__npi_bitwise_xor_scalar" t a) =>
+                           (TensorOp t t, Fullfilled "__npi_bitwise_xor_scalar" t a,
+                            HasCallStack) =>
                            ArgsHMap "__npi_bitwise_xor_scalar" t a -> TensorApply t
 __npi_bitwise_xor_scalar args
   = let scalarArgs
@@ -8185,7 +8662,8 @@ type instance ParameterList "__npi_blackman" t =
                  "uint8"]))]
 
 __npi_blackman ::
-               forall a t . (TensorOp t t, Fullfilled "__npi_blackman" t a) =>
+               forall a t .
+                 (TensorOp t t, Fullfilled "__npi_blackman" t a, HasCallStack) =>
                  ArgsHMap "__npi_blackman" t a -> TensorApply t
 __npi_blackman args
   = let scalarArgs
@@ -8209,8 +8687,8 @@ type instance ParameterList "__npi_boolean_mask_assign_scalar" t =
 
 __npi_boolean_mask_assign_scalar ::
                                  forall a t .
-                                   (TensorOp t t,
-                                    Fullfilled "__npi_boolean_mask_assign_scalar" t a) =>
+                                   (TensorOp t t, Fullfilled "__npi_boolean_mask_assign_scalar" t a,
+                                    HasCallStack) =>
                                    ArgsHMap "__npi_boolean_mask_assign_scalar" t a -> TensorApply t
 __npi_boolean_mask_assign_scalar args
   = let scalarArgs
@@ -8230,8 +8708,8 @@ type instance ParameterList "__npi_boolean_mask_assign_tensor" t =
 
 __npi_boolean_mask_assign_tensor ::
                                  forall a t .
-                                   (TensorOp t t,
-                                    Fullfilled "__npi_boolean_mask_assign_tensor" t a) =>
+                                   (TensorOp t t, Fullfilled "__npi_boolean_mask_assign_tensor" t a,
+                                    HasCallStack) =>
                                    ArgsHMap "__npi_boolean_mask_assign_tensor" t a -> TensorApply t
 __npi_boolean_mask_assign_tensor args
   = let scalarArgs = catMaybes []
@@ -8247,7 +8725,8 @@ __npi_boolean_mask_assign_tensor args
 type instance ParameterList "__npi_cbrt" t = '[ '("x", AttrOpt t)]
 
 __npi_cbrt ::
-           forall a t . (TensorOp t t, Fullfilled "__npi_cbrt" t a) =>
+           forall a t .
+             (TensorOp t t, Fullfilled "__npi_cbrt" t a, HasCallStack) =>
              ArgsHMap "__npi_cbrt" t a -> TensorApply t
 __npi_cbrt args
   = let scalarArgs = catMaybes []
@@ -8258,7 +8737,8 @@ __npi_cbrt args
 type instance ParameterList "__npi_ceil" t = '[ '("x", AttrOpt t)]
 
 __npi_ceil ::
-           forall a t . (TensorOp t t, Fullfilled "__npi_ceil" t a) =>
+           forall a t .
+             (TensorOp t t, Fullfilled "__npi_ceil" t a, HasCallStack) =>
              ArgsHMap "__npi_ceil" t a -> TensorApply t
 __npi_ceil args
   = let scalarArgs = catMaybes []
@@ -8273,7 +8753,8 @@ type instance ParameterList "__npi_choice" t =
         '("input2", AttrOpt t)]
 
 __npi_choice ::
-             forall a t . (TensorOp t t, Fullfilled "__npi_choice" t a) =>
+             forall a t .
+               (TensorOp t t, Fullfilled "__npi_choice" t a, HasCallStack) =>
                ArgsHMap "__npi_choice" t a -> TensorApply t
 __npi_choice args
   = let scalarArgs
@@ -8295,7 +8776,9 @@ type instance ParameterList "__npi_column_stack" t =
      '[ '("num_args", AttrReq Int), '("data", AttrOpt [t])]
 
 __npi_column_stack ::
-                   forall a t . (TensorOp t t, Fullfilled "__npi_column_stack" t a) =>
+                   forall a t .
+                     (TensorOp t t, Fullfilled "__npi_column_stack" t a,
+                      HasCallStack) =>
                      ArgsHMap "__npi_column_stack" t a -> TensorApply t
 __npi_column_stack args
   = let scalarArgs
@@ -8310,7 +8793,8 @@ type instance ParameterList "__npi_concatenate" t =
         '("data", AttrOpt [t])]
 
 __npi_concatenate ::
-                  forall a t . (TensorOp t t, Fullfilled "__npi_concatenate" t a) =>
+                  forall a t .
+                    (TensorOp t t, Fullfilled "__npi_concatenate" t a, HasCallStack) =>
                     ArgsHMap "__npi_concatenate" t a -> TensorApply t
 __npi_concatenate args
   = let scalarArgs
@@ -8325,7 +8809,8 @@ type instance ParameterList "__npi_copysign" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 __npi_copysign ::
-               forall a t . (TensorOp t t, Fullfilled "__npi_copysign" t a) =>
+               forall a t .
+                 (TensorOp t t, Fullfilled "__npi_copysign" t a, HasCallStack) =>
                  ArgsHMap "__npi_copysign" t a -> TensorApply t
 __npi_copysign args
   = let scalarArgs = catMaybes []
@@ -8342,7 +8827,8 @@ type instance ParameterList "__npi_copysign_scalar" t =
 
 __npi_copysign_scalar ::
                       forall a t .
-                        (TensorOp t t, Fullfilled "__npi_copysign_scalar" t a) =>
+                        (TensorOp t t, Fullfilled "__npi_copysign_scalar" t a,
+                         HasCallStack) =>
                         ArgsHMap "__npi_copysign_scalar" t a -> TensorApply t
 __npi_copysign_scalar args
   = let scalarArgs
@@ -8357,7 +8843,8 @@ __npi_copysign_scalar args
 type instance ParameterList "__npi_cos" t = '[ '("x", AttrOpt t)]
 
 __npi_cos ::
-          forall a t . (TensorOp t t, Fullfilled "__npi_cos" t a) =>
+          forall a t .
+            (TensorOp t t, Fullfilled "__npi_cos" t a, HasCallStack) =>
             ArgsHMap "__npi_cos" t a -> TensorApply t
 __npi_cos args
   = let scalarArgs = catMaybes []
@@ -8368,7 +8855,8 @@ __npi_cos args
 type instance ParameterList "__npi_cosh" t = '[ '("x", AttrOpt t)]
 
 __npi_cosh ::
-           forall a t . (TensorOp t t, Fullfilled "__npi_cosh" t a) =>
+           forall a t .
+             (TensorOp t t, Fullfilled "__npi_cosh" t a, HasCallStack) =>
              ArgsHMap "__npi_cosh" t a -> TensorApply t
 __npi_cosh args
   = let scalarArgs = catMaybes []
@@ -8380,7 +8868,8 @@ type instance ParameterList "__npi_degrees" t =
      '[ '("x", AttrOpt t)]
 
 __npi_degrees ::
-              forall a t . (TensorOp t t, Fullfilled "__npi_degrees" t a) =>
+              forall a t .
+                (TensorOp t t, Fullfilled "__npi_degrees" t a, HasCallStack) =>
                 ArgsHMap "__npi_degrees" t a -> TensorApply t
 __npi_degrees args
   = let scalarArgs = catMaybes []
@@ -8393,7 +8882,8 @@ type instance ParameterList "__npi_diff" t =
      '[ '("n", AttrOpt Int), '("axis", AttrOpt Int), '("a", AttrOpt t)]
 
 __npi_diff ::
-           forall a t . (TensorOp t t, Fullfilled "__npi_diff" t a) =>
+           forall a t .
+             (TensorOp t t, Fullfilled "__npi_diff" t a, HasCallStack) =>
              ArgsHMap "__npi_diff" t a -> TensorApply t
 __npi_diff args
   = let scalarArgs
@@ -8409,7 +8899,8 @@ type instance ParameterList "__npi_dstack" t =
         '("data", AttrOpt [t])]
 
 __npi_dstack ::
-             forall a t . (TensorOp t t, Fullfilled "__npi_dstack" t a) =>
+             forall a t .
+               (TensorOp t t, Fullfilled "__npi_dstack" t a, HasCallStack) =>
                ArgsHMap "__npi_dstack" t a -> TensorApply t
 __npi_dstack args
   = let scalarArgs
@@ -8425,7 +8916,8 @@ type instance ParameterList "__npi_einsum" t =
         '("optimize", AttrOpt Int), '("data", AttrOpt [t])]
 
 __npi_einsum ::
-             forall a t . (TensorOp t t, Fullfilled "__npi_einsum" t a) =>
+             forall a t .
+               (TensorOp t t, Fullfilled "__npi_einsum" t a, HasCallStack) =>
                ArgsHMap "__npi_einsum" t a -> TensorApply t
 __npi_einsum args
   = let scalarArgs
@@ -8442,7 +8934,8 @@ type instance ParameterList "__npi_equal" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 __npi_equal ::
-            forall a t . (TensorOp t t, Fullfilled "__npi_equal" t a) =>
+            forall a t .
+              (TensorOp t t, Fullfilled "__npi_equal" t a, HasCallStack) =>
               ArgsHMap "__npi_equal" t a -> TensorApply t
 __npi_equal args
   = let scalarArgs = catMaybes []
@@ -8457,7 +8950,9 @@ type instance ParameterList "__npi_equal_scalar" t =
      '[ '("scalar", AttrOpt Float), '("data", AttrOpt t)]
 
 __npi_equal_scalar ::
-                   forall a t . (TensorOp t t, Fullfilled "__npi_equal_scalar" t a) =>
+                   forall a t .
+                     (TensorOp t t, Fullfilled "__npi_equal_scalar" t a,
+                      HasCallStack) =>
                      ArgsHMap "__npi_equal_scalar" t a -> TensorApply t
 __npi_equal_scalar args
   = let scalarArgs
@@ -8472,7 +8967,8 @@ __npi_equal_scalar args
 type instance ParameterList "__npi_exp" t = '[ '("x", AttrOpt t)]
 
 __npi_exp ::
-          forall a t . (TensorOp t t, Fullfilled "__npi_exp" t a) =>
+          forall a t .
+            (TensorOp t t, Fullfilled "__npi_exp" t a, HasCallStack) =>
             ArgsHMap "__npi_exp" t a -> TensorApply t
 __npi_exp args
   = let scalarArgs = catMaybes []
@@ -8483,7 +8979,8 @@ __npi_exp args
 type instance ParameterList "__npi_expm1" t = '[ '("x", AttrOpt t)]
 
 __npi_expm1 ::
-            forall a t . (TensorOp t t, Fullfilled "__npi_expm1" t a) =>
+            forall a t .
+              (TensorOp t t, Fullfilled "__npi_expm1" t a, HasCallStack) =>
               ArgsHMap "__npi_expm1" t a -> TensorApply t
 __npi_expm1 args
   = let scalarArgs = catMaybes []
@@ -8494,7 +8991,8 @@ __npi_expm1 args
 type instance ParameterList "__npi_fix" t = '[ '("x", AttrOpt t)]
 
 __npi_fix ::
-          forall a t . (TensorOp t t, Fullfilled "__npi_fix" t a) =>
+          forall a t .
+            (TensorOp t t, Fullfilled "__npi_fix" t a, HasCallStack) =>
             ArgsHMap "__npi_fix" t a -> TensorApply t
 __npi_fix args
   = let scalarArgs = catMaybes []
@@ -8506,7 +9004,8 @@ type instance ParameterList "__npi_flip" t =
      '[ '("axis", AttrReq [Int]), '("data", AttrOpt t)]
 
 __npi_flip ::
-           forall a t . (TensorOp t t, Fullfilled "__npi_flip" t a) =>
+           forall a t .
+             (TensorOp t t, Fullfilled "__npi_flip" t a, HasCallStack) =>
              ArgsHMap "__npi_flip" t a -> TensorApply t
 __npi_flip args
   = let scalarArgs
@@ -8520,7 +9019,8 @@ __npi_flip args
 type instance ParameterList "__npi_floor" t = '[ '("x", AttrOpt t)]
 
 __npi_floor ::
-            forall a t . (TensorOp t t, Fullfilled "__npi_floor" t a) =>
+            forall a t .
+              (TensorOp t t, Fullfilled "__npi_floor" t a, HasCallStack) =>
               ArgsHMap "__npi_floor" t a -> TensorApply t
 __npi_floor args
   = let scalarArgs = catMaybes []
@@ -8532,7 +9032,8 @@ type instance ParameterList "__npi_greater" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 __npi_greater ::
-              forall a t . (TensorOp t t, Fullfilled "__npi_greater" t a) =>
+              forall a t .
+                (TensorOp t t, Fullfilled "__npi_greater" t a, HasCallStack) =>
                 ArgsHMap "__npi_greater" t a -> TensorApply t
 __npi_greater args
   = let scalarArgs = catMaybes []
@@ -8549,7 +9050,8 @@ type instance ParameterList "__npi_greater_equal" t =
 
 __npi_greater_equal ::
                     forall a t .
-                      (TensorOp t t, Fullfilled "__npi_greater_equal" t a) =>
+                      (TensorOp t t, Fullfilled "__npi_greater_equal" t a,
+                       HasCallStack) =>
                       ArgsHMap "__npi_greater_equal" t a -> TensorApply t
 __npi_greater_equal args
   = let scalarArgs = catMaybes []
@@ -8566,7 +9068,8 @@ type instance ParameterList "__npi_greater_equal_scalar" t =
 
 __npi_greater_equal_scalar ::
                            forall a t .
-                             (TensorOp t t, Fullfilled "__npi_greater_equal_scalar" t a) =>
+                             (TensorOp t t, Fullfilled "__npi_greater_equal_scalar" t a,
+                              HasCallStack) =>
                              ArgsHMap "__npi_greater_equal_scalar" t a -> TensorApply t
 __npi_greater_equal_scalar args
   = let scalarArgs
@@ -8583,7 +9086,8 @@ type instance ParameterList "__npi_greater_scalar" t =
 
 __npi_greater_scalar ::
                      forall a t .
-                       (TensorOp t t, Fullfilled "__npi_greater_scalar" t a) =>
+                       (TensorOp t t, Fullfilled "__npi_greater_scalar" t a,
+                        HasCallStack) =>
                        ArgsHMap "__npi_greater_scalar" t a -> TensorApply t
 __npi_greater_scalar args
   = let scalarArgs
@@ -8604,7 +9108,8 @@ type instance ParameterList "__npi_hamming" t =
                  "uint8"]))]
 
 __npi_hamming ::
-              forall a t . (TensorOp t t, Fullfilled "__npi_hamming" t a) =>
+              forall a t .
+                (TensorOp t t, Fullfilled "__npi_hamming" t a, HasCallStack) =>
                 ArgsHMap "__npi_hamming" t a -> TensorApply t
 __npi_hamming args
   = let scalarArgs
@@ -8631,7 +9136,8 @@ type instance ParameterList "__npi_hanning" t =
                  "uint8"]))]
 
 __npi_hanning ::
-              forall a t . (TensorOp t t, Fullfilled "__npi_hanning" t a) =>
+              forall a t .
+                (TensorOp t t, Fullfilled "__npi_hanning" t a, HasCallStack) =>
                 ArgsHMap "__npi_hanning" t a -> TensorApply t
 __npi_hanning args
   = let scalarArgs
@@ -8655,7 +9161,8 @@ type instance ParameterList "__npi_hsplit" t =
         '("data", AttrOpt t)]
 
 __npi_hsplit ::
-             forall a t . (TensorOp t t, Fullfilled "__npi_hsplit" t a) =>
+             forall a t .
+               (TensorOp t t, Fullfilled "__npi_hsplit" t a, HasCallStack) =>
                ArgsHMap "__npi_hsplit" t a -> TensorApply t
 __npi_hsplit args
   = let scalarArgs
@@ -8675,7 +9182,8 @@ type instance ParameterList "__npi_hsplit_backward" t = '[]
 
 __npi_hsplit_backward ::
                       forall a t .
-                        (TensorOp t t, Fullfilled "__npi_hsplit_backward" t a) =>
+                        (TensorOp t t, Fullfilled "__npi_hsplit_backward" t a,
+                         HasCallStack) =>
                         ArgsHMap "__npi_hsplit_backward" t a -> TensorApply t
 __npi_hsplit_backward args
   = let scalarArgs = catMaybes []
@@ -8688,7 +9196,8 @@ type instance ParameterList "__npi_hypot" t =
      '[ '("x1", AttrOpt t), '("x2", AttrOpt t)]
 
 __npi_hypot ::
-            forall a t . (TensorOp t t, Fullfilled "__npi_hypot" t a) =>
+            forall a t .
+              (TensorOp t t, Fullfilled "__npi_hypot" t a, HasCallStack) =>
               ArgsHMap "__npi_hypot" t a -> TensorApply t
 __npi_hypot args
   = let scalarArgs = catMaybes []
@@ -8708,7 +9217,8 @@ type instance ParameterList "__npi_identity" t =
                  "int8", "uint8"]))]
 
 __npi_identity ::
-               forall a t . (TensorOp t t, Fullfilled "__npi_identity" t a) =>
+               forall a t .
+                 (TensorOp t t, Fullfilled "__npi_identity" t a, HasCallStack) =>
                  ArgsHMap "__npi_identity" t a -> TensorApply t
 __npi_identity args
   = let scalarArgs
@@ -8736,7 +9246,8 @@ type instance ParameterList "__npi_indices" t =
         '("ctx", AttrOpt Text)]
 
 __npi_indices ::
-              forall a t . (TensorOp t t, Fullfilled "__npi_indices" t a) =>
+              forall a t .
+                (TensorOp t t, Fullfilled "__npi_indices" t a, HasCallStack) =>
                 ArgsHMap "__npi_indices" t a -> TensorApply t
 __npi_indices args
   = let scalarArgs
@@ -8759,7 +9270,8 @@ type instance ParameterList "__npi_lcm" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 __npi_lcm ::
-          forall a t . (TensorOp t t, Fullfilled "__npi_lcm" t a) =>
+          forall a t .
+            (TensorOp t t, Fullfilled "__npi_lcm" t a, HasCallStack) =>
             ArgsHMap "__npi_lcm" t a -> TensorApply t
 __npi_lcm args
   = let scalarArgs = catMaybes []
@@ -8774,7 +9286,8 @@ type instance ParameterList "__npi_lcm_scalar" t =
      '[ '("scalar", AttrOpt Int), '("data", AttrOpt t)]
 
 __npi_lcm_scalar ::
-                 forall a t . (TensorOp t t, Fullfilled "__npi_lcm_scalar" t a) =>
+                 forall a t .
+                   (TensorOp t t, Fullfilled "__npi_lcm_scalar" t a, HasCallStack) =>
                    ArgsHMap "__npi_lcm_scalar" t a -> TensorApply t
 __npi_lcm_scalar args
   = let scalarArgs
@@ -8790,7 +9303,8 @@ type instance ParameterList "__npi_ldexp" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 __npi_ldexp ::
-            forall a t . (TensorOp t t, Fullfilled "__npi_ldexp" t a) =>
+            forall a t .
+              (TensorOp t t, Fullfilled "__npi_ldexp" t a, HasCallStack) =>
               ArgsHMap "__npi_ldexp" t a -> TensorApply t
 __npi_ldexp args
   = let scalarArgs = catMaybes []
@@ -8805,7 +9319,9 @@ type instance ParameterList "__npi_ldexp_scalar" t =
      '[ '("scalar", AttrOpt Float), '("data", AttrOpt t)]
 
 __npi_ldexp_scalar ::
-                   forall a t . (TensorOp t t, Fullfilled "__npi_ldexp_scalar" t a) =>
+                   forall a t .
+                     (TensorOp t t, Fullfilled "__npi_ldexp_scalar" t a,
+                      HasCallStack) =>
                      ArgsHMap "__npi_ldexp_scalar" t a -> TensorApply t
 __npi_ldexp_scalar args
   = let scalarArgs
@@ -8821,7 +9337,8 @@ type instance ParameterList "__npi_less" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 __npi_less ::
-           forall a t . (TensorOp t t, Fullfilled "__npi_less" t a) =>
+           forall a t .
+             (TensorOp t t, Fullfilled "__npi_less" t a, HasCallStack) =>
              ArgsHMap "__npi_less" t a -> TensorApply t
 __npi_less args
   = let scalarArgs = catMaybes []
@@ -8836,7 +9353,8 @@ type instance ParameterList "__npi_less_equal" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 __npi_less_equal ::
-                 forall a t . (TensorOp t t, Fullfilled "__npi_less_equal" t a) =>
+                 forall a t .
+                   (TensorOp t t, Fullfilled "__npi_less_equal" t a, HasCallStack) =>
                    ArgsHMap "__npi_less_equal" t a -> TensorApply t
 __npi_less_equal args
   = let scalarArgs = catMaybes []
@@ -8853,7 +9371,8 @@ type instance ParameterList "__npi_less_equal_scalar" t =
 
 __npi_less_equal_scalar ::
                         forall a t .
-                          (TensorOp t t, Fullfilled "__npi_less_equal_scalar" t a) =>
+                          (TensorOp t t, Fullfilled "__npi_less_equal_scalar" t a,
+                           HasCallStack) =>
                           ArgsHMap "__npi_less_equal_scalar" t a -> TensorApply t
 __npi_less_equal_scalar args
   = let scalarArgs
@@ -8869,7 +9388,8 @@ type instance ParameterList "__npi_less_scalar" t =
      '[ '("scalar", AttrOpt Float), '("data", AttrOpt t)]
 
 __npi_less_scalar ::
-                  forall a t . (TensorOp t t, Fullfilled "__npi_less_scalar" t a) =>
+                  forall a t .
+                    (TensorOp t t, Fullfilled "__npi_less_scalar" t a, HasCallStack) =>
                     ArgsHMap "__npi_less_scalar" t a -> TensorApply t
 __npi_less_scalar args
   = let scalarArgs
@@ -8884,7 +9404,8 @@ __npi_less_scalar args
 type instance ParameterList "__npi_log" t = '[ '("x", AttrOpt t)]
 
 __npi_log ::
-          forall a t . (TensorOp t t, Fullfilled "__npi_log" t a) =>
+          forall a t .
+            (TensorOp t t, Fullfilled "__npi_log" t a, HasCallStack) =>
             ArgsHMap "__npi_log" t a -> TensorApply t
 __npi_log args
   = let scalarArgs = catMaybes []
@@ -8895,7 +9416,8 @@ __npi_log args
 type instance ParameterList "__npi_log10" t = '[ '("x", AttrOpt t)]
 
 __npi_log10 ::
-            forall a t . (TensorOp t t, Fullfilled "__npi_log10" t a) =>
+            forall a t .
+              (TensorOp t t, Fullfilled "__npi_log10" t a, HasCallStack) =>
               ArgsHMap "__npi_log10" t a -> TensorApply t
 __npi_log10 args
   = let scalarArgs = catMaybes []
@@ -8906,7 +9428,8 @@ __npi_log10 args
 type instance ParameterList "__npi_log1p" t = '[ '("x", AttrOpt t)]
 
 __npi_log1p ::
-            forall a t . (TensorOp t t, Fullfilled "__npi_log1p" t a) =>
+            forall a t .
+              (TensorOp t t, Fullfilled "__npi_log1p" t a, HasCallStack) =>
               ArgsHMap "__npi_log1p" t a -> TensorApply t
 __npi_log1p args
   = let scalarArgs = catMaybes []
@@ -8917,7 +9440,8 @@ __npi_log1p args
 type instance ParameterList "__npi_log2" t = '[ '("x", AttrOpt t)]
 
 __npi_log2 ::
-           forall a t . (TensorOp t t, Fullfilled "__npi_log2" t a) =>
+           forall a t .
+             (TensorOp t t, Fullfilled "__npi_log2" t a, HasCallStack) =>
              ArgsHMap "__npi_log2" t a -> TensorApply t
 __npi_log2 args
   = let scalarArgs = catMaybes []
@@ -8929,7 +9453,8 @@ type instance ParameterList "__npi_logical_not" t =
      '[ '("x", AttrOpt t)]
 
 __npi_logical_not ::
-                  forall a t . (TensorOp t t, Fullfilled "__npi_logical_not" t a) =>
+                  forall a t .
+                    (TensorOp t t, Fullfilled "__npi_logical_not" t a, HasCallStack) =>
                     ArgsHMap "__npi_logical_not" t a -> TensorApply t
 __npi_logical_not args
   = let scalarArgs = catMaybes []
@@ -8949,7 +9474,8 @@ type instance ParameterList "__npi_logspace" t =
                  "uint8"]))]
 
 __npi_logspace ::
-               forall a t . (TensorOp t t, Fullfilled "__npi_logspace" t a) =>
+               forall a t .
+                 (TensorOp t t, Fullfilled "__npi_logspace" t a, HasCallStack) =>
                  ArgsHMap "__npi_logspace" t a -> TensorApply t
 __npi_logspace args
   = let scalarArgs
@@ -8983,7 +9509,8 @@ type instance ParameterList "__npi_mean" t =
         '("a", AttrOpt t)]
 
 __npi_mean ::
-           forall a t . (TensorOp t t, Fullfilled "__npi_mean" t a) =>
+           forall a t .
+             (TensorOp t t, Fullfilled "__npi_mean" t a, HasCallStack) =>
              ArgsHMap "__npi_mean" t a -> TensorApply t
 __npi_mean args
   = let scalarArgs
@@ -9007,7 +9534,8 @@ type instance ParameterList "__npi_mod" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 __npi_mod ::
-          forall a t . (TensorOp t t, Fullfilled "__npi_mod" t a) =>
+          forall a t .
+            (TensorOp t t, Fullfilled "__npi_mod" t a, HasCallStack) =>
             ArgsHMap "__npi_mod" t a -> TensorApply t
 __npi_mod args
   = let scalarArgs = catMaybes []
@@ -9022,7 +9550,8 @@ type instance ParameterList "__npi_mod_scalar" t =
      '[ '("scalar", AttrOpt Float), '("data", AttrOpt t)]
 
 __npi_mod_scalar ::
-                 forall a t . (TensorOp t t, Fullfilled "__npi_mod_scalar" t a) =>
+                 forall a t .
+                   (TensorOp t t, Fullfilled "__npi_mod_scalar" t a, HasCallStack) =>
                    ArgsHMap "__npi_mod_scalar" t a -> TensorApply t
 __npi_mod_scalar args
   = let scalarArgs
@@ -9039,7 +9568,8 @@ type instance ParameterList "__npi_multinomial" t =
         '("size", AttrOpt (Maybe [Int])), '("a", AttrOpt t)]
 
 __npi_multinomial ::
-                  forall a t . (TensorOp t t, Fullfilled "__npi_multinomial" t a) =>
+                  forall a t .
+                    (TensorOp t t, Fullfilled "__npi_multinomial" t a, HasCallStack) =>
                     ArgsHMap "__npi_multinomial" t a -> TensorApply t
 __npi_multinomial args
   = let scalarArgs
@@ -9056,7 +9586,8 @@ type instance ParameterList "__npi_multiply" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 __npi_multiply ::
-               forall a t . (TensorOp t t, Fullfilled "__npi_multiply" t a) =>
+               forall a t .
+                 (TensorOp t t, Fullfilled "__npi_multiply" t a, HasCallStack) =>
                  ArgsHMap "__npi_multiply" t a -> TensorApply t
 __npi_multiply args
   = let scalarArgs = catMaybes []
@@ -9073,7 +9604,8 @@ type instance ParameterList "__npi_multiply_scalar" t =
 
 __npi_multiply_scalar ::
                       forall a t .
-                        (TensorOp t t, Fullfilled "__npi_multiply_scalar" t a) =>
+                        (TensorOp t t, Fullfilled "__npi_multiply_scalar" t a,
+                         HasCallStack) =>
                         ArgsHMap "__npi_multiply_scalar" t a -> TensorApply t
 __npi_multiply_scalar args
   = let scalarArgs
@@ -9089,7 +9621,8 @@ type instance ParameterList "__npi_negative" t =
      '[ '("x", AttrOpt t)]
 
 __npi_negative ::
-               forall a t . (TensorOp t t, Fullfilled "__npi_negative" t a) =>
+               forall a t .
+                 (TensorOp t t, Fullfilled "__npi_negative" t a, HasCallStack) =>
                  ArgsHMap "__npi_negative" t a -> TensorApply t
 __npi_negative args
   = let scalarArgs = catMaybes []
@@ -9106,7 +9639,8 @@ type instance ParameterList "__npi_normal" t =
         '("input1", AttrOpt t), '("input2", AttrOpt t)]
 
 __npi_normal ::
-             forall a t . (TensorOp t t, Fullfilled "__npi_normal" t a) =>
+             forall a t .
+               (TensorOp t t, Fullfilled "__npi_normal" t a, HasCallStack) =>
                ArgsHMap "__npi_normal" t a -> TensorApply t
 __npi_normal args
   = let scalarArgs
@@ -9130,7 +9664,8 @@ type instance ParameterList "__npi_not_equal" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 __npi_not_equal ::
-                forall a t . (TensorOp t t, Fullfilled "__npi_not_equal" t a) =>
+                forall a t .
+                  (TensorOp t t, Fullfilled "__npi_not_equal" t a, HasCallStack) =>
                   ArgsHMap "__npi_not_equal" t a -> TensorApply t
 __npi_not_equal args
   = let scalarArgs = catMaybes []
@@ -9147,7 +9682,8 @@ type instance ParameterList "__npi_not_equal_scalar" t =
 
 __npi_not_equal_scalar ::
                        forall a t .
-                         (TensorOp t t, Fullfilled "__npi_not_equal_scalar" t a) =>
+                         (TensorOp t t, Fullfilled "__npi_not_equal_scalar" t a,
+                          HasCallStack) =>
                          ArgsHMap "__npi_not_equal_scalar" t a -> TensorApply t
 __npi_not_equal_scalar args
   = let scalarArgs
@@ -9168,7 +9704,8 @@ type instance ParameterList "__npi_ones" t =
                  "int8", "uint8"]))]
 
 __npi_ones ::
-           forall a t . (TensorOp t t, Fullfilled "__npi_ones" t a) =>
+           forall a t .
+             (TensorOp t t, Fullfilled "__npi_ones" t a, HasCallStack) =>
              ArgsHMap "__npi_ones" t a -> TensorApply t
 __npi_ones args
   = let scalarArgs
@@ -9189,7 +9726,8 @@ type instance ParameterList "__npi_power" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 __npi_power ::
-            forall a t . (TensorOp t t, Fullfilled "__npi_power" t a) =>
+            forall a t .
+              (TensorOp t t, Fullfilled "__npi_power" t a, HasCallStack) =>
               ArgsHMap "__npi_power" t a -> TensorApply t
 __npi_power args
   = let scalarArgs = catMaybes []
@@ -9204,7 +9742,9 @@ type instance ParameterList "__npi_power_scalar" t =
      '[ '("scalar", AttrOpt Float), '("data", AttrOpt t)]
 
 __npi_power_scalar ::
-                   forall a t . (TensorOp t t, Fullfilled "__npi_power_scalar" t a) =>
+                   forall a t .
+                     (TensorOp t t, Fullfilled "__npi_power_scalar" t a,
+                      HasCallStack) =>
                      ArgsHMap "__npi_power_scalar" t a -> TensorApply t
 __npi_power_scalar args
   = let scalarArgs
@@ -9220,7 +9760,8 @@ type instance ParameterList "__npi_radians" t =
      '[ '("x", AttrOpt t)]
 
 __npi_radians ::
-              forall a t . (TensorOp t t, Fullfilled "__npi_radians" t a) =>
+              forall a t .
+                (TensorOp t t, Fullfilled "__npi_radians" t a, HasCallStack) =>
                 ArgsHMap "__npi_radians" t a -> TensorApply t
 __npi_radians args
   = let scalarArgs = catMaybes []
@@ -9234,7 +9775,8 @@ type instance ParameterList "__npi_rarctan2_scalar" t =
 
 __npi_rarctan2_scalar ::
                       forall a t .
-                        (TensorOp t t, Fullfilled "__npi_rarctan2_scalar" t a) =>
+                        (TensorOp t t, Fullfilled "__npi_rarctan2_scalar" t a,
+                         HasCallStack) =>
                         ArgsHMap "__npi_rarctan2_scalar" t a -> TensorApply t
 __npi_rarctan2_scalar args
   = let scalarArgs
@@ -9251,7 +9793,8 @@ type instance ParameterList "__npi_rcopysign_scalar" t =
 
 __npi_rcopysign_scalar ::
                        forall a t .
-                         (TensorOp t t, Fullfilled "__npi_rcopysign_scalar" t a) =>
+                         (TensorOp t t, Fullfilled "__npi_rcopysign_scalar" t a,
+                          HasCallStack) =>
                          ArgsHMap "__npi_rcopysign_scalar" t a -> TensorApply t
 __npi_rcopysign_scalar args
   = let scalarArgs
@@ -9267,7 +9810,8 @@ type instance ParameterList "__npi_reciprocal" t =
      '[ '("x", AttrOpt t)]
 
 __npi_reciprocal ::
-                 forall a t . (TensorOp t t, Fullfilled "__npi_reciprocal" t a) =>
+                 forall a t .
+                   (TensorOp t t, Fullfilled "__npi_reciprocal" t a, HasCallStack) =>
                    ArgsHMap "__npi_reciprocal" t a -> TensorApply t
 __npi_reciprocal args
   = let scalarArgs = catMaybes []
@@ -9279,7 +9823,8 @@ __npi_reciprocal args
 type instance ParameterList "__npi_rint" t = '[ '("x", AttrOpt t)]
 
 __npi_rint ::
-           forall a t . (TensorOp t t, Fullfilled "__npi_rint" t a) =>
+           forall a t .
+             (TensorOp t t, Fullfilled "__npi_rint" t a, HasCallStack) =>
              ArgsHMap "__npi_rint" t a -> TensorApply t
 __npi_rint args
   = let scalarArgs = catMaybes []
@@ -9292,7 +9837,8 @@ type instance ParameterList "__npi_rldexp_scalar" t =
 
 __npi_rldexp_scalar ::
                     forall a t .
-                      (TensorOp t t, Fullfilled "__npi_rldexp_scalar" t a) =>
+                      (TensorOp t t, Fullfilled "__npi_rldexp_scalar" t a,
+                       HasCallStack) =>
                       ArgsHMap "__npi_rldexp_scalar" t a -> TensorApply t
 __npi_rldexp_scalar args
   = let scalarArgs
@@ -9308,7 +9854,8 @@ type instance ParameterList "__npi_rmod_scalar" t =
      '[ '("scalar", AttrOpt Float), '("data", AttrOpt t)]
 
 __npi_rmod_scalar ::
-                  forall a t . (TensorOp t t, Fullfilled "__npi_rmod_scalar" t a) =>
+                  forall a t .
+                    (TensorOp t t, Fullfilled "__npi_rmod_scalar" t a, HasCallStack) =>
                     ArgsHMap "__npi_rmod_scalar" t a -> TensorApply t
 __npi_rmod_scalar args
   = let scalarArgs
@@ -9325,7 +9872,8 @@ type instance ParameterList "__npi_rot90" t =
         '("data", AttrOpt t)]
 
 __npi_rot90 ::
-            forall a t . (TensorOp t t, Fullfilled "__npi_rot90" t a) =>
+            forall a t .
+              (TensorOp t t, Fullfilled "__npi_rot90" t a, HasCallStack) =>
               ArgsHMap "__npi_rot90" t a -> TensorApply t
 __npi_rot90 args
   = let scalarArgs
@@ -9342,7 +9890,8 @@ type instance ParameterList "__npi_rpower_scalar" t =
 
 __npi_rpower_scalar ::
                     forall a t .
-                      (TensorOp t t, Fullfilled "__npi_rpower_scalar" t a) =>
+                      (TensorOp t t, Fullfilled "__npi_rpower_scalar" t a,
+                       HasCallStack) =>
                       ArgsHMap "__npi_rpower_scalar" t a -> TensorApply t
 __npi_rpower_scalar args
   = let scalarArgs
@@ -9359,7 +9908,8 @@ type instance ParameterList "__npi_rsubtract_scalar" t =
 
 __npi_rsubtract_scalar ::
                        forall a t .
-                         (TensorOp t t, Fullfilled "__npi_rsubtract_scalar" t a) =>
+                         (TensorOp t t, Fullfilled "__npi_rsubtract_scalar" t a,
+                          HasCallStack) =>
                          ArgsHMap "__npi_rsubtract_scalar" t a -> TensorApply t
 __npi_rsubtract_scalar args
   = let scalarArgs
@@ -9376,7 +9926,8 @@ type instance ParameterList "__npi_rtrue_divide_scalar" t =
 
 __npi_rtrue_divide_scalar ::
                           forall a t .
-                            (TensorOp t t, Fullfilled "__npi_rtrue_divide_scalar" t a) =>
+                            (TensorOp t t, Fullfilled "__npi_rtrue_divide_scalar" t a,
+                             HasCallStack) =>
                             ArgsHMap "__npi_rtrue_divide_scalar" t a -> TensorApply t
 __npi_rtrue_divide_scalar args
   = let scalarArgs
@@ -9392,7 +9943,9 @@ type instance ParameterList "__npi_share_memory" t =
      '[ '("a", AttrOpt t), '("b", AttrOpt t)]
 
 __npi_share_memory ::
-                   forall a t . (TensorOp t t, Fullfilled "__npi_share_memory" t a) =>
+                   forall a t .
+                     (TensorOp t t, Fullfilled "__npi_share_memory" t a,
+                      HasCallStack) =>
                      ArgsHMap "__npi_share_memory" t a -> TensorApply t
 __npi_share_memory args
   = let scalarArgs = catMaybes []
@@ -9407,7 +9960,8 @@ __npi_share_memory args
 type instance ParameterList "__npi_sign" t = '[ '("x", AttrOpt t)]
 
 __npi_sign ::
-           forall a t . (TensorOp t t, Fullfilled "__npi_sign" t a) =>
+           forall a t .
+             (TensorOp t t, Fullfilled "__npi_sign" t a, HasCallStack) =>
              ArgsHMap "__npi_sign" t a -> TensorApply t
 __npi_sign args
   = let scalarArgs = catMaybes []
@@ -9418,7 +9972,8 @@ __npi_sign args
 type instance ParameterList "__npi_sin" t = '[ '("x", AttrOpt t)]
 
 __npi_sin ::
-          forall a t . (TensorOp t t, Fullfilled "__npi_sin" t a) =>
+          forall a t .
+            (TensorOp t t, Fullfilled "__npi_sin" t a, HasCallStack) =>
             ArgsHMap "__npi_sin" t a -> TensorApply t
 __npi_sin args
   = let scalarArgs = catMaybes []
@@ -9429,7 +9984,8 @@ __npi_sin args
 type instance ParameterList "__npi_sinh" t = '[ '("x", AttrOpt t)]
 
 __npi_sinh ::
-           forall a t . (TensorOp t t, Fullfilled "__npi_sinh" t a) =>
+           forall a t .
+             (TensorOp t t, Fullfilled "__npi_sinh" t a, HasCallStack) =>
              ArgsHMap "__npi_sinh" t a -> TensorApply t
 __npi_sinh args
   = let scalarArgs = catMaybes []
@@ -9440,7 +9996,8 @@ __npi_sinh args
 type instance ParameterList "__npi_sqrt" t = '[ '("x", AttrOpt t)]
 
 __npi_sqrt ::
-           forall a t . (TensorOp t t, Fullfilled "__npi_sqrt" t a) =>
+           forall a t .
+             (TensorOp t t, Fullfilled "__npi_sqrt" t a, HasCallStack) =>
              ArgsHMap "__npi_sqrt" t a -> TensorApply t
 __npi_sqrt args
   = let scalarArgs = catMaybes []
@@ -9452,7 +10009,8 @@ type instance ParameterList "__npi_square" t =
      '[ '("x", AttrOpt t)]
 
 __npi_square ::
-             forall a t . (TensorOp t t, Fullfilled "__npi_square" t a) =>
+             forall a t .
+               (TensorOp t t, Fullfilled "__npi_square" t a, HasCallStack) =>
                ArgsHMap "__npi_square" t a -> TensorApply t
 __npi_square args
   = let scalarArgs = catMaybes []
@@ -9466,7 +10024,8 @@ type instance ParameterList "__npi_stack" t =
         '("data", AttrOpt [t])]
 
 __npi_stack ::
-            forall a t . (TensorOp t t, Fullfilled "__npi_stack" t a) =>
+            forall a t .
+              (TensorOp t t, Fullfilled "__npi_stack" t a, HasCallStack) =>
               ArgsHMap "__npi_stack" t a -> TensorApply t
 __npi_stack args
   = let scalarArgs
@@ -9488,7 +10047,8 @@ type instance ParameterList "__npi_std" t =
         '("a", AttrOpt t)]
 
 __npi_std ::
-          forall a t . (TensorOp t t, Fullfilled "__npi_std" t a) =>
+          forall a t .
+            (TensorOp t t, Fullfilled "__npi_std" t a, HasCallStack) =>
             ArgsHMap "__npi_std" t a -> TensorApply t
 __npi_std args
   = let scalarArgs
@@ -9510,7 +10070,8 @@ type instance ParameterList "__npi_subtract" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 __npi_subtract ::
-               forall a t . (TensorOp t t, Fullfilled "__npi_subtract" t a) =>
+               forall a t .
+                 (TensorOp t t, Fullfilled "__npi_subtract" t a, HasCallStack) =>
                  ArgsHMap "__npi_subtract" t a -> TensorApply t
 __npi_subtract args
   = let scalarArgs = catMaybes []
@@ -9527,7 +10088,8 @@ type instance ParameterList "__npi_subtract_scalar" t =
 
 __npi_subtract_scalar ::
                       forall a t .
-                        (TensorOp t t, Fullfilled "__npi_subtract_scalar" t a) =>
+                        (TensorOp t t, Fullfilled "__npi_subtract_scalar" t a,
+                         HasCallStack) =>
                         ArgsHMap "__npi_subtract_scalar" t a -> TensorApply t
 __npi_subtract_scalar args
   = let scalarArgs
@@ -9542,7 +10104,8 @@ __npi_subtract_scalar args
 type instance ParameterList "__npi_svd" t = '[ '("a", AttrOpt t)]
 
 __npi_svd ::
-          forall a t . (TensorOp t t, Fullfilled "__npi_svd" t a) =>
+          forall a t .
+            (TensorOp t t, Fullfilled "__npi_svd" t a, HasCallStack) =>
             ArgsHMap "__npi_svd" t a -> TensorApply t
 __npi_svd args
   = let scalarArgs = catMaybes []
@@ -9553,7 +10116,8 @@ __npi_svd args
 type instance ParameterList "__npi_tan" t = '[ '("x", AttrOpt t)]
 
 __npi_tan ::
-          forall a t . (TensorOp t t, Fullfilled "__npi_tan" t a) =>
+          forall a t .
+            (TensorOp t t, Fullfilled "__npi_tan" t a, HasCallStack) =>
             ArgsHMap "__npi_tan" t a -> TensorApply t
 __npi_tan args
   = let scalarArgs = catMaybes []
@@ -9564,7 +10128,8 @@ __npi_tan args
 type instance ParameterList "__npi_tanh" t = '[ '("x", AttrOpt t)]
 
 __npi_tanh ::
-           forall a t . (TensorOp t t, Fullfilled "__npi_tanh" t a) =>
+           forall a t .
+             (TensorOp t t, Fullfilled "__npi_tanh" t a, HasCallStack) =>
              ArgsHMap "__npi_tanh" t a -> TensorApply t
 __npi_tanh args
   = let scalarArgs = catMaybes []
@@ -9578,7 +10143,8 @@ type instance ParameterList "__npi_tensordot" t =
         '("b", AttrOpt t)]
 
 __npi_tensordot ::
-                forall a t . (TensorOp t t, Fullfilled "__npi_tensordot" t a) =>
+                forall a t .
+                  (TensorOp t t, Fullfilled "__npi_tensordot" t a, HasCallStack) =>
                   ArgsHMap "__npi_tensordot" t a -> TensorApply t
 __npi_tensordot args
   = let scalarArgs
@@ -9600,7 +10166,8 @@ type instance ParameterList "__npi_tensordot_int_axes" t =
 
 __npi_tensordot_int_axes ::
                          forall a t .
-                           (TensorOp t t, Fullfilled "__npi_tensordot_int_axes" t a) =>
+                           (TensorOp t t, Fullfilled "__npi_tensordot_int_axes" t a,
+                            HasCallStack) =>
                            ArgsHMap "__npi_tensordot_int_axes" t a -> TensorApply t
 __npi_tensordot_int_axes args
   = let scalarArgs
@@ -9618,7 +10185,8 @@ type instance ParameterList "__npi_tril" t =
      '[ '("k", AttrOpt Int), '("data", AttrOpt t)]
 
 __npi_tril ::
-           forall a t . (TensorOp t t, Fullfilled "__npi_tril" t a) =>
+           forall a t .
+             (TensorOp t t, Fullfilled "__npi_tril" t a, HasCallStack) =>
              ArgsHMap "__npi_tril" t a -> TensorApply t
 __npi_tril args
   = let scalarArgs
@@ -9632,7 +10200,8 @@ type instance ParameterList "__npi_true_divide" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 __npi_true_divide ::
-                  forall a t . (TensorOp t t, Fullfilled "__npi_true_divide" t a) =>
+                  forall a t .
+                    (TensorOp t t, Fullfilled "__npi_true_divide" t a, HasCallStack) =>
                     ArgsHMap "__npi_true_divide" t a -> TensorApply t
 __npi_true_divide args
   = let scalarArgs = catMaybes []
@@ -9649,7 +10218,8 @@ type instance ParameterList "__npi_true_divide_scalar" t =
 
 __npi_true_divide_scalar ::
                          forall a t .
-                           (TensorOp t t, Fullfilled "__npi_true_divide_scalar" t a) =>
+                           (TensorOp t t, Fullfilled "__npi_true_divide_scalar" t a,
+                            HasCallStack) =>
                            ArgsHMap "__npi_true_divide_scalar" t a -> TensorApply t
 __npi_true_divide_scalar args
   = let scalarArgs
@@ -9664,7 +10234,8 @@ __npi_true_divide_scalar args
 type instance ParameterList "__npi_trunc" t = '[ '("x", AttrOpt t)]
 
 __npi_trunc ::
-            forall a t . (TensorOp t t, Fullfilled "__npi_trunc" t a) =>
+            forall a t .
+              (TensorOp t t, Fullfilled "__npi_trunc" t a, HasCallStack) =>
               ArgsHMap "__npi_trunc" t a -> TensorApply t
 __npi_trunc args
   = let scalarArgs = catMaybes []
@@ -9680,7 +10251,8 @@ type instance ParameterList "__npi_uniform" t =
         '("input1", AttrOpt t), '("input2", AttrOpt t)]
 
 __npi_uniform ::
-              forall a t . (TensorOp t t, Fullfilled "__npi_uniform" t a) =>
+              forall a t .
+                (TensorOp t t, Fullfilled "__npi_uniform" t a, HasCallStack) =>
                 ArgsHMap "__npi_uniform" t a -> TensorApply t
 __npi_uniform args
   = let scalarArgs
@@ -9707,7 +10279,8 @@ type instance ParameterList "__npi_unique" t =
         '("data", AttrOpt t)]
 
 __npi_unique ::
-             forall a t . (TensorOp t t, Fullfilled "__npi_unique" t a) =>
+             forall a t .
+               (TensorOp t t, Fullfilled "__npi_unique" t a, HasCallStack) =>
                ArgsHMap "__npi_unique" t a -> TensorApply t
 __npi_unique args
   = let scalarArgs
@@ -9736,7 +10309,8 @@ type instance ParameterList "__npi_var" t =
         '("a", AttrOpt t)]
 
 __npi_var ::
-          forall a t . (TensorOp t t, Fullfilled "__npi_var" t a) =>
+          forall a t .
+            (TensorOp t t, Fullfilled "__npi_var" t a, HasCallStack) =>
             ArgsHMap "__npi_var" t a -> TensorApply t
 __npi_var args
   = let scalarArgs
@@ -9758,7 +10332,8 @@ type instance ParameterList "__npi_vstack" t =
      '[ '("num_args", AttrReq Int), '("data", AttrOpt [t])]
 
 __npi_vstack ::
-             forall a t . (TensorOp t t, Fullfilled "__npi_vstack" t a) =>
+             forall a t .
+               (TensorOp t t, Fullfilled "__npi_vstack" t a, HasCallStack) =>
                ArgsHMap "__npi_vstack" t a -> TensorApply t
 __npi_vstack args
   = let scalarArgs
@@ -9777,7 +10352,8 @@ type instance ParameterList "__npi_zeros" t =
                  "int8", "uint8"]))]
 
 __npi_zeros ::
-            forall a t . (TensorOp t t, Fullfilled "__npi_zeros" t a) =>
+            forall a t .
+              (TensorOp t t, Fullfilled "__npi_zeros" t a, HasCallStack) =>
               ArgsHMap "__npi_zeros" t a -> TensorApply t
 __npi_zeros args
   = let scalarArgs
@@ -9798,7 +10374,8 @@ type instance ParameterList "__npx_nonzero" t =
      '[ '("x", AttrOpt t)]
 
 __npx_nonzero ::
-              forall a t . (TensorOp t t, Fullfilled "__npx_nonzero" t a) =>
+              forall a t .
+                (TensorOp t t, Fullfilled "__npx_nonzero" t a, HasCallStack) =>
                 ArgsHMap "__npx_nonzero" t a -> TensorApply t
 __npx_nonzero args
   = let scalarArgs = catMaybes []
@@ -9811,7 +10388,8 @@ type instance ParameterList "__npx_relu" t =
      '[ '("data", AttrOpt t)]
 
 __npx_relu ::
-           forall a t . (TensorOp t t, Fullfilled "__npx_relu" t a) =>
+           forall a t .
+             (TensorOp t t, Fullfilled "__npx_relu" t a, HasCallStack) =>
              ArgsHMap "__npx_relu" t a -> TensorApply t
 __npx_relu args
   = let scalarArgs = catMaybes []
@@ -9825,7 +10403,8 @@ type instance ParameterList "__npx_reshape" t =
         '("order", AttrOpt Text), '("a", AttrOpt t)]
 
 __npx_reshape ::
-              forall a t . (TensorOp t t, Fullfilled "__npx_reshape" t a) =>
+              forall a t .
+                (TensorOp t t, Fullfilled "__npx_reshape" t a, HasCallStack) =>
                 ArgsHMap "__npx_reshape" t a -> TensorApply t
 __npx_reshape args
   = let scalarArgs
@@ -9842,7 +10421,8 @@ type instance ParameterList "__npx_sigmoid" t =
      '[ '("data", AttrOpt t)]
 
 __npx_sigmoid ::
-              forall a t . (TensorOp t t, Fullfilled "__npx_sigmoid" t a) =>
+              forall a t .
+                (TensorOp t t, Fullfilled "__npx_sigmoid" t a, HasCallStack) =>
                 ArgsHMap "__npx_sigmoid" t a -> TensorApply t
 __npx_sigmoid args
   = let scalarArgs = catMaybes []
@@ -9856,7 +10436,8 @@ type instance ParameterList "__onehot_encode" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 __onehot_encode ::
-                forall a t . (TensorOp t t, Fullfilled "__onehot_encode" t a) =>
+                forall a t .
+                  (TensorOp t t, Fullfilled "__onehot_encode" t a, HasCallStack) =>
                   ArgsHMap "__onehot_encode" t a -> TensorApply t
 __onehot_encode args
   = let scalarArgs = catMaybes []
@@ -9877,7 +10458,8 @@ type instance ParameterList "__ones" t =
                  "int8", "uint8"]))]
 
 __ones ::
-       forall a t . (TensorOp t t, Fullfilled "__ones" t a) =>
+       forall a t .
+         (TensorOp t t, Fullfilled "__ones" t a, HasCallStack) =>
          ArgsHMap "__ones" t a -> TensorApply t
 __ones args
   = let scalarArgs
@@ -9897,7 +10479,8 @@ type instance ParameterList "__plus_scalar" t =
      '[ '("scalar", AttrOpt Float), '("data", AttrOpt t)]
 
 __plus_scalar ::
-              forall a t . (TensorOp t t, Fullfilled "__plus_scalar" t a) =>
+              forall a t .
+                (TensorOp t t, Fullfilled "__plus_scalar" t a, HasCallStack) =>
                 ArgsHMap "__plus_scalar" t a -> TensorApply t
 __plus_scalar args
   = let scalarArgs
@@ -9913,7 +10496,8 @@ type instance ParameterList "__power" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 __power ::
-        forall a t . (TensorOp t t, Fullfilled "__power" t a) =>
+        forall a t .
+          (TensorOp t t, Fullfilled "__power" t a, HasCallStack) =>
           ArgsHMap "__power" t a -> TensorApply t
 __power args
   = let scalarArgs = catMaybes []
@@ -9927,7 +10511,8 @@ type instance ParameterList "__power_scalar" t =
      '[ '("scalar", AttrOpt Float), '("data", AttrOpt t)]
 
 __power_scalar ::
-               forall a t . (TensorOp t t, Fullfilled "__power_scalar" t a) =>
+               forall a t .
+                 (TensorOp t t, Fullfilled "__power_scalar" t a, HasCallStack) =>
                  ArgsHMap "__power_scalar" t a -> TensorApply t
 __power_scalar args
   = let scalarArgs
@@ -9947,7 +10532,8 @@ type instance ParameterList "__random_exponential" t =
 
 __random_exponential ::
                      forall a t .
-                       (TensorOp t t, Fullfilled "__random_exponential" t a) =>
+                       (TensorOp t t, Fullfilled "__random_exponential" t a,
+                        HasCallStack) =>
                        ArgsHMap "__random_exponential" t a -> TensorApply t
 __random_exponential args
   = let scalarArgs
@@ -9968,7 +10554,8 @@ type instance ParameterList "__random_exponential_like" t =
 
 __random_exponential_like ::
                           forall a t .
-                            (TensorOp t t, Fullfilled "__random_exponential_like" t a) =>
+                            (TensorOp t t, Fullfilled "__random_exponential_like" t a,
+                             HasCallStack) =>
                             ArgsHMap "__random_exponential_like" t a -> TensorApply t
 __random_exponential_like args
   = let scalarArgs
@@ -9987,7 +10574,8 @@ type instance ParameterList "__random_gamma" t =
           AttrOpt (EnumType '["None", "float16", "float32", "float64"]))]
 
 __random_gamma ::
-               forall a t . (TensorOp t t, Fullfilled "__random_gamma" t a) =>
+               forall a t .
+                 (TensorOp t t, Fullfilled "__random_gamma" t a, HasCallStack) =>
                  ArgsHMap "__random_gamma" t a -> TensorApply t
 __random_gamma args
   = let scalarArgs
@@ -10010,7 +10598,8 @@ type instance ParameterList "__random_gamma_like" t =
 
 __random_gamma_like ::
                     forall a t .
-                      (TensorOp t t, Fullfilled "__random_gamma_like" t a) =>
+                      (TensorOp t t, Fullfilled "__random_gamma_like" t a,
+                       HasCallStack) =>
                       ArgsHMap "__random_gamma_like" t a -> TensorApply t
 __random_gamma_like args
   = let scalarArgs
@@ -10033,8 +10622,8 @@ type instance
 __random_generalized_negative_binomial ::
                                        forall a t .
                                          (TensorOp t t,
-                                          Fullfilled "__random_generalized_negative_binomial" t
-                                            a) =>
+                                          Fullfilled "__random_generalized_negative_binomial" t a,
+                                          HasCallStack) =>
                                          ArgsHMap "__random_generalized_negative_binomial" t a ->
                                            TensorApply t
 __random_generalized_negative_binomial args
@@ -10061,8 +10650,8 @@ __random_generalized_negative_binomial_like ::
                                             forall a t .
                                               (TensorOp t t,
                                                Fullfilled
-                                                 "__random_generalized_negative_binomial_like" t
-                                                 a) =>
+                                                 "__random_generalized_negative_binomial_like" t a,
+                                               HasCallStack) =>
                                               ArgsHMap "__random_generalized_negative_binomial_like"
                                                 t
                                                 a
@@ -10086,7 +10675,8 @@ type instance ParameterList "__random_negative_binomial" t =
 
 __random_negative_binomial ::
                            forall a t .
-                             (TensorOp t t, Fullfilled "__random_negative_binomial" t a) =>
+                             (TensorOp t t, Fullfilled "__random_negative_binomial" t a,
+                              HasCallStack) =>
                              ArgsHMap "__random_negative_binomial" t a -> TensorApply t
 __random_negative_binomial args
   = let scalarArgs
@@ -10109,8 +10699,8 @@ type instance ParameterList "__random_negative_binomial_like" t =
 
 __random_negative_binomial_like ::
                                 forall a t .
-                                  (TensorOp t t,
-                                   Fullfilled "__random_negative_binomial_like" t a) =>
+                                  (TensorOp t t, Fullfilled "__random_negative_binomial_like" t a,
+                                   HasCallStack) =>
                                   ArgsHMap "__random_negative_binomial_like" t a -> TensorApply t
 __random_negative_binomial_like args
   = let scalarArgs
@@ -10130,7 +10720,8 @@ type instance ParameterList "__random_normal" t =
           AttrOpt (EnumType '["None", "float16", "float32", "float64"]))]
 
 __random_normal ::
-                forall a t . (TensorOp t t, Fullfilled "__random_normal" t a) =>
+                forall a t .
+                  (TensorOp t t, Fullfilled "__random_normal" t a, HasCallStack) =>
                   ArgsHMap "__random_normal" t a -> TensorApply t
 __random_normal args
   = let scalarArgs
@@ -10153,7 +10744,8 @@ type instance ParameterList "__random_normal_like" t =
 
 __random_normal_like ::
                      forall a t .
-                       (TensorOp t t, Fullfilled "__random_normal_like" t a) =>
+                       (TensorOp t t, Fullfilled "__random_normal_like" t a,
+                        HasCallStack) =>
                        ArgsHMap "__random_normal_like" t a -> TensorApply t
 __random_normal_like args
   = let scalarArgs
@@ -10172,7 +10764,8 @@ type instance ParameterList "__random_pdf_dirichlet" t =
 
 __random_pdf_dirichlet ::
                        forall a t .
-                         (TensorOp t t, Fullfilled "__random_pdf_dirichlet" t a) =>
+                         (TensorOp t t, Fullfilled "__random_pdf_dirichlet" t a,
+                          HasCallStack) =>
                          ArgsHMap "__random_pdf_dirichlet" t a -> TensorApply t
 __random_pdf_dirichlet args
   = let scalarArgs
@@ -10192,7 +10785,8 @@ type instance ParameterList "__random_pdf_exponential" t =
 
 __random_pdf_exponential ::
                          forall a t .
-                           (TensorOp t t, Fullfilled "__random_pdf_exponential" t a) =>
+                           (TensorOp t t, Fullfilled "__random_pdf_exponential" t a,
+                            HasCallStack) =>
                            ArgsHMap "__random_pdf_exponential" t a -> TensorApply t
 __random_pdf_exponential args
   = let scalarArgs
@@ -10211,7 +10805,9 @@ type instance ParameterList "__random_pdf_gamma" t =
         '("alpha", AttrOpt t), '("beta", AttrOpt t)]
 
 __random_pdf_gamma ::
-                   forall a t . (TensorOp t t, Fullfilled "__random_pdf_gamma" t a) =>
+                   forall a t .
+                     (TensorOp t t, Fullfilled "__random_pdf_gamma" t a,
+                      HasCallStack) =>
                      ArgsHMap "__random_pdf_gamma" t a -> TensorApply t
 __random_pdf_gamma args
   = let scalarArgs
@@ -10235,7 +10831,8 @@ __random_pdf_generalized_negative_binomial ::
                                            forall a t .
                                              (TensorOp t t,
                                               Fullfilled
-                                                "__random_pdf_generalized_negative_binomial" t a) =>
+                                                "__random_pdf_generalized_negative_binomial" t a,
+                                              HasCallStack) =>
                                              ArgsHMap "__random_pdf_generalized_negative_binomial" t
                                                a
                                                -> TensorApply t
@@ -10258,7 +10855,8 @@ type instance ParameterList "__random_pdf_negative_binomial" t =
 
 __random_pdf_negative_binomial ::
                                forall a t .
-                                 (TensorOp t t, Fullfilled "__random_pdf_negative_binomial" t a) =>
+                                 (TensorOp t t, Fullfilled "__random_pdf_negative_binomial" t a,
+                                  HasCallStack) =>
                                  ArgsHMap "__random_pdf_negative_binomial" t a -> TensorApply t
 __random_pdf_negative_binomial args
   = let scalarArgs
@@ -10279,7 +10877,8 @@ type instance ParameterList "__random_pdf_normal" t =
 
 __random_pdf_normal ::
                     forall a t .
-                      (TensorOp t t, Fullfilled "__random_pdf_normal" t a) =>
+                      (TensorOp t t, Fullfilled "__random_pdf_normal" t a,
+                       HasCallStack) =>
                       ArgsHMap "__random_pdf_normal" t a -> TensorApply t
 __random_pdf_normal args
   = let scalarArgs
@@ -10300,7 +10899,8 @@ type instance ParameterList "__random_pdf_poisson" t =
 
 __random_pdf_poisson ::
                      forall a t .
-                       (TensorOp t t, Fullfilled "__random_pdf_poisson" t a) =>
+                       (TensorOp t t, Fullfilled "__random_pdf_poisson" t a,
+                        HasCallStack) =>
                        ArgsHMap "__random_pdf_poisson" t a -> TensorApply t
 __random_pdf_poisson args
   = let scalarArgs
@@ -10320,7 +10920,8 @@ type instance ParameterList "__random_pdf_uniform" t =
 
 __random_pdf_uniform ::
                      forall a t .
-                       (TensorOp t t, Fullfilled "__random_pdf_uniform" t a) =>
+                       (TensorOp t t, Fullfilled "__random_pdf_uniform" t a,
+                        HasCallStack) =>
                        ArgsHMap "__random_pdf_uniform" t a -> TensorApply t
 __random_pdf_uniform args
   = let scalarArgs
@@ -10342,7 +10943,8 @@ type instance ParameterList "__random_poisson" t =
           AttrOpt (EnumType '["None", "float16", "float32", "float64"]))]
 
 __random_poisson ::
-                 forall a t . (TensorOp t t, Fullfilled "__random_poisson" t a) =>
+                 forall a t .
+                   (TensorOp t t, Fullfilled "__random_poisson" t a, HasCallStack) =>
                    ArgsHMap "__random_poisson" t a -> TensorApply t
 __random_poisson args
   = let scalarArgs
@@ -10363,7 +10965,8 @@ type instance ParameterList "__random_poisson_like" t =
 
 __random_poisson_like ::
                       forall a t .
-                        (TensorOp t t, Fullfilled "__random_poisson_like" t a) =>
+                        (TensorOp t t, Fullfilled "__random_poisson_like" t a,
+                         HasCallStack) =>
                         ArgsHMap "__random_poisson_like" t a -> TensorApply t
 __random_poisson_like args
   = let scalarArgs
@@ -10382,7 +10985,8 @@ type instance ParameterList "__random_uniform" t =
           AttrOpt (EnumType '["None", "float16", "float32", "float64"]))]
 
 __random_uniform ::
-                 forall a t . (TensorOp t t, Fullfilled "__random_uniform" t a) =>
+                 forall a t .
+                   (TensorOp t t, Fullfilled "__random_uniform" t a, HasCallStack) =>
                    ArgsHMap "__random_uniform" t a -> TensorApply t
 __random_uniform args
   = let scalarArgs
@@ -10405,7 +11009,8 @@ type instance ParameterList "__random_uniform_like" t =
 
 __random_uniform_like ::
                       forall a t .
-                        (TensorOp t t, Fullfilled "__random_uniform_like" t a) =>
+                        (TensorOp t t, Fullfilled "__random_uniform_like" t a,
+                         HasCallStack) =>
                         ArgsHMap "__random_uniform_like" t a -> TensorApply t
 __random_uniform_like args
   = let scalarArgs
@@ -10423,7 +11028,8 @@ type instance ParameterList "__ravel_multi_index" t =
 
 __ravel_multi_index ::
                     forall a t .
-                      (TensorOp t t, Fullfilled "__ravel_multi_index" t a) =>
+                      (TensorOp t t, Fullfilled "__ravel_multi_index" t a,
+                       HasCallStack) =>
                       ArgsHMap "__ravel_multi_index" t a -> TensorApply t
 __ravel_multi_index args
   = let scalarArgs
@@ -10439,7 +11045,8 @@ type instance ParameterList "__rdiv_scalar" t =
      '[ '("scalar", AttrOpt Float), '("data", AttrOpt t)]
 
 __rdiv_scalar ::
-              forall a t . (TensorOp t t, Fullfilled "__rdiv_scalar" t a) =>
+              forall a t .
+                (TensorOp t t, Fullfilled "__rdiv_scalar" t a, HasCallStack) =>
                 ArgsHMap "__rdiv_scalar" t a -> TensorApply t
 __rdiv_scalar args
   = let scalarArgs
@@ -10455,7 +11062,8 @@ type instance ParameterList "__rminus_scalar" t =
      '[ '("scalar", AttrOpt Float), '("data", AttrOpt t)]
 
 __rminus_scalar ::
-                forall a t . (TensorOp t t, Fullfilled "__rminus_scalar" t a) =>
+                forall a t .
+                  (TensorOp t t, Fullfilled "__rminus_scalar" t a, HasCallStack) =>
                   ArgsHMap "__rminus_scalar" t a -> TensorApply t
 __rminus_scalar args
   = let scalarArgs
@@ -10471,7 +11079,8 @@ type instance ParameterList "__rmod_scalar" t =
      '[ '("scalar", AttrOpt Float), '("data", AttrOpt t)]
 
 __rmod_scalar ::
-              forall a t . (TensorOp t t, Fullfilled "__rmod_scalar" t a) =>
+              forall a t .
+                (TensorOp t t, Fullfilled "__rmod_scalar" t a, HasCallStack) =>
                 ArgsHMap "__rmod_scalar" t a -> TensorApply t
 __rmod_scalar args
   = let scalarArgs
@@ -10488,7 +11097,9 @@ type instance ParameterList "__rnn_param_concat" t =
         '("data", AttrOpt [t])]
 
 __rnn_param_concat ::
-                   forall a t . (TensorOp t t, Fullfilled "__rnn_param_concat" t a) =>
+                   forall a t .
+                     (TensorOp t t, Fullfilled "__rnn_param_concat" t a,
+                      HasCallStack) =>
                      ArgsHMap "__rnn_param_concat" t a -> TensorApply t
 __rnn_param_concat args
   = let scalarArgs
@@ -10503,7 +11114,8 @@ type instance ParameterList "__rpower_scalar" t =
      '[ '("scalar", AttrOpt Float), '("data", AttrOpt t)]
 
 __rpower_scalar ::
-                forall a t . (TensorOp t t, Fullfilled "__rpower_scalar" t a) =>
+                forall a t .
+                  (TensorOp t t, Fullfilled "__rpower_scalar" t a, HasCallStack) =>
                   ArgsHMap "__rpower_scalar" t a -> TensorApply t
 __rpower_scalar args
   = let scalarArgs
@@ -10523,7 +11135,8 @@ type instance ParameterList "__sample_exponential" t =
 
 __sample_exponential ::
                      forall a t .
-                       (TensorOp t t, Fullfilled "__sample_exponential" t a) =>
+                       (TensorOp t t, Fullfilled "__sample_exponential" t a,
+                        HasCallStack) =>
                        ArgsHMap "__sample_exponential" t a -> TensorApply t
 __sample_exponential args
   = let scalarArgs
@@ -10544,7 +11157,8 @@ type instance ParameterList "__sample_gamma" t =
         '("alpha", AttrOpt t), '("beta", AttrOpt t)]
 
 __sample_gamma ::
-               forall a t . (TensorOp t t, Fullfilled "__sample_gamma" t a) =>
+               forall a t .
+                 (TensorOp t t, Fullfilled "__sample_gamma" t a, HasCallStack) =>
                  ArgsHMap "__sample_gamma" t a -> TensorApply t
 __sample_gamma args
   = let scalarArgs
@@ -10571,8 +11185,8 @@ type instance
 __sample_generalized_negative_binomial ::
                                        forall a t .
                                          (TensorOp t t,
-                                          Fullfilled "__sample_generalized_negative_binomial" t
-                                            a) =>
+                                          Fullfilled "__sample_generalized_negative_binomial" t a,
+                                          HasCallStack) =>
                                          ArgsHMap "__sample_generalized_negative_binomial" t a ->
                                            TensorApply t
 __sample_generalized_negative_binomial args
@@ -10599,7 +11213,8 @@ type instance ParameterList "__sample_multinomial" t =
 
 __sample_multinomial ::
                      forall a t .
-                       (TensorOp t t, Fullfilled "__sample_multinomial" t a) =>
+                       (TensorOp t t, Fullfilled "__sample_multinomial" t a,
+                        HasCallStack) =>
                        ArgsHMap "__sample_multinomial" t a -> TensorApply t
 __sample_multinomial args
   = let scalarArgs
@@ -10624,7 +11239,8 @@ type instance ParameterList "__sample_negative_binomial" t =
 
 __sample_negative_binomial ::
                            forall a t .
-                             (TensorOp t t, Fullfilled "__sample_negative_binomial" t a) =>
+                             (TensorOp t t, Fullfilled "__sample_negative_binomial" t a,
+                              HasCallStack) =>
                              ArgsHMap "__sample_negative_binomial" t a -> TensorApply t
 __sample_negative_binomial args
   = let scalarArgs
@@ -10648,7 +11264,8 @@ type instance ParameterList "__sample_normal" t =
         '("mu", AttrOpt t), '("sigma", AttrOpt t)]
 
 __sample_normal ::
-                forall a t . (TensorOp t t, Fullfilled "__sample_normal" t a) =>
+                forall a t .
+                  (TensorOp t t, Fullfilled "__sample_normal" t a, HasCallStack) =>
                   ArgsHMap "__sample_normal" t a -> TensorApply t
 __sample_normal args
   = let scalarArgs
@@ -10672,7 +11289,8 @@ type instance ParameterList "__sample_poisson" t =
         '("lam", AttrOpt t)]
 
 __sample_poisson ::
-                 forall a t . (TensorOp t t, Fullfilled "__sample_poisson" t a) =>
+                 forall a t .
+                   (TensorOp t t, Fullfilled "__sample_poisson" t a, HasCallStack) =>
                    ArgsHMap "__sample_poisson" t a -> TensorApply t
 __sample_poisson args
   = let scalarArgs
@@ -10693,7 +11311,8 @@ type instance ParameterList "__sample_uniform" t =
         '("low", AttrOpt t), '("high", AttrOpt t)]
 
 __sample_uniform ::
-                 forall a t . (TensorOp t t, Fullfilled "__sample_uniform" t a) =>
+                 forall a t .
+                   (TensorOp t t, Fullfilled "__sample_uniform" t a, HasCallStack) =>
                    ArgsHMap "__sample_uniform" t a -> TensorApply t
 __sample_uniform args
   = let scalarArgs
@@ -10715,7 +11334,8 @@ type instance ParameterList "__sample_unique_zipfian" t =
 
 __sample_unique_zipfian ::
                         forall a t .
-                          (TensorOp t t, Fullfilled "__sample_unique_zipfian" t a) =>
+                          (TensorOp t t, Fullfilled "__sample_unique_zipfian" t a,
+                           HasCallStack) =>
                           ArgsHMap "__sample_unique_zipfian" t a -> TensorApply t
 __sample_unique_zipfian args
   = let scalarArgs
@@ -10732,7 +11352,8 @@ type instance ParameterList "__scatter_elemwise_div" t =
 
 __scatter_elemwise_div ::
                        forall a t .
-                         (TensorOp t t, Fullfilled "__scatter_elemwise_div" t a) =>
+                         (TensorOp t t, Fullfilled "__scatter_elemwise_div" t a,
+                          HasCallStack) =>
                          ArgsHMap "__scatter_elemwise_div" t a -> TensorApply t
 __scatter_elemwise_div args
   = let scalarArgs = catMaybes []
@@ -10749,7 +11370,8 @@ type instance ParameterList "__scatter_minus_scalar" t =
 
 __scatter_minus_scalar ::
                        forall a t .
-                         (TensorOp t t, Fullfilled "__scatter_minus_scalar" t a) =>
+                         (TensorOp t t, Fullfilled "__scatter_minus_scalar" t a,
+                          HasCallStack) =>
                          ArgsHMap "__scatter_minus_scalar" t a -> TensorApply t
 __scatter_minus_scalar args
   = let scalarArgs
@@ -10766,7 +11388,8 @@ type instance ParameterList "__scatter_plus_scalar" t =
 
 __scatter_plus_scalar ::
                       forall a t .
-                        (TensorOp t t, Fullfilled "__scatter_plus_scalar" t a) =>
+                        (TensorOp t t, Fullfilled "__scatter_plus_scalar" t a,
+                         HasCallStack) =>
                         ArgsHMap "__scatter_plus_scalar" t a -> TensorApply t
 __scatter_plus_scalar args
   = let scalarArgs
@@ -10783,7 +11406,8 @@ type instance ParameterList "__scatter_set_nd" t =
         '("rhs", AttrOpt t), '("indices", AttrOpt t)]
 
 __scatter_set_nd ::
-                 forall a t . (TensorOp t t, Fullfilled "__scatter_set_nd" t a) =>
+                 forall a t .
+                   (TensorOp t t, Fullfilled "__scatter_set_nd" t a, HasCallStack) =>
                    ArgsHMap "__scatter_set_nd" t a -> TensorApply t
 __scatter_set_nd args
   = let scalarArgs
@@ -10802,7 +11426,8 @@ type instance ParameterList "__set_value" t =
      '[ '("src", AttrOpt Float)]
 
 __set_value ::
-            forall a t . (TensorOp t t, Fullfilled "__set_value" t a) =>
+            forall a t .
+              (TensorOp t t, Fullfilled "__set_value" t a, HasCallStack) =>
               ArgsHMap "__set_value" t a -> TensorApply t
 __set_value args
   = let scalarArgs
@@ -10815,7 +11440,8 @@ __set_value args
 type instance ParameterList "__sg_mkldnn_conv" t = '[]
 
 __sg_mkldnn_conv ::
-                 forall a t . (TensorOp t t, Fullfilled "__sg_mkldnn_conv" t a) =>
+                 forall a t .
+                   (TensorOp t t, Fullfilled "__sg_mkldnn_conv" t a, HasCallStack) =>
                    ArgsHMap "__sg_mkldnn_conv" t a -> TensorApply t
 __sg_mkldnn_conv args
   = let scalarArgs = catMaybes []
@@ -10828,7 +11454,8 @@ type instance ParameterList "__sg_mkldnn_fully_connected" t = '[]
 
 __sg_mkldnn_fully_connected ::
                             forall a t .
-                              (TensorOp t t, Fullfilled "__sg_mkldnn_fully_connected" t a) =>
+                              (TensorOp t t, Fullfilled "__sg_mkldnn_fully_connected" t a,
+                               HasCallStack) =>
                               ArgsHMap "__sg_mkldnn_fully_connected" t a -> TensorApply t
 __sg_mkldnn_fully_connected args
   = let scalarArgs = catMaybes []
@@ -10841,7 +11468,8 @@ type instance ParameterList "__shuffle" t =
      '[ '("data", AttrOpt t)]
 
 __shuffle ::
-          forall a t . (TensorOp t t, Fullfilled "__shuffle" t a) =>
+          forall a t .
+            (TensorOp t t, Fullfilled "__shuffle" t a, HasCallStack) =>
             ArgsHMap "__shuffle" t a -> TensorApply t
 __shuffle args
   = let scalarArgs = catMaybes []
@@ -10855,7 +11483,8 @@ type instance ParameterList "__slice_assign" t =
         '("step", AttrOpt [Int]), '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 __slice_assign ::
-               forall a t . (TensorOp t t, Fullfilled "__slice_assign" t a) =>
+               forall a t .
+                 (TensorOp t t, Fullfilled "__slice_assign" t a, HasCallStack) =>
                  ArgsHMap "__slice_assign" t a -> TensorApply t
 __slice_assign args
   = let scalarArgs
@@ -10878,7 +11507,8 @@ type instance ParameterList "__slice_assign_scalar" t =
 
 __slice_assign_scalar ::
                       forall a t .
-                        (TensorOp t t, Fullfilled "__slice_assign_scalar" t a) =>
+                        (TensorOp t t, Fullfilled "__slice_assign_scalar" t a,
+                         HasCallStack) =>
                         ArgsHMap "__slice_assign_scalar" t a -> TensorApply t
 __slice_assign_scalar args
   = let scalarArgs
@@ -10901,7 +11531,8 @@ type instance ParameterList "__sparse_adagrad_update" t =
 
 __sparse_adagrad_update ::
                         forall a t .
-                          (TensorOp t t, Fullfilled "__sparse_adagrad_update" t a) =>
+                          (TensorOp t t, Fullfilled "__sparse_adagrad_update" t a,
+                           HasCallStack) =>
                           ArgsHMap "__sparse_adagrad_update" t a -> TensorApply t
 __sparse_adagrad_update args
   = let scalarArgs
@@ -10926,7 +11557,8 @@ type instance ParameterList "__sparse_retain" t =
      '[ '("data", AttrOpt t), '("indices", AttrOpt t)]
 
 __sparse_retain ::
-                forall a t . (TensorOp t t, Fullfilled "__sparse_retain" t a) =>
+                forall a t .
+                  (TensorOp t t, Fullfilled "__sparse_retain" t a, HasCallStack) =>
                   ArgsHMap "__sparse_retain" t a -> TensorApply t
 __sparse_retain args
   = let scalarArgs = catMaybes []
@@ -10944,7 +11576,8 @@ type instance ParameterList "__split_v2" t =
         '("data", AttrOpt t)]
 
 __split_v2 ::
-           forall a t . (TensorOp t t, Fullfilled "__split_v2" t a) =>
+           forall a t .
+             (TensorOp t t, Fullfilled "__split_v2" t a, HasCallStack) =>
              ArgsHMap "__split_v2" t a -> TensorApply t
 __split_v2 args
   = let scalarArgs
@@ -10963,7 +11596,8 @@ type instance ParameterList "__split_v2_backward" t = '[]
 
 __split_v2_backward ::
                     forall a t .
-                      (TensorOp t t, Fullfilled "__split_v2_backward" t a) =>
+                      (TensorOp t t, Fullfilled "__split_v2_backward" t a,
+                       HasCallStack) =>
                       ArgsHMap "__split_v2_backward" t a -> TensorApply t
 __split_v2_backward args
   = let scalarArgs = catMaybes []
@@ -10977,7 +11611,8 @@ type instance ParameterList "__square_sum" t =
         '("exclude", AttrOpt Bool), '("data", AttrOpt t)]
 
 __square_sum ::
-             forall a t . (TensorOp t t, Fullfilled "__square_sum" t a) =>
+             forall a t .
+               (TensorOp t t, Fullfilled "__square_sum" t a, HasCallStack) =>
                ArgsHMap "__square_sum" t a -> TensorApply t
 __square_sum args
   = let scalarArgs
@@ -10995,7 +11630,8 @@ type instance ParameterList "__unravel_index" t =
      '[ '("shape", AttrOpt [Int]), '("data", AttrOpt t)]
 
 __unravel_index ::
-                forall a t . (TensorOp t t, Fullfilled "__unravel_index" t a) =>
+                forall a t .
+                  (TensorOp t t, Fullfilled "__unravel_index" t a, HasCallStack) =>
                   ArgsHMap "__unravel_index" t a -> TensorApply t
 __unravel_index args
   = let scalarArgs
@@ -11016,7 +11652,8 @@ type instance ParameterList "__zeros" t =
                  "int8", "uint8"]))]
 
 __zeros ::
-        forall a t . (TensorOp t t, Fullfilled "__zeros" t a) =>
+        forall a t .
+          (TensorOp t t, Fullfilled "__zeros" t a, HasCallStack) =>
           ArgsHMap "__zeros" t a -> TensorApply t
 __zeros args
   = let scalarArgs
@@ -11038,7 +11675,8 @@ type instance ParameterList "__zeros_without_dtype" t =
 
 __zeros_without_dtype ::
                       forall a t .
-                        (TensorOp t t, Fullfilled "__zeros_without_dtype" t a) =>
+                        (TensorOp t t, Fullfilled "__zeros_without_dtype" t a,
+                         HasCallStack) =>
                         ArgsHMap "__zeros_without_dtype" t a -> TensorApply t
 __zeros_without_dtype args
   = let scalarArgs
@@ -11054,7 +11692,7 @@ __zeros_without_dtype args
 type instance ParameterList "_abs" t = '[ '("data", AttrOpt t)]
 
 _abs ::
-     forall a t . (TensorOp t t, Fullfilled "_abs" t a) =>
+     forall a t . (TensorOp t t, Fullfilled "_abs" t a, HasCallStack) =>
        ArgsHMap "_abs" t a -> TensorApply t
 _abs args
   = let scalarArgs = catMaybes []
@@ -11071,7 +11709,8 @@ type instance ParameterList "_adam_update" t =
         '("var", AttrOpt t)]
 
 _adam_update ::
-             forall a t . (TensorOp t t, Fullfilled "_adam_update" t a) =>
+             forall a t .
+               (TensorOp t t, Fullfilled "_adam_update" t a, HasCallStack) =>
                ArgsHMap "_adam_update" t a -> TensorApply t
 _adam_update args
   = let scalarArgs
@@ -11100,7 +11739,8 @@ _adam_update args
 type instance ParameterList "_add_n" t = '[ '("args", AttrOpt [t])]
 
 _add_n ::
-       forall a t . (TensorOp t t, Fullfilled "_add_n" t a) =>
+       forall a t .
+         (TensorOp t t, Fullfilled "_add_n" t a, HasCallStack) =>
          ArgsHMap "_add_n" t a -> TensorApply t
 _add_n args
   = let scalarArgs
@@ -11113,7 +11753,8 @@ type instance ParameterList "_all_finite" t =
      '[ '("init_output", AttrOpt Bool), '("data", AttrOpt t)]
 
 _all_finite ::
-            forall a t . (TensorOp t t, Fullfilled "_all_finite" t a) =>
+            forall a t .
+              (TensorOp t t, Fullfilled "_all_finite" t a, HasCallStack) =>
               ArgsHMap "_all_finite" t a -> TensorApply t
 _all_finite args
   = let scalarArgs
@@ -11134,7 +11775,8 @@ type instance ParameterList "_amp_cast" t =
         '("data", AttrOpt t)]
 
 _amp_cast ::
-          forall a t . (TensorOp t t, Fullfilled "_amp_cast" t a) =>
+          forall a t .
+            (TensorOp t t, Fullfilled "_amp_cast" t a, HasCallStack) =>
             ArgsHMap "_amp_cast" t a -> TensorApply t
 _amp_cast args
   = let scalarArgs
@@ -11155,7 +11797,8 @@ type instance ParameterList "_amp_multicast" t =
         '("data", AttrOpt [t])]
 
 _amp_multicast ::
-               forall a t . (TensorOp t t, Fullfilled "_amp_multicast" t a) =>
+               forall a t .
+                 (TensorOp t t, Fullfilled "_amp_multicast" t a, HasCallStack) =>
                  ArgsHMap "_amp_multicast" t a -> TensorApply t
 _amp_multicast args
   = let scalarArgs
@@ -11171,7 +11814,8 @@ _amp_multicast args
 type instance ParameterList "_arccos" t = '[ '("data", AttrOpt t)]
 
 _arccos ::
-        forall a t . (TensorOp t t, Fullfilled "_arccos" t a) =>
+        forall a t .
+          (TensorOp t t, Fullfilled "_arccos" t a, HasCallStack) =>
           ArgsHMap "_arccos" t a -> TensorApply t
 _arccos args
   = let scalarArgs = catMaybes []
@@ -11182,7 +11826,8 @@ _arccos args
 type instance ParameterList "_arccosh" t = '[ '("data", AttrOpt t)]
 
 _arccosh ::
-         forall a t . (TensorOp t t, Fullfilled "_arccosh" t a) =>
+         forall a t .
+           (TensorOp t t, Fullfilled "_arccosh" t a, HasCallStack) =>
            ArgsHMap "_arccosh" t a -> TensorApply t
 _arccosh args
   = let scalarArgs = catMaybes []
@@ -11193,7 +11838,8 @@ _arccosh args
 type instance ParameterList "_arcsin" t = '[ '("data", AttrOpt t)]
 
 _arcsin ::
-        forall a t . (TensorOp t t, Fullfilled "_arcsin" t a) =>
+        forall a t .
+          (TensorOp t t, Fullfilled "_arcsin" t a, HasCallStack) =>
           ArgsHMap "_arcsin" t a -> TensorApply t
 _arcsin args
   = let scalarArgs = catMaybes []
@@ -11204,7 +11850,8 @@ _arcsin args
 type instance ParameterList "_arcsinh" t = '[ '("data", AttrOpt t)]
 
 _arcsinh ::
-         forall a t . (TensorOp t t, Fullfilled "_arcsinh" t a) =>
+         forall a t .
+           (TensorOp t t, Fullfilled "_arcsinh" t a, HasCallStack) =>
            ArgsHMap "_arcsinh" t a -> TensorApply t
 _arcsinh args
   = let scalarArgs = catMaybes []
@@ -11215,7 +11862,8 @@ _arcsinh args
 type instance ParameterList "_arctan" t = '[ '("data", AttrOpt t)]
 
 _arctan ::
-        forall a t . (TensorOp t t, Fullfilled "_arctan" t a) =>
+        forall a t .
+          (TensorOp t t, Fullfilled "_arctan" t a, HasCallStack) =>
           ArgsHMap "_arctan" t a -> TensorApply t
 _arctan args
   = let scalarArgs = catMaybes []
@@ -11226,7 +11874,8 @@ _arctan args
 type instance ParameterList "_arctanh" t = '[ '("data", AttrOpt t)]
 
 _arctanh ::
-         forall a t . (TensorOp t t, Fullfilled "_arctanh" t a) =>
+         forall a t .
+           (TensorOp t t, Fullfilled "_arctanh" t a, HasCallStack) =>
            ArgsHMap "_arctanh" t a -> TensorApply t
 _arctanh args
   = let scalarArgs = catMaybes []
@@ -11239,7 +11888,8 @@ type instance ParameterList "_argmax" t =
         '("data", AttrOpt t)]
 
 _argmax ::
-        forall a t . (TensorOp t t, Fullfilled "_argmax" t a) =>
+        forall a t .
+          (TensorOp t t, Fullfilled "_argmax" t a, HasCallStack) =>
           ArgsHMap "_argmax" t a -> TensorApply t
 _argmax args
   = let scalarArgs
@@ -11254,7 +11904,8 @@ type instance ParameterList "_argmax_channel" t =
      '[ '("data", AttrOpt t)]
 
 _argmax_channel ::
-                forall a t . (TensorOp t t, Fullfilled "_argmax_channel" t a) =>
+                forall a t .
+                  (TensorOp t t, Fullfilled "_argmax_channel" t a, HasCallStack) =>
                   ArgsHMap "_argmax_channel" t a -> TensorApply t
 _argmax_channel args
   = let scalarArgs = catMaybes []
@@ -11269,7 +11920,8 @@ type instance ParameterList "_argmin" t =
         '("data", AttrOpt t)]
 
 _argmin ::
-        forall a t . (TensorOp t t, Fullfilled "_argmin" t a) =>
+        forall a t .
+          (TensorOp t t, Fullfilled "_argmin" t a, HasCallStack) =>
           ArgsHMap "_argmin" t a -> TensorApply t
 _argmin args
   = let scalarArgs
@@ -11289,7 +11941,8 @@ type instance ParameterList "_argsort" t =
         '("data", AttrOpt t)]
 
 _argsort ::
-         forall a t . (TensorOp t t, Fullfilled "_argsort" t a) =>
+         forall a t .
+           (TensorOp t t, Fullfilled "_argsort" t a, HasCallStack) =>
            ArgsHMap "_argsort" t a -> TensorApply t
 _argsort args
   = let scalarArgs
@@ -11312,7 +11965,8 @@ type instance ParameterList "_batch_dot" t =
         '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 _batch_dot ::
-           forall a t . (TensorOp t t, Fullfilled "_batch_dot" t a) =>
+           forall a t .
+             (TensorOp t t, Fullfilled "_batch_dot" t a, HasCallStack) =>
              ArgsHMap "_batch_dot" t a -> TensorApply t
 _batch_dot args
   = let scalarArgs
@@ -11335,7 +11989,8 @@ type instance ParameterList "_batch_take" t =
      '[ '("a", AttrOpt t), '("indices", AttrOpt t)]
 
 _batch_take ::
-            forall a t . (TensorOp t t, Fullfilled "_batch_take" t a) =>
+            forall a t .
+              (TensorOp t t, Fullfilled "_batch_take" t a, HasCallStack) =>
               ArgsHMap "_batch_take" t a -> TensorApply t
 _batch_take args
   = let scalarArgs = catMaybes []
@@ -11350,7 +12005,8 @@ type instance ParameterList "_broadcast_add" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 _broadcast_add ::
-               forall a t . (TensorOp t t, Fullfilled "_broadcast_add" t a) =>
+               forall a t .
+                 (TensorOp t t, Fullfilled "_broadcast_add" t a, HasCallStack) =>
                  ArgsHMap "_broadcast_add" t a -> TensorApply t
 _broadcast_add args
   = let scalarArgs = catMaybes []
@@ -11367,7 +12023,8 @@ type instance ParameterList "_broadcast_axis" t =
         '("data", AttrOpt t)]
 
 _broadcast_axis ::
-                forall a t . (TensorOp t t, Fullfilled "_broadcast_axis" t a) =>
+                forall a t .
+                  (TensorOp t t, Fullfilled "_broadcast_axis" t a, HasCallStack) =>
                   ArgsHMap "_broadcast_axis" t a -> TensorApply t
 _broadcast_axis args
   = let scalarArgs
@@ -11384,7 +12041,8 @@ type instance ParameterList "_broadcast_div" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 _broadcast_div ::
-               forall a t . (TensorOp t t, Fullfilled "_broadcast_div" t a) =>
+               forall a t .
+                 (TensorOp t t, Fullfilled "_broadcast_div" t a, HasCallStack) =>
                  ArgsHMap "_broadcast_div" t a -> TensorApply t
 _broadcast_div args
   = let scalarArgs = catMaybes []
@@ -11400,7 +12058,8 @@ type instance ParameterList "_broadcast_equal" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 _broadcast_equal ::
-                 forall a t . (TensorOp t t, Fullfilled "_broadcast_equal" t a) =>
+                 forall a t .
+                   (TensorOp t t, Fullfilled "_broadcast_equal" t a, HasCallStack) =>
                    ArgsHMap "_broadcast_equal" t a -> TensorApply t
 _broadcast_equal args
   = let scalarArgs = catMaybes []
@@ -11416,7 +12075,9 @@ type instance ParameterList "_broadcast_greater" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 _broadcast_greater ::
-                   forall a t . (TensorOp t t, Fullfilled "_broadcast_greater" t a) =>
+                   forall a t .
+                     (TensorOp t t, Fullfilled "_broadcast_greater" t a,
+                      HasCallStack) =>
                      ArgsHMap "_broadcast_greater" t a -> TensorApply t
 _broadcast_greater args
   = let scalarArgs = catMaybes []
@@ -11433,7 +12094,8 @@ type instance ParameterList "_broadcast_greater_equal" t =
 
 _broadcast_greater_equal ::
                          forall a t .
-                           (TensorOp t t, Fullfilled "_broadcast_greater_equal" t a) =>
+                           (TensorOp t t, Fullfilled "_broadcast_greater_equal" t a,
+                            HasCallStack) =>
                            ArgsHMap "_broadcast_greater_equal" t a -> TensorApply t
 _broadcast_greater_equal args
   = let scalarArgs = catMaybes []
@@ -11449,7 +12111,8 @@ type instance ParameterList "_broadcast_hypot" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 _broadcast_hypot ::
-                 forall a t . (TensorOp t t, Fullfilled "_broadcast_hypot" t a) =>
+                 forall a t .
+                   (TensorOp t t, Fullfilled "_broadcast_hypot" t a, HasCallStack) =>
                    ArgsHMap "_broadcast_hypot" t a -> TensorApply t
 _broadcast_hypot args
   = let scalarArgs = catMaybes []
@@ -11465,7 +12128,8 @@ type instance ParameterList "_broadcast_lesser" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 _broadcast_lesser ::
-                  forall a t . (TensorOp t t, Fullfilled "_broadcast_lesser" t a) =>
+                  forall a t .
+                    (TensorOp t t, Fullfilled "_broadcast_lesser" t a, HasCallStack) =>
                     ArgsHMap "_broadcast_lesser" t a -> TensorApply t
 _broadcast_lesser args
   = let scalarArgs = catMaybes []
@@ -11482,7 +12146,8 @@ type instance ParameterList "_broadcast_lesser_equal" t =
 
 _broadcast_lesser_equal ::
                         forall a t .
-                          (TensorOp t t, Fullfilled "_broadcast_lesser_equal" t a) =>
+                          (TensorOp t t, Fullfilled "_broadcast_lesser_equal" t a,
+                           HasCallStack) =>
                           ArgsHMap "_broadcast_lesser_equal" t a -> TensorApply t
 _broadcast_lesser_equal args
   = let scalarArgs = catMaybes []
@@ -11500,7 +12165,8 @@ type instance ParameterList "_broadcast_like" t =
         '("rhs", AttrOpt t)]
 
 _broadcast_like ::
-                forall a t . (TensorOp t t, Fullfilled "_broadcast_like" t a) =>
+                forall a t .
+                  (TensorOp t t, Fullfilled "_broadcast_like" t a, HasCallStack) =>
                   ArgsHMap "_broadcast_like" t a -> TensorApply t
 _broadcast_like args
   = let scalarArgs
@@ -11522,7 +12188,8 @@ type instance ParameterList "_broadcast_logical_and" t =
 
 _broadcast_logical_and ::
                        forall a t .
-                         (TensorOp t t, Fullfilled "_broadcast_logical_and" t a) =>
+                         (TensorOp t t, Fullfilled "_broadcast_logical_and" t a,
+                          HasCallStack) =>
                          ArgsHMap "_broadcast_logical_and" t a -> TensorApply t
 _broadcast_logical_and args
   = let scalarArgs = catMaybes []
@@ -11539,7 +12206,8 @@ type instance ParameterList "_broadcast_logical_or" t =
 
 _broadcast_logical_or ::
                       forall a t .
-                        (TensorOp t t, Fullfilled "_broadcast_logical_or" t a) =>
+                        (TensorOp t t, Fullfilled "_broadcast_logical_or" t a,
+                         HasCallStack) =>
                         ArgsHMap "_broadcast_logical_or" t a -> TensorApply t
 _broadcast_logical_or args
   = let scalarArgs = catMaybes []
@@ -11556,7 +12224,8 @@ type instance ParameterList "_broadcast_logical_xor" t =
 
 _broadcast_logical_xor ::
                        forall a t .
-                         (TensorOp t t, Fullfilled "_broadcast_logical_xor" t a) =>
+                         (TensorOp t t, Fullfilled "_broadcast_logical_xor" t a,
+                          HasCallStack) =>
                          ArgsHMap "_broadcast_logical_xor" t a -> TensorApply t
 _broadcast_logical_xor args
   = let scalarArgs = catMaybes []
@@ -11572,7 +12241,9 @@ type instance ParameterList "_broadcast_maximum" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 _broadcast_maximum ::
-                   forall a t . (TensorOp t t, Fullfilled "_broadcast_maximum" t a) =>
+                   forall a t .
+                     (TensorOp t t, Fullfilled "_broadcast_maximum" t a,
+                      HasCallStack) =>
                      ArgsHMap "_broadcast_maximum" t a -> TensorApply t
 _broadcast_maximum args
   = let scalarArgs = catMaybes []
@@ -11588,7 +12259,9 @@ type instance ParameterList "_broadcast_minimum" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 _broadcast_minimum ::
-                   forall a t . (TensorOp t t, Fullfilled "_broadcast_minimum" t a) =>
+                   forall a t .
+                     (TensorOp t t, Fullfilled "_broadcast_minimum" t a,
+                      HasCallStack) =>
                      ArgsHMap "_broadcast_minimum" t a -> TensorApply t
 _broadcast_minimum args
   = let scalarArgs = catMaybes []
@@ -11604,7 +12277,8 @@ type instance ParameterList "_broadcast_mod" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 _broadcast_mod ::
-               forall a t . (TensorOp t t, Fullfilled "_broadcast_mod" t a) =>
+               forall a t .
+                 (TensorOp t t, Fullfilled "_broadcast_mod" t a, HasCallStack) =>
                  ArgsHMap "_broadcast_mod" t a -> TensorApply t
 _broadcast_mod args
   = let scalarArgs = catMaybes []
@@ -11620,7 +12294,8 @@ type instance ParameterList "_broadcast_mul" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 _broadcast_mul ::
-               forall a t . (TensorOp t t, Fullfilled "_broadcast_mul" t a) =>
+               forall a t .
+                 (TensorOp t t, Fullfilled "_broadcast_mul" t a, HasCallStack) =>
                  ArgsHMap "_broadcast_mul" t a -> TensorApply t
 _broadcast_mul args
   = let scalarArgs = catMaybes []
@@ -11637,7 +12312,8 @@ type instance ParameterList "_broadcast_not_equal" t =
 
 _broadcast_not_equal ::
                      forall a t .
-                       (TensorOp t t, Fullfilled "_broadcast_not_equal" t a) =>
+                       (TensorOp t t, Fullfilled "_broadcast_not_equal" t a,
+                        HasCallStack) =>
                        ArgsHMap "_broadcast_not_equal" t a -> TensorApply t
 _broadcast_not_equal args
   = let scalarArgs = catMaybes []
@@ -11653,7 +12329,8 @@ type instance ParameterList "_broadcast_power" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 _broadcast_power ::
-                 forall a t . (TensorOp t t, Fullfilled "_broadcast_power" t a) =>
+                 forall a t .
+                   (TensorOp t t, Fullfilled "_broadcast_power" t a, HasCallStack) =>
                    ArgsHMap "_broadcast_power" t a -> TensorApply t
 _broadcast_power args
   = let scalarArgs = catMaybes []
@@ -11669,7 +12346,8 @@ type instance ParameterList "_broadcast_sub" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 _broadcast_sub ::
-               forall a t . (TensorOp t t, Fullfilled "_broadcast_sub" t a) =>
+               forall a t .
+                 (TensorOp t t, Fullfilled "_broadcast_sub" t a, HasCallStack) =>
                  ArgsHMap "_broadcast_sub" t a -> TensorApply t
 _broadcast_sub args
   = let scalarArgs = catMaybes []
@@ -11685,7 +12363,8 @@ type instance ParameterList "_broadcast_to" t =
      '[ '("shape", AttrOpt [Int]), '("data", AttrOpt t)]
 
 _broadcast_to ::
-              forall a t . (TensorOp t t, Fullfilled "_broadcast_to" t a) =>
+              forall a t .
+                (TensorOp t t, Fullfilled "_broadcast_to" t a, HasCallStack) =>
                 ArgsHMap "_broadcast_to" t a -> TensorApply t
 _broadcast_to args
   = let scalarArgs
@@ -11703,7 +12382,8 @@ type instance ParameterList "_cast_storage" t =
         '("data", AttrOpt t)]
 
 _cast_storage ::
-              forall a t . (TensorOp t t, Fullfilled "_cast_storage" t a) =>
+              forall a t .
+                (TensorOp t t, Fullfilled "_cast_storage" t a, HasCallStack) =>
                 ArgsHMap "_cast_storage" t a -> TensorApply t
 _cast_storage args
   = let scalarArgs
@@ -11720,7 +12400,8 @@ _cast_storage args
 type instance ParameterList "_cbrt" t = '[ '("data", AttrOpt t)]
 
 _cbrt ::
-      forall a t . (TensorOp t t, Fullfilled "_cbrt" t a) =>
+      forall a t .
+        (TensorOp t t, Fullfilled "_cbrt" t a, HasCallStack) =>
         ArgsHMap "_cbrt" t a -> TensorApply t
 _cbrt args
   = let scalarArgs = catMaybes []
@@ -11731,7 +12412,8 @@ _cbrt args
 type instance ParameterList "_ceil" t = '[ '("data", AttrOpt t)]
 
 _ceil ::
-      forall a t . (TensorOp t t, Fullfilled "_ceil" t a) =>
+      forall a t .
+        (TensorOp t t, Fullfilled "_ceil" t a, HasCallStack) =>
         ArgsHMap "_ceil" t a -> TensorApply t
 _ceil args
   = let scalarArgs = catMaybes []
@@ -11744,7 +12426,8 @@ type instance ParameterList "_clip" t =
         '("data", AttrOpt t)]
 
 _clip ::
-      forall a t . (TensorOp t t, Fullfilled "_clip" t a) =>
+      forall a t .
+        (TensorOp t t, Fullfilled "_clip" t a, HasCallStack) =>
         ArgsHMap "_clip" t a -> TensorApply t
 _clip args
   = let scalarArgs
@@ -11758,7 +12441,7 @@ _clip args
 type instance ParameterList "_cos" t = '[ '("data", AttrOpt t)]
 
 _cos ::
-     forall a t . (TensorOp t t, Fullfilled "_cos" t a) =>
+     forall a t . (TensorOp t t, Fullfilled "_cos" t a, HasCallStack) =>
        ArgsHMap "_cos" t a -> TensorApply t
 _cos args
   = let scalarArgs = catMaybes []
@@ -11769,7 +12452,8 @@ _cos args
 type instance ParameterList "_cosh" t = '[ '("data", AttrOpt t)]
 
 _cosh ::
-      forall a t . (TensorOp t t, Fullfilled "_cosh" t a) =>
+      forall a t .
+        (TensorOp t t, Fullfilled "_cosh" t a, HasCallStack) =>
         ArgsHMap "_cosh" t a -> TensorApply t
 _cosh args
   = let scalarArgs = catMaybes []
@@ -11780,7 +12464,8 @@ _cosh args
 type instance ParameterList "_degrees" t = '[ '("data", AttrOpt t)]
 
 _degrees ::
-         forall a t . (TensorOp t t, Fullfilled "_degrees" t a) =>
+         forall a t .
+           (TensorOp t t, Fullfilled "_degrees" t a, HasCallStack) =>
            ArgsHMap "_degrees" t a -> TensorApply t
 _degrees args
   = let scalarArgs = catMaybes []
@@ -11792,7 +12477,8 @@ type instance ParameterList "_depth_to_space" t =
      '[ '("block_size", AttrReq Int), '("data", AttrOpt t)]
 
 _depth_to_space ::
-                forall a t . (TensorOp t t, Fullfilled "_depth_to_space" t a) =>
+                forall a t .
+                  (TensorOp t t, Fullfilled "_depth_to_space" t a, HasCallStack) =>
                   ArgsHMap "_depth_to_space" t a -> TensorApply t
 _depth_to_space args
   = let scalarArgs
@@ -11810,7 +12496,8 @@ type instance ParameterList "_diag" t =
         '("axis2", AttrOpt Int), '("data", AttrOpt t)]
 
 _diag ::
-      forall a t . (TensorOp t t, Fullfilled "_diag" t a) =>
+      forall a t .
+        (TensorOp t t, Fullfilled "_diag" t a, HasCallStack) =>
         ArgsHMap "_diag" t a -> TensorApply t
 _diag args
   = let scalarArgs
@@ -11829,7 +12516,7 @@ type instance ParameterList "_dot" t =
         '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 _dot ::
-     forall a t . (TensorOp t t, Fullfilled "_dot" t a) =>
+     forall a t . (TensorOp t t, Fullfilled "_dot" t a, HasCallStack) =>
        ArgsHMap "_dot" t a -> TensorApply t
 _dot args
   = let scalarArgs
@@ -11851,7 +12538,8 @@ type instance ParameterList "_elemwise_add" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 _elemwise_add ::
-              forall a t . (TensorOp t t, Fullfilled "_elemwise_add" t a) =>
+              forall a t .
+                (TensorOp t t, Fullfilled "_elemwise_add" t a, HasCallStack) =>
                 ArgsHMap "_elemwise_add" t a -> TensorApply t
 _elemwise_add args
   = let scalarArgs = catMaybes []
@@ -11867,7 +12555,8 @@ type instance ParameterList "_elemwise_div" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 _elemwise_div ::
-              forall a t . (TensorOp t t, Fullfilled "_elemwise_div" t a) =>
+              forall a t .
+                (TensorOp t t, Fullfilled "_elemwise_div" t a, HasCallStack) =>
                 ArgsHMap "_elemwise_div" t a -> TensorApply t
 _elemwise_div args
   = let scalarArgs = catMaybes []
@@ -11883,7 +12572,8 @@ type instance ParameterList "_elemwise_mul" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 _elemwise_mul ::
-              forall a t . (TensorOp t t, Fullfilled "_elemwise_mul" t a) =>
+              forall a t .
+                (TensorOp t t, Fullfilled "_elemwise_mul" t a, HasCallStack) =>
                 ArgsHMap "_elemwise_mul" t a -> TensorApply t
 _elemwise_mul args
   = let scalarArgs = catMaybes []
@@ -11899,7 +12589,8 @@ type instance ParameterList "_elemwise_sub" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 _elemwise_sub ::
-              forall a t . (TensorOp t t, Fullfilled "_elemwise_sub" t a) =>
+              forall a t .
+                (TensorOp t t, Fullfilled "_elemwise_sub" t a, HasCallStack) =>
                 ArgsHMap "_elemwise_sub" t a -> TensorApply t
 _elemwise_sub args
   = let scalarArgs = catMaybes []
@@ -11914,7 +12605,7 @@ _elemwise_sub args
 type instance ParameterList "_erf" t = '[ '("data", AttrOpt t)]
 
 _erf ::
-     forall a t . (TensorOp t t, Fullfilled "_erf" t a) =>
+     forall a t . (TensorOp t t, Fullfilled "_erf" t a, HasCallStack) =>
        ArgsHMap "_erf" t a -> TensorApply t
 _erf args
   = let scalarArgs = catMaybes []
@@ -11925,7 +12616,8 @@ _erf args
 type instance ParameterList "_erfinv" t = '[ '("data", AttrOpt t)]
 
 _erfinv ::
-        forall a t . (TensorOp t t, Fullfilled "_erfinv" t a) =>
+        forall a t .
+          (TensorOp t t, Fullfilled "_erfinv" t a, HasCallStack) =>
           ArgsHMap "_erfinv" t a -> TensorApply t
 _erfinv args
   = let scalarArgs = catMaybes []
@@ -11936,7 +12628,7 @@ _erfinv args
 type instance ParameterList "_exp" t = '[ '("data", AttrOpt t)]
 
 _exp ::
-     forall a t . (TensorOp t t, Fullfilled "_exp" t a) =>
+     forall a t . (TensorOp t t, Fullfilled "_exp" t a, HasCallStack) =>
        ArgsHMap "_exp" t a -> TensorApply t
 _exp args
   = let scalarArgs = catMaybes []
@@ -11948,7 +12640,8 @@ type instance ParameterList "_expand_dims" t =
      '[ '("axis", AttrReq Int), '("data", AttrOpt t)]
 
 _expand_dims ::
-             forall a t . (TensorOp t t, Fullfilled "_expand_dims" t a) =>
+             forall a t .
+               (TensorOp t t, Fullfilled "_expand_dims" t a, HasCallStack) =>
                ArgsHMap "_expand_dims" t a -> TensorApply t
 _expand_dims args
   = let scalarArgs
@@ -11963,7 +12656,8 @@ _expand_dims args
 type instance ParameterList "_expm1" t = '[ '("data", AttrOpt t)]
 
 _expm1 ::
-       forall a t . (TensorOp t t, Fullfilled "_expm1" t a) =>
+       forall a t .
+         (TensorOp t t, Fullfilled "_expm1" t a, HasCallStack) =>
          ArgsHMap "_expm1" t a -> TensorApply t
 _expm1 args
   = let scalarArgs = catMaybes []
@@ -11976,7 +12670,8 @@ type instance ParameterList "_fill_element_0index" t =
 
 _fill_element_0index ::
                      forall a t .
-                       (TensorOp t t, Fullfilled "_fill_element_0index" t a) =>
+                       (TensorOp t t, Fullfilled "_fill_element_0index" t a,
+                        HasCallStack) =>
                        ArgsHMap "_fill_element_0index" t a -> TensorApply t
 _fill_element_0index args
   = let scalarArgs = catMaybes []
@@ -11992,7 +12687,7 @@ _fill_element_0index args
 type instance ParameterList "_fix" t = '[ '("data", AttrOpt t)]
 
 _fix ::
-     forall a t . (TensorOp t t, Fullfilled "_fix" t a) =>
+     forall a t . (TensorOp t t, Fullfilled "_fix" t a, HasCallStack) =>
        ArgsHMap "_fix" t a -> TensorApply t
 _fix args
   = let scalarArgs = catMaybes []
@@ -12003,7 +12698,8 @@ _fix args
 type instance ParameterList "_floor" t = '[ '("data", AttrOpt t)]
 
 _floor ::
-       forall a t . (TensorOp t t, Fullfilled "_floor" t a) =>
+       forall a t .
+         (TensorOp t t, Fullfilled "_floor" t a, HasCallStack) =>
          ArgsHMap "_floor" t a -> TensorApply t
 _floor args
   = let scalarArgs = catMaybes []
@@ -12020,7 +12716,8 @@ type instance ParameterList "_ftml_update" t =
         '("v", AttrOpt t), '("z", AttrOpt t)]
 
 _ftml_update ::
-             forall a t . (TensorOp t t, Fullfilled "_ftml_update" t a) =>
+             forall a t .
+               (TensorOp t t, Fullfilled "_ftml_update" t a, HasCallStack) =>
                ArgsHMap "_ftml_update" t a -> TensorApply t
 _ftml_update args
   = let scalarArgs
@@ -12053,7 +12750,8 @@ type instance ParameterList "_ftrl_update" t =
         '("grad", AttrOpt t), '("z", AttrOpt t), '("n", AttrOpt t)]
 
 _ftrl_update ::
-             forall a t . (TensorOp t t, Fullfilled "_ftrl_update" t a) =>
+             forall a t .
+               (TensorOp t t, Fullfilled "_ftrl_update" t a, HasCallStack) =>
                ArgsHMap "_ftrl_update" t a -> TensorApply t
 _ftrl_update args
   = let scalarArgs
@@ -12079,7 +12777,8 @@ _ftrl_update args
 type instance ParameterList "_gamma" t = '[ '("data", AttrOpt t)]
 
 _gamma ::
-       forall a t . (TensorOp t t, Fullfilled "_gamma" t a) =>
+       forall a t .
+         (TensorOp t t, Fullfilled "_gamma" t a, HasCallStack) =>
          ArgsHMap "_gamma" t a -> TensorApply t
 _gamma args
   = let scalarArgs = catMaybes []
@@ -12090,7 +12789,8 @@ _gamma args
 type instance ParameterList "_gammaln" t = '[ '("data", AttrOpt t)]
 
 _gammaln ::
-         forall a t . (TensorOp t t, Fullfilled "_gammaln" t a) =>
+         forall a t .
+           (TensorOp t t, Fullfilled "_gammaln" t a, HasCallStack) =>
            ArgsHMap "_gammaln" t a -> TensorApply t
 _gammaln args
   = let scalarArgs = catMaybes []
@@ -12102,7 +12802,8 @@ type instance ParameterList "_gather_nd" t =
      '[ '("data", AttrOpt t), '("indices", AttrOpt t)]
 
 _gather_nd ::
-           forall a t . (TensorOp t t, Fullfilled "_gather_nd" t a) =>
+           forall a t .
+             (TensorOp t t, Fullfilled "_gather_nd" t a, HasCallStack) =>
              ArgsHMap "_gather_nd" t a -> TensorApply t
 _gather_nd args
   = let scalarArgs = catMaybes []
@@ -12118,7 +12819,8 @@ type instance ParameterList "_hard_sigmoid" t =
         '("data", AttrOpt t)]
 
 _hard_sigmoid ::
-              forall a t . (TensorOp t t, Fullfilled "_hard_sigmoid" t a) =>
+              forall a t .
+                (TensorOp t t, Fullfilled "_hard_sigmoid" t a, HasCallStack) =>
                 ArgsHMap "_hard_sigmoid" t a -> TensorApply t
 _hard_sigmoid args
   = let scalarArgs
@@ -12135,7 +12837,8 @@ type instance ParameterList "_khatri_rao" t =
      '[ '("args", AttrOpt [t])]
 
 _khatri_rao ::
-            forall a t . (TensorOp t t, Fullfilled "_khatri_rao" t a) =>
+            forall a t .
+              (TensorOp t t, Fullfilled "_khatri_rao" t a, HasCallStack) =>
               ArgsHMap "_khatri_rao" t a -> TensorApply t
 _khatri_rao args
   = let scalarArgs
@@ -12154,7 +12857,8 @@ type instance ParameterList "_lamb_update_phase1" t =
 
 _lamb_update_phase1 ::
                     forall a t .
-                      (TensorOp t t, Fullfilled "_lamb_update_phase1" t a) =>
+                      (TensorOp t t, Fullfilled "_lamb_update_phase1" t a,
+                       HasCallStack) =>
                       ArgsHMap "_lamb_update_phase1" t a -> TensorApply t
 _lamb_update_phase1 args
   = let scalarArgs
@@ -12187,7 +12891,8 @@ type instance ParameterList "_lamb_update_phase2" t =
 
 _lamb_update_phase2 ::
                     forall a t .
-                      (TensorOp t t, Fullfilled "_lamb_update_phase2" t a) =>
+                      (TensorOp t t, Fullfilled "_lamb_update_phase2" t a,
+                       HasCallStack) =>
                       ArgsHMap "_lamb_update_phase2" t a -> TensorApply t
 _lamb_update_phase2 args
   = let scalarArgs
@@ -12210,7 +12915,7 @@ _lamb_update_phase2 args
 type instance ParameterList "_log" t = '[ '("data", AttrOpt t)]
 
 _log ::
-     forall a t . (TensorOp t t, Fullfilled "_log" t a) =>
+     forall a t . (TensorOp t t, Fullfilled "_log" t a, HasCallStack) =>
        ArgsHMap "_log" t a -> TensorApply t
 _log args
   = let scalarArgs = catMaybes []
@@ -12221,7 +12926,8 @@ _log args
 type instance ParameterList "_log10" t = '[ '("data", AttrOpt t)]
 
 _log10 ::
-       forall a t . (TensorOp t t, Fullfilled "_log10" t a) =>
+       forall a t .
+         (TensorOp t t, Fullfilled "_log10" t a, HasCallStack) =>
          ArgsHMap "_log10" t a -> TensorApply t
 _log10 args
   = let scalarArgs = catMaybes []
@@ -12232,7 +12938,8 @@ _log10 args
 type instance ParameterList "_log1p" t = '[ '("data", AttrOpt t)]
 
 _log1p ::
-       forall a t . (TensorOp t t, Fullfilled "_log1p" t a) =>
+       forall a t .
+         (TensorOp t t, Fullfilled "_log1p" t a, HasCallStack) =>
          ArgsHMap "_log1p" t a -> TensorApply t
 _log1p args
   = let scalarArgs = catMaybes []
@@ -12243,7 +12950,8 @@ _log1p args
 type instance ParameterList "_log2" t = '[ '("data", AttrOpt t)]
 
 _log2 ::
-      forall a t . (TensorOp t t, Fullfilled "_log2" t a) =>
+      forall a t .
+        (TensorOp t t, Fullfilled "_log2" t a, HasCallStack) =>
         ArgsHMap "_log2" t a -> TensorApply t
 _log2 args
   = let scalarArgs = catMaybes []
@@ -12259,7 +12967,8 @@ type instance ParameterList "_log_softmax" t =
         '("use_length", AttrOpt (Maybe Bool)), '("data", AttrOpt t)]
 
 _log_softmax ::
-             forall a t . (TensorOp t t, Fullfilled "_log_softmax" t a) =>
+             forall a t .
+               (TensorOp t t, Fullfilled "_log_softmax" t a, HasCallStack) =>
                ArgsHMap "_log_softmax" t a -> TensorApply t
 _log_softmax args
   = let scalarArgs
@@ -12282,7 +12991,8 @@ type instance ParameterList "_logical_not" t =
      '[ '("data", AttrOpt t)]
 
 _logical_not ::
-             forall a t . (TensorOp t t, Fullfilled "_logical_not" t a) =>
+             forall a t .
+               (TensorOp t t, Fullfilled "_logical_not" t a, HasCallStack) =>
                ArgsHMap "_logical_not" t a -> TensorApply t
 _logical_not args
   = let scalarArgs = catMaybes []
@@ -12296,7 +13006,8 @@ type instance ParameterList "_make_loss" t =
      '[ '("data", AttrOpt t)]
 
 _make_loss ::
-           forall a t . (TensorOp t t, Fullfilled "_make_loss" t a) =>
+           forall a t .
+             (TensorOp t t, Fullfilled "_make_loss" t a, HasCallStack) =>
              ArgsHMap "_make_loss" t a -> TensorApply t
 _make_loss args
   = let scalarArgs = catMaybes []
@@ -12310,7 +13021,7 @@ type instance ParameterList "_max" t =
         '("exclude", AttrOpt Bool), '("data", AttrOpt t)]
 
 _max ::
-     forall a t . (TensorOp t t, Fullfilled "_max" t a) =>
+     forall a t . (TensorOp t t, Fullfilled "_max" t a, HasCallStack) =>
        ArgsHMap "_max" t a -> TensorApply t
 _max args
   = let scalarArgs
@@ -12327,7 +13038,8 @@ type instance ParameterList "_mean" t =
         '("exclude", AttrOpt Bool), '("data", AttrOpt t)]
 
 _mean ::
-      forall a t . (TensorOp t t, Fullfilled "_mean" t a) =>
+      forall a t .
+        (TensorOp t t, Fullfilled "_mean" t a, HasCallStack) =>
         ArgsHMap "_mean" t a -> TensorApply t
 _mean args
   = let scalarArgs
@@ -12344,7 +13056,7 @@ type instance ParameterList "_min" t =
         '("exclude", AttrOpt Bool), '("data", AttrOpt t)]
 
 _min ::
-     forall a t . (TensorOp t t, Fullfilled "_min" t a) =>
+     forall a t . (TensorOp t t, Fullfilled "_min" t a, HasCallStack) =>
        ArgsHMap "_min" t a -> TensorApply t
 _min args
   = let scalarArgs
@@ -12361,7 +13073,8 @@ type instance ParameterList "_moments" t =
         '("data", AttrOpt t)]
 
 _moments ::
-         forall a t . (TensorOp t t, Fullfilled "_moments" t a) =>
+         forall a t .
+           (TensorOp t t, Fullfilled "_moments" t a, HasCallStack) =>
            ArgsHMap "_moments" t a -> TensorApply t
 _moments args
   = let scalarArgs
@@ -12383,7 +13096,8 @@ type instance ParameterList "_mp_lamb_update_phase1" t =
 
 _mp_lamb_update_phase1 ::
                        forall a t .
-                         (TensorOp t t, Fullfilled "_mp_lamb_update_phase1" t a) =>
+                         (TensorOp t t, Fullfilled "_mp_lamb_update_phase1" t a,
+                          HasCallStack) =>
                          ArgsHMap "_mp_lamb_update_phase1" t a -> TensorApply t
 _mp_lamb_update_phase1 args
   = let scalarArgs
@@ -12418,7 +13132,8 @@ type instance ParameterList "_mp_lamb_update_phase2" t =
 
 _mp_lamb_update_phase2 ::
                        forall a t .
-                         (TensorOp t t, Fullfilled "_mp_lamb_update_phase2" t a) =>
+                         (TensorOp t t, Fullfilled "_mp_lamb_update_phase2" t a,
+                          HasCallStack) =>
                          ArgsHMap "_mp_lamb_update_phase2" t a -> TensorApply t
 _mp_lamb_update_phase2 args
   = let scalarArgs
@@ -12447,7 +13162,9 @@ type instance ParameterList "_mp_nag_mom_update" t =
         '("weight32", AttrOpt t)]
 
 _mp_nag_mom_update ::
-                   forall a t . (TensorOp t t, Fullfilled "_mp_nag_mom_update" t a) =>
+                   forall a t .
+                     (TensorOp t t, Fullfilled "_mp_nag_mom_update" t a,
+                      HasCallStack) =>
                      ArgsHMap "_mp_nag_mom_update" t a -> TensorApply t
 _mp_nag_mom_update args
   = let scalarArgs
@@ -12477,7 +13194,9 @@ type instance ParameterList "_mp_sgd_mom_update" t =
         '("weight32", AttrOpt t)]
 
 _mp_sgd_mom_update ::
-                   forall a t . (TensorOp t t, Fullfilled "_mp_sgd_mom_update" t a) =>
+                   forall a t .
+                     (TensorOp t t, Fullfilled "_mp_sgd_mom_update" t a,
+                      HasCallStack) =>
                      ArgsHMap "_mp_sgd_mom_update" t a -> TensorApply t
 _mp_sgd_mom_update args
   = let scalarArgs
@@ -12509,7 +13228,8 @@ type instance ParameterList "_mp_sgd_update" t =
         '("weight32", AttrOpt t)]
 
 _mp_sgd_update ::
-               forall a t . (TensorOp t t, Fullfilled "_mp_sgd_update" t a) =>
+               forall a t .
+                 (TensorOp t t, Fullfilled "_mp_sgd_update" t a, HasCallStack) =>
                  ArgsHMap "_mp_sgd_update" t a -> TensorApply t
 _mp_sgd_update args
   = let scalarArgs
@@ -12536,7 +13256,8 @@ type instance ParameterList "_multi_all_finite" t =
         '("data", AttrOpt [t])]
 
 _multi_all_finite ::
-                  forall a t . (TensorOp t t, Fullfilled "_multi_all_finite" t a) =>
+                  forall a t .
+                    (TensorOp t t, Fullfilled "_multi_all_finite" t a, HasCallStack) =>
                     ArgsHMap "_multi_all_finite" t a -> TensorApply t
 _multi_all_finite args
   = let scalarArgs
@@ -12556,7 +13277,8 @@ type instance ParameterList "_multi_lars" t =
         '("wds", AttrOpt t)]
 
 _multi_lars ::
-            forall a t . (TensorOp t t, Fullfilled "_multi_lars" t a) =>
+            forall a t .
+              (TensorOp t t, Fullfilled "_multi_lars" t a, HasCallStack) =>
               ArgsHMap "_multi_lars" t a -> TensorApply t
 _multi_lars args
   = let scalarArgs
@@ -12582,7 +13304,8 @@ type instance ParameterList "_multi_mp_sgd_mom_update" t =
 
 _multi_mp_sgd_mom_update ::
                          forall a t .
-                           (TensorOp t t, Fullfilled "_multi_mp_sgd_mom_update" t a) =>
+                           (TensorOp t t, Fullfilled "_multi_mp_sgd_mom_update" t a,
+                            HasCallStack) =>
                            ArgsHMap "_multi_mp_sgd_mom_update" t a -> TensorApply t
 _multi_mp_sgd_mom_update args
   = let scalarArgs
@@ -12608,7 +13331,8 @@ type instance ParameterList "_multi_mp_sgd_update" t =
 
 _multi_mp_sgd_update ::
                      forall a t .
-                       (TensorOp t t, Fullfilled "_multi_mp_sgd_update" t a) =>
+                       (TensorOp t t, Fullfilled "_multi_mp_sgd_update" t a,
+                        HasCallStack) =>
                        ArgsHMap "_multi_mp_sgd_update" t a -> TensorApply t
 _multi_mp_sgd_update args
   = let scalarArgs
@@ -12633,7 +13357,8 @@ type instance ParameterList "_multi_sgd_mom_update" t =
 
 _multi_sgd_mom_update ::
                       forall a t .
-                        (TensorOp t t, Fullfilled "_multi_sgd_mom_update" t a) =>
+                        (TensorOp t t, Fullfilled "_multi_sgd_mom_update" t a,
+                         HasCallStack) =>
                         ArgsHMap "_multi_sgd_mom_update" t a -> TensorApply t
 _multi_sgd_mom_update args
   = let scalarArgs
@@ -12658,7 +13383,8 @@ type instance ParameterList "_multi_sgd_update" t =
         '("data", AttrOpt [t])]
 
 _multi_sgd_update ::
-                  forall a t . (TensorOp t t, Fullfilled "_multi_sgd_update" t a) =>
+                  forall a t .
+                    (TensorOp t t, Fullfilled "_multi_sgd_update" t a, HasCallStack) =>
                     ArgsHMap "_multi_sgd_update" t a -> TensorApply t
 _multi_sgd_update args
   = let scalarArgs
@@ -12679,7 +13405,8 @@ type instance ParameterList "_multi_sum_sq" t =
      '[ '("num_arrays", AttrReq Int), '("data", AttrOpt [t])]
 
 _multi_sum_sq ::
-              forall a t . (TensorOp t t, Fullfilled "_multi_sum_sq" t a) =>
+              forall a t .
+                (TensorOp t t, Fullfilled "_multi_sum_sq" t a, HasCallStack) =>
                 ArgsHMap "_multi_sum_sq" t a -> TensorApply t
 _multi_sum_sq args
   = let scalarArgs
@@ -12697,7 +13424,8 @@ type instance ParameterList "_nag_mom_update" t =
         '("grad", AttrOpt t), '("mom", AttrOpt t)]
 
 _nag_mom_update ::
-                forall a t . (TensorOp t t, Fullfilled "_nag_mom_update" t a) =>
+                forall a t .
+                  (TensorOp t t, Fullfilled "_nag_mom_update" t a, HasCallStack) =>
                   ArgsHMap "_nag_mom_update" t a -> TensorApply t
 _nag_mom_update args
   = let scalarArgs
@@ -12723,7 +13451,8 @@ type instance ParameterList "_nanprod" t =
         '("exclude", AttrOpt Bool), '("data", AttrOpt t)]
 
 _nanprod ::
-         forall a t . (TensorOp t t, Fullfilled "_nanprod" t a) =>
+         forall a t .
+           (TensorOp t t, Fullfilled "_nanprod" t a, HasCallStack) =>
            ArgsHMap "_nanprod" t a -> TensorApply t
 _nanprod args
   = let scalarArgs
@@ -12740,7 +13469,8 @@ type instance ParameterList "_nansum" t =
         '("exclude", AttrOpt Bool), '("data", AttrOpt t)]
 
 _nansum ::
-        forall a t . (TensorOp t t, Fullfilled "_nansum" t a) =>
+        forall a t .
+          (TensorOp t t, Fullfilled "_nansum" t a, HasCallStack) =>
           ArgsHMap "_nansum" t a -> TensorApply t
 _nansum args
   = let scalarArgs
@@ -12756,7 +13486,8 @@ type instance ParameterList "_negative" t =
      '[ '("data", AttrOpt t)]
 
 _negative ::
-          forall a t . (TensorOp t t, Fullfilled "_negative" t a) =>
+          forall a t .
+            (TensorOp t t, Fullfilled "_negative" t a, HasCallStack) =>
             ArgsHMap "_negative" t a -> TensorApply t
 _negative args
   = let scalarArgs = catMaybes []
@@ -12775,7 +13506,8 @@ type instance ParameterList "_norm" t =
         '("keepdims", AttrOpt Bool), '("data", AttrOpt t)]
 
 _norm ::
-      forall a t . (TensorOp t t, Fullfilled "_norm" t a) =>
+      forall a t .
+        (TensorOp t t, Fullfilled "_norm" t a, HasCallStack) =>
         ArgsHMap "_norm" t a -> TensorApply t
 _norm args
   = let scalarArgs
@@ -12804,7 +13536,8 @@ type instance ParameterList "_one_hot" t =
         '("indices", AttrOpt t)]
 
 _one_hot ::
-         forall a t . (TensorOp t t, Fullfilled "_one_hot" t a) =>
+         forall a t .
+           (TensorOp t t, Fullfilled "_one_hot" t a, HasCallStack) =>
            ArgsHMap "_one_hot" t a -> TensorApply t
 _one_hot args
   = let scalarArgs
@@ -12827,7 +13560,8 @@ type instance ParameterList "_ones_like" t =
      '[ '("data", AttrOpt t)]
 
 _ones_like ::
-           forall a t . (TensorOp t t, Fullfilled "_ones_like" t a) =>
+           forall a t .
+             (TensorOp t t, Fullfilled "_ones_like" t a, HasCallStack) =>
              ArgsHMap "_ones_like" t a -> TensorApply t
 _ones_like args
   = let scalarArgs = catMaybes []
@@ -12842,7 +13576,8 @@ type instance ParameterList "_pick" t =
         '("data", AttrOpt t), '("index", AttrOpt t)]
 
 _pick ::
-      forall a t . (TensorOp t t, Fullfilled "_pick" t a) =>
+      forall a t .
+        (TensorOp t t, Fullfilled "_pick" t a, HasCallStack) =>
         ArgsHMap "_pick" t a -> TensorApply t
 _pick args
   = let scalarArgs
@@ -12866,7 +13601,8 @@ type instance ParameterList "_preloaded_multi_mp_sgd_mom_update" t
 _preloaded_multi_mp_sgd_mom_update ::
                                    forall a t .
                                      (TensorOp t t,
-                                      Fullfilled "_preloaded_multi_mp_sgd_mom_update" t a) =>
+                                      Fullfilled "_preloaded_multi_mp_sgd_mom_update" t a,
+                                      HasCallStack) =>
                                      ArgsHMap "_preloaded_multi_mp_sgd_mom_update" t a ->
                                        TensorApply t
 _preloaded_multi_mp_sgd_mom_update args
@@ -12892,7 +13628,8 @@ type instance ParameterList "_preloaded_multi_mp_sgd_update" t =
 
 _preloaded_multi_mp_sgd_update ::
                                forall a t .
-                                 (TensorOp t t, Fullfilled "_preloaded_multi_mp_sgd_update" t a) =>
+                                 (TensorOp t t, Fullfilled "_preloaded_multi_mp_sgd_update" t a,
+                                  HasCallStack) =>
                                  ArgsHMap "_preloaded_multi_mp_sgd_update" t a -> TensorApply t
 _preloaded_multi_mp_sgd_update args
   = let scalarArgs
@@ -12916,8 +13653,8 @@ type instance ParameterList "_preloaded_multi_sgd_mom_update" t =
 
 _preloaded_multi_sgd_mom_update ::
                                 forall a t .
-                                  (TensorOp t t,
-                                   Fullfilled "_preloaded_multi_sgd_mom_update" t a) =>
+                                  (TensorOp t t, Fullfilled "_preloaded_multi_sgd_mom_update" t a,
+                                   HasCallStack) =>
                                   ArgsHMap "_preloaded_multi_sgd_mom_update" t a -> TensorApply t
 _preloaded_multi_sgd_mom_update args
   = let scalarArgs
@@ -12942,7 +13679,8 @@ type instance ParameterList "_preloaded_multi_sgd_update" t =
 
 _preloaded_multi_sgd_update ::
                             forall a t .
-                              (TensorOp t t, Fullfilled "_preloaded_multi_sgd_update" t a) =>
+                              (TensorOp t t, Fullfilled "_preloaded_multi_sgd_update" t a,
+                               HasCallStack) =>
                               ArgsHMap "_preloaded_multi_sgd_update" t a -> TensorApply t
 _preloaded_multi_sgd_update args
   = let scalarArgs
@@ -12963,7 +13701,8 @@ type instance ParameterList "_prod" t =
         '("exclude", AttrOpt Bool), '("data", AttrOpt t)]
 
 _prod ::
-      forall a t . (TensorOp t t, Fullfilled "_prod" t a) =>
+      forall a t .
+        (TensorOp t t, Fullfilled "_prod" t a, HasCallStack) =>
         ArgsHMap "_prod" t a -> TensorApply t
 _prod args
   = let scalarArgs
@@ -12978,7 +13717,8 @@ _prod args
 type instance ParameterList "_radians" t = '[ '("data", AttrOpt t)]
 
 _radians ::
-         forall a t . (TensorOp t t, Fullfilled "_radians" t a) =>
+         forall a t .
+           (TensorOp t t, Fullfilled "_radians" t a, HasCallStack) =>
            ArgsHMap "_radians" t a -> TensorApply t
 _radians args
   = let scalarArgs = catMaybes []
@@ -12989,7 +13729,8 @@ _radians args
 type instance ParameterList "_rcbrt" t = '[ '("data", AttrOpt t)]
 
 _rcbrt ::
-       forall a t . (TensorOp t t, Fullfilled "_rcbrt" t a) =>
+       forall a t .
+         (TensorOp t t, Fullfilled "_rcbrt" t a, HasCallStack) =>
          ArgsHMap "_rcbrt" t a -> TensorApply t
 _rcbrt args
   = let scalarArgs = catMaybes []
@@ -13001,7 +13742,8 @@ type instance ParameterList "_reciprocal" t =
      '[ '("data", AttrOpt t)]
 
 _reciprocal ::
-            forall a t . (TensorOp t t, Fullfilled "_reciprocal" t a) =>
+            forall a t .
+              (TensorOp t t, Fullfilled "_reciprocal" t a, HasCallStack) =>
               ArgsHMap "_reciprocal" t a -> TensorApply t
 _reciprocal args
   = let scalarArgs = catMaybes []
@@ -13013,7 +13755,8 @@ _reciprocal args
 type instance ParameterList "_relu" t = '[ '("data", AttrOpt t)]
 
 _relu ::
-      forall a t . (TensorOp t t, Fullfilled "_relu" t a) =>
+      forall a t .
+        (TensorOp t t, Fullfilled "_relu" t a, HasCallStack) =>
         ArgsHMap "_relu" t a -> TensorApply t
 _relu args
   = let scalarArgs = catMaybes []
@@ -13026,7 +13769,8 @@ type instance ParameterList "_repeat" t =
         '("data", AttrOpt t)]
 
 _repeat ::
-        forall a t . (TensorOp t t, Fullfilled "_repeat" t a) =>
+        forall a t .
+          (TensorOp t t, Fullfilled "_repeat" t a, HasCallStack) =>
           ArgsHMap "_repeat" t a -> TensorApply t
 _repeat args
   = let scalarArgs
@@ -13041,7 +13785,8 @@ type instance ParameterList "_reset_arrays" t =
      '[ '("num_arrays", AttrReq Int), '("data", AttrOpt [t])]
 
 _reset_arrays ::
-              forall a t . (TensorOp t t, Fullfilled "_reset_arrays" t a) =>
+              forall a t .
+                (TensorOp t t, Fullfilled "_reset_arrays" t a, HasCallStack) =>
                 ArgsHMap "_reset_arrays" t a -> TensorApply t
 _reset_arrays args
   = let scalarArgs
@@ -13060,7 +13805,8 @@ type instance ParameterList "_reshape_like" t =
         '("rhs", AttrOpt t)]
 
 _reshape_like ::
-              forall a t . (TensorOp t t, Fullfilled "_reshape_like" t a) =>
+              forall a t .
+                (TensorOp t t, Fullfilled "_reshape_like" t a, HasCallStack) =>
                 ArgsHMap "_reshape_like" t a -> TensorApply t
 _reshape_like args
   = let scalarArgs
@@ -13085,7 +13831,8 @@ type instance ParameterList "_reverse" t =
      '[ '("axis", AttrReq [Int]), '("data", AttrOpt t)]
 
 _reverse ::
-         forall a t . (TensorOp t t, Fullfilled "_reverse" t a) =>
+         forall a t .
+           (TensorOp t t, Fullfilled "_reverse" t a, HasCallStack) =>
            ArgsHMap "_reverse" t a -> TensorApply t
 _reverse args
   = let scalarArgs
@@ -13098,7 +13845,8 @@ _reverse args
 type instance ParameterList "_rint" t = '[ '("data", AttrOpt t)]
 
 _rint ::
-      forall a t . (TensorOp t t, Fullfilled "_rint" t a) =>
+      forall a t .
+        (TensorOp t t, Fullfilled "_rint" t a, HasCallStack) =>
         ArgsHMap "_rint" t a -> TensorApply t
 _rint args
   = let scalarArgs = catMaybes []
@@ -13115,7 +13863,8 @@ type instance ParameterList "_rmsprop_update" t =
         '("grad", AttrOpt t), '("n", AttrOpt t)]
 
 _rmsprop_update ::
-                forall a t . (TensorOp t t, Fullfilled "_rmsprop_update" t a) =>
+                forall a t .
+                  (TensorOp t t, Fullfilled "_rmsprop_update" t a, HasCallStack) =>
                   ArgsHMap "_rmsprop_update" t a -> TensorApply t
 _rmsprop_update args
   = let scalarArgs
@@ -13150,7 +13899,8 @@ type instance ParameterList "_rmspropalex_update" t =
 
 _rmspropalex_update ::
                     forall a t .
-                      (TensorOp t t, Fullfilled "_rmspropalex_update" t a) =>
+                      (TensorOp t t, Fullfilled "_rmspropalex_update" t a,
+                       HasCallStack) =>
                       ArgsHMap "_rmspropalex_update" t a -> TensorApply t
 _rmspropalex_update args
   = let scalarArgs
@@ -13180,7 +13930,8 @@ _rmspropalex_update args
 type instance ParameterList "_round" t = '[ '("data", AttrOpt t)]
 
 _round ::
-       forall a t . (TensorOp t t, Fullfilled "_round" t a) =>
+       forall a t .
+         (TensorOp t t, Fullfilled "_round" t a, HasCallStack) =>
          ArgsHMap "_round" t a -> TensorApply t
 _round args
   = let scalarArgs = catMaybes []
@@ -13191,7 +13942,8 @@ _round args
 type instance ParameterList "_rsqrt" t = '[ '("data", AttrOpt t)]
 
 _rsqrt ::
-       forall a t . (TensorOp t t, Fullfilled "_rsqrt" t a) =>
+       forall a t .
+         (TensorOp t t, Fullfilled "_rsqrt" t a, HasCallStack) =>
          ArgsHMap "_rsqrt" t a -> TensorApply t
 _rsqrt args
   = let scalarArgs = catMaybes []
@@ -13204,7 +13956,8 @@ type instance ParameterList "_scatter_nd" t =
         '("indices", AttrOpt t)]
 
 _scatter_nd ::
-            forall a t . (TensorOp t t, Fullfilled "_scatter_nd" t a) =>
+            forall a t .
+              (TensorOp t t, Fullfilled "_scatter_nd" t a, HasCallStack) =>
               ArgsHMap "_scatter_nd" t a -> TensorApply t
 _scatter_nd args
   = let scalarArgs
@@ -13224,7 +13977,8 @@ type instance ParameterList "_sgd_mom_update" t =
         '("weight", AttrOpt t), '("grad", AttrOpt t), '("mom", AttrOpt t)]
 
 _sgd_mom_update ::
-                forall a t . (TensorOp t t, Fullfilled "_sgd_mom_update" t a) =>
+                forall a t .
+                  (TensorOp t t, Fullfilled "_sgd_mom_update" t a, HasCallStack) =>
                   ArgsHMap "_sgd_mom_update" t a -> TensorApply t
 _sgd_mom_update args
   = let scalarArgs
@@ -13254,7 +14008,8 @@ type instance ParameterList "_sgd_update" t =
         '("weight", AttrOpt t), '("grad", AttrOpt t)]
 
 _sgd_update ::
-            forall a t . (TensorOp t t, Fullfilled "_sgd_update" t a) =>
+            forall a t .
+              (TensorOp t t, Fullfilled "_sgd_update" t a, HasCallStack) =>
               ArgsHMap "_sgd_update" t a -> TensorApply t
 _sgd_update args
   = let scalarArgs
@@ -13278,7 +14033,8 @@ type instance ParameterList "_shape_array" t =
      '[ '("data", AttrOpt t)]
 
 _shape_array ::
-             forall a t . (TensorOp t t, Fullfilled "_shape_array" t a) =>
+             forall a t .
+               (TensorOp t t, Fullfilled "_shape_array" t a, HasCallStack) =>
                ArgsHMap "_shape_array" t a -> TensorApply t
 _shape_array args
   = let scalarArgs = catMaybes []
@@ -13291,7 +14047,8 @@ _shape_array args
 type instance ParameterList "_sigmoid" t = '[ '("data", AttrOpt t)]
 
 _sigmoid ::
-         forall a t . (TensorOp t t, Fullfilled "_sigmoid" t a) =>
+         forall a t .
+           (TensorOp t t, Fullfilled "_sigmoid" t a, HasCallStack) =>
            ArgsHMap "_sigmoid" t a -> TensorApply t
 _sigmoid args
   = let scalarArgs = catMaybes []
@@ -13302,7 +14059,8 @@ _sigmoid args
 type instance ParameterList "_sign" t = '[ '("data", AttrOpt t)]
 
 _sign ::
-      forall a t . (TensorOp t t, Fullfilled "_sign" t a) =>
+      forall a t .
+        (TensorOp t t, Fullfilled "_sign" t a, HasCallStack) =>
         ArgsHMap "_sign" t a -> TensorApply t
 _sign args
   = let scalarArgs = catMaybes []
@@ -13317,7 +14075,8 @@ type instance ParameterList "_signsgd_update" t =
         '("grad", AttrOpt t)]
 
 _signsgd_update ::
-                forall a t . (TensorOp t t, Fullfilled "_signsgd_update" t a) =>
+                forall a t .
+                  (TensorOp t t, Fullfilled "_signsgd_update" t a, HasCallStack) =>
                   ArgsHMap "_signsgd_update" t a -> TensorApply t
 _signsgd_update args
   = let scalarArgs
@@ -13343,7 +14102,8 @@ type instance ParameterList "_signum_update" t =
         '("weight", AttrOpt t), '("grad", AttrOpt t), '("mom", AttrOpt t)]
 
 _signum_update ::
-               forall a t . (TensorOp t t, Fullfilled "_signum_update" t a) =>
+               forall a t .
+                 (TensorOp t t, Fullfilled "_signum_update" t a, HasCallStack) =>
                  ArgsHMap "_signum_update" t a -> TensorApply t
 _signum_update args
   = let scalarArgs
@@ -13368,7 +14128,7 @@ _signum_update args
 type instance ParameterList "_sin" t = '[ '("data", AttrOpt t)]
 
 _sin ::
-     forall a t . (TensorOp t t, Fullfilled "_sin" t a) =>
+     forall a t . (TensorOp t t, Fullfilled "_sin" t a, HasCallStack) =>
        ArgsHMap "_sin" t a -> TensorApply t
 _sin args
   = let scalarArgs = catMaybes []
@@ -13379,7 +14139,8 @@ _sin args
 type instance ParameterList "_sinh" t = '[ '("data", AttrOpt t)]
 
 _sinh ::
-      forall a t . (TensorOp t t, Fullfilled "_sinh" t a) =>
+      forall a t .
+        (TensorOp t t, Fullfilled "_sinh" t a, HasCallStack) =>
         ArgsHMap "_sinh" t a -> TensorApply t
 _sinh args
   = let scalarArgs = catMaybes []
@@ -13391,7 +14152,8 @@ type instance ParameterList "_size_array" t =
      '[ '("data", AttrOpt t)]
 
 _size_array ::
-            forall a t . (TensorOp t t, Fullfilled "_size_array" t a) =>
+            forall a t .
+              (TensorOp t t, Fullfilled "_size_array" t a, HasCallStack) =>
               ArgsHMap "_size_array" t a -> TensorApply t
 _size_array args
   = let scalarArgs = catMaybes []
@@ -13405,7 +14167,8 @@ type instance ParameterList "_slice" t =
         '("step", AttrOpt [Int]), '("data", AttrOpt t)]
 
 _slice ::
-       forall a t . (TensorOp t t, Fullfilled "_slice" t a) =>
+       forall a t .
+         (TensorOp t t, Fullfilled "_slice" t a, HasCallStack) =>
          ArgsHMap "_slice" t a -> TensorApply t
 _slice args
   = let scalarArgs
@@ -13422,7 +14185,8 @@ type instance ParameterList "_slice_axis" t =
         '("end", AttrReq (Maybe Int)), '("data", AttrOpt t)]
 
 _slice_axis ::
-            forall a t . (TensorOp t t, Fullfilled "_slice_axis" t a) =>
+            forall a t .
+              (TensorOp t t, Fullfilled "_slice_axis" t a, HasCallStack) =>
               ArgsHMap "_slice_axis" t a -> TensorApply t
 _slice_axis args
   = let scalarArgs
@@ -13440,7 +14204,8 @@ type instance ParameterList "_slice_like" t =
         '("shape_like", AttrOpt t)]
 
 _slice_like ::
-            forall a t . (TensorOp t t, Fullfilled "_slice_like" t a) =>
+            forall a t .
+              (TensorOp t t, Fullfilled "_slice_like" t a, HasCallStack) =>
               ArgsHMap "_slice_like" t a -> TensorApply t
 _slice_like args
   = let scalarArgs
@@ -13457,7 +14222,8 @@ type instance ParameterList "_smooth_l1" t =
      '[ '("scalar", AttrOpt Float), '("data", AttrOpt t)]
 
 _smooth_l1 ::
-           forall a t . (TensorOp t t, Fullfilled "_smooth_l1" t a) =>
+           forall a t .
+             (TensorOp t t, Fullfilled "_smooth_l1" t a, HasCallStack) =>
              ArgsHMap "_smooth_l1" t a -> TensorApply t
 _smooth_l1 args
   = let scalarArgs
@@ -13477,7 +14243,8 @@ type instance ParameterList "_softmax" t =
         '("length", AttrOpt t)]
 
 _softmax ::
-         forall a t . (TensorOp t t, Fullfilled "_softmax" t a) =>
+         forall a t .
+           (TensorOp t t, Fullfilled "_softmax" t a, HasCallStack) =>
            ArgsHMap "_softmax" t a -> TensorApply t
 _softmax args
   = let scalarArgs
@@ -13501,7 +14268,8 @@ type instance ParameterList "_softmax_cross_entropy" t =
 
 _softmax_cross_entropy ::
                        forall a t .
-                         (TensorOp t t, Fullfilled "_softmax_cross_entropy" t a) =>
+                         (TensorOp t t, Fullfilled "_softmax_cross_entropy" t a,
+                          HasCallStack) =>
                          ArgsHMap "_softmax_cross_entropy" t a -> TensorApply t
 _softmax_cross_entropy args
   = let scalarArgs = catMaybes []
@@ -13521,7 +14289,8 @@ type instance ParameterList "_softmin" t =
         '("use_length", AttrOpt (Maybe Bool)), '("data", AttrOpt t)]
 
 _softmin ::
-         forall a t . (TensorOp t t, Fullfilled "_softmin" t a) =>
+         forall a t .
+           (TensorOp t t, Fullfilled "_softmin" t a, HasCallStack) =>
            ArgsHMap "_softmin" t a -> TensorApply t
 _softmin args
   = let scalarArgs
@@ -13542,7 +14311,8 @@ type instance ParameterList "_softsign" t =
      '[ '("data", AttrOpt t)]
 
 _softsign ::
-          forall a t . (TensorOp t t, Fullfilled "_softsign" t a) =>
+          forall a t .
+            (TensorOp t t, Fullfilled "_softsign" t a, HasCallStack) =>
             ArgsHMap "_softsign" t a -> TensorApply t
 _softsign args
   = let scalarArgs = catMaybes []
@@ -13556,7 +14326,8 @@ type instance ParameterList "_sort" t =
         '("data", AttrOpt t)]
 
 _sort ::
-      forall a t . (TensorOp t t, Fullfilled "_sort" t a) =>
+      forall a t .
+        (TensorOp t t, Fullfilled "_sort" t a, HasCallStack) =>
         ArgsHMap "_sort" t a -> TensorApply t
 _sort args
   = let scalarArgs
@@ -13571,7 +14342,8 @@ type instance ParameterList "_space_to_depth" t =
      '[ '("block_size", AttrReq Int), '("data", AttrOpt t)]
 
 _space_to_depth ::
-                forall a t . (TensorOp t t, Fullfilled "_space_to_depth" t a) =>
+                forall a t .
+                  (TensorOp t t, Fullfilled "_space_to_depth" t a, HasCallStack) =>
                   ArgsHMap "_space_to_depth" t a -> TensorApply t
 _space_to_depth args
   = let scalarArgs
@@ -13587,7 +14359,8 @@ _space_to_depth args
 type instance ParameterList "_sqrt" t = '[ '("data", AttrOpt t)]
 
 _sqrt ::
-      forall a t . (TensorOp t t, Fullfilled "_sqrt" t a) =>
+      forall a t .
+        (TensorOp t t, Fullfilled "_sqrt" t a, HasCallStack) =>
         ArgsHMap "_sqrt" t a -> TensorApply t
 _sqrt args
   = let scalarArgs = catMaybes []
@@ -13598,7 +14371,8 @@ _sqrt args
 type instance ParameterList "_square" t = '[ '("data", AttrOpt t)]
 
 _square ::
-        forall a t . (TensorOp t t, Fullfilled "_square" t a) =>
+        forall a t .
+          (TensorOp t t, Fullfilled "_square" t a, HasCallStack) =>
           ArgsHMap "_square" t a -> TensorApply t
 _square args
   = let scalarArgs = catMaybes []
@@ -13610,7 +14384,8 @@ type instance ParameterList "_squeeze" t =
      '[ '("axis", AttrOpt (Maybe [Int])), '("data", AttrOpt t)]
 
 _squeeze ::
-         forall a t . (TensorOp t t, Fullfilled "_squeeze" t a) =>
+         forall a t .
+           (TensorOp t t, Fullfilled "_squeeze" t a, HasCallStack) =>
            ArgsHMap "_squeeze" t a -> TensorApply t
 _squeeze args
   = let scalarArgs
@@ -13625,7 +14400,8 @@ type instance ParameterList "_stack" t =
         '("data", AttrOpt [t])]
 
 _stack ::
-       forall a t . (TensorOp t t, Fullfilled "_stack" t a) =>
+       forall a t .
+         (TensorOp t t, Fullfilled "_stack" t a, HasCallStack) =>
          ArgsHMap "_stack" t a -> TensorApply t
 _stack args
   = let scalarArgs
@@ -13641,7 +14417,7 @@ type instance ParameterList "_sum" t =
         '("exclude", AttrOpt Bool), '("data", AttrOpt t)]
 
 _sum ::
-     forall a t . (TensorOp t t, Fullfilled "_sum" t a) =>
+     forall a t . (TensorOp t t, Fullfilled "_sum" t a, HasCallStack) =>
        ArgsHMap "_sum" t a -> TensorApply t
 _sum args
   = let scalarArgs
@@ -13659,7 +14435,8 @@ type instance ParameterList "_take" t =
         '("a", AttrOpt t), '("indices", AttrOpt t)]
 
 _take ::
-      forall a t . (TensorOp t t, Fullfilled "_take" t a) =>
+      forall a t .
+        (TensorOp t t, Fullfilled "_take" t a, HasCallStack) =>
         ArgsHMap "_take" t a -> TensorApply t
 _take args
   = let scalarArgs
@@ -13676,7 +14453,7 @@ _take args
 type instance ParameterList "_tan" t = '[ '("data", AttrOpt t)]
 
 _tan ::
-     forall a t . (TensorOp t t, Fullfilled "_tan" t a) =>
+     forall a t . (TensorOp t t, Fullfilled "_tan" t a, HasCallStack) =>
        ArgsHMap "_tan" t a -> TensorApply t
 _tan args
   = let scalarArgs = catMaybes []
@@ -13687,7 +14464,8 @@ _tan args
 type instance ParameterList "_tanh" t = '[ '("data", AttrOpt t)]
 
 _tanh ::
-      forall a t . (TensorOp t t, Fullfilled "_tanh" t a) =>
+      forall a t .
+        (TensorOp t t, Fullfilled "_tanh" t a, HasCallStack) =>
         ArgsHMap "_tanh" t a -> TensorApply t
 _tanh args
   = let scalarArgs = catMaybes []
@@ -13699,7 +14477,8 @@ type instance ParameterList "_tile" t =
      '[ '("reps", AttrReq [Int]), '("data", AttrOpt t)]
 
 _tile ::
-      forall a t . (TensorOp t t, Fullfilled "_tile" t a) =>
+      forall a t .
+        (TensorOp t t, Fullfilled "_tile" t a, HasCallStack) =>
         ArgsHMap "_tile" t a -> TensorApply t
 _tile args
   = let scalarArgs
@@ -13721,7 +14500,8 @@ type instance ParameterList "_topk" t =
         '("data", AttrOpt t)]
 
 _topk ::
-      forall a t . (TensorOp t t, Fullfilled "_topk" t a) =>
+      forall a t .
+        (TensorOp t t, Fullfilled "_topk" t a, HasCallStack) =>
         ArgsHMap "_topk" t a -> TensorApply t
 _topk args
   = let scalarArgs
@@ -13745,7 +14525,8 @@ type instance ParameterList "_transpose" t =
      '[ '("axes", AttrOpt [Int]), '("data", AttrOpt t)]
 
 _transpose ::
-           forall a t . (TensorOp t t, Fullfilled "_transpose" t a) =>
+           forall a t .
+             (TensorOp t t, Fullfilled "_transpose" t a, HasCallStack) =>
              ArgsHMap "_transpose" t a -> TensorApply t
 _transpose args
   = let scalarArgs
@@ -13759,7 +14540,8 @@ _transpose args
 type instance ParameterList "_trunc" t = '[ '("data", AttrOpt t)]
 
 _trunc ::
-       forall a t . (TensorOp t t, Fullfilled "_trunc" t a) =>
+       forall a t .
+         (TensorOp t t, Fullfilled "_trunc" t a, HasCallStack) =>
          ArgsHMap "_trunc" t a -> TensorApply t
 _trunc args
   = let scalarArgs = catMaybes []
@@ -13771,7 +14553,8 @@ type instance ParameterList "_where" t =
      '[ '("condition", AttrOpt t), '("x", AttrOpt t), '("y", AttrOpt t)]
 
 _where ::
-       forall a t . (TensorOp t t, Fullfilled "_where" t a) =>
+       forall a t .
+         (TensorOp t t, Fullfilled "_where" t a, HasCallStack) =>
          ArgsHMap "_where" t a -> TensorApply t
 _where args
   = let scalarArgs = catMaybes []
@@ -13786,7 +14569,8 @@ type instance ParameterList "_zeros_like" t =
      '[ '("data", AttrOpt t)]
 
 _zeros_like ::
-            forall a t . (TensorOp t t, Fullfilled "_zeros_like" t a) =>
+            forall a t .
+              (TensorOp t t, Fullfilled "_zeros_like" t a, HasCallStack) =>
               ArgsHMap "_zeros_like" t a -> TensorApply t
 _zeros_like args
   = let scalarArgs = catMaybes []

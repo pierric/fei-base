@@ -29,7 +29,7 @@ data Arguments = Arguments
     }
 
 args_spec = Arguments
-         <$> strOption (long "output" <> short 'o' <> value "operators" <> metavar "OUTPUT-DIR")
+         <$> strOption (long "output" <> short 'o' <> value "tmp" <> metavar "OUTPUT-DIR")
 
 main = do
     updateGlobalLogger _module_ (setLevel INFO)
@@ -91,7 +91,8 @@ makeSignature :: String -> Type () -> Type () -> [Asst ()] -> Decl ()
 makeSignature symname ti to extra_constraints =
     let cxfullfill = appA (name "Fullfilled") [tyPromotedStr symname, ti, tyVarIdent "a"]
         cxtensor   = appA (name "TensorOp") [ti, to]
-        cx_all = cxTuple (cxtensor : cxfullfill : extra_constraints)
+        callstack  = appA (name "HasCallStack") []
+        cx_all = cxTuple (cxtensor : cxfullfill : callstack : extra_constraints)
         fun = tyFun (let hmap = tyCon $ unQual $ name "ArgsHMap"
                      in hmap `tyApp` tyPromotedStr symname
                              `tyApp` ti

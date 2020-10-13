@@ -9,6 +9,7 @@ import Foreign.C.Types
 import Foreign.C.String (CString, peekCString, withCString)
 import Foreign.Ptr
 import GHC.Generics (Generic)
+import GHC.Stack
 
 type MX_UINT  = C2HSImp.CUInt
 type MX_CCHAR = C2HSImp.CChar
@@ -17,24 +18,25 @@ type MX_CCHAR = C2HSImp.CChar
 {# default in  `Text' [char *] withCStringT* #}
 {# default out `Text' [char *] peekCStringT* #}
 
-data MXNetError = MXNetError Text
+data MXNetError = MXNetError String Text
     deriving Typeable
 instance Exception MXNetError
 
 instance Show MXNetError where
-    show (MXNetError msg) = "an error occurred in MXNet.\n" ++ T.unpack msg
+    show (MXNetError tb msg) = tb ++ "\n\nAn error occurred in MXNet.\n" ++ T.unpack msg
 
 newtype WrapText = WrapText {unWrapText :: Text}
 deriving instance Generic WrapText
 deriving instance Generic C2HSImp.CInt
 deriving instance Generic C2HSImp.CUInt
 
-checked :: Unconsable t CInt r => IO t -> IO r
+checked :: (HasCallStack, Unconsable t CInt r) => IO t -> IO r
 checked call = do
     (res, ret) <- uncons <$> call
     if res < 0
       then do err <- mxGetLastError
-              throwIO $ MXNetError err
+              let tb = prettyCallStack callStack
+              throwIO $ MXNetError tb err
       else return ret
 
 peekCStringT :: CString -> IO Text

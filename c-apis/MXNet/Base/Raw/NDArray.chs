@@ -301,7 +301,8 @@ fun MXImperativeInvoke as mxImperativeInvoke_
 #}
 
 -- | Invoke a nnvm op and imperative function.
-mxImperativeInvoke :: AtomicSymbolCreator
+mxImperativeInvoke :: HasCallStack
+                   => AtomicSymbolCreator
                    -> [NDArrayHandle]
                    -> [(Text, Text)]
                    -> Maybe [NDArrayHandle]

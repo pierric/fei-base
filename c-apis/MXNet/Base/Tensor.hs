@@ -31,7 +31,7 @@ type TensorM t = TensorMonad t t
 
 
 class TensorOp ti to where
-    apply :: Text -> [(Text, Text)] -> Either [(Text, ti)] [ti] -> TensorApply to
+    apply :: HasCallStack => Text -> [(Text, Text)] -> Either [(Text, ti)] [ti] -> TensorApply to
 
 
 class TensorOp ti to => PrimTensorOp ti to where
