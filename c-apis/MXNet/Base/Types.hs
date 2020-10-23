@@ -18,6 +18,7 @@ class (Storable a,
        Show a,
        Eq a,
        Num a,
+       Read a,
        KnownSymbol (DTypeName a)) => DType a where
     type DTypeName a :: Symbol
     typename :: a -> Proxy (DTypeName a)

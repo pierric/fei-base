@@ -2,6 +2,11 @@
 module MXNet.Base.Raw.Symbol where
 
 import RIO
+import qualified RIO.Text as T
+import qualified RIO.HashMap as M
+import qualified RIO.Vector.Boxed as VB
+import qualified RIO.Vector.Boxed.Partial as VB
+import Control.Lens ((?~), at, non)
 import Foreign.Marshal (alloca, withArray, peekArray, allocaBytesAligned)
 import Foreign.Storable (Storable(..))
 import Foreign.Ptr (FunPtr)
@@ -228,10 +233,19 @@ fun MXSymbolListAttr as mxSymbolListAttr_
 #}
 
 mxSymbolListAttr :: SymbolHandle
-                 -> IO [Text]
+                 -> IO (HashMap Text (HashMap Text Text))
 mxSymbolListAttr symbol = do
     (cnt, ptr) <- checked $ mxSymbolListAttr_ symbol
-    peekCStringArrayT (fromIntegral cnt) ptr
+    cnt <- pure $ fromIntegral cnt
+    kvs <- VB.fromList <$> peekCStringArrayT (2 * cnt) ptr
+    let kv_tuples = map (\i -> let p = i * 2
+                                   q = p + 1
+                               in (kvs VB.! p, kvs VB.! q))
+                        [0..cnt-1]
+        upd m (k, v) = case T.split (=='$') k of
+                         [k1, k2] -> m & at k1 . non M.empty . at k2 ?~ v
+                         _ -> error ("bad attr " ++ T.unpack k)
+    return $ foldl' upd M.empty kv_tuples
 
 {#
 fun MXSymbolListAttrShallow as mxSymbolListAttrShallow_
@@ -243,10 +257,16 @@ fun MXSymbolListAttrShallow as mxSymbolListAttrShallow_
 #}
 
 mxSymbolListAttrShallow :: SymbolHandle
-                        -> IO [Text]
+                        -> IO (HashMap Text Text)
 mxSymbolListAttrShallow symbol = do
     (cnt, ptr) <- checked $ mxSymbolListAttrShallow_ symbol
-    peekCStringArrayT (fromIntegral cnt) ptr
+    cnt <- pure $ fromIntegral cnt
+    kvs <- VB.fromList <$> peekCStringArrayT (2 * fromIntegral cnt) ptr
+    let kv_tuples = map (\i -> let p = i * 2
+                                   q = p + 1
+                               in (kvs VB.! p, kvs VB.! q))
+                        [0..cnt-1]
+    return $ M.fromList kv_tuples
 
 {#
 fun MXSymbolListArguments as mxSymbolListArguments_
