@@ -13,4 +13,4 @@ extra-lib-dirs:
 - /home/jiasen/workspace/mxnet/build-1.6.0
 flags:
   fei-base:
-    MXNet_1_6: true
+    MXNet_geq_10600: true
