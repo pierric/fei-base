@@ -177,6 +177,17 @@ fun MXNotifyShutdown as mxNotifyShutdown_
 mxNotifyShutdown :: IO ()
 mxNotifyShutdown = checked mxNotifyShutdown_
 
+
+{#
+fun MXRandomSeed as mxRandomSeed_
+    {
+        `CInt'
+    } -> `CInt'
+#}
+
+mxRandomSeed :: Int -> IO ()
+mxRandomSeed seed = checked $ mxRandomSeed_ (fromIntegral seed)
+
 ---------------------------------------------------
 type NN_UINT  = C2HSImp.CUInt
 
