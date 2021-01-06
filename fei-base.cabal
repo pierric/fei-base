@@ -8,7 +8,7 @@ license:             BSD-3-Clause
 license-file:        LICENSE
 author:              Jiasen Wu
 maintainer:          jiasenwu@hotmail.com
-copyright:           2018 Jiasen Wu
+copyright:           2020 - Jiasen Wu
 category:            Machine Learning, AI
 build-type:          Simple
 extra-source-files:  README.md
