@@ -44,6 +44,14 @@ instance DType Word8 where
     type DTypeName Word8 = "uint8"
     flag _ = 3    -- mshadow::kUint8
 
+instance DType Int32 where
+    type DTypeName Int32 = "int32"
+    flag _ = 4    -- mshadow::kInt32
+
+instance DType Int64 where
+    type DTypeName Int64 = "int64"
+    flag _ = 6    -- mshadow::kInt64
+
 contextCPU :: Context
 contextCPU = Context 1 0
 
