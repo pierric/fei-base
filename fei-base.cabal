@@ -23,6 +23,11 @@ Flag dummy {
   Default: True
 }
 
+Flag use_repa {
+  Description: use repa
+  Default: False
+}
+
 library
   hs-source-dirs:      c-apis
   if flag(mxnet_geq_10600) {
@@ -31,12 +36,14 @@ library
   elif flag(dummy) {
       hs-source-dirs:  ops/dummy
   }
+  if flag(use_repa) {
+      build-depends:   repa
+  }
   build-depends:       base >= 4.7 && < 5,
                        tuple-ops == 0.0.0.4,
                        deepseq,
                        constraints,
                        lens,
-                       repa,
                        vector,
                        attoparsec,
                        rio,
@@ -88,7 +95,7 @@ executable mxnet-op-gen
                        MXNet.Base.Raw.Executor,
                        MXNet.Base.Raw.DataIter
   build-depends:       base >= 4.7 && < 5,
-                       optparse-applicative >= 0.14 && < 0.15,
+                       optparse-applicative >= 0.14 && < 0.16,
                        haskell-src-exts >= 1.22,
                        hslogger >= 1.2,
                        tuple-ops == 0.0.0.4,
