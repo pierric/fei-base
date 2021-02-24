@@ -42,7 +42,8 @@ newExecutorHandle ptr = newForeignPtr_ ptr >>= return . ExecutorHandle
 peekExecutorHandle :: Ptr ExecutorHandlePtr -> IO ExecutorHandle
 peekExecutorHandle = peek >=> newExecutorHandle
 
-withExecutorHandleArray :: [ExecutorHandle] -> (Ptr ExecutorHandlePtr -> IO r) -> IO r
+withExecutorHandleArray :: HasCallStack
+                        => [ExecutorHandle] -> (Ptr ExecutorHandlePtr -> IO r) -> IO r
 withExecutorHandleArray array io = do
     let unExecutorHandle (ExecutorHandle fptr) = fptr
     r <- withArray (map (unsafeForeignPtrToPtr . unExecutorHandle) array) io
@@ -56,7 +57,7 @@ fun MXExecutorFree as mxExecutorFree_
     } -> `CInt'
 #}
 
-mxExecutorFree :: ExecutorHandlePtr -> IO ()
+mxExecutorFree :: HasCallStack => ExecutorHandlePtr -> IO ()
 mxExecutorFree = checked . mxExecutorFree_
 
 {#
@@ -67,7 +68,7 @@ fun MXExecutorPrint as mxExecutorPrint_
     } -> `CInt'
 #}
 
-mxExecutorPrint :: ExecutorHandle -> IO Text
+mxExecutorPrint :: HasCallStack => ExecutorHandle -> IO Text
 mxExecutorPrint = fmap unWrapText . checked . fmap (second WrapText) . mxExecutorPrint_
 
 {#
@@ -78,7 +79,7 @@ fun MXExecutorForward as mxExecutorForward_
     } -> `CInt'
 #}
 
-mxExecutorForward :: ExecutorHandle -> Bool -> IO ()
+mxExecutorForward :: HasCallStack => ExecutorHandle -> Bool -> IO ()
 mxExecutorForward exec train = checked $ mxExecutorForward_ exec is_train
   where
     is_train = if train then 1 else 0
@@ -103,7 +104,7 @@ fun MXExecutorBackward as mxExecutorBackward_
 #}
 #endif
 
-mxExecutorBackward :: ExecutorHandle -> [NDArrayHandle] -> IO ()
+mxExecutorBackward :: HasCallStack => ExecutorHandle -> [NDArrayHandle] -> IO ()
 mxExecutorBackward exec head_grads = checked $ mxExecutorBackward_ exec cnt head_grads
   where
     cnt = fromIntegral $ length head_grads
@@ -130,7 +131,7 @@ fun MXExecutorBackwardEx as mxExecutorBackwardEx_
 #}
 #endif
 
-mxExecutorBackwardEx :: ExecutorHandle -> [NDArrayHandle] -> Bool -> IO ()
+mxExecutorBackwardEx :: HasCallStack => ExecutorHandle -> [NDArrayHandle] -> Bool -> IO ()
 mxExecutorBackwardEx exec head_grads train = checked $ mxExecutorBackwardEx_ exec cnt head_grads is_train
   where
     cnt = fromIntegral $ length head_grads
@@ -145,7 +146,7 @@ fun MXExecutorOutputs as mxExecutorOutputs_
     } -> `CInt'
 #}
 
-mxExecutorOutputs :: ExecutorHandle -> IO [NDArrayHandle]
+mxExecutorOutputs :: HasCallStack => ExecutorHandle -> IO [NDArrayHandle]
 mxExecutorOutputs handle = do
     (cnt, ptr) <- checked $ mxExecutorOutputs_ handle
     handle_ptrs <- peekArray (fromIntegral cnt) ptr
@@ -187,7 +188,8 @@ fun MXExecutorBind as mxExecutorBind_
 
 makeNullNDArrayHandle = NDArrayHandle <$> newForeignPtr_ C2HSImp.nullPtr
 
-mxExecutorBind :: SymbolHandle
+mxExecutorBind :: HasCallStack
+               => SymbolHandle
                -> Int
                -> Int
                -> [NDArrayHandle]
@@ -248,7 +250,8 @@ fun MXExecutorBindX as mxExecutorBindX_
 #}
 #endif
 
-mxExecutorBindX :: SymbolHandle
+mxExecutorBindX :: HasCallStack
+                => SymbolHandle
                 -> Int
                 -> Int
                 -> [Text]
@@ -317,7 +320,8 @@ fun MXExecutorBindEX as mxExecutorBindEX_
 #}
 #endif
 
-mxExecutorBindEX :: SymbolHandle
+mxExecutorBindEX :: HasCallStack
+                 => SymbolHandle
                  -> Int
                  -> Int
                  -> [Text]
@@ -425,7 +429,8 @@ fun MXExecutorSimpleBind as mxExecutorSimpleBind_
 #}
 #endif
 
-mxExecutorSimpleBind :: SymbolHandle
+mxExecutorSimpleBind :: HasCallStack
+                     => SymbolHandle
                      -> Int -> Int                        -- device
                      -> [Text] -> [Int] -> [Int]        -- g2c
                      -> [Text] -> [Text]              -- provided_grad_req_list
@@ -561,7 +566,8 @@ fun MXExecutorReshapeEx as mxExecutorReshapeEx_
 #}
 #endif
 
-mxExecutorReshapeEx :: Bool -> Bool -> Int -> Int
+mxExecutorReshapeEx :: HasCallStack
+                    => Bool -> Bool -> Int -> Int
                     -> [Text] -> [Int] -> [Int]        -- group2ctx
                     -> [Text] -> [Int] -> [Int]        -- provided_arg_shapes
                     -> ExecutorHandle                    -- shared exec

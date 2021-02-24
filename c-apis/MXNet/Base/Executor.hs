@@ -19,18 +19,24 @@ instance ForeignData (Executor a) where
 
 instance NFData (Executor a)
 
-execGetOutputs :: Executor a -> IO [NDArray a]
+execGetOutputs :: HasCallStack => Executor a -> IO [NDArray a]
 execGetOutputs (Executor hdl) = do
     arrhdls <- I.mxExecutorOutputs hdl
     return $!! map NDArray arrhdls
 
-execForward :: Executor a -> Bool -> IO ()
+execForward :: HasCallStack => Executor a -> Bool -> IO ()
 execForward (Executor hdl) = I.mxExecutorForward hdl
 
-execBackward :: Executor a -> [NDArray a] -> IO ()
+execBackward :: HasCallStack => Executor a -> [NDArray a] -> IO ()
 execBackward (Executor hdl) arrs = I.mxExecutorBackward hdl (map unNDArray arrs)
 
-execReshapeEx :: Executor a -> Bool -> Bool -> Context -> [(Text, NonEmpty Int)] -> IO ([NDArray a], [Maybe (NDArray a)], [NDArray a], Executor a)
+execReshapeEx :: HasCallStack
+              => Executor a
+              -> Bool
+              -> Bool
+              -> Context
+              -> [(Text, NonEmpty Int)]
+              -> IO ([NDArray a], [Maybe (NDArray a)], [NDArray a], Executor a)
 execReshapeEx (Executor hdl) partial_shaping allow_up_sizing Context{..} input_shapes = do
     let (names, shapes) = unzip input_shapes
         arg_ind = scanl (+) 0 $ map length shapes
@@ -47,10 +53,11 @@ execReshapeEx (Executor hdl) partial_shaping allow_up_sizing Context{..} input_s
         new_exec      = Executor new_hdl
     return $!! (new_arg_in', new_arg_grad', new_arg_aux', new_exec)
 
-execBind :: I.SymbolHandle -> Context -> [NDArray a] -> [Maybe (NDArray a, Int)] -> [NDArray a] ->  IO (Executor a)
+execBind :: HasCallStack
+         => I.SymbolHandle -> Context -> [NDArray a] -> [Maybe (NDArray a, Int)] -> [NDArray a] ->  IO (Executor a)
 execBind symbol Context{..} arg_in arg_gr_with_req arg_aux = do
     let (arg_gr, arg_gr_req) = unzip $ flip map arg_gr_with_req $ \case
-                                 Nothing -> (Nothing, 0)
+                                 Nothing         -> (Nothing, 0)
                                  Just (arr, req) -> (Just $ unNDArray arr, req)
     hdl <- I.mxExecutorBind symbol
                             _device_type _device_id
@@ -60,5 +67,5 @@ execBind symbol Context{..} arg_in arg_gr_with_req arg_aux = do
                             (map unNDArray arg_aux)
     return $ Executor hdl
 
-execFree :: Executor a -> IO ()
+execFree :: HasCallStack => Executor a -> IO ()
 execFree (Executor hdl) = I.withExecutorHandle hdl I.mxExecutorFree
