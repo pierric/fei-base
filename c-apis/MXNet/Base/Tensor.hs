@@ -2,18 +2,18 @@
 {-# LANGUAGE TypeFamilyDependencies #-}
 module MXNet.Base.Tensor where
 
-import           Data.Bifunctor           (bimap)
-import           Data.Kind                (Constraint)
-import           RIO
-import           RIO.List                 (unzip)
+import                          Data.Bifunctor           (bimap)
+import                          Data.Kind                (Constraint)
+import                          RIO
+import                          RIO.List                 (unzip)
 
-import {-# SOURCE #-} MXNet.Base.NDArray
-import           MXNet.Base.Raw.Common
-import           MXNet.Base.Raw.NDArray
-import           MXNet.Base.Raw.Symbol
-import           MXNet.Base.Spec.Operator (ArgsHMap)
-import           MXNet.Base.Symbol
-import           MXNet.Base.Types
+import {-# SOURCE #-}           MXNet.Base.NDArray
+import                          MXNet.Base.Raw.Common
+import                          MXNet.Base.Raw.NDArray
+import                          MXNet.Base.Raw.Symbol
+import                          MXNet.Base.Spec.Operator (ArgsHMap)
+import                          MXNet.Base.Symbol
+import                          MXNet.Base.Types
 
 
 -- TensorApply is injective
@@ -27,15 +27,13 @@ type family TensorMonad t :: * -> *
 type instance TensorMonad (NDArray a)   = IO
 type instance TensorMonad NDArrayHandle = IO
 
-type TensorM t = TensorMonad t t
-
-
 class TensorOp ti to where
     apply :: HasCallStack => Text -> [(Text, Text)] -> Either [(Text, ti)] [ti] -> TensorApply to
 
 
 class TensorOp ti to => PrimTensorOp ti to where
-    prim :: HasCallStack => (ArgsHMap s ti a -> TensorApply to) -> ArgsHMap s ti a -> TensorM to
+    prim      :: HasCallStack => (ArgsHMap s ti a -> TensorApply to) -> ArgsHMap s ti a -> TensorMonad to to
+    primMulti :: HasCallStack => (ArgsHMap s ti a -> TensorApply to) -> ArgsHMap s ti a -> TensorMonad to [to]
 
 
 instance TensorOp NDArrayHandle NDArrayHandle where
@@ -69,10 +67,15 @@ instance TensorOp SymbolHandle SymbolHandle where
         return sym
 
 instance PrimTensorOp NDArrayHandle NDArrayHandle where
-    prim op args = op args Nothing >>= \[x] -> return x
-
+    prim op args = op args Nothing >>= \case
+                        [x] -> return x
+                        _   -> error "the operation returns multiple ndarrays"
+    primMulti op args = op args Nothing
 
 instance (DType a, DType b) => PrimTensorOp (NDArray a) (NDArray b) where
-    prim op args = op args Nothing >>= \[x] -> return x
+    prim      op args = op args Nothing >>= \case
+                        [x] -> return x
+                        _   -> error "the operation returns multiple ndarrays"
+    primMulti op args = op args Nothing
 
 
