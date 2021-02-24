@@ -1,7 +1,11 @@
+{-# LANGUAGE CPP                 #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 module MXNet.Base.NDArray where
 
+#ifdef USE_REPA
 import qualified Data.Array.Repa              as Repa
+#endif
+
 import qualified Data.Store                   as S
 import qualified Data.Vector.Storable.Mutable as VMut
 import           Foreign.Ptr                  (castPtr)
@@ -94,12 +98,6 @@ zeros = full 1
 fromVector :: DType a => NonEmpty Int -> Vector a -> IO (NDArray a)
 fromVector shape = makeNDArray shape contextCPU
 
-fromRepa :: (HasCallStack, Repa.Shape sh, DType a, UV.Unbox a) => Repa.Array Repa.U sh a -> IO (NDArray a)
-fromRepa arr = do
-    let shp = RNE.fromList $ reverse $ Repa.listOfShape $ Repa.extent arr
-        vec = UV.convert $ Repa.toUnboxed arr
-    makeNDArray shp contextCPU vec
-
 copyFromVector :: (HasCallStack, DType a) => NDArray a -> Vector a -> IO ()
 copyFromVector arr vec = do
     sz <- ndsize arr
@@ -109,11 +107,6 @@ copyFromVector arr vec = do
         SV.unsafeWith vec $ \p -> do
             I.mxNDArraySyncCopyFromCPU (unNDArray arr) (castPtr p) sz
 
-copyFromRepa :: (HasCallStack, Repa.Shape sh, DType a, UV.Unbox a) => NDArray a -> Repa.Array Repa.U sh a -> IO ()
-copyFromRepa arr repa = do
-    let vec = UV.convert $ Repa.toUnboxed repa
-    copyFromVector arr vec
-
 toVector :: DType a => NDArray a -> IO (Vector a)
 toVector arr = do
     nlen <- ndsize arr
@@ -121,11 +114,25 @@ toVector arr = do
     VMut.unsafeWith mvec $ \p -> I.mxNDArraySyncCopyToCPU (unNDArray arr) (castPtr p) nlen
     SV.unsafeFreeze mvec
 
+#ifdef USE_REPA
+fromRepa :: (HasCallStack, Repa.Shape sh, DType a, UV.Unbox a) => Repa.Array Repa.U sh a -> IO (NDArray a)
+fromRepa arr = do
+    let shp = RNE.fromList $ reverse $ Repa.listOfShape $ Repa.extent arr
+        vec = UV.convert $ Repa.toUnboxed arr
+    makeNDArray shp contextCPU vec
+
+
+copyFromRepa :: (HasCallStack, Repa.Shape sh, DType a, UV.Unbox a) => NDArray a -> Repa.Array Repa.U sh a -> IO ()
+copyFromRepa arr repa = do
+    let vec = UV.convert $ Repa.toUnboxed repa
+    copyFromVector arr vec
+
 toRepa :: (Repa.Shape sh, DType a, UV.Unbox a) => NDArray a -> IO (Repa.Array Repa.U sh a)
 toRepa arr = do
     shp <- RNE.toList <$> ndshape arr
     vec <- toVector arr
     return $ Repa.fromUnboxed (Repa.shapeOfList (reverse shp)) (UV.convert vec)
+#endif
 
 context :: DType a => NDArray a -> IO Context
 context (NDArray handle) = do
