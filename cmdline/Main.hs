@@ -350,7 +350,7 @@ tyForall vars cxt typ = TyForall () vars_ cxt_ typ
 cxSingle = CxSingle ()
 cxTuple  = CxTuple ()
 
-appA = AppA ()
+appA n ts = TypeA () $ foldl tyApp (tyCon $ unQual n) ts
 
 tupleSection = TupleSection () Boxed
 

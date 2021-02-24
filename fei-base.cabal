@@ -89,7 +89,7 @@ executable mxnet-op-gen
                        MXNet.Base.Raw.DataIter
   build-depends:       base >= 4.7 && < 5,
                        optparse-applicative >= 0.14 && < 0.15,
-                       haskell-src-exts >= 1.20,
+                       haskell-src-exts >= 1.22,
                        hslogger >= 1.2,
                        tuple-ops == 0.0.0.4,
                        deepseq,
