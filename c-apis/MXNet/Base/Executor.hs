@@ -31,7 +31,12 @@ execBackward :: HasCallStack => Executor a -> [NDArray a] -> IO ()
 execBackward (Executor hdl) arrs = I.mxExecutorBackward hdl (map unNDArray arrs)
 
 execReshapeEx :: HasCallStack
-              => Executor a -> Bool -> Bool -> Context -> [(Text, NonEmpty Int)] -> IO ([NDArray a], [Maybe (NDArray a)], [NDArray a], Executor a)
+              => Executor a
+              -> Bool
+              -> Bool
+              -> Context
+              -> [(Text, NonEmpty Int)]
+              -> IO ([NDArray a], [Maybe (NDArray a)], [NDArray a], Executor a)
 execReshapeEx (Executor hdl) partial_shaping allow_up_sizing Context{..} input_shapes = do
     let (names, shapes) = unzip input_shapes
         arg_ind = scanl (+) 0 $ map length shapes
