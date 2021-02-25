@@ -1,6 +1,6 @@
 {-# LANGUAGE MultiParamTypeClasses  #-}
 {-# LANGUAGE TypeFamilyDependencies #-}
-module MXNet.Base.Tensor where
+module MXNet.Base.Tensor.Class where
 
 import                          Data.Bifunctor           (bimap)
 import                          Data.Kind                (Constraint)
