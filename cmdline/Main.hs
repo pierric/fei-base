@@ -59,7 +59,7 @@ main = do
                 , simpleImport "MXNet.Base.Raw"
                 , simpleImport "MXNet.Base.Spec.Operator"
                 , simpleImport "MXNet.Base.Spec.HMap"
-                , simpleImport "MXNet.Base.Tensor"
+                , simpleImport "MXNet.Base.Tensor.Class"
                 , simpleImportVars "Data.Maybe" ["catMaybes", "fromMaybe"]]
     modDataIter = Module () (Just $ ModuleHead () (ModuleName () "MXNet.Base.DataIter") Nothing Nothing) []
                   [ simpleImport "RIO"

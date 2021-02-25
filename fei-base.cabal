@@ -82,7 +82,9 @@ library
                        MXNet.Base.Raw.NDArray,
                        MXNet.Base.Raw.Symbol,
                        MXNet.Base.Raw.Executor,
-                       MXNet.Base.Raw.DataIter
+                       MXNet.Base.Raw.DataIter,
+                       MXNet.Base.Tensor.Class,
+                       MXNet.Base.Tensor.Functional
   extra-libraries:     mxnet
 
 executable mxnet-op-gen
