@@ -62,7 +62,7 @@ not_  a   = prim S._logical_not  (#data := a .& Nil)
 
 #if MXNET_VERSION == 10600
 _adaptDouble = double2Float
-#else
+#elif MXNET_VERSION >= 10700
 _adaptDouble = id
 #endif
 
