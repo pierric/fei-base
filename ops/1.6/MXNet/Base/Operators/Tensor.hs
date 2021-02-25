@@ -1,11 +1,11 @@
 module MXNet.Base.Operators.Tensor where
-import RIO
-import RIO.List
-import MXNet.Base.Raw
-import MXNet.Base.Spec.Operator
-import MXNet.Base.Spec.HMap
-import MXNet.Base.Tensor
-import Data.Maybe (catMaybes, fromMaybe)
+import           Data.Maybe               (catMaybes, fromMaybe)
+import           MXNet.Base.Raw
+import           MXNet.Base.Spec.HMap
+import           MXNet.Base.Spec.Operator
+import           MXNet.Base.Tensor.Class
+import           RIO
+import           RIO.List
 
 type instance ParameterList "_Activation" t =
      '[ '("act_type",
