@@ -1,6 +1,6 @@
 cabal-version:       2.4
 name:                fei-base
-version:             1.0.0
+version:             1.1.0
 synopsis:            FFI to MXNet
 description:         This package provides a FFI wrap of MXNet, including c-apis and symbol/array/executor operations.
 homepage:
@@ -18,6 +18,11 @@ Flag mxnet_geq_10600 {
   Default: False
 }
 
+Flag mxnet_geq_10700 {
+  Description: With MXNet 1.7.x operators
+  Default: False
+}
+
 Flag dummy {
   Description: no operators
   Default: True
@@ -32,12 +37,18 @@ library
   hs-source-dirs:      c-apis
   if flag(mxnet_geq_10600) {
       hs-source-dirs:  ops/1.6
+      cpp-options:     -DMXNET_VERSION=10600
+  }
+  elif flag(mxnet_geq_10700) {
+      hs-source-dirs:  ops/1.7
+      cpp-options:     -DMXNET_VERSION=10700
   }
   elif flag(dummy) {
       hs-source-dirs:  ops/dummy
   }
   if flag(use_repa) {
       build-depends:   repa
+      cpp-options:     -DUSE_REPA
   }
   build-depends:       base >= 4.7 && < 5,
                        tuple-ops == 0.0.0.4,

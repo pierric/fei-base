@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 module MXNet.Base.Tensor.Functional where
 
 import           RIO
@@ -7,10 +8,11 @@ import           MXNet.Base.Spec.HMap        (HMap (..), (.&))
 import           MXNet.Base.Spec.Operator
 import           MXNet.Base.Tensor.Class
 
+#ifdef MXNET_VERSION
+
 -----------------------------------------------------------------------------
 -- For both Symbol and NDArray
 -----------------------------------------------------------------------------
-
 
 pooling :: (PrimTensorOp t t, Fullfilled "_Pooling" t args)
         => ArgsHMap "_Pooling" t args -> TensorMonad t t
@@ -134,7 +136,13 @@ splitBySections num_sections axis squeeze s =
 
 -- TODO constraint the `o` to conform to `dt`
 cast :: PrimTensorOp t o
-     => EnumType '["bool", "float16", "float32", "float64", "int32", "int64", "int8", "uint8"]
+#if MXNET_VERSION == 10600
+     => EnumType '["bool", "float16", "float32", "float64", "int32",
+                   "int64", "int8", "uint8"]
+#elif MXNET_VERSION == 10700
+     => EnumType '["bfloat16", "bool", "float16", "float32", "float64",
+                   "int32", "int64", "int8", "uint8"]
+#endif
      -> t
      -> TensorMonad o o
 cast dt t = prim S._Cast (#dtype := dt .& #data := t .& Nil)
@@ -181,3 +189,4 @@ copy src dst = do
     [ret] <- S.__copyto (#data := src .& Nil) (Just [dst])
     return ret
 
+#endif
