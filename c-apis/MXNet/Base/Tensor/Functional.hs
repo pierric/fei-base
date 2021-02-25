@@ -1,6 +1,7 @@
 {-# LANGUAGE CPP #-}
 module MXNet.Base.Tensor.Functional where
 
+import           GHC.Float                   (double2Float)
 import           RIO
 
 import qualified MXNet.Base.Operators.Tensor as S
@@ -59,23 +60,36 @@ or_   a b = prim S.__logical_or  (#lhs := a .& #rhs := b .& Nil)
 xor_  a b = prim S.__logical_xor (#lhs := a .& #rhs := b .& Nil)
 not_  a   = prim S._logical_not  (#data := a .& Nil)
 
-addScalar  b a = prim S.__plus_scalar (#data := a .& #scalar := b .& Nil)
-subScalar  b a = prim S.__minus_scalar (#data := a .& #scalar := b .& Nil)
-rsubScalar b a = prim S.__rminus_scalar (#data := a .& #scalar := b .& Nil)
-mulScalar  b a = prim S.__mul_scalar (#data := a .& #scalar := b .& Nil)
-divScalar  b a = prim S.__div_scalar (#data := a .& #scalar := b .& Nil)
-rdivScalar b a = prim S.__rdiv_scalar (#data := a .& #scalar := b .& Nil)
+#if MXNET_VERSION == 10600
+_adaptDouble = double2Float
+#elif MXNET_VERSION >= 10700
+_adaptDouble = id
+#endif
 
-eqScalar  b a = prim S.__equal_scalar (#data := a .& #scalar := b .& Nil)
-neqScalar b a = prim S.__not_equal_scalar (#data := a .& #scalar := b .& Nil)
-ltScalar  b a = prim S.__lesser_scalar (#data := a .& #scalar := b .& Nil)
-leqScalar b a = prim S.__lesser_equal_scalar (#data := a .& #scalar := b .& Nil)
-gtScalar  b a = prim S.__greater_scalar (#data := a .& #scalar := b .& Nil)
-geqScalar b a = prim S.__greater_equal_scalar (#data := a .& #scalar := b .& Nil)
+addScalar, subScalar, rsubScalar, mulScalar, divScalar, rdivScalar ::
+    PrimTensorOp t t => Double -> t -> TensorMonad t t
+addScalar  b a = prim S.__plus_scalar (#data := a .& #scalar := _adaptDouble b .& Nil)
+subScalar  b a = prim S.__minus_scalar (#data := a .& #scalar := _adaptDouble b .& Nil)
+rsubScalar b a = prim S.__rminus_scalar (#data := a .& #scalar := _adaptDouble b .& Nil)
+mulScalar  b a = prim S.__mul_scalar (#data := a .& #scalar := _adaptDouble b .& Nil)
+divScalar  b a = prim S.__div_scalar (#data := a .& #scalar := _adaptDouble b .& Nil)
+rdivScalar b a = prim S.__rdiv_scalar (#data := a .& #scalar := _adaptDouble b .& Nil)
 
-andScalar b a = prim S.__logical_and_scalar (#data := a .& #scalar := b .& Nil)
-orScalar  b a = prim S.__logical_or_scalar  (#data := a .& #scalar := b .& Nil)
-xorScalar b a = prim S.__logical_xor_scalar (#data := a .& #scalar := b .& Nil)
+eqScalar, neqScalar, ltScalar, leqScalar, gtScalar, geqScalar ::
+    PrimTensorOp t t => Double -> t -> TensorMonad t t
+eqScalar  b a = prim S.__equal_scalar (#data := a .& #scalar := _adaptDouble b .& Nil)
+neqScalar b a = prim S.__not_equal_scalar (#data := a .& #scalar := _adaptDouble b .& Nil)
+ltScalar  b a = prim S.__lesser_scalar (#data := a .& #scalar := _adaptDouble b .& Nil)
+leqScalar b a = prim S.__lesser_equal_scalar (#data := a .& #scalar := _adaptDouble b .& Nil)
+gtScalar  b a = prim S.__greater_scalar (#data := a .& #scalar := _adaptDouble b .& Nil)
+geqScalar b a = prim S.__greater_equal_scalar (#data := a .& #scalar := _adaptDouble b .& Nil)
+
+
+andScalar, orScalar, xorScalar ::
+    PrimTensorOp t t => Double -> t -> TensorMonad t t
+andScalar b a = prim S.__logical_and_scalar (#data := a .& #scalar := _adaptDouble b .& Nil)
+orScalar  b a = prim S.__logical_or_scalar  (#data := a .& #scalar := _adaptDouble b .& Nil)
+xorScalar b a = prim S.__logical_xor_scalar (#data := a .& #scalar := _adaptDouble b .& Nil)
 
 addBroadcast a b = prim S._broadcast_add (#lhs := a .& #rhs := b .& Nil)
 subBroadcast a b = prim S._broadcast_sub (#lhs := a .& #rhs := b .& Nil)
