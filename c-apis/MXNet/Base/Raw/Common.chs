@@ -30,14 +30,18 @@ deriving instance Generic WrapText
 deriving instance Generic C2HSImp.CInt
 deriving instance Generic C2HSImp.CUInt
 
+checkRC :: HasCallStack => CInt -> IO ()
+checkRC res = do
+    when (res < 0) $ do
+        err <- mxGetLastError
+        let tb = prettyCallStack callStack
+        throwIO $ MXNetError tb err
+
 checked :: (HasCallStack, Unconsable t CInt r) => IO t -> IO r
 checked call = do
     (res, ret) <- uncons <$> call
-    if res < 0
-      then do err <- mxGetLastError
-              let tb = prettyCallStack callStack
-              throwIO $ MXNetError tb err
-      else return ret
+    checkRC res
+    return ret
 
 peekCStringT :: CString -> IO Text
 peekCStringT = fmap T.pack . peekCString
