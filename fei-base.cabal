@@ -88,12 +88,14 @@ library
                        MXNet.Base.Spec.Operator,
                        MXNet.Base.Spec.HMap
                        MXNet.Base.Operators.Tensor,
-                       MXNet.Base.DataIter
+                       MXNet.Base.DataIter,
+                       MXNet.Base.Profiler
   other-modules:       MXNet.Base.Raw.Common,
                        MXNet.Base.Raw.NDArray,
                        MXNet.Base.Raw.Symbol,
                        MXNet.Base.Raw.Executor,
                        MXNet.Base.Raw.DataIter,
+                       MXNet.Base.Raw.Profiler,
                        MXNet.Base.Tensor.Class,
                        MXNet.Base.Tensor.Functional
   extra-libraries:     mxnet
