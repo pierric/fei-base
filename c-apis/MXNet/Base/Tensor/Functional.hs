@@ -139,6 +139,8 @@ transpose a axes = prim S._transpose (#data := a .& #axes := axes .& Nil)
 
 argmax a axis keepdims = prim S._argmax (#data := a .& #axis := axis .& #keepdims := keepdims .& Nil)
 
+slice a beg end = prim S._slice (#data := a .& #begin := beg .& #end := end .& Nil)
+
 sliceAxis a axis beg end = prim S._slice_axis (#data := a .& #axis := axis .& #begin := beg .& #end := end .& Nil)
 
 splitBySections num_sections axis squeeze s =
