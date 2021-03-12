@@ -34,7 +34,14 @@ setConfig args = do
     let kwargs = dump args
     mxSetProfilerConfig kwargs
 
+withProfiler :: IO a -> IO a
 withProfiler = bracket_ (mxSetProfilerState 1) (mxSetProfilerState 0)
+
+beginProfiler :: IO ()
+beginProfiler = mxSetProfilerState 1
+
+endProfiler :: IO ()
+endProfiler = mxSetProfilerState 0
 
 data StatsFormat = Table | Json
   deriving Enum
