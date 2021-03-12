@@ -61,7 +61,7 @@ fun MXNDArrayFree as mxNDArrayFree_
     } -> `CInt'
 #}
 
-mxNDArrayFree :: NDArrayHandlePtr -> IO ()
+mxNDArrayFree :: HasCallStack => NDArrayHandlePtr -> IO ()
 mxNDArrayFree = checked . mxNDArrayFree_
 
 {#
@@ -71,7 +71,7 @@ fun MXNDArrayCreateNone as mxNDArrayCreateNone_
     } -> `CInt'
 #}
 
-mxNDArrayCreateNone :: IO NDArrayHandle
+mxNDArrayCreateNone :: HasCallStack => IO NDArrayHandle
 mxNDArrayCreateNone = checked mxNDArrayCreateNone_
 
 {#
@@ -86,7 +86,7 @@ fun MXNDArrayCreate as mxNDArrayCreate_
     } -> `CInt'
 #}
 
-mxNDArrayCreate :: [Int] -> Int -> Int -> Bool -> IO NDArrayHandle
+mxNDArrayCreate :: HasCallStack => [Int] -> Int -> Int -> Bool -> IO NDArrayHandle
 mxNDArrayCreate shape devtype devid delay_alloc = do
     let shape_   = fromIntegral <$> shape
         dim_     = fromIntegral (length shape_)
@@ -107,7 +107,7 @@ fun MXNDArrayCreateEx as mxNDArrayCreateEx_
     } -> `CInt'
 #}
 
-mxNDArrayCreateEx :: [Int] -> Int -> Int -> Bool -> Int -> IO NDArrayHandle
+mxNDArrayCreateEx :: HasCallStack => [Int] -> Int -> Int -> Bool -> Int -> IO NDArrayHandle
 mxNDArrayCreateEx shape devtype devid delay_alloc dtype = do
     let shape_   = fromIntegral <$> shape
         dim_     = fromIntegral (length shape_)
@@ -126,7 +126,7 @@ fun MXNDArraySyncCopyFromCPU as mxNDArraySyncCopyFromCPU_
     } -> `CInt'
 #}
 
-mxNDArraySyncCopyFromCPU :: NDArrayHandle -> Ptr () -> Int -> IO ()
+mxNDArraySyncCopyFromCPU :: HasCallStack => NDArrayHandle -> Ptr () -> Int -> IO ()
 mxNDArraySyncCopyFromCPU array ptr size =
     checked $ mxNDArraySyncCopyFromCPU_ array ptr (fromIntegral size)
 
@@ -139,7 +139,7 @@ fun MXNDArraySyncCopyToCPU as mxNDArraySyncCopyToCPU_
     } -> `CInt'
 #}
 
-mxNDArraySyncCopyToCPU :: NDArrayHandle -> Ptr () -> Int -> IO ()
+mxNDArraySyncCopyToCPU :: HasCallStack => NDArrayHandle -> Ptr () -> Int -> IO ()
 mxNDArraySyncCopyToCPU array ptr size =
     checked $ mxNDArraySyncCopyToCPU_ array ptr (fromIntegral size)
 
@@ -152,7 +152,7 @@ fun MXNDArraySyncCopyFromNDArray as mxNDArraySyncCopyFromNDArray_
     } -> `CInt'
 #}
 
-mxNDArraySyncCopyFromNDArray :: NDArrayHandle -> NDArrayHandle -> Int -> IO ()
+mxNDArraySyncCopyFromNDArray :: HasCallStack => NDArrayHandle -> NDArrayHandle -> Int -> IO ()
 mxNDArraySyncCopyFromNDArray array_dst array_src blob =
     checked $ mxNDArraySyncCopyFromNDArray_ array_dst array_src (fromIntegral blob)
 
@@ -163,7 +163,7 @@ fun MXNDArrayWaitToRead as mxNDArrayWaitToRead_
     } -> `CInt'
 #}
 
-mxNDArrayWaitToRead :: NDArrayHandle -> IO ()
+mxNDArrayWaitToRead :: HasCallStack => NDArrayHandle -> IO ()
 mxNDArrayWaitToRead = checked . mxNDArrayWaitToRead_
 
 {#
@@ -173,7 +173,7 @@ fun MXNDArrayWaitToWrite as mxNDArrayWaitToWrite_
     } -> `CInt'
 #}
 
-mxNDArrayWaitToWrite :: NDArrayHandle -> IO ()
+mxNDArrayWaitToWrite :: HasCallStack => NDArrayHandle -> IO ()
 mxNDArrayWaitToWrite = checked . mxNDArrayWaitToWrite_
 
 {#
@@ -182,7 +182,7 @@ fun MXNDArrayWaitAll as mxNDArrayWaitAll_
     } -> `CInt'
 #}
 
-mxNDArrayWaitAll :: IO ()
+mxNDArrayWaitAll :: HasCallStack => IO ()
 mxNDArrayWaitAll = checked mxNDArrayWaitAll_
 
 #if MXNet_MAJOR==1 && MXNet_MINOR<6
@@ -207,7 +207,7 @@ fun MXNDArraySlice as mxNDArraySlice_
 #}
 #endif
 
-mxNDArraySlice :: NDArrayHandle -> Int -> Int -> IO NDArrayHandle
+mxNDArraySlice :: HasCallStack => NDArrayHandle -> Int -> Int -> IO NDArrayHandle
 mxNDArraySlice array begin end = do
     let begin_ = fromIntegral begin
         end_   = fromIntegral end
@@ -234,7 +234,7 @@ fun MXNDArrayAt as mxNDArrayAt_
 #}
 #endif
 
-mxNDArrayAt :: NDArrayHandle -> Int -> IO NDArrayHandle
+mxNDArrayAt :: HasCallStack => NDArrayHandle -> Int -> IO NDArrayHandle
 mxNDArrayAt array index = do
     checked $ mxNDArrayAt_ array (fromIntegral index)
 
@@ -246,7 +246,7 @@ fun MXNDArrayGetStorageType as mxNDArrayGetStorageType_
     } -> `CInt'
 #}
 
-mxNDArrayGetStorageType :: NDArrayHandle -> IO Int
+mxNDArrayGetStorageType :: HasCallStack => NDArrayHandle -> IO Int
 mxNDArrayGetStorageType array = do
     storageType <- checked $ mxNDArrayGetStorageType_ array
     return $ fromIntegral storageType
@@ -261,7 +261,7 @@ fun MXNDArrayReshape as mxNDArrayReshape_
     } -> `CInt'
 #}
 
-mxNDArrayReshape :: NDArrayHandle -> [Int] -> IO NDArrayHandle
+mxNDArrayReshape :: HasCallStack => NDArrayHandle -> [Int] -> IO NDArrayHandle
 mxNDArrayReshape array shape = do
     let shape_ = fromIntegral <$> shape
         num_   = fromIntegral $ length shape_
@@ -276,7 +276,7 @@ fun MXNDArrayGetShape as mxNDArrayGetShape_
     } -> `CInt'
 #}
 
-mxNDArrayGetShape :: NDArrayHandle -> IO [Int]
+mxNDArrayGetShape :: HasCallStack => NDArrayHandle -> IO [Int]
 mxNDArrayGetShape array = do
     (size, ptr) <- checked $ mxNDArrayGetShape_ array
     shape <- peekArray (fromIntegral size) ptr
@@ -301,7 +301,7 @@ fun MXImperativeInvoke as mxImperativeInvoke_
 #}
 
 -- | Invoke a nnvm op and imperative function.
-mxImperativeInvoke :: HasCallStack
+mxImperativeInvoke :: HasCallStack => HasCallStack
                    => AtomicSymbolCreator
                    -> [NDArrayHandle]
                    -> [(Text, Text)]
@@ -342,7 +342,7 @@ fun MXNDArrayGetContext as mxNDArrayGetContext_
     } -> `CInt'
 #}
 
-mxNDArrayGetContext :: NDArrayHandle -> IO (Int, Int)
+mxNDArrayGetContext :: HasCallStack => NDArrayHandle -> IO (Int, Int)
 mxNDArrayGetContext handle = do
     (devtyp, devidx) <- checked $ mxNDArrayGetContext_ handle
     return (fromIntegral devtyp, fromIntegral devidx)
@@ -370,7 +370,7 @@ fun MXNDArraySave as mxNDArraySave_
 #}
 #endif
 
-mxNDArraySave ::  Text -> [(Text, NDArrayHandle)] -> IO ()
+mxNDArraySave ::  HasCallStack => Text -> [(Text, NDArrayHandle)] -> IO ()
 mxNDArraySave filename keyvals = do
     let num = length keyvals
         (keys, vals) = unzip keyvals
@@ -387,7 +387,7 @@ fun MXNDArrayLoad as mxNDArrayLoad_
     } -> `CInt'
 #}
 
-mxNDArrayLoad :: Text -> IO [(Text, NDArrayHandle)]
+mxNDArrayLoad :: HasCallStack => Text -> IO [(Text, NDArrayHandle)]
 mxNDArrayLoad path = do
     (numArrays, ptrArrays, numNames, ptrNames) <- checked $ mxNDArrayLoad_ path
     pa <- peekArray (fromIntegral numArrays) ptrArrays
