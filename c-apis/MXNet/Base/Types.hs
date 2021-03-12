@@ -55,6 +55,9 @@ instance DType Int64 where
 contextCPU :: Context
 contextCPU = Context 1 0
 
+contextPinnedCPU :: Context
+contextPinnedCPU = Context 3 0
+
 contextGPU0 :: Context
 contextGPU0 = Context 2 0
 
