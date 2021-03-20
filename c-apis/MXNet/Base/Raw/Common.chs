@@ -1,6 +1,7 @@
 module MXNet.Base.Raw.Common where
 
 import RIO
+import RIO.Partial (toEnum)
 import qualified RIO.Text as T
 import Data.Tuple.Ops (Unconsable, uncons)
 import Foreign.Marshal (alloca, peekArray, withArray)
@@ -279,3 +280,19 @@ fun MXStorageEmptyCache as mxStorageEmptyCache_
 
 mxStorageEmptyCache :: Int -> Int -> IO ()
 mxStorageEmptyCache devtype devid = checked $ mxStorageEmptyCache_ (fromIntegral devtype) (fromIntegral devid)
+
+{#
+fun MXSetIsNumpyShape as mxSetIsNumpyShape_
+{
+    `CInt',
+    alloca- `CInt' peek*
+} -> `CInt'
+#}
+
+data NumpyShapeSemantic = NpyShapeOff | NpyShapeTL | NpyShapeGL
+    deriving Enum
+
+mxSetIsNumpyShape :: NumpyShapeSemantic -> IO NumpyShapeSemantic
+mxSetIsNumpyShape flag = do
+    ret <- checked $ mxSetIsNumpyShape_ $ fromIntegral $ fromEnum flag
+    return $ toEnum $ fromIntegral ret
