@@ -1,9 +1,15 @@
+{-# LANGUAGE AllowAmbiguousTypes    #-}
+{-# LANGUAGE ConstraintKinds        #-}
 {-# LANGUAGE MultiParamTypeClasses  #-}
+{-# LANGUAGE PolyKinds              #-}
 {-# LANGUAGE TypeFamilyDependencies #-}
+{-# LANGUAGE TypeOperators          #-}
+{-# LANGUAGE UndecidableInstances   #-}
 module MXNet.Base.Tensor.Class where
 
 import                          Data.Bifunctor           (bimap)
 import                          Data.Kind                (Constraint)
+import                qualified GHC.TypeLits             as L
 import                          RIO
 import                          RIO.List                 (unzip)
 
@@ -19,42 +25,47 @@ import                          MXNet.Base.Types
 -- TensorApply is injective
 type family TensorApply t = c | c -> t where
     TensorApply NDArrayHandle = Maybe [NDArrayHandle] -> IO [NDArrayHandle]
-    TensorApply (NDArray a) = Maybe [NDArray a] -> IO [NDArray a]
-    TensorApply SymbolHandle = Text -> IO SymbolHandle
+    TensorApply (NDArray a)   = Maybe [NDArray a] -> IO [NDArray a]
+    TensorApply SymbolHandle  = Text -> IO SymbolHandle
+    TensorApply (Symbol a)    = Text -> IO (Symbol a)
 
-type family TensorMonad t :: * -> *
+type family TensorDType t :: L.Symbol where
+    TensorDType (NDArray t) = DTypeName t
+    TensorDType (Symbol  t) = DTypeName t
+    TensorDType _           = "unknown"
 
-type instance TensorMonad (NDArray a)   = IO
-type instance TensorMonad NDArrayHandle = IO
+type family TensorWithDType t s where
+    TensorWithDType (NDArray t) s = NDArray s
+    TensorWithDType (Symbol  t) s = Symbol  s
+    TensorWithDType t _ = t
 
-class TensorOp ti to where
-    apply :: HasCallStack => Text -> [(Text, Text)] -> Either [(Text, ti)] [ti] -> TensorApply to
+class Tensor (t :: * -> *) where
+    type RawTensor t = s | s -> t
+    toRaw    :: DType a => t a -> RawTensor t
+    fromRaw  :: DType a => RawTensor t -> t a
+    applyRaw :: (HasCallStack, DType a)
+                 => Text
+                 -> [(Text, Text)]
+                 -> Either [(Text, RawTensor t)] [RawTensor t]
+                 -> TensorApply (t a)
 
-
-class TensorOp ti to => PrimTensorOp ti to where
-    prim      :: HasCallStack => (ArgsHMap s ti a -> TensorApply to) -> ArgsHMap s ti a -> TensorMonad to to
-    primMulti :: HasCallStack => (ArgsHMap s ti a -> TensorApply to) -> ArgsHMap s ti a -> TensorMonad to [to]
-
-
-instance TensorOp NDArrayHandle NDArrayHandle where
-    apply opname scalars tensors outputs = do
+instance Tensor NDArray where
+    type RawTensor NDArray = NDArrayHandle
+    toRaw (NDArray hdl) = hdl
+    fromRaw hdl = NDArray hdl
+    applyRaw opname scalars tensors outputs = do
         let tensors' = case tensors of
                          Left kwargs -> snd $ unzip kwargs
                          Right args  -> args
-        op <- nnGetOpHandle opname
-        mxImperativeInvoke (fromOpHandle op) tensors' scalars outputs
+        op  <- nnGetOpHandle opname
+        let outputsRaw = map toRaw <$> outputs
+        map fromRaw <$> mxImperativeInvoke (fromOpHandle op) tensors' scalars outputsRaw
 
-
-instance (DType a, DType b) => TensorOp (NDArray a) (NDArray b) where
-    apply opname scalars tensors outputs = do
-        let tensors' = bimap (map (second unNDArray)) (map unNDArray) tensors
-            outputs' = fmap (map unNDArray) outputs :: Maybe [NDArrayHandle]
-        ret <- apply opname scalars tensors' outputs' :: IO [NDArrayHandle]
-        return $ map NDArray ret
-
-
-instance TensorOp SymbolHandle SymbolHandle where
-    apply opname scalars tensors name = do
+instance Tensor Symbol where
+    type RawTensor Symbol = SymbolHandle
+    toRaw (Symbol hdl) = hdl
+    fromRaw hdl = Symbol hdl
+    applyRaw opname scalars tensors name = do
         let (scalarkeys, scalarvals) = unzip scalars
             (tensorkeys, tensorvals) = case tensors of
                                          Left kwargs -> first Just $ unzip kwargs
@@ -64,18 +75,20 @@ instance TensorOp SymbolHandle SymbolHandle where
                                           scalarkeys
                                           scalarvals
         mxSymbolCompose sym name tensorkeys tensorvals
-        return sym
+        return $ fromRaw sym
 
-instance PrimTensorOp NDArrayHandle NDArrayHandle where
+type family TensorMonad (t :: * -> *) :: * -> *
+type instance TensorMonad NDArray = IO
+
+class (MonadIO (TensorMonad t), Tensor t) => PrimTensorOp t where
+    prim      :: (HasCallStack, DType v)
+              => (ArgsHMap s (p :: kind) a -> TensorApply (t v)) -> ArgsHMap s p a -> TensorMonad t (t v)
+    primMulti :: (HasCallStack, DType v)
+              => (ArgsHMap s (p :: kind) a -> TensorApply (t v)) -> ArgsHMap s p a -> TensorMonad t [t v]
+
+instance PrimTensorOp NDArray where
     prim op args = op args Nothing >>= \case
                         [x] -> return x
                         _   -> error "the operation returns multiple ndarrays"
     primMulti op args = op args Nothing
-
-instance (DType a, DType b) => PrimTensorOp (NDArray a) (NDArray b) where
-    prim      op args = op args Nothing >>= \case
-                        [x] -> return x
-                        _   -> error "the operation returns multiple ndarrays"
-    primMulti op args = op args Nothing
-
 
