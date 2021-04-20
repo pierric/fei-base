@@ -4,7 +4,6 @@ module MXNet.Base.Raw.Executor where
 import RIO
 import Foreign.Marshal (alloca, withArray, peekArray)
 import Foreign.Storable (Storable(..))
-import Foreign.Concurrent (newForeignPtr)
 import Foreign.ForeignPtr (newForeignPtr_, touchForeignPtr)
 import Foreign.ForeignPtr.Unsafe (unsafeForeignPtrToPtr)
 import Foreign.Ptr
@@ -84,16 +83,6 @@ mxExecutorForward exec train = checked $ mxExecutorForward_ exec is_train
   where
     is_train = if train then 1 else 0
 
-#if MXNet_MAJOR==1 && MXNet_MINOR<6
-{#
-fun MXExecutorBackward as mxExecutorBackward_
-    {
-        `ExecutorHandle',
-        `MX_UINT',
-        withNDArrayHandleArray* `[NDArrayHandle]'
-    } -> `CInt'
-#}
-#else
 {#
 fun MXExecutorBackward as mxExecutorBackward_
     {
@@ -102,24 +91,12 @@ fun MXExecutorBackward as mxExecutorBackward_
         withNDArrayHandleArray* `[NDArrayHandle]'
     } -> `CInt'
 #}
-#endif
 
 mxExecutorBackward :: HasCallStack => ExecutorHandle -> [NDArrayHandle] -> IO ()
 mxExecutorBackward exec head_grads = checked $ mxExecutorBackward_ exec cnt head_grads
   where
     cnt = fromIntegral $ length head_grads
 
-#if MXNet_MAJOR==1 && MXNet_MINOR<6
-{#
-fun MXExecutorBackwardEx as mxExecutorBackwardEx_
-    {
-        `ExecutorHandle',
-        `MX_UINT',
-        withNDArrayHandleArray* `[NDArrayHandle]',
-        `CInt'
-    } -> `CInt'
-#}
-#else
 {#
 fun MXExecutorBackwardEx as mxExecutorBackwardEx_
     {
@@ -129,7 +106,6 @@ fun MXExecutorBackwardEx as mxExecutorBackwardEx_
         `CInt'
     } -> `CInt'
 #}
-#endif
 
 mxExecutorBackwardEx :: HasCallStack => ExecutorHandle -> [NDArrayHandle] -> Bool -> IO ()
 mxExecutorBackwardEx exec head_grads train = checked $ mxExecutorBackwardEx_ exec cnt head_grads is_train
@@ -152,23 +128,6 @@ mxExecutorOutputs handle = do
     handle_ptrs <- peekArray (fromIntegral cnt) ptr
     mapM newNDArrayHandle handle_ptrs
 
-#if MXNet_MAJOR==1 && MXNet_MINOR<6
-{#
-fun MXExecutorBind as mxExecutorBind_
-    {
-        `SymbolHandle',
-        `CInt',
-        `CInt',
-        `MX_UINT',
-        withNDArrayHandleArray* `[NDArrayHandle]',
-        withNDArrayHandleArray* `[NDArrayHandle]',
-        withArray* `[MX_UINT]',
-        `MX_UINT',
-        withNDArrayHandleArray* `[NDArrayHandle]',
-        alloca- `ExecutorHandle' peekExecutorHandle*
-    } -> `CInt'
-#}
-#else
 {#
 fun MXExecutorBind as mxExecutorBind_
     {
@@ -184,7 +143,6 @@ fun MXExecutorBind as mxExecutorBind_
         alloca- `ExecutorHandle' peekExecutorHandle*
     } -> `CInt'
 #}
-#endif
 
 makeNullNDArrayHandle = NDArrayHandle <$> newForeignPtr_ C2HSImp.nullPtr
 
@@ -208,27 +166,6 @@ mxExecutorBind symbol devtype devid in_args arg_grad_store grad_req_type aux_sta
     cnt_auxs = fromIntegral $ length aux_states
     grad_req_type_ = map fromIntegral grad_req_type
 
-#if MXNet_MAJOR==1 && MXNet_MINOR<6
-{#
-fun MXExecutorBindX as mxExecutorBindX_
-    {
-        `SymbolHandle',
-        `CInt',
-        `CInt',
-        `MX_UINT',
-        withCStringArrayT* `[Text]',
-        withArray* `[CInt]',
-        withArray* `[CInt]',
-        `MX_UINT',
-        withNDArrayHandleArray* `[NDArrayHandle]',
-        withNDArrayHandleArray* `[NDArrayHandle]',
-        withArray* `[MX_UINT]',
-        `MX_UINT',
-        withNDArrayHandleArray* `[NDArrayHandle]',
-        alloca- `ExecutorHandle' peekExecutorHandle*
-    } -> `CInt'
-#}
-#else
 {#
 fun MXExecutorBindX as mxExecutorBindX_
     {
@@ -248,7 +185,6 @@ fun MXExecutorBindX as mxExecutorBindX_
         alloca- `ExecutorHandle' peekExecutorHandle*
     } -> `CInt'
 #}
-#endif
 
 mxExecutorBindX :: HasCallStack
                 => SymbolHandle
@@ -276,28 +212,6 @@ mxExecutorBindX symbol devtype devid map_keys map_dev_types map_dev_ids in_args 
     cnt_auxs = fromIntegral $ length aux_states
     grad_req_type_ = map fromIntegral grad_req_type
 
-#if MXNet_MAJOR==1 && MXNet_MINOR<6
-{#
-fun MXExecutorBindEX as mxExecutorBindEX_
-    {
-        `SymbolHandle',
-        `CInt',
-        `CInt',
-        `MX_UINT',
-        withCStringArrayT* `[Text]',
-        withArray* `[CInt]',
-        withArray* `[CInt]',
-        `MX_UINT',
-        withNDArrayHandleArray* `[NDArrayHandle]',
-        withNDArrayHandleArray* `[NDArrayHandle]',
-        withArray* `[MX_UINT]',
-        `MX_UINT',
-        withNDArrayHandleArray* `[NDArrayHandle]',
-        `ExecutorHandle',
-        alloca- `ExecutorHandle' peekExecutorHandle*
-    } -> `CInt'
-#}
-#else
 {#
 fun MXExecutorBindEX as mxExecutorBindEX_
     {
@@ -318,7 +232,6 @@ fun MXExecutorBindEX as mxExecutorBindEX_
         alloca- `ExecutorHandle' peekExecutorHandle*
     } -> `CInt'
 #}
-#endif
 
 mxExecutorBindEX :: HasCallStack
                  => SymbolHandle
@@ -347,47 +260,6 @@ mxExecutorBindEX symbol devtype devid map_keys map_dev_types map_dev_ids in_args
     cnt_auxs = fromIntegral $ length aux_states
     grad_req_type_ = map fromIntegral grad_req_type
 
-#if MXNet_MAJOR==1 && MXNet_MINOR<6
-{#
-fun MXExecutorSimpleBind as mxExecutorSimpleBind_
-    {
-        `SymbolHandle',
-        `CInt',
-        `CInt',
-        `MX_UINT',
-        withCStringArrayT* `[Text]',
-        withArray* `[CInt]',
-        withArray* `[CInt]',
-        `MX_UINT',
-        withCStringArrayT* `[Text]',
-        withCStringArrayT* `[Text]',
-        `MX_UINT',
-        withCStringArrayT* `[Text]',
-        withArray* `[MX_UINT]',
-        withArray* `[MX_UINT]',
-        `MX_UINT',
-        withCStringArrayT* `[Text]',
-        withArray* `[CInt]',
-        `MX_UINT',
-        withCStringArrayT* `[Text]',
-        withArray* `[CInt]',
-        `MX_UINT',
-        withCStringArrayT* `[Text]',
-        id `Ptr CInt',                          -- [in/out] shared_buffer_len
-        id `Ptr (Ptr CChar)',                   -- [in, optional] shared_buffer_name_list
-        id `Ptr NDArrayHandlePtr',              -- [in, optional] shared_buffer_handle_list
-        alloca- `Ptr (Ptr CChar)' peek*,        -- [out] updated_shared_buffer_name_list
-        alloca- `Ptr NDArrayHandlePtr' peek*,   -- [out] updated_shared_buffer_handle_list
-        alloca- `MX_UINT' peek*,
-        alloca- `Ptr NDArrayHandlePtr' peek*,
-        alloca- `Ptr NDArrayHandlePtr' peek*,
-        alloca- `MX_UINT' peek*,
-        alloca- `Ptr NDArrayHandlePtr' peek*,
-        `ExecutorHandle',
-        alloca- `ExecutorHandle' peekExecutorHandle*
-    } -> `CInt'
-#}
-#else
 {#
 fun MXExecutorSimpleBind as mxExecutorSimpleBind_
     {
@@ -427,7 +299,6 @@ fun MXExecutorSimpleBind as mxExecutorSimpleBind_
         alloca- `ExecutorHandle' peekExecutorHandle*
     } -> `CInt'
 #}
-#endif
 
 mxExecutorSimpleBind :: HasCallStack
                      => SymbolHandle
@@ -514,32 +385,6 @@ mxExecutorSimpleBind symbol
     provided_arg_stypes_ = map fromIntegral $ provided_arg_stypes
     cnt_shared_arg_names = fromIntegral $ length shared_arg_name_list
 
-#if MXNet_MAJOR==1 && MXNet_MINOR<6
-{#
-fun MXExecutorReshapeEx as mxExecutorReshapeEx_
-    {
-        `CInt',
-        `CInt',
-        `CInt',
-        `CInt',
-        `MX_UINT',
-        withCStringArrayT* `[Text]',
-        withArray* `[CInt]',
-        withArray* `[CInt]',
-        `MX_UINT',
-        withCStringArrayT* `[Text]',
-        withArray* `[CInt]',
-        withArray* `[MX_UINT]',
-        alloca0- `MX_UINT' peek*,
-        alloca- `Ptr NDArrayHandlePtr' peek*,
-        alloca- `Ptr NDArrayHandlePtr' peek*,
-        alloca0- `MX_UINT' peek*,
-        alloca- `Ptr NDArrayHandlePtr' peek*,
-        `ExecutorHandle',
-        alloca- `ExecutorHandle' peekExecutorHandle*
-    } -> `CInt'
-#}
-#else
 {#
 fun MXExecutorReshapeEx as mxExecutorReshapeEx_
     {
@@ -564,7 +409,6 @@ fun MXExecutorReshapeEx as mxExecutorReshapeEx_
         alloca- `ExecutorHandle' peekExecutorHandle*
     } -> `CInt'
 #}
-#endif
 
 mxExecutorReshapeEx :: HasCallStack
                     => Bool -> Bool -> Int -> Int
