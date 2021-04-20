@@ -144,7 +144,8 @@ fun MXExecutorBind as mxExecutorBind_
     } -> `CInt'
 #}
 
-makeNullNDArrayHandle = NDArrayHandle <$> newForeignPtr_ C2HSImp.nullPtr
+makeNullNDArrayHandle  = NDArrayHandle  <$> newForeignPtr_ C2HSImp.nullPtr
+makeNullExecutorHandle = ExecutorHandle <$> newForeignPtr_ C2HSImp.nullPtr
 
 mxExecutorBind :: HasCallStack
                => SymbolHandle
@@ -261,77 +262,81 @@ mxExecutorBindEX symbol devtype devid map_keys map_dev_types map_dev_ids in_args
     grad_req_type_ = map fromIntegral grad_req_type
 
 {#
-fun MXExecutorSimpleBind as mxExecutorSimpleBind_
+fun MXExecutorSimpleBindEx as mxExecutorSimpleBindEx_
     {
         `SymbolHandle',
         `CInt',
         `CInt',
-        `CUInt',
-        withCStringArrayT* `[Text]',
-        withArray* `[CInt]',
-        withArray* `[CInt]',
-        `CUInt',
-        withCStringArrayT* `[Text]',
-        withCStringArrayT* `[Text]',
-        `CUInt',
-        withCStringArrayT* `[Text]',
-        withArray* `[CUInt]',
-        withArray* `[CUInt]',
-        `CUInt',
-        withCStringArrayT* `[Text]',
-        withArray* `[CInt]',
-        `CUInt',
-        withCStringArrayT* `[Text]',
-        withArray* `[CInt]',
-        `CUInt',
-        withCStringArrayT* `[Text]',
+        `CUInt',                        -- num_g2c_keys
+        withCStringArrayT* `[Text]',    -- g2c_keys
+        withArray* `[CInt]',            -- g2c_dev_types
+        withArray* `[CInt]',            -- g2c_dev_ids
+        `CUInt',                        -- provided_grad_req_list_len
+        withCStringArrayT* `[Text]',    -- provided_grad_req_names
+        withCStringArrayT* `[Text]',    -- provided_grad_req_types
+        `CUInt',                        -- num_provided_arg_shapes
+        withCStringArrayT* `[Text]',    -- provided_arg_shape_names
+        withArray* `[CInt]',            -- provided_arg_shape_data
+        withArray* `[CUInt]',           -- provided_arg_shape_idx
+        `CUInt',                        -- num_provided_arg_dtypes
+        withCStringArrayT* `[Text]',    -- provideded_arg_dtype_names
+        withArray* `[CInt]',            -- provideded_arg_dtypes
+        `CUInt',                        -- num_provided_arg_stypes
+        withCStringArrayT* `[Text]',    -- provideded_arg_stype_names
+        withArray* `[CInt]',            -- provideded_arg_stypes
+        `CUInt',                        -- num_shared_arg_names
+        withCStringArrayT* `[Text]',    -- shared_arg_name_list
         id `Ptr CInt',                          -- [in/out] shared_buffer_len
         id `Ptr (Ptr CChar)',                   -- [in, optional] shared_buffer_name_list
         id `Ptr NDArrayHandlePtr',              -- [in, optional] shared_buffer_handle_list
         alloca- `Ptr (Ptr CChar)' peek*,        -- [out] updated_shared_buffer_name_list
         alloca- `Ptr NDArrayHandlePtr' peek*,   -- [out] updated_shared_buffer_handle_list
-        alloca- `CUInt' peek*,
-        alloca- `Ptr NDArrayHandlePtr' peek*,
-        alloca- `Ptr NDArrayHandlePtr' peek*,
-        alloca- `CUInt' peek*,
-        alloca- `Ptr NDArrayHandlePtr' peek*,
-        `ExecutorHandle',
+        alloc0- `CUInt' peek*,                  -- num_in_args
+        alloca- `Ptr NDArrayHandlePtr' peek*,   -- in_args
+        alloca- `Ptr NDArrayHandlePtr' peek*,   -- arg_grads
+        alloc0- `CUInt' peek*,                  -- num_aux_stats
+        alloca- `Ptr NDArrayHandlePtr' peek*,   -- aux_stats
+        `ExecutorHandle',                       -- shared_exec_handle
         alloca- `ExecutorHandle' peekExecutorHandle*
     } -> `CInt'
 #}
 
-mxExecutorSimpleBind :: HasCallStack
-                     => SymbolHandle
-                     -> Int -> Int                        -- device
-                     -> [Text] -> [Int] -> [Int]        -- g2c
-                     -> [Text] -> [Text]              -- provided_grad_req_list
-                     -> [Text] -> [Int] -> [Int]        -- provided_arg_shapes
-                     -> [Text] -> [Int]                 -- provided_arg_dtypes
-                     -> [Text] -> [Int]                 -- provided_arg_stypes
-                     -> [Text]                          -- shared_arg_names
-                     -> Maybe ([Text], [NDArrayHandle]) -- shared_buffer
-                     -> ExecutorHandle                    -- shared_exec_handle
-                     -> IO (Maybe ([Text], [NDArrayHandle]), -- updated_shared_buffer
-                            [NDArrayHandle],                   -- arg_array
-                            [NDArrayHandle],                   -- grad_array
-                            [NDArrayHandle],                   -- aux_array
-                            ExecutorHandle)
-mxExecutorSimpleBind symbol
-                     devtype devid
-                     g2c_keys g2c_dev_types g2c_dev_ids
-                     provided_grad_req_names
-                     provided_grad_req_types
-                     provided_arg_shape_names provided_arg_shape_data provided_arg_shape_idx
-                     provided_arg_dtype_names provided_arg_dtypes
-                     provided_arg_stype_names provided_arg_stypes
-                     shared_arg_name_list
-                     shared_buffer
-                     shared_exec_handle =
+mxExecutorSimpleBindEx :: HasCallStack
+                       => SymbolHandle
+                       -> Int -> Int                        -- device
+                       -> [Text] -> [Int] -> [Int]          -- g2c
+                       -> [Text] -> [Text]                  -- provided_grad_req_list
+                       -> [Text] -> [Int] -> [Int]          -- provided_arg_shapes
+                       -> [Text] -> [Int]                   -- provided_arg_dtypes
+                       -> [Text] -> [Int]                   -- provided_arg_stypes
+                       -> [Text]                            -- shared_arg_names
+                       -> Maybe ([Text], [NDArrayHandle])   -- shared_buffer
+                       -> Maybe ExecutorHandle              -- shared_exec_handle
+                       -> IO (Maybe ([Text], [NDArrayHandle]),   -- updated_shared_buffer
+                              [NDArrayHandle],                   -- arg_array
+                              [Maybe NDArrayHandle],             -- grad_array
+                              [NDArrayHandle],                   -- aux_array
+                              ExecutorHandle)
+mxExecutorSimpleBindEx symbol
+                       devtype devid
+                       g2c_keys g2c_dev_types g2c_dev_ids
+                       provided_grad_req_names
+                       provided_grad_req_types
+                       provided_arg_shape_names provided_arg_shape_data provided_arg_shape_idx
+                       provided_arg_dtype_names provided_arg_dtypes
+                       provided_arg_stype_names provided_arg_stypes
+                       shared_arg_name_list
+                       shared_buffer
+                       shared_exec_handle = do
+
+    nullExecutorHandle <- makeNullExecutorHandle
+
     case shared_buffer of
 
         Nothing -> alloca (\ptr_shared_buffer_len -> do
             poke ptr_shared_buffer_len (-1)
-            (_, _, num_in_args, in_args, arg_grads, num_aux_states, aux_states, out) <- checked $ mxExecutorSimpleBind_
+            (_, _, num_in_args, in_args, arg_grads, num_aux_states, aux_states, out)
+                <- checked $ mxExecutorSimpleBindEx_
                         symbol devtype_ devid_
                         cnt_g2c g2c_keys g2c_dev_types_ g2c_dev_ids_
                         cnt_provided_grad_req_list provided_grad_req_names provided_grad_req_types
@@ -340,9 +345,13 @@ mxExecutorSimpleBind symbol
                         cnt_provided_arg_stypes provided_arg_stype_names provided_arg_stypes_
                         cnt_shared_arg_names shared_arg_name_list
                         ptr_shared_buffer_len C2HSImp.nullPtr C2HSImp.nullPtr
-                        shared_exec_handle
+                        (fromMaybe nullExecutorHandle shared_exec_handle)
             arg_array  <- peekArray (fromIntegral num_in_args) in_args   >>= mapM newNDArrayHandle
-            grad_array <- peekArray (fromIntegral num_in_args) arg_grads >>= mapM newNDArrayHandle
+            grad_array <- peekArray (fromIntegral num_in_args) arg_grads
+            grad_array <- forM grad_array $ \ptr ->
+                            if ptr == C2HSImp.nullPtr
+                            then return Nothing
+                            else Just <$> newNDArrayHandle ptr
             aux_array  <- peekArray (fromIntegral num_aux_states) aux_states >>= mapM newNDArrayHandle
             return (Nothing, arg_array, grad_array, aux_array, out))
 
@@ -350,7 +359,9 @@ mxExecutorSimpleBind symbol
             poke ptr_shared_buffer_len (fromIntegral $ length shared_buffer_name_list)
             withCStringArrayT shared_buffer_name_list (\ptr_shared_buffer_name_list ->
                 withNDArrayHandleArray shared_buffer_handle_list (\ptr_shared_buffer_handle_list -> do
-                    (ptr_updated_shared_buffer_name_list, ptr_updated_shared_buffer_handle_list, num_in_args, in_args, arg_grads, num_aux_states, aux_states, out) <- checked $ mxExecutorSimpleBind_
+                    (ptr_updated_shared_buffer_name_list, ptr_updated_shared_buffer_handle_list,
+                     num_in_args, in_args, arg_grads, num_aux_states, aux_states, out)
+                        <- checked $ mxExecutorSimpleBindEx_
                                 symbol devtype_ devid_
                                 cnt_g2c g2c_keys g2c_dev_types_ g2c_dev_ids_
                                 cnt_provided_grad_req_list provided_grad_req_names provided_grad_req_types
@@ -359,15 +370,21 @@ mxExecutorSimpleBind symbol
                                 cnt_provided_arg_stypes provided_arg_stype_names provided_arg_stypes_
                                 cnt_shared_arg_names shared_arg_name_list
                                 ptr_shared_buffer_len ptr_shared_buffer_name_list ptr_shared_buffer_handle_list
-                                shared_exec_handle
+                                (fromMaybe nullExecutorHandle shared_exec_handle)
                     arg_array  <- peekArray (fromIntegral num_in_args) in_args   >>= mapM newNDArrayHandle
-                    grad_array <- peekArray (fromIntegral num_in_args) arg_grads >>= mapM newNDArrayHandle
+                    grad_array <- peekArray (fromIntegral num_in_args) arg_grads
+                    grad_array <- forM grad_array $ \ptr ->
+                                    if ptr == C2HSImp.nullPtr
+                                    then return Nothing
+                                    else Just <$> newNDArrayHandle ptr
                     aux_array  <- peekArray (fromIntegral num_aux_states) aux_states >>= mapM newNDArrayHandle
                     update_shared_buffer_len <- fromIntegral <$> peek ptr_shared_buffer_len
-                    updated_shared_buffer_name_list <- peekCStringArrayT update_shared_buffer_len ptr_updated_shared_buffer_name_list
-                    updated_shared_buffer_handle_list <- peekArray update_shared_buffer_len ptr_updated_shared_buffer_handle_list >>= mapM newNDArrayHandle
-                    return (Just (updated_shared_buffer_name_list, updated_shared_buffer_handle_list), arg_array, grad_array, aux_array, out)
-                )))
+                    updated_shared_buffer_name_list
+                        <- peekCStringArrayT update_shared_buffer_len ptr_updated_shared_buffer_name_list
+                    updated_shared_buffer_handle_list
+                        <- peekArray update_shared_buffer_len ptr_updated_shared_buffer_handle_list >>= mapM newNDArrayHandle
+                    return (Just (updated_shared_buffer_name_list, updated_shared_buffer_handle_list),
+                            arg_array, grad_array, aux_array, out))))
 
   where
     devtype_ = fromIntegral devtype
