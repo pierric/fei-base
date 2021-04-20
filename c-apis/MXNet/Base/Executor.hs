@@ -10,7 +10,7 @@ import           RIO.List           (scanl, unzip)
 import           MXNet.Base.NDArray (NDArray (..))
 import qualified MXNet.Base.Raw     as I
 import           MXNet.Base.Symbol  (Symbol (..))
-import           MXNet.Base.Types   (Context (..), ForeignData (..),
+import           MXNet.Base.Types   (Context (..), DType, ForeignData (..),
                                      ReqType (..), Shape)
 
 newtype Executor a = Executor { unExecutor :: I.ExecutorHandle }
@@ -73,6 +73,47 @@ execBind symbol Context{..} arg_in arg_gr_with_req arg_aux = do
                             arg_gr_req
                             (map unNDArray arg_aux)
     return $ Executor hdl
+
+execSimpleBind :: (HasCallStack, DType a)
+               => Symbol a
+               -> Context
+               -> HashMap Text ReqType
+               -> HashMap Text Shape
+               -> HashMap Text Int
+               -> HashMap Text Int
+               -> IO ([NDArray a], [Maybe (NDArray a)], [NDArray a], Executor a)
+execSimpleBind symbol Context{..} req_types shapes dtypes stypes = do
+    let (gtype_names, gtype_vals) = flattenR req_types
+        (shape_names, shape_data, shape_idx) = flattenT shapes
+        (dtype_names, dtype_vals) = flattenE dtypes
+        (stype_names, stype_vals) = flattenE stypes
+    out <- I.mxExecutorSimpleBindEx
+                (unSymbol symbol)
+                _device_type _device_id
+                [] [] []  -- don't support g2c now
+                gtype_names gtype_vals
+                shape_names shape_data shape_idx
+                dtype_names dtype_vals
+                stype_names stype_vals
+                [] Nothing Nothing
+    let (Nothing, args, grads, aux, exec) = out
+    return (map NDArray args, map (NDArray <$>) grads, map NDArray aux, Executor exec)
+    where
+        flattenR :: HashMap Text ReqType -> ([Text], [Text])
+        flattenR mapping = let toStr ReqNull    = "null"
+                               toStr ReqWrite   = "write"
+                               toStr ReqAdd     = "add"
+                               toStr ReqInplace = "inplace"
+                            in unzip $ M.toList $ M.map toStr mapping
+
+        flattenE :: Enum a => HashMap Text a -> ([Text], [Int])
+        flattenE mapping = unzip $ M.toList $ M.map fromEnum mapping
+
+        flattenT :: HashMap Text [Int] -> ([Text], [Int], [Int])
+        flattenT mapping = let (k, v) = unzip $ M.toList mapping
+                               dat    = concat v
+                               idx    = scanl (+) 0 $ map length v
+                            in (k, dat, idx)
 
 execFree :: HasCallStack => Executor a -> IO ()
 execFree (Executor hdl) = I.withExecutorHandle hdl I.mxExecutorFree
