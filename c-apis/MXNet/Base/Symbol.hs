@@ -40,6 +40,8 @@ class SymbolClass s where
     listArguments       :: (HasCallStack, MonadIO m) => s -> m [Text]
     listOutputs         :: (HasCallStack, MonadIO m) => s -> m [Text]
     listAuxiliaryStates :: (HasCallStack, MonadIO m) => s -> m [Text]
+    listAttrs           :: (HasCallStack, MonadIO m)
+                        => s -> m (HashMap Text (HashMap Text Text))
     numOutputs          :: (HasCallStack, MonadIO m) => s -> m Int
     at                  :: (HasCallStack, MonadIO m) => s -> Int -> m s
     group               :: (HasCallStack, MonadIO m) => [s] -> m s
@@ -54,12 +56,14 @@ class SymbolClass s where
         case V.findIndex (== name) $ V.fromList all_names of
             Just idx -> at sym idx
             Nothing  -> throwIO (SymbolNameNotFound name)
+    setAttr :: (HasCallStack, MonadIO m) => s -> Text -> Text -> m ()
 
 instance SymbolClass I.SymbolHandle where
     getName = liftIO . I.mxSymbolGetName
     listArguments       = liftIO . I.mxSymbolListArguments
     listOutputs         = liftIO . I.mxSymbolListOutputs
     listAuxiliaryStates = liftIO . I.mxSymbolListAuxiliaryStates
+    listAttrs           = liftIO . I.mxSymbolListAttr
     numOutputs          = liftIO . I.mxSymbolGetNumOutputs
     at sym index = liftIO $ do
         max <- numOutputs sym
@@ -82,17 +86,20 @@ instance SymbolClass I.SymbolHandle where
       where
         build name s      = (name, s)
         pair names shapes = zipWith build names shapes
+    setAttr s k v = liftIO $ I.mxSymbolSetAttr s k v
 
 instance SymbolClass (Symbol a) where
     getName             = getName . unSymbol
     listArguments       = listArguments . unSymbol
     listOutputs         = listOutputs . unSymbol
     listAuxiliaryStates = listAuxiliaryStates . unSymbol
+    listAttrs           = listAttrs . unSymbol
     numOutputs          = numOutputs . unSymbol
     at (Symbol s)       = (Symbol <$>) . at s
     group = (Symbol <$>) . group . map unSymbol
     internals           = (Symbol <$>) . internals . unSymbol
     inferShape          = inferShape  . unSymbol
+    setAttr s k v       = setAttr (unSymbol s) k v
 
 listInternals :: (SymbolClass sym, MonadIO m) => sym -> m [Text]
 listInternals sym = internals sym >>= listOutputs
