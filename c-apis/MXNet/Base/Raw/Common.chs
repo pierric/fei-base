@@ -1,9 +1,10 @@
 module MXNet.Base.Raw.Common where
 
 import RIO
+import RIO.Partial (toEnum)
 import qualified RIO.Text as T
 import Data.Tuple.Ops (Unconsable, uncons)
-import Foreign.Marshal (alloca, peekArray, withArray)
+import Foreign.Marshal (alloca, peekArray, withArray, with)
 import Foreign.Storable (Storable(..))
 import Foreign.C.Types
 import Foreign.C.String (CString, peekCString, withCString)
@@ -70,6 +71,9 @@ withCStringArrayT strs act = go strs []
   where
     go [] all = withArray (reverse all) act
     go (s:ss) all = withCStringT s (go ss . (:all))
+
+alloc0 :: (Num a, Storable a) => (Ptr a -> IO b) -> IO b
+alloc0 = with 0
 
 #include <mxnet/c_api.h>
 #include <nnvm/c_api.h>
@@ -279,3 +283,19 @@ fun MXStorageEmptyCache as mxStorageEmptyCache_
 
 mxStorageEmptyCache :: Int -> Int -> IO ()
 mxStorageEmptyCache devtype devid = checked $ mxStorageEmptyCache_ (fromIntegral devtype) (fromIntegral devid)
+
+{#
+fun MXSetIsNumpyShape as mxSetIsNumpyShape_
+{
+    `CInt',
+    alloca- `CInt' peek*
+} -> `CInt'
+#}
+
+data NumpyShapeSemantic = NpyShapeOff | NpyShapeTL | NpyShapeGL
+    deriving Enum
+
+mxSetIsNumpyShape :: NumpyShapeSemantic -> IO NumpyShapeSemantic
+mxSetIsNumpyShape flag = do
+    ret <- checked $ mxSetIsNumpyShape_ $ fromIntegral $ fromEnum flag
+    return $ toEnum $ fromIntegral ret

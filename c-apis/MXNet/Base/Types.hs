@@ -63,3 +63,11 @@ contextGPU0 = Context 2 0
 
 class ForeignData a where
     touch :: a -> IO ()
+
+type Shape = [Int]
+
+data ReqType = ReqNull
+    | ReqWrite
+    | ReqInplace
+    | ReqAdd
+    deriving (Bounded, Enum, Show)
