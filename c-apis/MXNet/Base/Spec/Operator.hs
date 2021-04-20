@@ -1,46 +1,51 @@
-{-# LANGUAGE ConstraintKinds       #-}
-{-# LANGUAGE DataKinds             #-}
-{-# LANGUAGE FlexibleInstances     #-}
-{-# LANGUAGE GADTs                 #-}
-{-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE OverloadedLabels      #-}
-{-# LANGUAGE PartialTypeSignatures #-}
-{-# LANGUAGE PolyKinds             #-}
-{-# LANGUAGE ScopedTypeVariables   #-}
-{-# LANGUAGE TypeFamilies          #-}
-{-# LANGUAGE TypeOperators         #-}
-{-# LANGUAGE UndecidableInstances  #-}
+{-# LANGUAGE AllowAmbiguousTypes    #-}
+{-# LANGUAGE ConstraintKinds        #-}
+{-# LANGUAGE DataKinds              #-}
+{-# LANGUAGE FlexibleInstances      #-}
+{-# LANGUAGE GADTs                  #-}
+{-# LANGUAGE MultiParamTypeClasses  #-}
+{-# LANGUAGE OverloadedLabels       #-}
+{-# LANGUAGE PartialTypeSignatures  #-}
+{-# LANGUAGE PolyKinds              #-}
+{-# LANGUAGE ScopedTypeVariables    #-}
+{-# LANGUAGE TypeApplications       #-}
+{-# LANGUAGE TypeFamilies           #-}
+{-# LANGUAGE TypeFamilyDependencies #-}
+{-# LANGUAGE TypeOperators          #-}
+{-# LANGUAGE UndecidableInstances   #-}
 module MXNet.Base.Spec.Operator where
 
 import           Data.Constraint
 import           Data.Proxy
+import           Data.Typeable        (eqT, (:~:) (..))
 import           GHC.Exts             (Constraint)
 import           GHC.OverloadedLabels
 import           GHC.TypeLits
-import           MXNet.Base.Spec.HMap
 import           RIO                  hiding (Text)
 import           RIO.List             (intersperse)
 import qualified RIO.Text             as RT
+import           Type.Set
+import           Unsafe.Coerce        (unsafeCoerce)
+
+import           MXNet.Base.Spec.HMap
+import           MXNet.Base.Types
 
 instance a ~ b => IsLabel a (Proxy b) where
   fromLabel = Proxy
 
 data EnumType (e :: [Symbol]) where
-  EnumType :: (KnownSymbol v, HasEnum v e) => Proxy v -> EnumType e
-
-type family HasEnum v e :: Constraint where
-  HasEnum v e = IfThenElse (HasElement v e) (() :: Constraint) (TypeError (Text "\"" :<>: Text v :<>: Text "\" is not a valid value for the enum: [" :<>: FormatEnum e :<>: Text "]"))
+  EnumType :: (KnownSymbol v, InEnum v (SetFromList e)) => Proxy v -> EnumType e
 
 type family FormatEnum (l :: [Symbol]) :: ErrorMessage where
   FormatEnum (s ': m ': n) = Text s :<>: Text ", " :<>: FormatEnum (m ': n)
   FormatEnum (s ': '[]) = Text s
   FormatEnum ('[]) = Text ""
 
-instance (KnownSymbol v, HasEnum v e) => IsLabel v (EnumType e) where
+instance (KnownSymbol v, InEnum v (SetFromList e)) => IsLabel v (EnumType e) where
     fromLabel = EnumType (Proxy :: Proxy v)
 
 ----
-type family ParameterList (s :: Symbol) (t :: *) :: [(Symbol, Attr)]
+type family ParameterList (s :: Symbol) (t :: kind) :: [(Symbol, Attr)]
 
 data Attr where
   AttrReq :: (a :: *) -> Attr
@@ -50,19 +55,19 @@ type family ParameterType (a :: Attr) :: * where
   ParameterType (AttrReq a) = a
   ParameterType (AttrOpt a) = a
 
-type family ResolveParameter (s :: Symbol) (t :: *) (k :: Symbol) :: Attr where
+type family ResolveParameter (s :: Symbol) (t :: kind) (k :: Symbol) :: Attr where
   ResolveParameter s t k = FindKey k (ParameterList s t) (Text "Parameter '" :<>:
                               Text k :<>:
                               Text " not found")
 
-type family FindKey (s :: Symbol) (l :: [(Symbol, k)]) (e :: ErrorMessage) :: k where
+type family FindKey (s :: Symbol) (l :: [(Symbol, kind)]) (e :: ErrorMessage) :: kind where
   FindKey s ('(s,i) ': _) _ = i
   FindKey s ('(z,_) ': n) e = FindKey s n e
   FindKey s '[] e = TypeError e
 
 ----
 
-data ArgOf s t k v where
+data ArgOf s (t :: kind) k v where
   (:=) :: (info ~ ResolveParameter s t k) => Proxy k -> ParameterType info -> ArgOf s t k (ParameterType info)
   -- | (:≅) is an alternative of (:=) that bypasses the type check
   (:≅) :: Proxy k -> a -> ArgOf s t k a
@@ -84,7 +89,7 @@ infix 1 :=, :≅
   => ArgsHMap s t kvs -> Proxy k -> Maybe v
 (!?) = query
 
-type ArgsHMap s t kvs = HMap (ArgOf s t) kvs
+type ArgsHMap s (t :: kind) kvs = HMap (ArgOf s t) kvs
 ----
 class Value a where
   showValue :: a -> RT.Text
@@ -141,23 +146,23 @@ instance (Dump (ArgsHMap s t kvs), KnownSymbol k, Value v) => Dump (ArgsHMap s t
   dump (Cons (k :≅ v) kvs) = (RT.pack $ symbolVal k, showValue v) : dump kvs
 
 ----
-type family Subset (s1 :: [(Symbol, *)]) (s2 :: [(Symbol, *)]) :: Constraint where
-  Subset '[] _ = ()
-  Subset ('(a, t) ': s1) s2 = ( IfThenElse (HasElement '(a,t) s2)
+type family KvSubset (s1 :: [(Symbol, *)]) (s2 :: [(Symbol, *)]) :: Constraint where
+  KvSubset '[] _ = ()
+  KvSubset ('(a, t) ': s1) s2 = ( IfThenElse (HasElement '(a,t) s2)
                                   (() :: Constraint)
                                   (TypeError (Text "Argument '" :<>: Text a :<>: Text "' is required."))
-                              , Subset s1 s2)
-  Subset a b = TypeError (Text "xx")
+                              , KvSubset s1 s2)
+  KvSubset a b = TypeError (Text "xx")
 
 type family AsKVs (a :: [*]) :: [(Symbol, *)] where
   AsKVs (ArgOf s t k v ': args) = '(k, v) ': AsKVs args
   AsKVs '[] = '[]
 
-type family GenAccess s t kvs (req :: [(Symbol, *)]) :: Constraint where
+type family GenAccess s (t :: kind) kvs (req :: [(Symbol, *)]) :: Constraint where
   GenAccess s t kvs '[] = ()
   GenAccess s t kvs ('(k, v) ': req) = (Access (MatchHead (ArgOf s t) k v kvs) (ArgOf s t) k v kvs, GenAccess s t kvs req)
 
-type family GenQuery  s t kvs (req :: [(Symbol, *)]) :: Constraint where
+type family GenQuery  s (t :: kind) kvs (req :: [(Symbol, *)]) :: Constraint where
   GenQuery  s t kvs '[]  = ()
   GenQuery  s t kvs ('(k, v) ': req) = (Query  (MatchHead (ArgOf s t) k v kvs) (ArgOf s t) k v kvs, GenQuery  s t kvs req)
 
@@ -173,8 +178,8 @@ type family AllArgs (pl :: [(k, Attr)]) :: [(k, *)] where
   AllArgs ('(s, AttrReq t) ': pl) = '(s,t) ': AllArgs pl
   AllArgs ('(s, AttrOpt t) ': pl) = '(s,t) ': AllArgs pl
 
-type family Fullfilled (s :: Symbol) t (args :: [*]) :: Constraint where
-  Fullfilled s t args = ( Subset ( FilterRequired (ParameterList s t)) (AsKVs args)
+type family Fullfilled (s :: Symbol) (t :: kind) (args :: [*]) :: Constraint where
+  Fullfilled s t args = ( KvSubset ( FilterRequired (ParameterList s t)) (AsKVs args)
                         , GenAccess s t args (FilterRequired (ParameterList s t))
                         , GenQuery  s t args (AllArgs (ParameterList s t)))
 
@@ -220,16 +225,17 @@ type family WithoutArgs (s :: Symbol) t (args :: [*]) (k :: [Symbol]) :: Constra
   WithoutArgs s t args '[] = ()
   WithoutArgs s t args (k0 ': ks) = (WithoutArgsGen (ArgOf s t) (ParameterType (ResolveParameter s t k0)) k0 args, WithoutArgs s t args ks)
 ----
-type family HasElement (s :: k) (l :: [k]) :: Bool where
+type family HasElement (s :: kind) (l :: [kind]) :: Bool where
   HasElement s (s ': _) = True
   HasElement s (z ': n) = HasElement s n
   HasElement s '[] = False
 
-type family IfThenElse (b :: Bool) (t :: k) (f :: k) :: k where
+type family IfThenElse (b :: Bool) (t :: kind) (f :: kind) :: kind where
   IfThenElse True  t f = t
   IfThenElse False t f = f
 
 -------------------------------------
+{-
 
 type instance ParameterList "fn" t = [
   '("a", AttrReq Int),
@@ -264,3 +270,4 @@ fn3 args = fn1 (#a := 3 .& args)
 
 fn4 :: (HasArgs "fn" t args '["c", "b", "d"], WithoutArgs "fn" t args '["a"]) => ArgsHMap "fn" t args -> _
 fn4 args = fn1 (#a := 3 .& args)
+-}
