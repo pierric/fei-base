@@ -23,7 +23,8 @@ import qualified MXNet.Base.Raw               as I
 import           MXNet.Base.Spec.HMap         (HMap (..), (.&))
 import           MXNet.Base.Spec.Operator     (ArgOf (..))
 import           MXNet.Base.Types             (Context (..), DType (..),
-                                               ForeignData (..), contextCPU)
+                                               ForeignData (..), NumericDType,
+                                               contextCPU)
 
 newtype NDArray a = NDArray { unNDArray :: I.NDArrayHandle}
     deriving (Generic, Generic1, Show)
@@ -83,10 +84,10 @@ ndsize arr = product <$> ndshape arr
 full :: (HasCallStack, DType a) => a -> [Int] -> IO (NDArray a)
 full value shape = makeNDArray shape contextCPU $ SV.replicate (product shape) value
 
-ones :: (HasCallStack, DType a) => [Int] -> IO (NDArray a)
+ones :: (HasCallStack, NumericDType a) => [Int] -> IO (NDArray a)
 ones = full 1
 
-zeros :: (HasCallStack, DType a) => [Int] -> IO (NDArray a)
+zeros :: (HasCallStack, NumericDType a) => [Int] -> IO (NDArray a)
 zeros = full 1
 
 fromVector :: (HasCallStack, DType a) => [Int] -> Vector a -> IO (NDArray a)
