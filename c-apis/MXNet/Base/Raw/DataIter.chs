@@ -90,18 +90,6 @@ mxDataIterGetIterInfo dataitercreator = do
     arg_descs_ <- peekCStringArrayT num_args_ arg_descs
     return (name, descr, arg_names_, arg_type_infos_, arg_descs_)
 
-#if MXNet_MAJOR==1 && MXNet_MINOR<6
-{#
-fun MXDataIterCreateIter as mxDataIterCreateIter_
-    {
-        `DataIterCreator',
-        `MX_UINT',
-        withCStringArrayT* `[Text]',
-        withCStringArrayT* `[Text]',
-        alloca- `DataIterHandle' peekDataIterHandle*
-    } -> `CInt'
-#}
-#else
 {#
 fun MXDataIterCreateIter as mxDataIterCreateIter_
     {
@@ -112,7 +100,6 @@ fun MXDataIterCreateIter as mxDataIterCreateIter_
         alloca- `DataIterHandle' peekDataIterHandle*
     } -> `CInt'
 #}
-#endif
 
 mxDataIterCreateIter :: DataIterCreator -> [Text] -> [Text] -> IO DataIterHandle
 mxDataIterCreateIter dataitercreator keys vals = do

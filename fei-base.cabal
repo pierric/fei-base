@@ -23,6 +23,11 @@ Flag mxnet_geq_10700 {
   Default: False
 }
 
+Flag mxnet_geq_10800 {
+  Description: With MXNet 1.8.x operators
+  Default: False
+}
+
 Flag dummy {
   Description: no operators
   Default: True
@@ -43,6 +48,10 @@ library
       hs-source-dirs:  ops/1.7
       cpp-options:     -DMXNET_VERSION=10700
   }
+  elif flag(mxnet_geq_10800) {
+      hs-source-dirs:  ops/1.8
+      cpp-options:     -DMXNET_VERSION=10800
+  }
   elif flag(dummy) {
       hs-source-dirs:  ops/dummy
   }
@@ -58,7 +67,8 @@ library
                        vector,
                        attoparsec,
                        rio,
-                       store
+                       store,
+                       type-sets
   default-language:    Haskell2010
   build-tool-depends:  c2hs:c2hs
   default-extensions:  FlexibleContexts,

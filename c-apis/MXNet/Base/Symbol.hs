@@ -1,5 +1,4 @@
 {-# LANGUAGE PartialTypeSignatures #-}
-{-# LANGUAGE ViewPatterns          #-}
 module MXNet.Base.Symbol where
 
 import qualified Data.Vector.Mutable     as VM
@@ -19,7 +18,7 @@ import           Foreign.Ptr
 import           Foreign.Storable
 
 import qualified MXNet.Base.Raw          as I
-import           MXNet.Base.Types        (ForeignData (..))
+import           MXNet.Base.Types        (ForeignData (..), ReqType, Shape)
 
 newtype Symbol a = Symbol { unSymbol :: I.SymbolHandle }
 
@@ -32,33 +31,24 @@ data SymbolException = SymbolIndexOutOfBound Int Int
     deriving (Typeable, Show)
 instance Exception SymbolException
 
-data FShape = STensor
-    { _shape_nonempty :: NonEmpty Int
-    }
-    | SScalar
-    deriving Show
-
-shapeLength (STensor l) = length l
-shapeLength SScalar     = 0
-
-shapeToList (STensor l) = RNE.toList l
-shapeToList SScalar     = []
-
-shapeCons a (STensor s) = STensor $ a RNE.<| s
-shapeCons a SScalar     = STensor $ a RNE.:| []
+shapeLength = length
+shapeToList = id
+shapeCons = (:)
 
 class SymbolClass s where
     getName             :: (HasCallStack, MonadIO m) => s -> m (Maybe Text)
     listArguments       :: (HasCallStack, MonadIO m) => s -> m [Text]
     listOutputs         :: (HasCallStack, MonadIO m) => s -> m [Text]
     listAuxiliaryStates :: (HasCallStack, MonadIO m) => s -> m [Text]
+    listAttrs           :: (HasCallStack, MonadIO m)
+                        => s -> m (HashMap Text (HashMap Text Text))
     numOutputs          :: (HasCallStack, MonadIO m) => s -> m Int
     at                  :: (HasCallStack, MonadIO m) => s -> Int -> m s
     group               :: (HasCallStack, MonadIO m) => [s] -> m s
     internals           :: (HasCallStack, MonadIO m) => s -> m s
     inferShape          :: (HasCallStack, MonadIO m)
-                        => s -> [(Text, FShape)]
-                        -> m ([(Text, FShape)], [(Text, FShape)], [(Text, FShape)], Bool)
+                        => s -> [(Text, Shape)]
+                        -> m ([(Text, Shape)], [(Text, Shape)], [(Text, Shape)], Bool)
 
     at'                 :: (HasCallStack, MonadIO m) => s -> Text -> m s
     at' sym name = do
@@ -66,12 +56,14 @@ class SymbolClass s where
         case V.findIndex (== name) $ V.fromList all_names of
             Just idx -> at sym idx
             Nothing  -> throwIO (SymbolNameNotFound name)
+    setAttr :: (HasCallStack, MonadIO m) => s -> Text -> Text -> m ()
 
 instance SymbolClass I.SymbolHandle where
     getName = liftIO . I.mxSymbolGetName
     listArguments       = liftIO . I.mxSymbolListArguments
     listOutputs         = liftIO . I.mxSymbolListOutputs
     listAuxiliaryStates = liftIO . I.mxSymbolListAuxiliaryStates
+    listAttrs           = liftIO . I.mxSymbolListAttr
     numOutputs          = liftIO . I.mxSymbolGetNumOutputs
     at sym index = liftIO $ do
         max <- numOutputs sym
@@ -92,20 +84,22 @@ instance SymbolClass I.SymbolHandle where
         auxs <- listAuxiliaryStates sym
         return (pair inps inp_shp, pair outs out_shp, pair auxs aux_shp, complete)
       where
-        build name (RNE.nonEmpty -> Just s) = (name, STensor s)
-        build name _                        = (name, SScalar)
+        build name s      = (name, s)
         pair names shapes = zipWith build names shapes
+    setAttr s k v = liftIO $ I.mxSymbolSetAttr s k v
 
 instance SymbolClass (Symbol a) where
     getName             = getName . unSymbol
     listArguments       = listArguments . unSymbol
     listOutputs         = listOutputs . unSymbol
     listAuxiliaryStates = listAuxiliaryStates . unSymbol
+    listAttrs           = listAttrs . unSymbol
     numOutputs          = numOutputs . unSymbol
     at (Symbol s)       = (Symbol <$>) . at s
     group = (Symbol <$>) . group . map unSymbol
     internals           = (Symbol <$>) . internals . unSymbol
     inferShape          = inferShape  . unSymbol
+    setAttr s k v       = setAttr (unSymbol s) k v
 
 listInternals :: (SymbolClass sym, MonadIO m) => sym -> m [Text]
 listInternals sym = internals sym >>= listOutputs
@@ -119,7 +113,7 @@ getInternalByName sym name = liftIO $ handle on_exc $ do
       on_exc :: SymbolException -> IO (Maybe a)
       on_exc _ = return Nothing
 
-inferOutputShape :: (SymbolClass sym, MonadIO m) => sym  -> [(Text, FShape)] -> m FShape
+inferOutputShape :: (SymbolClass sym, MonadIO m) => sym  -> [(Text, Shape)] -> m Shape
 inferOutputShape sym input_shapes = do
     (_, out, _, _) <- inferShape sym input_shapes
     case out of
@@ -166,7 +160,7 @@ class CustomOperation (Operation prop) => CustomOperationProp prop where
     -- infer the shape.
     -- params: shapes of each inputs
     -- return: shapes of inputs, outputs, auxiliary states
-    prop_infer_shape :: prop -> [FShape] -> ([FShape], [FShape], [FShape])
+    prop_infer_shape :: prop -> [Shape] -> ([Shape], [Shape], [Shape])
     -- declare the dependency of symbols
     -- params: unique indices of inputs, outputs, auxiliary states
     -- return: dependant indices.
@@ -204,25 +198,19 @@ class CustomOperation (Operation prop) => CustomOperationProp prop where
     prop_create_operator :: prop -> [[Int]] -> [MXDType] -> IO (Operation prop)
 
 class CustomOperation op where
-    forward  :: op -> [ReqEnum]
+    forward  :: op -> [ReqType]
              -> [I.NDArrayHandle]
              -> [I.NDArrayHandle]
              -> [I.NDArrayHandle]
              -> Bool
              -> IO ()
-    backward :: op -> [ReqEnum]
+    backward :: op -> [ReqType]
              -> [I.NDArrayHandle]
              -> [I.NDArrayHandle]
              -> [I.NDArrayHandle]
              -> [I.NDArrayHandle]
              -> [I.NDArrayHandle]
              -> IO ()
-
-data ReqEnum = ReqNull
-    | ReqWrite
-    | ReqInplace
-    | ReqAdd
-    deriving (Bounded, Enum)
 
 registerCustomOperator :: CustomOperationProp op => (Text, [(Text, Text)] -> IO op) -> IO ()
 registerCustomOperator (op_type, op_ctor) = do
@@ -310,9 +298,7 @@ registerCustomOperator (op_type, op_ctor) = do
         -- read each shape of each input
         inp_shape_0 <- zipWithM (\i j -> do ptr <- peekElemOff in_out_shapes_tensor i
                                             arr <- peekArray j ptr
-                                            case RNE.map fromIntegral <$> RNE.nonEmpty arr of
-                                                Nothing  -> return SScalar
-                                                Just shp -> return $ STensor shp)
+                                            return $ map fromIntegral arr)
                                 [0..] (map fromIntegral inp_dim_0)
 
         let (inp_shape, out_shape, aux_shape) = prop_infer_shape prop inp_shape_0
@@ -440,7 +426,7 @@ registerCustomOperator (op_type, op_ctor) = do
             out_data = tensors ! 1
             aux      = tensors ! 4
 
-        reqs <- map (toEnum . fromIntegral) <$> peekArray (length out_data) reqs :: IO [ReqEnum]
+        reqs <- map (toEnum . fromIntegral) <$> peekArray (length out_data) reqs :: IO [ReqType]
         forward op reqs in_data out_data aux (is_train == 1)
         return 1
 

@@ -1,11 +1,12 @@
 module MXNet.Base.Operators.Tensor where
-import RIO
-import RIO.List
-import MXNet.Base.Raw
-import MXNet.Base.Spec.Operator
-import MXNet.Base.Spec.HMap
-import MXNet.Base.Tensor.Class
-import Data.Maybe (catMaybes, fromMaybe)
+import           Data.Maybe               (catMaybes, fromMaybe)
+import           MXNet.Base.Raw
+import           MXNet.Base.Spec.HMap
+import           MXNet.Base.Spec.Operator
+import           MXNet.Base.Tensor.Class
+import           MXNet.Base.Types         (DType)
+import           RIO
+import           RIO.List
 
 type instance ParameterList "_Activation" t =
      '[ '("act_type",
@@ -161,18 +162,18 @@ _CTCLoss args
                ("label_lengths",) <$> (args !? #label_lengths :: Maybe t)]
       in apply "CTCLoss" scalarArgs (Left (tensorKeyArgs :: [(Text, t)]))
 
-type instance ParameterList "_Cast" t =
+type instance ParameterList "_Cast" '(t, u) =
      '[ '("dtype",
           AttrReq
             (EnumType
                '["bfloat16", "bool", "float16", "float32", "float64", "int32",
                  "int64", "int8", "uint8"])),
-        '("data", AttrOpt t)]
+        '("data", AttrOpt (t u))]
 
 _Cast ::
-      forall a t o .
-        (TensorOp t o, Fullfilled "_Cast" t a, HasCallStack) =>
-        ArgsHMap "_Cast" t a -> TensorApply o
+      forall a t u v .
+        (Tensor t, DType u, DType v, Fullfilled "_Cast" '(t, u) a, HasCallStack) =>
+        ArgsHMap "_Cast" '(t, u) a -> TensorApply (t v)
 _Cast args
   = let scalarArgs
           = catMaybes
@@ -183,8 +184,8 @@ _Cast args
                          '["bfloat16", "bool", "float16", "float32", "float64", "int32",
                            "int64", "int8", "uint8"]))]
         tensorKeyArgs
-          = catMaybes [("data",) <$> (args !? #data :: Maybe t)]
-      in apply "Cast" scalarArgs (Left (tensorKeyArgs :: [(Text, t)]))
+          = catMaybes [("data",) . toRaw <$> (args !? #data :: Maybe (t u))]
+      in applyRaw "Cast" scalarArgs (Left (tensorKeyArgs :: [(Text, RawTensor t)]))
 
 type instance ParameterList "_Concat" t =
      '[ '("num_args", AttrReq Int), '("dim", AttrOpt Int),
@@ -2864,6 +2865,23 @@ __backward_contrib_AdaptiveAvgPooling2D args
         tensorKeyArgs = catMaybes []
       in
       apply "_backward_contrib_AdaptiveAvgPooling2D" scalarArgs
+        (Left (tensorKeyArgs :: [(Text, t)]))
+
+type instance
+     ParameterList "__backward_contrib_BatchNormWithReLU" t = '[]
+
+__backward_contrib_BatchNormWithReLU ::
+                                     forall a t .
+                                       (TensorOp t t,
+                                        Fullfilled "__backward_contrib_BatchNormWithReLU" t a,
+                                        HasCallStack) =>
+                                       ArgsHMap "__backward_contrib_BatchNormWithReLU" t a ->
+                                         TensorApply t
+__backward_contrib_BatchNormWithReLU args
+  = let scalarArgs = catMaybes []
+        tensorKeyArgs = catMaybes []
+      in
+      apply "_backward_contrib_BatchNormWithReLU" scalarArgs
         (Left (tensorKeyArgs :: [(Text, t)]))
 
 type instance ParameterList "__backward_contrib_BilinearResize2D" t
@@ -5590,6 +5608,48 @@ __contrib_AdaptiveAvgPooling2D args
       apply "_contrib_AdaptiveAvgPooling2D" scalarArgs
         (Left (tensorKeyArgs :: [(Text, t)]))
 
+type instance ParameterList "__contrib_BatchNormWithReLU" t =
+     '[ '("eps", AttrOpt Double), '("momentum", AttrOpt Float),
+        '("fix_gamma", AttrOpt Bool), '("use_global_stats", AttrOpt Bool),
+        '("output_mean_var", AttrOpt Bool), '("axis", AttrOpt Int),
+        '("cudnn_off", AttrOpt Bool),
+        '("min_calib_range", AttrOpt (Maybe Float)),
+        '("max_calib_range", AttrOpt (Maybe Float)), '("data", AttrOpt t),
+        '("gamma", AttrOpt t), '("beta", AttrOpt t),
+        '("moving_mean", AttrOpt t), '("moving_var", AttrOpt t)]
+
+__contrib_BatchNormWithReLU ::
+                            forall a t .
+                              (TensorOp t t, Fullfilled "__contrib_BatchNormWithReLU" t a,
+                               HasCallStack) =>
+                              ArgsHMap "__contrib_BatchNormWithReLU" t a -> TensorApply t
+__contrib_BatchNormWithReLU args
+  = let scalarArgs
+          = catMaybes
+              [("eps",) . showValue <$> (args !? #eps :: Maybe Double),
+               ("momentum",) . showValue <$> (args !? #momentum :: Maybe Float),
+               ("fix_gamma",) . showValue <$> (args !? #fix_gamma :: Maybe Bool),
+               ("use_global_stats",) . showValue <$>
+                 (args !? #use_global_stats :: Maybe Bool),
+               ("output_mean_var",) . showValue <$>
+                 (args !? #output_mean_var :: Maybe Bool),
+               ("axis",) . showValue <$> (args !? #axis :: Maybe Int),
+               ("cudnn_off",) . showValue <$> (args !? #cudnn_off :: Maybe Bool),
+               ("min_calib_range",) . showValue <$>
+                 (args !? #min_calib_range :: Maybe (Maybe Float)),
+               ("max_calib_range",) . showValue <$>
+                 (args !? #max_calib_range :: Maybe (Maybe Float))]
+        tensorKeyArgs
+          = catMaybes
+              [("data",) <$> (args !? #data :: Maybe t),
+               ("gamma",) <$> (args !? #gamma :: Maybe t),
+               ("beta",) <$> (args !? #beta :: Maybe t),
+               ("moving_mean",) <$> (args !? #moving_mean :: Maybe t),
+               ("moving_var",) <$> (args !? #moving_var :: Maybe t)]
+      in
+      apply "_contrib_BatchNormWithReLU" scalarArgs
+        (Left (tensorKeyArgs :: [(Text, t)]))
+
 type instance ParameterList "__contrib_BilinearResize2D" t =
      '[ '("height", AttrOpt Int), '("width", AttrOpt Int),
         '("scale_height", AttrOpt (Maybe Float)),
@@ -6753,6 +6813,113 @@ __contrib_interleaved_matmul_selfatt_valatt args
                ("attention",) <$> (args !? #attention :: Maybe t)]
       in
       apply "_contrib_interleaved_matmul_selfatt_valatt" scalarArgs
+        (Left (tensorKeyArgs :: [(Text, t)]))
+
+type instance ParameterList "__contrib_intgemm_fully_connected" t =
+     '[ '("num_hidden", AttrReq Int), '("no_bias", AttrOpt Bool),
+        '("flatten", AttrOpt Bool),
+        '("out_type", AttrOpt (EnumType '["float32", "int32"])),
+        '("data", AttrOpt t), '("weight", AttrOpt t),
+        '("scaling", AttrOpt t), '("bias", AttrOpt t)]
+
+__contrib_intgemm_fully_connected ::
+                                  forall a t .
+                                    (TensorOp t t,
+                                     Fullfilled "__contrib_intgemm_fully_connected" t a,
+                                     HasCallStack) =>
+                                    ArgsHMap "__contrib_intgemm_fully_connected" t a ->
+                                      TensorApply t
+__contrib_intgemm_fully_connected args
+  = let scalarArgs
+          = catMaybes
+              [("num_hidden",) . showValue <$>
+                 (args !? #num_hidden :: Maybe Int),
+               ("no_bias",) . showValue <$> (args !? #no_bias :: Maybe Bool),
+               ("flatten",) . showValue <$> (args !? #flatten :: Maybe Bool),
+               ("out_type",) . showValue <$>
+                 (args !? #out_type :: Maybe (EnumType '["float32", "int32"]))]
+        tensorKeyArgs
+          = catMaybes
+              [("data",) <$> (args !? #data :: Maybe t),
+               ("weight",) <$> (args !? #weight :: Maybe t),
+               ("scaling",) <$> (args !? #scaling :: Maybe t),
+               ("bias",) <$> (args !? #bias :: Maybe t)]
+      in
+      apply "_contrib_intgemm_fully_connected" scalarArgs
+        (Left (tensorKeyArgs :: [(Text, t)]))
+
+type instance ParameterList "__contrib_intgemm_maxabsolute" t =
+     '[ '("data", AttrOpt t)]
+
+__contrib_intgemm_maxabsolute ::
+                              forall a t .
+                                (TensorOp t t, Fullfilled "__contrib_intgemm_maxabsolute" t a,
+                                 HasCallStack) =>
+                                ArgsHMap "__contrib_intgemm_maxabsolute" t a -> TensorApply t
+__contrib_intgemm_maxabsolute args
+  = let scalarArgs = catMaybes []
+        tensorKeyArgs
+          = catMaybes [("data",) <$> (args !? #data :: Maybe t)]
+      in
+      apply "_contrib_intgemm_maxabsolute" scalarArgs
+        (Left (tensorKeyArgs :: [(Text, t)]))
+
+type instance ParameterList "__contrib_intgemm_prepare_data" t =
+     '[ '("data", AttrOpt t), '("maxabs", AttrOpt t)]
+
+__contrib_intgemm_prepare_data ::
+                               forall a t .
+                                 (TensorOp t t, Fullfilled "__contrib_intgemm_prepare_data" t a,
+                                  HasCallStack) =>
+                                 ArgsHMap "__contrib_intgemm_prepare_data" t a -> TensorApply t
+__contrib_intgemm_prepare_data args
+  = let scalarArgs = catMaybes []
+        tensorKeyArgs
+          = catMaybes
+              [("data",) <$> (args !? #data :: Maybe t),
+               ("maxabs",) <$> (args !? #maxabs :: Maybe t)]
+      in
+      apply "_contrib_intgemm_prepare_data" scalarArgs
+        (Left (tensorKeyArgs :: [(Text, t)]))
+
+type instance ParameterList "__contrib_intgemm_prepare_weight" t =
+     '[ '("already_quantized", AttrOpt Bool), '("weight", AttrOpt t),
+        '("maxabs", AttrOpt t)]
+
+__contrib_intgemm_prepare_weight ::
+                                 forall a t .
+                                   (TensorOp t t, Fullfilled "__contrib_intgemm_prepare_weight" t a,
+                                    HasCallStack) =>
+                                   ArgsHMap "__contrib_intgemm_prepare_weight" t a -> TensorApply t
+__contrib_intgemm_prepare_weight args
+  = let scalarArgs
+          = catMaybes
+              [("already_quantized",) . showValue <$>
+                 (args !? #already_quantized :: Maybe Bool)]
+        tensorKeyArgs
+          = catMaybes
+              [("weight",) <$> (args !? #weight :: Maybe t),
+               ("maxabs",) <$> (args !? #maxabs :: Maybe t)]
+      in
+      apply "_contrib_intgemm_prepare_weight" scalarArgs
+        (Left (tensorKeyArgs :: [(Text, t)]))
+
+type instance ParameterList "__contrib_intgemm_take_weight" t =
+     '[ '("weight", AttrOpt t), '("indices", AttrOpt t)]
+
+__contrib_intgemm_take_weight ::
+                              forall a t .
+                                (TensorOp t t, Fullfilled "__contrib_intgemm_take_weight" t a,
+                                 HasCallStack) =>
+                                ArgsHMap "__contrib_intgemm_take_weight" t a -> TensorApply t
+__contrib_intgemm_take_weight args
+  = let scalarArgs = catMaybes []
+        tensorKeyArgs
+          = catMaybes
+              [("weight",) <$> (args !? #weight :: Maybe t),
+               ("indices",) <$> (args !? #indices :: Maybe t)]
+      in
+      apply "_contrib_intgemm_take_weight" scalarArgs
         (Left (tensorKeyArgs :: [(Text, t)]))
 
 type instance ParameterList "__contrib_mrcnn_mask_target" t =
@@ -10187,9 +10354,10 @@ type instance ParameterList "__npi_equal" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 __npi_equal ::
-            forall a t .
-              (TensorOp t t, Fullfilled "__npi_equal" t a, HasCallStack) =>
-              ArgsHMap "__npi_equal" t a -> TensorApply t
+            forall a t o .
+              (TensorOp t (TensorWithDType t Bool), Fullfilled "__npi_equal" t a,
+               HasCallStack) =>
+              ArgsHMap "__npi_equal" t a -> TensorApply (TensorWithDType t Bool)
 __npi_equal args
   = let scalarArgs = catMaybes []
         tensorKeyArgs
@@ -10204,10 +10372,11 @@ type instance ParameterList "__npi_equal_scalar" t =
         '("data", AttrOpt t)]
 
 __npi_equal_scalar ::
-                   forall a t .
-                     (TensorOp t t, Fullfilled "__npi_equal_scalar" t a,
-                      HasCallStack) =>
-                     ArgsHMap "__npi_equal_scalar" t a -> TensorApply t
+                   forall a t o .
+                     (TensorOp t (TensorWithDType t Bool),
+                      Fullfilled "__npi_equal_scalar" t a, HasCallStack) =>
+                     ArgsHMap "__npi_equal_scalar" t a ->
+                       TensorApply (TensorWithDType t Bool)
 __npi_equal_scalar args
   = let scalarArgs
           = catMaybes
@@ -10370,9 +10539,11 @@ type instance ParameterList "__npi_greater" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 __npi_greater ::
-              forall a t .
-                (TensorOp t t, Fullfilled "__npi_greater" t a, HasCallStack) =>
-                ArgsHMap "__npi_greater" t a -> TensorApply t
+              forall a t o .
+                (TensorOp t (TensorWithDType t Bool),
+                 Fullfilled "__npi_greater" t a, HasCallStack) =>
+                ArgsHMap "__npi_greater" t a ->
+                  TensorApply (TensorWithDType t Bool)
 __npi_greater args
   = let scalarArgs = catMaybes []
         tensorKeyArgs
@@ -10387,10 +10558,11 @@ type instance ParameterList "__npi_greater_equal" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 __npi_greater_equal ::
-                    forall a t .
-                      (TensorOp t t, Fullfilled "__npi_greater_equal" t a,
-                       HasCallStack) =>
-                      ArgsHMap "__npi_greater_equal" t a -> TensorApply t
+                    forall a t o .
+                      (TensorOp t (TensorWithDType t Bool),
+                       Fullfilled "__npi_greater_equal" t a, HasCallStack) =>
+                      ArgsHMap "__npi_greater_equal" t a ->
+                        TensorApply (TensorWithDType t Bool)
 __npi_greater_equal args
   = let scalarArgs = catMaybes []
         tensorKeyArgs
@@ -10406,10 +10578,11 @@ type instance ParameterList "__npi_greater_equal_scalar" t =
         '("data", AttrOpt t)]
 
 __npi_greater_equal_scalar ::
-                           forall a t .
-                             (TensorOp t t, Fullfilled "__npi_greater_equal_scalar" t a,
-                              HasCallStack) =>
-                             ArgsHMap "__npi_greater_equal_scalar" t a -> TensorApply t
+                           forall a t o .
+                             (TensorOp t (TensorWithDType t Bool),
+                              Fullfilled "__npi_greater_equal_scalar" t a, HasCallStack) =>
+                             ArgsHMap "__npi_greater_equal_scalar" t a ->
+                               TensorApply (TensorWithDType t Bool)
 __npi_greater_equal_scalar args
   = let scalarArgs
           = catMaybes
@@ -10426,10 +10599,11 @@ type instance ParameterList "__npi_greater_scalar" t =
         '("data", AttrOpt t)]
 
 __npi_greater_scalar ::
-                     forall a t .
-                       (TensorOp t t, Fullfilled "__npi_greater_scalar" t a,
-                        HasCallStack) =>
-                       ArgsHMap "__npi_greater_scalar" t a -> TensorApply t
+                     forall a t o .
+                       (TensorOp t (TensorWithDType t Bool),
+                        Fullfilled "__npi_greater_scalar" t a, HasCallStack) =>
+                       ArgsHMap "__npi_greater_scalar" t a ->
+                         TensorApply (TensorWithDType t Bool)
 __npi_greater_scalar args
   = let scalarArgs
           = catMaybes
@@ -10882,9 +11056,10 @@ type instance ParameterList "__npi_less" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 __npi_less ::
-           forall a t .
-             (TensorOp t t, Fullfilled "__npi_less" t a, HasCallStack) =>
-             ArgsHMap "__npi_less" t a -> TensorApply t
+           forall a t o .
+             (TensorOp t (TensorWithDType t Bool), Fullfilled "__npi_less" t a,
+              HasCallStack) =>
+             ArgsHMap "__npi_less" t a -> TensorApply (TensorWithDType t Bool)
 __npi_less args
   = let scalarArgs = catMaybes []
         tensorKeyArgs
@@ -10898,9 +11073,11 @@ type instance ParameterList "__npi_less_equal" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 __npi_less_equal ::
-                 forall a t .
-                   (TensorOp t t, Fullfilled "__npi_less_equal" t a, HasCallStack) =>
-                   ArgsHMap "__npi_less_equal" t a -> TensorApply t
+                 forall a t o .
+                   (TensorOp t (TensorWithDType t Bool),
+                    Fullfilled "__npi_less_equal" t a, HasCallStack) =>
+                   ArgsHMap "__npi_less_equal" t a ->
+                     TensorApply (TensorWithDType t Bool)
 __npi_less_equal args
   = let scalarArgs = catMaybes []
         tensorKeyArgs
@@ -10916,10 +11093,11 @@ type instance ParameterList "__npi_less_equal_scalar" t =
         '("data", AttrOpt t)]
 
 __npi_less_equal_scalar ::
-                        forall a t .
-                          (TensorOp t t, Fullfilled "__npi_less_equal_scalar" t a,
-                           HasCallStack) =>
-                          ArgsHMap "__npi_less_equal_scalar" t a -> TensorApply t
+                        forall a t o .
+                          (TensorOp t (TensorWithDType t Bool),
+                           Fullfilled "__npi_less_equal_scalar" t a, HasCallStack) =>
+                          ArgsHMap "__npi_less_equal_scalar" t a ->
+                            TensorApply (TensorWithDType t Bool)
 __npi_less_equal_scalar args
   = let scalarArgs
           = catMaybes
@@ -10936,9 +11114,11 @@ type instance ParameterList "__npi_less_scalar" t =
         '("data", AttrOpt t)]
 
 __npi_less_scalar ::
-                  forall a t .
-                    (TensorOp t t, Fullfilled "__npi_less_scalar" t a, HasCallStack) =>
-                    ArgsHMap "__npi_less_scalar" t a -> TensorApply t
+                  forall a t o .
+                    (TensorOp t (TensorWithDType t Bool),
+                     Fullfilled "__npi_less_scalar" t a, HasCallStack) =>
+                    ArgsHMap "__npi_less_scalar" t a ->
+                      TensorApply (TensorWithDType t Bool)
 __npi_less_scalar args
   = let scalarArgs
           = catMaybes
@@ -11326,9 +11506,11 @@ type instance ParameterList "__npi_not_equal" t =
      '[ '("lhs", AttrOpt t), '("rhs", AttrOpt t)]
 
 __npi_not_equal ::
-                forall a t .
-                  (TensorOp t t, Fullfilled "__npi_not_equal" t a, HasCallStack) =>
-                  ArgsHMap "__npi_not_equal" t a -> TensorApply t
+                forall a t o .
+                  (TensorOp t (TensorWithDType t Bool),
+                   Fullfilled "__npi_not_equal" t a, HasCallStack) =>
+                  ArgsHMap "__npi_not_equal" t a ->
+                    TensorApply (TensorWithDType t Bool)
 __npi_not_equal args
   = let scalarArgs = catMaybes []
         tensorKeyArgs
@@ -11344,10 +11526,11 @@ type instance ParameterList "__npi_not_equal_scalar" t =
         '("data", AttrOpt t)]
 
 __npi_not_equal_scalar ::
-                       forall a t .
-                         (TensorOp t t, Fullfilled "__npi_not_equal_scalar" t a,
-                          HasCallStack) =>
-                         ArgsHMap "__npi_not_equal_scalar" t a -> TensorApply t
+                       forall a t o .
+                         (TensorOp t (TensorWithDType t Bool),
+                          Fullfilled "__npi_not_equal_scalar" t a, HasCallStack) =>
+                         ArgsHMap "__npi_not_equal_scalar" t a ->
+                           TensorApply (TensorWithDType t Bool)
 __npi_not_equal_scalar args
   = let scalarArgs
           = catMaybes
@@ -12274,22 +12457,22 @@ __npi_weibull args
       apply "_npi_weibull" scalarArgs
         (Left (tensorKeyArgs :: [(Text, t)]))
 
-type instance ParameterList "__npi_where" t =
-     '[ '("condition", AttrOpt t), '("x", AttrOpt t), '("y", AttrOpt t)]
+type instance ParameterList "__npi_where" '(t, u) =
+     '[ '("condition", AttrOpt (t Bool)), '("x", AttrOpt (t u)), '("y", AttrOpt (t u))]
 
 __npi_where ::
-            forall a t .
-              (TensorOp t t, Fullfilled "__npi_where" t a, HasCallStack) =>
-              ArgsHMap "__npi_where" t a -> TensorApply t
+            forall a t u.
+              (Tensor t, DType u, Fullfilled "__npi_where" '(t, u) a, HasCallStack) =>
+              ArgsHMap "__npi_where" '(t, u) a -> TensorApply (t u)
 __npi_where args
   = let scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
-              [("condition",) <$> (args !? #condition :: Maybe t),
-               ("x",) <$> (args !? #x :: Maybe t),
-               ("y",) <$> (args !? #y :: Maybe t)]
+              [("condition",) . toRaw <$> (args !? #condition :: Maybe (t Bool)),
+               ("x",) . toRaw <$> (args !? #x :: Maybe (t u)),
+               ("y",) . toRaw <$> (args !? #y :: Maybe (t u))]
       in
-      apply "_npi_where" scalarArgs (Left (tensorKeyArgs :: [(Text, t)]))
+      applyRaw "_npi_where" scalarArgs (Left (tensorKeyArgs :: [(Text, RawTensor t)]))
 
 type instance ParameterList "__npi_where_lscalar" t =
      '[ '("scalar", AttrOpt Double), '("condition", AttrOpt t),

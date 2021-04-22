@@ -1,15 +1,18 @@
+{-# LANGUAGE LambdaCase #-}
 module Main where
 
 import           Prelude
-import           RIO                          (first, forM, on, zipWithM_, (<>))
+import           RIO                          (Text, first, forM, on, traceShow,
+                                               zipWithM_, (<>))
 import           RIO.Char                     (isAlphaNum, isSpace, isUpper,
                                                toLower)
 import           RIO.Directory
 import           RIO.FilePath                 (FilePath, (</>))
-import           RIO.List                     (sortBy)
+import           RIO.List                     (nub, sortBy)
 import qualified RIO.Text                     as T
 import           RIO.Writer                   (Writer, execWriter, tell)
 
+import           Data.Bifunctor               (bimap)
 import           Data.Tuple.Ops               (uncons)
 import           Language.Haskell.Exts
 import           Options.Applicative          hiding (optional)
@@ -60,11 +63,13 @@ main = do
                 , simpleImport "MXNet.Base.Spec.Operator"
                 , simpleImport "MXNet.Base.Spec.HMap"
                 , simpleImport "MXNet.Base.Tensor.Class"
+                , simpleImportVars "MXNet.Base.Types" ["DType"]
                 , simpleImportVars "Data.Maybe" ["catMaybes", "fromMaybe"]]
     modDataIter = Module () (Just $ ModuleHead () (ModuleName () "MXNet.Base.DataIter") Nothing Nothing) []
                   [ simpleImport "RIO"
                   , simpleImport "RIO.List"
                   , simpleImportVars "RIO.List.Partial" ["(!!)"]
+                  , simpleImportVars "MXNet.Base.Types" ["DType"]
                   , simpleImport "MXNet.Base.Raw"
                   , simpleImport "MXNet.Base.Spec.Operator"
                   , simpleImport "MXNet.Base.Spec.HMap"
@@ -74,47 +79,111 @@ getOpName :: AtomicSymbolCreator -> IO String
 getOpName = fmap T.unpack . mxSymbolGetAtomicSymbolName
 
 tensorVar = tyVarIdent "t"
-tensorVar2 = tyVarIdent "o"
 
-makeParamInst :: String -> [ResolvedType] -> Bool -> Decl ()
-makeParamInst symname typs symbolapi =
-    TypeInsDecl () (tyApp (tyApp (tyCon $ unQual $ name "ParameterList") (tyPromotedStr symname)) tensorVar)
+makeParamInst :: String -> [Type ()] -> [ResolvedType] -> Bool -> Decl ()
+makeParamInst symname dvars argtyps symbolapi =
+    TypeInsDecl () (tyApp (tyApp (tyCon $ unQual $ name "ParameterList") (tyPromotedStr symname)) pparm)
                    (tyPromotedList paramList)
-  where
-    paramList = map (\(name, typ1, typ2) -> tyPromotedTuple [tyPromotedStr name, tyApp typ1 typ2]) typs
+    where
+        tvar      = tyVarIdent "t"
+        pparm     = tyPromotedTuple $ case dvars of
+                      [] -> []
+                      _  -> tvar:dvars
+        paramList = map (\(name, typ1, typ2) -> tyPromotedTuple [tyPromotedStr name, tyApp typ1 typ2]) argtyps
 
 data GenFlag = GenSymbolOp
     | GenNDArrayReturn
     | GenNDArrayUpdate
 
-makeSignature :: String -> Type () -> Type () -> [Asst ()] -> Decl ()
-makeSignature symname ti to extra_constraints =
-    let cxfullfill = appA (name "Fullfilled") [tyPromotedStr symname, ti, tyVarIdent "a"]
-        cxtensor   = appA (name "TensorOp") [ti, to]
+makeSignature :: String -> [Type ()] -> Type () -> [Asst ()] -> Decl ()
+makeSignature symname din dout extra_constraints =
+    let dtype_vars = nub (gatherDtyVarsFromType dout ++ din)
+        hargs_var  = tyVarIdent "a"
+        tensor_var = tyVarIdent "t"
+        pparm      = tyPromotedTuple $ case din of
+                       [] -> []
+                       _  -> tensor_var:din
+        cxfullfill = appA (name "Fullfilled") [tyPromotedStr symname, pparm, hargs_var]
+        cxtensor   = appA (name "Tensor") [tensor_var]
+        cxdtype    = map (\v -> appA (name "DType") [v]) dtype_vars
         callstack  = appA (name "HasCallStack") []
-        cx_all = cxTuple (cxtensor : cxfullfill : callstack : extra_constraints)
-        fun = tyFun (let hmap = tyCon $ unQual $ name "ArgsHMap"
-                     in hmap `tyApp` tyPromotedStr symname
-                             `tyApp` ti
-                             `tyApp` tyVarIdent "a")
-                    ((tyCon $ unQual $ name "TensorApply") `tyApp ` to)
-        vars = map (unkindedVar . name) $ "a" : "t" : if ti == to then [] else ["o"]
+        cx_all     = cxTuple (cxtensor : cxfullfill : callstack : (cxdtype ++ extra_constraints))
+        in_type    = let hmap = tyCon $ unQual $ name "ArgsHMap"
+                      in hmap `tyApp` tyPromotedStr symname
+                             `tyApp` pparm
+                             `tyApp` hargs_var
+        out_type   = (tyCon $ unQual $ name "TensorApply") `tyApp` dout
+        fun        = tyFun in_type out_type
+        dtype_var_names = map (\case {TyVar () (Ident () n) -> n}) dtype_vars
+        vars       = map (unkindedVar . name) $ "a" : "t" : dtype_var_names
     in tySig [name symname] $ tyForall vars cx_all fun
+
+patchOutputTensor :: String -> [Type ()] -> Type ()
+patchOutputTensor symname input_dtype_var
+  | symname == "Cast" = tensor_var `tyApp` tyVarIdent "v"
+  | symname `elem` npi_boolean_ops = tensor_var `tyApp` (tyCon $ unQual $ name "Bool")
+  | symname `elem` npi_argminmax   = tensor_var `tyApp` (tyCon $ unQual $ name "Int64")
+  | otherwise = case input_dtype_var of
+                  []  -> tensor_var `tyApp` tyVarIdent "u"
+                  [a] -> tensor_var `tyApp` a
+                  _   -> error ("multiple input dtypes " ++ show input_dtype_var)
+    where
+        tensor_var = tyVarIdent "t"
+        npi_boolean_ops = [ "_npi_equal"
+                          , "_npi_not_equal"
+                          , "_npi_greater"
+                          , "_npi_less"
+                          , "_npi_greater_equal"
+                          , "_npi_less_equal"
+                          , "_npi_equal_scalar"
+                          , "_npi_not_equal_scalar"
+                          , "_npi_greater_scalar"
+                          , "_npi_less_scalar"
+                          , "_npi_greater_equal_scalar"
+                          , "_npi_less_equal_scalar"
+                          ]
+        npi_argminmax = ["_npi_argmax", "_npi_argmin"]
+
+patchTensorKeyArgs :: String -> [ResolvedType] -> [ResolvedType]
+patchTensorKeyArgs symname keyargs
+  | symname == "_npi_where" = map fixup keyargs
+  | otherwise = keyargs
+    where
+        tvar = tyVarIdent "t"
+        bool = tyCon $ unQual $ name "Bool"
+        fixup ("condition", attr, _) = ("condition", attr, tvar `tyApp` bool)
+        fixup x                      = x
+
+patchConstraints :: String -> [Type ()] -> [Asst ()]
+patchConstraints symname input_dtype_var
+  | symname == "Custom" = -- the "Custom" is a little special, because it allow extra arguments
+                          --    PopKey (ArgOf "_Custom(symbol)") args "data",
+                          --    Dump (PopResult (ArgOf "_Custom(symbol)") args "data"))
+                          let tvar = tyVarIdent "t"
+                              argOfCustom = tyParen $ (tyCon $ unQual $ name "ArgOf") `tyApp`
+                                             (tyPromotedStr "_Custom") `tyApp`
+                                             (tyPromotedTuple (tvar:input_dtype_var))
+                           in [appA (name "PopKey") [argOfCustom, tyVarIdent "a", tyPromotedStr "data"],
+                               appA (name "Dump") [ tyParen $
+                               (tyCon $ unQual $ name "PopResult") `tyApp`
+                               argOfCustom `tyApp`
+                               tyVarIdent "a" `tyApp`
+                               tyPromotedStr "data"]]
+  | otherwise = []
 
 genTensorOp :: AtomicSymbolCreator -> IO [Decl ()]
 genTensorOp sc = do
     (symname_t, _, argname_t, argtype_t, _, key_var_num_args_t, rettyp) <- mxSymbolGetAtomicSymbolInfo sc
     let symname = T.unpack symname_t
-        argname = map T.unpack argname_t
-        argtype = map T.unpack argtype_t
+        (argname, argtype) = bimap (map T.unpack) (map T.unpack) $ numpyFixups symname_t argname_t argtype_t
         key_var_num_args = T.unpack key_var_num_args_t
+        unsupportedOps = ["_Native", "_NDArray", "_CrossDeviceCopy",
+                          "_CustomFunction", "_FusedOpHelper", "_FusedOpOutHelper"]
 
-    if symname `elem` ["_Native", "_NDArray"] then
+    if symname `elem` unsupportedOps then
         return []
     else do
         let symname_ = normalizeName symname
-            out_new = symname `elem` ["Cast"]
-            out_var = if out_new then tensorVar2 else tensorVar
             (errs, scalarTypes, tensorKeyTypes, tensorVarTypes) = execWriter $ zipWithM_ (resolveHaskellType ResolveTensor) argname argtype
 
         if not (null errs) then do
@@ -128,74 +197,78 @@ genTensorOp sc = do
             errorM _module_ (printf "Function: %s has both NDArray/Symbol and NDArray/Symbol[] arguments." symname)
             return []
         else do
-            let paramListInst = makeParamInst symname_ (scalarTypes ++ tensorKeyTypes ++ tensorVarTypes) True
-                sig = makeSignature symname_ tensorVar out_var $
-                        -- the "Custom" is a little special, because it allow extra arguments
-                        if symname == "Custom"
-                            --    PopKey (ArgOf "_Custom(symbol)") args "data",
-                            --    Dump (PopResult (ArgOf "_Custom(symbol)") args "data"))
-                            then let argOfCustom = tyParen $ (tyCon $ unQual $ name "ArgOf") `tyApp`
-                                                             (tyPromotedStr "_Custom") `tyApp`
-                                                             tensorVar
-                                 in [appA (name "PopKey") [argOfCustom, tyVarIdent "a", tyPromotedStr "data"],
-                                     appA (name "Dump") [ tyParen $
-                                        (tyCon $ unQual $ name "PopResult") `tyApp`
-                                        argOfCustom `tyApp`
-                                        tyVarIdent "a" `tyApp`
-                                        tyPromotedStr "data"]]
-                            else []
-            let fun = sfun (name symname_) [name "args"] (UnGuardedRhs () body) Nothing
-                make_scalar_values =
-                    if symname == "Custom"
-                        -- dump (pop args #data)
-                        then function "dump" `app` (
-                                function "pop" `app`
-                                (var $ name "args") `app`
-                                OverloadedLabel () "data")
-                        -- catMaybes
-                        --    [("KEY",) . showValue <$> (args !? #KEY :: Maybe VALUE_TYPE),
-                        --     ... ]
-                        else function "catMaybes" `app` listE
-                                ([ infixApp (infixApp (tupleSection [Just $ strE argkey, Nothing])
-                                                     (op $ sym ".")
-                                                     (function "showValue"))
-                                           (op $ sym "<$>") $
-                                               ExpTypeSig () (infixApp (var $ name "args")
-                                                                   (op $ sym "!?")
-                                                                   (OverloadedLabel () argkey))
-                                                      (tyApp (tyCon $ unQual $ name "Maybe") typ)
-                                 | (argkey, _, typ) <- scalarTypes] ++
-                                 if null key_var_num_args || null tensorVarTypes || key_var_num_args `elem` [k | (k,_,_) <- scalarTypes]
-                                 then []
-                                 else [(con $ unQual $ name "Just") `app` tuple [
-                                    strE key_var_num_args,
-                                    function "showValue" `app` (function "length" `app` (var $ name "tensorVarArgs"))]])
-                body =  letE ([
-                          patBind (pvar $ name "scalarArgs") make_scalar_values
-                        , patBind (pvar $ name "tensorKeyArgs") (function "catMaybes"
-                            `app` listE [
-                                infixApp (tupleSection [Just $ strE argkey, Nothing]) (op $ sym "<$>") $
-                                ExpTypeSig ()
-                                    (infixApp (var $ name "args") (op $ sym "!?") (OverloadedLabel () argkey))
-                                    (tyApp (tyCon $ unQual $ name "Maybe") typ) | (argkey, _, typ) <- tensorKeyTypes])
-                        ] ++
-                        case tensorVarTypes of
-                          [(argkey,_,_)] ->
-                              [patBind (pvar $ name "tensorVarArgs") $ function "fromMaybe"
-                                `app` eList
-                                `app` ExpTypeSig ()
-                                    (infixApp (var $ name "args") (op $ sym "!?") (OverloadedLabel () argkey))
-                                    (tyApp (tyCon $ unQual $ name "Maybe") (tyList tensorVar))]
-                          _ -> [])
-                        (function "apply"
-                            `app` (strE symname)
-                            `app` (var $ name "scalarArgs")
-                            `app` (if null tensorVarTypes
-                                      then function "Left" `app` (expTypeSig
-                                            (var $ name "tensorKeyArgs")
-                                            (tyList $ tyTuple [tyCon $ unQual $ name "Text", tensorVar]))
-                                      else function "Right" `app` (var $ name "tensorVarArgs")))
-            return [paramListInst, sig, fun]
+            let tensorKeyArgs = patchTensorKeyArgs symname tensorKeyTypes
+                dvars         = gatherDtyVars (tensorKeyArgs ++ tensorVarTypes)
+                outTensor     = patchOutputTensor  symname dvars
+                extraCst      = patchConstraints   symname dvars
+                paramListInst = makeParamInst symname_ dvars (scalarTypes ++ tensorKeyArgs ++ tensorVarTypes) True
+                sig           = makeSignature symname_ dvars outTensor extraCst
+                fun           = sfun (name symname_) [name "args"] (UnGuardedRhs () body) Nothing
+                scalarArgs    = -- catMaybes
+                                --    [("KEY",) . showValue <$> (args !? #KEY :: Maybe VALUE_TYPE),
+                                --     ... ]
+                                function "catMaybes" `app`
+                                listE ([infixApp (infixApp (tupleSection [Just $ strE argkey, Nothing])
+                                                           (op $ sym ".")
+                                                           (function "showValue"))
+                                                 (op $ sym "<$>") $
+                                                     ExpTypeSig ()
+                                                        (infixApp
+                                                            (var $ name "args")
+                                                            (op $ sym "!?")
+                                                            (OverloadedLabel () argkey))
+                                                        (tyApp (tyCon $ unQual $ name "Maybe") typ)
+                                       | (argkey, _, typ) <- scalarTypes] ++
+                                            if null key_var_num_args ||
+                                               null tensorVarTypes   ||
+                                               key_var_num_args `elem` [k | (k,_,_) <- scalarTypes]
+                                            then []
+                                            else [(con $ unQual $ name "Just") `app`
+                                                  tuple [ strE key_var_num_args
+                                                        , app (function "showValue") $
+                                                          app (function "length")    $
+                                                          var $ name "tensorVarArgs"
+                                                        ]])
+                scalarArgsForCustom = -- dump (pop args #data)
+                                      app (function "dump") $
+                                      function "pop" `app` (var $ name "args") `app` OverloadedLabel () "data"
+                tvar = tyVarIdent "t"
+                raw_tensor = tyApp (tyCon $ unQual $ name "RawTensor") tvar
+                body = letE ([
+                         patBind (pvar $ name "scalarArgs")
+                                 (if symname == "Custom" then scalarArgsForCustom else scalarArgs)
+                       , patBind (pvar $ name "tensorKeyArgs") (function "catMaybes"
+                           `app` listE [
+                               infixApp
+                                   (infixApp (tupleSection [Just $ strE argkey, Nothing])
+                                             (op $ sym ".")
+                                             (var $ name "toRaw"))
+                                   (op $ sym "<$>") $
+                                   ExpTypeSig ()
+                                       (infixApp (var $ name "args") (op $ sym "!?") (OverloadedLabel () argkey))
+                                       (tyApp (tyCon $ unQual $ name "Maybe") typ) | (argkey, _, typ) <- tensorKeyArgs])
+                       ] ++
+                       case tensorVarTypes of
+                         [(argkey,_,_)] ->
+                             [patBind (pvar $ name "tensorVarArgs") $ function "fromMaybe"
+                               `app` eList
+                               `app` ExpTypeSig ()
+                                   (infixApp ((var $ name "map") `app` (var $ name "toRaw"))
+                                             (op $ sym "<$>")
+                                             (infixApp (var $ name "args")
+                                                       (op $ sym "!?")
+                                                       (OverloadedLabel () argkey)))
+                                   (tyApp (tyCon $ unQual $ name "Maybe") (tyList raw_tensor))]
+                         _ -> [])
+                       (function "applyRaw"
+                           `app` (strE symname)
+                           `app` (var $ name "scalarArgs")
+                           `app` (if null tensorVarTypes
+                                     then function "Left" `app` (expTypeSig
+                                           (var $ name "tensorKeyArgs")
+                                           (tyList $ tyTuple [tyCon $ unQual $ name "Text", raw_tensor]))
+                                     else function "Right" `app` (var $ name "tensorVarArgs")))
+            return $ [paramListInst, sig, fun]
 
 genDataIter :: (DataIterCreator, Integer) -> IO [Decl ()]
 genDataIter (dataitercreator, index) = do
@@ -249,6 +322,12 @@ uncapitalize :: String -> String
 uncapitalize []     = []
 uncapitalize (x:xs) = toLower x: xs
 
+numpyFixups :: Text -> [Text] -> [Text] -> ([Text], [Text])
+numpyFixups symname argnames argtypes = unzip $ zipWith (fixup symname) argnames argtypes
+    where
+        fixup "_npi_concatenate" "dim" t = ("axis", t)
+        fixup _ n t                      = (n, t)
+
 data ParamDesc = ParamDescItem String
     | ParamDescList Bool [String]
     deriving (Eq, Show)
@@ -271,12 +350,15 @@ resolveHaskellType mode symname desc = do
                 --
                 -- tensor operators
                 --
-                handleTensor (ParamDescItem "NDArray")             = tensor_karg $ tensorVar
-                handleTensor (ParamDescItem "NDArray-or-Symbol")   = tensor_karg $ tensorVar
-                handleTensor (ParamDescItem "NDArray-or-Symbol[]") = tensor_varg $ tyList $ tensorVar
-                handleTensor (ParamDescItem "Symbol")              = tensor_karg $ tensorVar
-                handleTensor (ParamDescItem "Symbol[]")            = tensor_varg $ tyList $ tensorVar
-                handleTensor (ParamDescItem "Symbol or Symbol[]")  = tensor_varg $ tyList $ tensorVar
+                tensor_var = tyVarIdent "t"
+                dtype_var  = tyVarIdent "u"
+                tensor_ty  = tensor_var `tyApp` dtype_var
+                handleTensor (ParamDescItem "NDArray")             = tensor_karg $ tensor_ty
+                handleTensor (ParamDescItem "NDArray-or-Symbol")   = tensor_karg $ tensor_ty
+                handleTensor (ParamDescItem "NDArray-or-Symbol[]") = tensor_varg $ tyList $ tensor_ty
+                handleTensor (ParamDescItem "Symbol")              = tensor_karg $ tensor_ty
+                handleTensor (ParamDescItem "Symbol[]")            = tensor_varg $ tyList $ tensor_ty
+                handleTensor (ParamDescItem "Symbol or Symbol[]")  = tensor_varg $ tyList $ tensor_ty
                 handleTensor t = fallThrough t
 
                 fallThrough t = fail $ printf "Unknown type: arg %s(%s)." symname desc
@@ -322,6 +404,20 @@ typedesc = do
     item = ParamDescItem <$> munch1 (\c -> isAlphaNum c || oneOf c " _-+()=[]<>./'")
     oneOf :: Eq a => a -> [a] -> Bool
     oneOf c wl = c `elem` wl
+
+gatherDtyVars :: [ResolvedType] -> [Type ()]
+gatherDtyVars = nub . concatMap (\ (_, _, ty) -> gatherDtyVarsFromType ty)
+
+gatherDtyVarsFromType = walk
+    where
+        walk v@(TyVar _ _)   = [v]
+        walk (TyParen _ u)   = walk u
+        walk (TyTuple _ _ u) = concatMap walk u
+        walk (TyList _ u)    = walk u
+        walk (TyApp _ _ v)   = walk v
+        walk (TyCon _ _)     = []
+        walk v               = error ("the case should not happen: " ++ show v)
+
 
 unQual = UnQual ()
 unkindedVar = UnkindedVar ()

@@ -185,17 +185,6 @@ fun MXNDArrayWaitAll as mxNDArrayWaitAll_
 mxNDArrayWaitAll :: HasCallStack => IO ()
 mxNDArrayWaitAll = checked mxNDArrayWaitAll_
 
-#if MXNet_MAJOR==1 && MXNet_MINOR<6
-{#
-fun MXNDArraySlice as mxNDArraySlice_
-    {
-        `NDArrayHandle',
-        `MX_UINT',
-        `MX_UINT',
-        alloca- `NDArrayHandle' peekNDArrayHandle*
-    } -> `CInt'
-#}
-#else
 {#
 fun MXNDArraySlice as mxNDArraySlice_
     {
@@ -205,7 +194,6 @@ fun MXNDArraySlice as mxNDArraySlice_
         alloca- `NDArrayHandle' peekNDArrayHandle*
     } -> `CInt'
 #}
-#endif
 
 mxNDArraySlice :: HasCallStack => NDArrayHandle -> Int -> Int -> IO NDArrayHandle
 mxNDArraySlice array begin end = do
@@ -213,17 +201,6 @@ mxNDArraySlice array begin end = do
         end_   = fromIntegral end
     checked $ mxNDArraySlice_ array begin_ end_
 
-
-#if MXNet_MAJOR==1 && MXNet_MINOR<6
-{#
-fun MXNDArrayAt as mxNDArrayAt_
-    {
-        `NDArrayHandle',
-        `MX_UINT',
-        alloca- `NDArrayHandle' peekNDArrayHandle*
-    } -> `CInt'
-#}
-#else
 {#
 fun MXNDArrayAt as mxNDArrayAt_
     {
@@ -232,7 +209,6 @@ fun MXNDArrayAt as mxNDArrayAt_
         alloca- `NDArrayHandle' peekNDArrayHandle*
     } -> `CInt'
 #}
-#endif
 
 mxNDArrayAt :: HasCallStack => NDArrayHandle -> Int -> IO NDArrayHandle
 mxNDArrayAt array index = do
@@ -347,18 +323,6 @@ mxNDArrayGetContext handle = do
     (devtyp, devidx) <- checked $ mxNDArrayGetContext_ handle
     return (fromIntegral devtyp, fromIntegral devidx)
 
-
-#if MXNet_MAJOR==1 && MXNet_MINOR<6
-{#
-fun MXNDArraySave as mxNDArraySave_
-    {
-        withCStringT* `Text',
-        `MX_UINT',
-        withNDArrayHandleArray* `[NDArrayHandle]',
-        withCStringArrayT* `[Text]'
-    } -> `CInt'
-#}
-#else
 {#
 fun MXNDArraySave as mxNDArraySave_
     {
@@ -368,7 +332,6 @@ fun MXNDArraySave as mxNDArraySave_
         withCStringArrayT* `[Text]'
     } -> `CInt'
 #}
-#endif
 
 mxNDArraySave ::  HasCallStack => Text -> [(Text, NDArrayHandle)] -> IO ()
 mxNDArraySave filename keyvals = do

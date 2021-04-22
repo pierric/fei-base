@@ -10,7 +10,7 @@ module MXNet.Base(
 ) where
 
 import           MXNet.Base.Executor
-import           MXNet.Base.NDArray
+import           MXNet.Base.NDArray       hiding (ones, zeros)
 import           MXNet.Base.Raw
 import           MXNet.Base.Spec.HMap     (HMap (..), (.&))
 import           MXNet.Base.Spec.Operator
