@@ -192,6 +192,14 @@ reshape shape a = prim S.__npx_reshape (#a := a .& #newshape := shape .& Nil)
 reshapeLegacy :: (HasCallStack, PrimTensorOp t, DType u) => [Int] -> t u -> TensorMonad t (t u)
 reshapeLegacy shape a = prim S._Reshape (#data := a .& #shape := shape .& Nil)
 
+reshapeLike :: (HasCallStack, PrimTensorOp t, DType u)
+            => t u -> Maybe Int -> Maybe Int
+            -> t u -> Maybe Int -> Maybe Int
+            -> TensorMonad t (t u)
+reshapeLike lhs lhs_beg lhs_end rhs rhs_beg rhs_end =
+    prim S._reshape_like (#lhs := lhs .& #lhs_begin := lhs_beg .& #lhs_end := lhs_end
+                       .& #rhs := rhs .& #rhs_begin := rhs_beg .& #rhs_end := rhs_end .& Nil)
+
 concat_ :: (HasCallStack, PrimTensorOp t, DType u) => Int -> [t u] -> TensorMonad t (t u)
 concat_ a s = prim S.__npi_concatenate (#data := s .& #num_args := length s .& #axis := a .& Nil)
 
@@ -202,6 +210,10 @@ takeI i a = prim S._take (#a := a .& #indices := i .& Nil)
 pick :: (HasCallStack, PrimTensorOp t, DType u)
       => Maybe Int -> t u -> t u -> TensorMonad t (t u)
 pick a i t = prim S._pick (#data := t .& #index := i .& #axis := a .& Nil)
+
+gather :: (HasCallStack, PrimTensorOp t, DType u)
+       => t u -> t u -> TensorMonad t (t u)
+gather a i = prim S._gather_nd (#data := a .& #indices := i .& Nil)
 
 where_ :: (HasCallStack, PrimTensorOp t, DType u)
        => t Bool -> t u -> t u -> TensorMonad t (t u)
