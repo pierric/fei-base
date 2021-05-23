@@ -63,9 +63,21 @@ ones, zeros :: (HasCallStack, PrimTensorOp t, DType u, KnownSymbol dty, InEnum d
 zeros dty shp = prim S.__npi_zeros (#shape := shp .& #dtype := EnumType dty .& Nil)
 ones  dty shp = prim S.__npi_ones  (#shape := shp .& #dtype := EnumType dty .& Nil)
 
+onesF, zerosF :: forall t u dty . (HasCallStack, PrimTensorOp t, FloatDType u, KnownSymbol dty, DTypeName u ~ dty)
+            => Proxy dty -> [Int] -> TensorMonad t (t u)
+onesF  = case enumWeaken @FloatDTypes @AllDTypes @dty of
+           Sub Dict -> ones
+zerosF = case enumWeaken @FloatDTypes @AllDTypes @dty of
+           Sub Dict -> zeros
+
 eye :: (HasCallStack, PrimTensorOp t, DType u, KnownSymbol dty, InEnum dty AllDTypes, DTypeName u ~ dty)
     => Proxy dty -> [Int] -> TensorMonad t (t u)
 eye dtype shape = prim S.__npi_identity (#shape := shape .& #dtype := EnumType dtype .& Nil)
+
+eyeF :: forall t u dty . (HasCallStack, PrimTensorOp t, FloatDType u, KnownSymbol dty, DTypeName u ~ dty)
+    => Proxy dty -> [Int] -> TensorMonad t (t u)
+eyeF = case enumWeaken @FloatDTypes @AllDTypes @dty of
+         Sub Dict -> eye
 
 arange :: (HasCallStack, PrimTensorOp t, DType u, KnownSymbol dty, InEnum dty NumericDTypes, DTypeName u ~ dty)
        => Proxy dty -> Double -> Maybe Double -> Maybe Double -> TensorMonad t (t u)
@@ -74,6 +86,11 @@ arange dtype start stop step =
      in case step of
           Nothing -> prim S.__npi_arange args
           Just st -> prim S.__npi_arange (#step := st .& args)
+
+arangeF :: forall t u dty . (HasCallStack, PrimTensorOp t, FloatDType u, KnownSymbol dty, DTypeName u ~ dty)
+        => Proxy dty -> Double -> Maybe Double -> Maybe Double -> TensorMonad t (t u)
+arangeF = case enumWeaken @FloatDTypes @NumericDTypes @dty of
+            Sub Dict -> arange
 
 addNoBroadcast, subNoBroadcast, mulNoBroadcast, divNoBroadcast ::
     (HasCallStack, PrimTensorOp t, DType u) => t u -> t u -> TensorMonad t (t u)
