@@ -77,7 +77,7 @@ instance Tensor Symbol where
         mxSymbolCompose sym name tensorkeys tensorvals
         return $ fromRaw sym
 
-type family TensorMonad (t :: * -> *) :: * -> *
+type family TensorMonad (t :: * -> *) = (m :: * -> *) | m -> t
 type instance TensorMonad NDArray = IO
 
 class (MonadIO (TensorMonad t), Tensor t) => PrimTensorOp t where
