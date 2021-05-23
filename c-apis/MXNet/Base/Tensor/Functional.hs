@@ -63,9 +63,21 @@ ones, zeros :: (HasCallStack, PrimTensorOp t, DType u, KnownSymbol dty, InEnum d
 zeros dty shp = prim S.__npi_zeros (#shape := shp .& #dtype := EnumType dty .& Nil)
 ones  dty shp = prim S.__npi_ones  (#shape := shp .& #dtype := EnumType dty .& Nil)
 
+onesF, zerosF :: forall t u dty . (HasCallStack, PrimTensorOp t, FloatDType u, KnownSymbol dty, DTypeName u ~ dty)
+            => Proxy dty -> [Int] -> TensorMonad t (t u)
+onesF  = case enumWeaken @FloatDTypes @AllDTypes @dty of
+           Sub Dict -> ones
+zerosF = case enumWeaken @FloatDTypes @AllDTypes @dty of
+           Sub Dict -> zeros
+
 eye :: (HasCallStack, PrimTensorOp t, DType u, KnownSymbol dty, InEnum dty AllDTypes, DTypeName u ~ dty)
     => Proxy dty -> [Int] -> TensorMonad t (t u)
 eye dtype shape = prim S.__npi_identity (#shape := shape .& #dtype := EnumType dtype .& Nil)
+
+eyeF :: forall t u dty . (HasCallStack, PrimTensorOp t, FloatDType u, KnownSymbol dty, DTypeName u ~ dty)
+    => Proxy dty -> [Int] -> TensorMonad t (t u)
+eyeF = case enumWeaken @FloatDTypes @AllDTypes @dty of
+         Sub Dict -> eye
 
 arange :: (HasCallStack, PrimTensorOp t, DType u, KnownSymbol dty, InEnum dty NumericDTypes, DTypeName u ~ dty)
        => Proxy dty -> Double -> Maybe Double -> Maybe Double -> TensorMonad t (t u)
@@ -74,6 +86,11 @@ arange dtype start stop step =
      in case step of
           Nothing -> prim S.__npi_arange args
           Just st -> prim S.__npi_arange (#step := st .& args)
+
+arangeF :: forall t u dty . (HasCallStack, PrimTensorOp t, FloatDType u, KnownSymbol dty, DTypeName u ~ dty)
+        => Proxy dty -> Double -> Maybe Double -> Maybe Double -> TensorMonad t (t u)
+arangeF = case enumWeaken @FloatDTypes @NumericDTypes @dty of
+            Sub Dict -> arange
 
 addNoBroadcast, subNoBroadcast, mulNoBroadcast, divNoBroadcast ::
     (HasCallStack, PrimTensorOp t, DType u) => t u -> t u -> TensorMonad t (t u)
@@ -192,6 +209,14 @@ reshape shape a = prim S.__npx_reshape (#a := a .& #newshape := shape .& Nil)
 reshapeLegacy :: (HasCallStack, PrimTensorOp t, DType u) => [Int] -> t u -> TensorMonad t (t u)
 reshapeLegacy shape a = prim S._Reshape (#data := a .& #shape := shape .& Nil)
 
+reshapeLike :: (HasCallStack, PrimTensorOp t, DType u)
+            => t u -> Maybe Int -> Maybe Int
+            -> t u -> Maybe Int -> Maybe Int
+            -> TensorMonad t (t u)
+reshapeLike lhs lhs_beg lhs_end rhs rhs_beg rhs_end =
+    prim S._reshape_like (#lhs := lhs .& #lhs_begin := lhs_beg .& #lhs_end := lhs_end
+                       .& #rhs := rhs .& #rhs_begin := rhs_beg .& #rhs_end := rhs_end .& Nil)
+
 concat_ :: (HasCallStack, PrimTensorOp t, DType u) => Int -> [t u] -> TensorMonad t (t u)
 concat_ a s = prim S.__npi_concatenate (#data := s .& #num_args := length s .& #axis := a .& Nil)
 
@@ -202,6 +227,10 @@ takeI i a = prim S._take (#a := a .& #indices := i .& Nil)
 pick :: (HasCallStack, PrimTensorOp t, DType u)
       => Maybe Int -> t u -> t u -> TensorMonad t (t u)
 pick a i t = prim S._pick (#data := t .& #index := i .& #axis := a .& Nil)
+
+gather :: (HasCallStack, PrimTensorOp t, DType u)
+       => t u -> t u -> TensorMonad t (t u)
+gather a i = prim S._gather_nd (#data := a .& #indices := i .& Nil)
 
 where_ :: (HasCallStack, PrimTensorOp t, DType u)
        => t Bool -> t u -> t u -> TensorMonad t (t u)
