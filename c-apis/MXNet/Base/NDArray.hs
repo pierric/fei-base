@@ -84,11 +84,11 @@ ndsize arr = product <$> ndshape arr
 full :: (HasCallStack, DType a) => a -> [Int] -> IO (NDArray a)
 full value shape = makeNDArray shape contextCPU $ SV.replicate (product shape) value
 
-ones :: (HasCallStack, NumericDType a) => [Int] -> IO (NDArray a)
-ones = full 1
+ndOnes :: (HasCallStack, NumericDType a) => [Int] -> IO (NDArray a)
+ndOnes = full 1
 
-zeros :: (HasCallStack, NumericDType a) => [Int] -> IO (NDArray a)
-zeros = full 1
+ndZeros :: (HasCallStack, NumericDType a) => [Int] -> IO (NDArray a)
+ndZeros = full 0
 
 fromVector :: (HasCallStack, DType a) => [Int] -> Vector a -> IO (NDArray a)
 fromVector shape = makeNDArray shape contextCPU
