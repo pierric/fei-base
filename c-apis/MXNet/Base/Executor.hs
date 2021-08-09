@@ -74,19 +74,29 @@ execBind symbol Context{..} arg_in arg_gr_with_req arg_aux = do
                             (map unNDArray arg_aux)
     return $ Executor hdl
 
-execSimpleBind :: (HasCallStack, DType a)
-               => Symbol a
-               -> Context
-               -> HashMap Text ReqType
-               -> HashMap Text Shape
-               -> HashMap Text Int
-               -> HashMap Text Int
-               -> IO ([NDArray a], [Maybe (NDArray a)], [NDArray a], Executor a)
-execSimpleBind symbol Context{..} req_types shapes dtypes stypes = do
+execSimpleBindWithShared
+    :: (HasCallStack, DType a)
+    => Symbol a
+    -> Context
+    -> HashMap Text ReqType
+    -> HashMap Text Shape
+    -> HashMap Text Int
+    -> HashMap Text Int
+    -> [Text]
+    -> Maybe (Executor a)
+    -> IO ([NDArray a], [Maybe (NDArray a)], [NDArray a], Executor a)
+execSimpleBindWithShared
+    symbol Context{..} req_types shapes dtypes stypes shared_arg_names shared_exec = do
+
     let (gtype_names, gtype_vals) = flattenR req_types
         (shape_names, shape_data, shape_idx) = flattenT shapes
         (dtype_names, dtype_vals) = flattenE dtypes
         (stype_names, stype_vals) = flattenE stypes
+        -- we shrae the argument via the exec, so passing '[]' as 'shared_buffer'
+        -- sharing mechanism is enabled if the size of shared_buffer is >= 0.
+        shared_buffer = case shared_exec of
+                          Nothing -> Nothing
+                          Just _  -> Just ([], [])
     out <- I.mxExecutorSimpleBindEx
                 (unSymbol symbol)
                 _device_type _device_id
@@ -95,8 +105,11 @@ execSimpleBind symbol Context{..} req_types shapes dtypes stypes = do
                 shape_names shape_data shape_idx
                 dtype_names dtype_vals
                 stype_names stype_vals
-                [] Nothing Nothing
-    let (Nothing, args, grads, aux, exec) = out
+                shared_arg_names shared_buffer (fmap unExecutor shared_exec)
+    -- when shared_* is passed, the graph_executor will reuse the NDArray of shared
+    -- arguments, and allocate new NDArray for the others. The newly created ones
+    -- are also recorded in the 'upd', but we are not interest in it.
+    let (upd, args, grads, aux, exec) = out
     return (map NDArray args, map (NDArray <$>) grads, map NDArray aux, Executor exec)
     where
         flattenR :: HashMap Text ReqType -> ([Text], [Text])
@@ -114,6 +127,17 @@ execSimpleBind symbol Context{..} req_types shapes dtypes stypes = do
                                dat    = concat v
                                idx    = scanl (+) 0 $ map length v
                             in (k, dat, idx)
+
+execSimpleBind :: (HasCallStack, DType a)
+               => Symbol a
+               -> Context
+               -> HashMap Text ReqType
+               -> HashMap Text Shape
+               -> HashMap Text Int
+               -> HashMap Text Int
+               -> IO ([NDArray a], [Maybe (NDArray a)], [NDArray a], Executor a)
+execSimpleBind symbol context req_types shapes dtypes stypes =
+    execSimpleBindWithShared symbol context req_types shapes dtypes stypes [] Nothing
 
 execFree :: HasCallStack => Executor a -> IO ()
 execFree (Executor hdl) = I.withExecutorHandle hdl I.mxExecutorFree
