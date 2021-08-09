@@ -94,6 +94,7 @@ library
                        MXNet.Base.Symbol,
                        MXNet.Base.NDArray,
                        MXNet.Base.Tensor,
+                       MXNet.Base.Tensor.Functional,
                        MXNet.Base.Executor,
                        MXNet.Base.Spec.Operator,
                        MXNet.Base.Spec.HMap
@@ -106,8 +107,7 @@ library
                        MXNet.Base.Raw.Executor,
                        MXNet.Base.Raw.DataIter,
                        MXNet.Base.Raw.Profiler,
-                       MXNet.Base.Tensor.Class,
-                       MXNet.Base.Tensor.Functional
+                       MXNet.Base.Tensor.Class
   extra-libraries:     mxnet
 
 executable mxnet-op-gen

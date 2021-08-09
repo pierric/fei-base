@@ -3,6 +3,7 @@
 module MXNet.Base.Tensor.Functional where
 
 import           Data.Constraint
+import           Data.Typeable               (eqT, (:~:)(..))
 import           GHC.Float                   (double2Float)
 import           GHC.TypeLits                (KnownSymbol)
 import           RIO
@@ -244,9 +245,24 @@ expandDims axis a = prim S._expand_dims (#data := a .& #axis := axis .& Nil)
 
 broadcastAxis axis size a = prim S._broadcast_axis (#data := a .& #axis := axis .& #size := size .& Nil)
 broadcastLike lhs rhs = prim S._broadcast_like (#lhs := lhs .& #rhs := rhs .& Nil)
+broadcastLikeAxis :: (HasCallStack, PrimTensorOp t, DType u)
+                  => (t u, [Int]) -> (t u, [Int]) -> TensorMonad t (t u)
+broadcastLikeAxis (lhs, la) (rhs, ra) =
+    prim S._broadcast_like
+        (#lhs := lhs .& #rhs := rhs .& #lhs_axes := Just la .& #rhs_axes := Just ra .& Nil)
 
 transpose :: (HasCallStack, PrimTensorOp t, DType u) => t u -> [Int] -> TensorMonad t (t u)
 transpose a axes = prim S.__np_transpose (#a := a .& #axes := axes .& Nil)
+
+scatter :: forall t u. (HasCallStack, PrimTensorOp t, DType u, Typeable u, InEnum (DTypeName u) AllDTypes)
+        => t Int64 -> t u -> [Int] -> TensorMonad t (t u)
+scatter indices values shape = do
+    case eqT @Int64 @u of
+      Just Refl ->
+          prim S._scatter_nd (#shape := shape .& #data := values .& #indices := indices .& Nil)
+      Nothing -> do
+          indices <- cast (Proxy :: Proxy (DTypeName u)) indices
+          prim S._scatter_nd (#shape := shape .& #data := values .& #indices := indices .& Nil)
 
 -- TODO: slice will always create a copy of the target sub-region. This can be
 --  not ideal if the range is continuous. Use `mxNDArraySlice` instead.
@@ -291,12 +307,17 @@ cast :: (HasCallStack, PrimTensorOp t, DType u, DType v, KnownSymbol dty, InEnum
      -> TensorMonad t (t v)
 cast dty t = prim S._Cast (#dtype := EnumType dty .& #data := t .& Nil)
 
+-- | restricted form of `cast`. When only having the knowledge that the `dty` belongs
+--   to `FloatDTypes`, `cast` is not useable because of the constraint
+--   `InEnum dty AllDTypes`. In this case, `castToFloat` helps.
 castToFloat :: forall dty t u v . (HasCallStack, PrimTensorOp t, DType u, DType v,
                                    KnownSymbol dty, InEnum dty FloatDTypes, DTypeName v ~ dty)
             => t u -> TensorMonad t (t v)
 castToFloat t = case enumWeaken @FloatDTypes @AllDTypes @dty of
                   Sub Dict -> cast (Proxy :: Proxy dty) t
 
+-- | resetricted form of `cast`. Similarly to `castToFloat`, it is applicable when
+--   only having the knowledge that the `dty` belongs to `NumericDTypes`.
 castToNum :: forall dty t u v . (HasCallStack, PrimTensorOp t, DType u, DType v,
                                  KnownSymbol dty, InEnum dty NumericDTypes, DTypeName v ~ dty)
           => t u -> TensorMonad t (t v)
@@ -332,11 +353,10 @@ softmaxCE :: (HasCallStack, PrimTensorOp t, DType u)
           => Int -> t u -> t u -> Maybe (t u) -> TensorMonad t (t u)
 softmaxCE axis pred label sample_weight = do
     pred <- logSoftmax pred axis Nothing
-    labl <- prim S._reshape_like (#lhs := label .& #rhs := pred .& Nil)
-    loss <- mul_ pred labl
+    loss <- mulNoBroadcast pred label
     loss <- sum_ loss (Just [axis]) True >>= rsubScalar 0
     loss <- case sample_weight of
-              Just w  -> mul_ loss w
+              Just w  -> mulNoBroadcast loss w
               Nothing -> return loss
     mean loss Nothing False
 
