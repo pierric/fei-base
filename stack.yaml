@@ -16,4 +16,4 @@ extra-lib-dirs:
 - /home/jiasen/workspace/mxnet/build-1.8.0
 flags:
   fei-base:
-    MXNet_geq_10800: true
+    mxnet_geq_10800: true
