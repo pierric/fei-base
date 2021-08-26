@@ -39,7 +39,7 @@ touchSymbolHandle :: SymbolHandle -> IO ()
 touchSymbolHandle (SymbolHandle fptr) = touchForeignPtr fptr
 
 newSymbolHandle :: SymbolHandlePtr -> IO SymbolHandle
-newSymbolHandle ptr = newForeignPtr ptr (mxSymbolFree ptr) >>= return . SymbolHandle
+newSymbolHandle ptr = newForeignPtr ptr (safeFreeWith mxSymbolFree ptr) >>= return . SymbolHandle
 
 peekSymbolHandle :: Ptr SymbolHandlePtr -> IO SymbolHandle
 peekSymbolHandle = peek >=> newSymbolHandle

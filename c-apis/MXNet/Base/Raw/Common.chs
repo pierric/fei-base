@@ -11,6 +11,7 @@ import Foreign.C.String (CString, peekCString, withCString)
 import Foreign.Ptr
 import GHC.Generics (Generic)
 import GHC.Stack
+import System.IO.Unsafe (unsafePerformIO)
 
 type MX_UINT  = C2HSImp.CUInt
 type MX_CCHAR = C2HSImp.CChar
@@ -58,6 +59,13 @@ peekCStringArrayT cnt ptr = peekArray cnt ptr >>= mapM peekCStringT
 
 withCStringT :: Text -> (CString -> IO a) -> IO a
 withCStringT str = withCString (T.unpack str)
+
+-- | The free action is called in a separate thread. We need a lock to
+--   block turning on profiling to prevent confusing the profiler.
+flagSafeToFree = unsafePerformIO (newMVar ())
+
+safeFreeWith :: (hdl -> IO ()) -> hdl -> IO ()
+safeFreeWith free handle = withMVar flagSafeToFree $ \_ -> free handle
 
 -- TODO: Does it worth of any opt for the withCStringArrayT?
 -- withCStringArrayT :: [Text] -> (Ptr CString -> IO a) -> IO a

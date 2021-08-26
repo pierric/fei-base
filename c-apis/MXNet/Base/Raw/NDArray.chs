@@ -41,7 +41,7 @@ touchNDArrayHandle (NDArrayHandle fptr) = touchForeignPtr fptr
 
 newNDArrayHandle :: NDArrayHandlePtr -> IO NDArrayHandle
 newNDArrayHandle ptr = do
-    hdl <- newForeignPtr ptr (mxNDArrayFree ptr)
+    hdl <- newForeignPtr ptr (safeFreeWith mxNDArrayFree ptr)
     return $ NDArrayHandle hdl
 
 peekNDArrayHandle :: Ptr NDArrayHandlePtr -> IO NDArrayHandle
