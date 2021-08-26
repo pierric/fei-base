@@ -35,20 +35,23 @@ instance NFData (NDArray a)
 
 instance (DType a, S.Store a) => S.Store (NDArray a) where
     size = S.VarSize $ \a ->
-                -- not ideal, I should avoid call toVector
-                let b = unsafePerformIO $ do
-                            shape <- ndshape a
-                            vec <- toVector a
-                            return (shape, vec)
-                    S.VarSize sz = S.size :: S.Size ([Int], SV.Vector a)
-                in sz b
+                let shape = unsafePerformIO $ ndshape a
+                    S.ConstSize size_int = S.size :: S.Size Int
+                    S.VarSize size_shape = S.size :: S.Size [Int]
+                 in case S.size :: S.Size a of
+                      S.VarSize _ -> error "Unsupported! element has no constant size."
+                      S.ConstSize sizeElm -> size_shape shape + size_int + sizeElm * product shape
     peek = do
-        (shape, vec) <- S.peek
-        liftIO $ fromVector shape vec
+        shape <- S.peek :: S.Peek [Int]
+        vec   <- S.peek :: S.Peek (SV.Vector a)
+        if product shape /= SV.length vec
+            then error "mismatched shape and data"
+            else liftIO $ fromVector shape vec
     poke a = do
         shape <- liftIO $ ndshape a
-        vec <- liftIO $ toVector a
-        S.poke (shape, vec)
+        vec   <- liftIO $ toVector a
+        S.poke shape
+        S.poke vec
 
 makeEmptyNDArray :: forall a. (HasCallStack, DType a) => [Int] -> Context -> IO (NDArray a)
 makeEmptyNDArray shape ctx = do
