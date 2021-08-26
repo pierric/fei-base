@@ -11,6 +11,7 @@ module MXNet.Base.Profiler (
 
 import           RIO
 
+import           MXNet.Base.Raw.Common    (flagSafeToFree)
 import           MXNet.Base.Raw.Profiler
 import           MXNet.Base.Spec.Operator
 
@@ -35,7 +36,7 @@ setConfig args = do
     mxSetProfilerConfig kwargs
 
 withProfiler :: IO a -> IO a
-withProfiler = bracket_ (mxSetProfilerState 1) (mxSetProfilerState 0)
+withProfiler = bracket_ (withMVar flagSafeToFree $ \_ -> mxSetProfilerState 1) (mxSetProfilerState 0)
 
 beginProfiler :: IO ()
 beginProfiler = mxSetProfilerState 1
