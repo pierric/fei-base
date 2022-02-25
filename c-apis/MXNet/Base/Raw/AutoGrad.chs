@@ -1,5 +1,14 @@
 {-# LANGUAGE ScopedTypeVariables #-}
-module MXNet.Base.Raw.AutoGrad where
+module MXNet.Base.Raw.AutoGrad (
+    mxAutogradSetIsRecording,
+    mxAutogradSetIsTraining,
+    mxAutogradIsRecording,
+    mxAutogradIsTraining,
+    mxAutogradMarkVariables,
+    mxAutogradGetSymbol,
+    mxAutogradComputeGradient,
+    mxAutogradBackwardEx,
+) where
 
 import RIO
 import RIO.List (unzip, unzip3)
