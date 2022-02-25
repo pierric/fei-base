@@ -2,7 +2,7 @@
 module MXNet.Base.Raw.AutoGrad where
 
 import RIO
-import RIO.List (unzip)
+import RIO.List (unzip, unzip3)
 import Foreign.C.Types
 import Foreign.Ptr
 import Foreign.Marshal.Array (peekArray, withArray)
@@ -148,7 +148,7 @@ mxAutogradBackwardEx output_arrays variables retrain_graph create_graph is_train
                                 (boolToCInt create_graph)
                                 (boolToCInt is_train)
                                 pp pt
-                            var_grads  <- peek pp >>= peekArray num_vars >>= mapM newNDArrayHandle 
+                            var_grads  <- peek pp >>= peekArray num_vars >>= mapM newNDArrayHandle
                             var_stypes <- peek pt >>= peekArray num_vars >>= return . map fromIntegral
                             return $ Just $ zip var_grads var_stypes
 
