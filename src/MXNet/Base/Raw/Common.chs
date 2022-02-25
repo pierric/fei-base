@@ -31,6 +31,7 @@ newtype WrapText = WrapText {unWrapText :: Text}
 deriving instance Generic WrapText
 deriving instance Generic C2HSImp.CInt
 deriving instance Generic C2HSImp.CUInt
+deriving instance Generic C2HSImp.CUChar
 
 checkRC :: HasCallStack => CInt -> IO ()
 checkRC res = do
