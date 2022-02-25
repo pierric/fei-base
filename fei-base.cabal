@@ -39,7 +39,7 @@ Flag use_repa {
 }
 
 library
-  hs-source-dirs:      c-apis
+  hs-source-dirs:      src
   if flag(mxnet_geq_10600) {
       hs-source-dirs:  ops/1.6
       cpp-options:     -DMXNET_VERSION=10600
@@ -115,7 +115,7 @@ library
 
 executable mxnet-op-gen
   hs-source-dirs:      cmdline
-  hs-source-dirs:      c-apis
+  hs-source-dirs:      src
   main-is:             Main.hs
   other-modules:       MXNet.Base.Raw.Common,
                        MXNet.Base.Raw.NDArray,
