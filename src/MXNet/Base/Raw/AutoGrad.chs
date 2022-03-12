@@ -135,9 +135,12 @@ mxAutogradBackwardEx :: Either [NDArrayHandle] ([(NDArrayHandle, NDArrayHandle)]
                      -> IO (Maybe [(NDArrayHandle, Int)])
 mxAutogradBackwardEx output_arrays variables retrain_graph create_graph is_train ret_grads =
     case output_arrays of
-        Left  oa -> _call oa C2HSImp.nullPtr variables
-        Right ps -> let (oa, og) = unzip ps
-                     in withNDArrayHandleArray og (\ptr_og -> _call oa ptr_og variables)
+        Left  oa -> do
+            let og = replicate (length oa) C2HSImp.nullPtr
+            withArray og (\ptr_og -> _call oa ptr_og variables)
+        Right ps -> do
+            let (oa, og) = unzip ps
+            withNDArrayHandleArray og (\ptr_og -> _call oa ptr_og variables)
     where
         _call oa og va
             | not ret_grads = do checked $ mxAutogradBackwardEx_
@@ -171,3 +174,4 @@ fun MXAutogradGetSymbol as mxAutogradGetSymbol_
 
 mxAutogradGetSymbol :: NDArrayHandle -> IO SymbolHandle
 mxAutogradGetSymbol = checked . mxAutogradGetSymbol_
+

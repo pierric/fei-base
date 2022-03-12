@@ -13,6 +13,7 @@ import           GHC.Generics                 (Generic, Generic1)
 import           RIO                          hiding (Vector)
 import           RIO.Vector.Storable          (Vector)
 import qualified RIO.Vector.Storable          as SV
+import qualified RIO.Vector.Storable.Partial  as SV
 import qualified RIO.Vector.Storable.Unsafe   as SV
 import qualified RIO.Vector.Unboxed           as UV
 import           System.IO.Unsafe
@@ -99,7 +100,7 @@ fromVector shape = makeNDArray shape contextCPU
 copyFromVector :: (HasCallStack, DType a) => NDArray a -> Vector a -> IO ()
 copyFromVector arr vec = do
     sz <- ndsize arr
-    if (sz /= SV.length vec)
+    if sz /= SV.length vec
       then error $ printf "cannot copy from Vector: size mismatch (%d vs. %d)" sz (SV.length vec)
       else do
         SV.unsafeWith vec $ \p -> do
@@ -111,6 +112,13 @@ toVector arr = do
     mvec <- VMut.new nlen
     VMut.unsafeWith mvec $ \p -> I.mxNDArraySyncCopyToCPU (unNDArray arr) (castPtr p) nlen
     SV.unsafeFreeze mvec
+
+toValue :: DType a => NDArray a -> IO a
+toValue arr = do
+    vec <- toVector arr
+    if SV.length vec /= 1
+        then error $ printf "Cannot convert to value for a non-scalar ndarray."
+        else return $ SV.head vec
 
 #ifdef USE_REPA
 fromRepa :: (HasCallStack, Repa.Shape sh, DType a, UV.Unbox a) => Repa.Array Repa.U sh a -> IO (NDArray a)
@@ -161,3 +169,11 @@ waitAll = I.mxNDArrayWaitAll
 
 emptyCache :: HasCallStack => Context -> IO ()
 emptyCache context = I.mxStorageEmptyCache (_device_type context) (_device_id context)
+
+getGradient :: HasCallStack => NDArray a -> IO (Maybe (NDArray a))
+getGradient (NDArray hdl) = do
+    grad <- I.mxNDArrayGetGrad hdl
+    if I.isNullNDArrayHandle grad then return Nothing else return $ Just $ NDArray grad
+
+detach :: HasCallStack => NDArray a -> IO (NDArray a)
+detach (NDArray hdl) = NDArray <$> I.mxNDArrayDetach hdl
