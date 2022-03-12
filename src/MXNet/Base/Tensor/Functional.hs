@@ -37,20 +37,28 @@ pooling = prim S._Pooling
 
 _common_pool :: (PrimTensorOp t, DType u)
              => EnumType '["avg", "lp", "max", "sum"]
+             -> Bool
              -> t u -> [Int] -> Maybe [Int] -> Maybe [Int] -> TensorMonad t (t u)
-_common_pool pool_type t kernel_size stride padding =
+_common_pool pool_type global_pool t kernel_size stride padding =
     let stride'  = fromMaybe kernel_size stride
         padding' = fromMaybe (replicate (length kernel_size) 0) padding
-     in pooling (#data := t .& #kernel := kernel_size .& #stride := stride' .& #pad := padding' .& #pool_type := pool_type .& Nil)
+     in pooling (#data := t .& #kernel := kernel_size .& #stride := stride' .& #pad := padding' .& #pool_type := pool_type .& #global_pool := global_pool .& Nil)
 
 maxPool :: (PrimTensorOp t, DType u)
         => t u -> [Int] -> Maybe [Int] -> Maybe [Int] -> TensorMonad t (t u)
-maxPool = _common_pool #max
-
+maxPool = _common_pool #max False
 
 avgPool :: (PrimTensorOp t, DType u)
         => t u -> [Int] -> Maybe [Int] -> Maybe [Int] -> TensorMonad t (t u)
-avgPool = _common_pool #avg
+avgPool = _common_pool #avg False
+
+globalMaxPool :: (PrimTensorOp t, DType u)
+              => t u -> [Int] -> Maybe [Int] -> Maybe [Int] -> TensorMonad t (t u)
+globalMaxPool = _common_pool #max True
+
+globalAvgPool :: (PrimTensorOp t, DType u)
+              => t u -> [Int] -> Maybe [Int] -> Maybe [Int] -> TensorMonad t (t u)
+globalAvgPool = _common_pool #avg True
 
 activation :: (PrimTensorOp t, DType u, Fullfilled "_Activation" '(t, u) args)
            => ArgsHMap "_Activation" '(t, u) args -> TensorMonad t (t u)
