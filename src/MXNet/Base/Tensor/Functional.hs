@@ -67,6 +67,16 @@ softsign a = activation (#data := a .& #act_type := #softsign .& Nil)
 tanh :: (PrimTensorOp t, DType u) => t u -> TensorMonad t (t u)
 tanh a = prim S.__npi_tanh (#x := a .& Nil)
 
+gelu a = prim S._LeakyReLU (#data := a .& #act_type := #gelu .& Nil)
+
+selu a = prim S._LeakyReLU (#data := a .& #act_type := #selu .& Nil)
+
+elu alpha a = prim S._LeakyReLU (#data := a .& #slope := alpha .& #act_type := #elu .& Nil)
+
+leaky negative_slope a = prim S._LeakyReLU (#data := a .& #act_type := #leaky .& #slope := negative_slope .& Nil)
+
+rrelu lower_bound upper_bound a = prim S._LeakyReLU (#data := a .& #act_type := #rrelu .& #lower_bound := lower_bound .& #upper_bound := upper_bound .& Nil)
+
 softmax :: (PrimTensorOp t, DType u, Fullfilled "_softmax" '(t, u) args)
         => ArgsHMap "_softmax" '(t, u) args -> TensorMonad t (t u)
 softmax = prim S._softmax
