@@ -68,6 +68,7 @@ library
                        attoparsec,
                        rio,
                        store,
+                       data-default-class,
                        type-sets,
                        resourcet,
                        conduit >= 1.2 && < 1.4,

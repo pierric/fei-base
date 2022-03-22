@@ -18,7 +18,7 @@ data Parameter t where
 class Module m where
     type ModuleDType m
     type ModuleArgs  m
-    data ModuleParamEnums   m
+    type ModuleParamEnums   m
     type ModuleParamTensors m
     init        :: (HasCallStack, ?device :: Context)
                 => NonEmpty Text

@@ -15,9 +15,10 @@ type Initializer p t = p -> NDArray t -> IO ()
 initConstant :: forall t. DType t => Float -> NDArray t -> IO ()
 initConstant val arr = void' @t $ O.__set_value (#src := val .& Nil) (Just [arr])
 
-initEmpty, initZeros :: DType t => NDArray t -> IO ()
+initEmpty, initZeros, initOnes :: DType t => NDArray t -> IO ()
 initEmpty _ = return ()
 initZeros   = initConstant 0
+initOnes    = initConstant 1
 
 initNormal, initUniform :: forall t. DType t => Float -> NDArray t -> IO ()
 initNormal sigma arr = void' @t $ O.__random_normal (#loc := (0 :: Float) .& #scale  := sigma .& Nil) (Just [arr])
