@@ -3,7 +3,7 @@
 module MXNet.Base.Tensor.Functional where
 
 import           Data.Constraint
-import           Data.Typeable               (eqT, (:~:)(..))
+import           Data.Typeable               (eqT, (:~:) (..))
 import           GHC.Float                   (double2Float)
 import           GHC.TypeLits                (KnownSymbol)
 import           RIO
@@ -35,9 +35,55 @@ pooling :: (PrimTensorOp t, DType u, Fullfilled "_Pooling" '(t, u) args)
         => ArgsHMap "_Pooling" '(t, u) args -> TensorMonad t (t u)
 pooling = prim S._Pooling
 
+_common_pool :: (PrimTensorOp t, DType u)
+             => EnumType '["avg", "lp", "max", "sum"]
+             -> Bool
+             -> t u -> [Int] -> Maybe [Int] -> Maybe [Int] -> TensorMonad t (t u)
+_common_pool pool_type global_pool t kernel_size stride padding =
+    let stride'  = fromMaybe kernel_size stride
+        padding' = fromMaybe (replicate (length kernel_size) 0) padding
+     in pooling (#data := t .& #kernel := kernel_size .& #stride := stride' .& #pad := padding' .& #pool_type := pool_type .& #global_pool := global_pool .& Nil)
+
+maxPool :: (PrimTensorOp t, DType u)
+        => t u -> [Int] -> Maybe [Int] -> Maybe [Int] -> TensorMonad t (t u)
+maxPool = _common_pool #max False
+
+avgPool :: (PrimTensorOp t, DType u)
+        => t u -> [Int] -> Maybe [Int] -> Maybe [Int] -> TensorMonad t (t u)
+avgPool = _common_pool #avg False
+
+globalMaxPool :: (PrimTensorOp t, DType u)
+              => t u -> [Int] -> Maybe [Int] -> Maybe [Int] -> TensorMonad t (t u)
+globalMaxPool = _common_pool #max True
+
+globalAvgPool :: (PrimTensorOp t, DType u)
+              => t u -> [Int] -> Maybe [Int] -> Maybe [Int] -> TensorMonad t (t u)
+globalAvgPool = _common_pool #avg True
+
 activation :: (PrimTensorOp t, DType u, Fullfilled "_Activation" '(t, u) args)
            => ArgsHMap "_Activation" '(t, u) args -> TensorMonad t (t u)
 activation = prim S._Activation
+
+relu a = prim S.__npx_relu (#data := a .& Nil)
+
+sigmoid a = prim S.__npx_sigmoid (#data := a .& Nil)
+
+softrelu a = activation (#data := a .& #act_type := #softrelu .& Nil)
+
+softsign a = activation (#data := a .& #act_type := #softsign .& Nil)
+
+tanh :: (PrimTensorOp t, DType u) => t u -> TensorMonad t (t u)
+tanh a = prim S.__npi_tanh (#x := a .& Nil)
+
+gelu a = prim S._LeakyReLU (#data := a .& #act_type := #gelu .& Nil)
+
+selu a = prim S._LeakyReLU (#data := a .& #act_type := #selu .& Nil)
+
+elu alpha a = prim S._LeakyReLU (#data := a .& #slope := alpha .& #act_type := #elu .& Nil)
+
+leaky negative_slope a = prim S._LeakyReLU (#data := a .& #act_type := #leaky .& #slope := negative_slope .& Nil)
+
+rrelu lower_bound upper_bound a = prim S._LeakyReLU (#data := a .& #act_type := #rrelu .& #lower_bound := lower_bound .& #upper_bound := upper_bound .& Nil)
 
 softmax :: (PrimTensorOp t, DType u, Fullfilled "_softmax" '(t, u) args)
         => ArgsHMap "_softmax" '(t, u) args -> TensorMonad t (t u)
@@ -186,8 +232,6 @@ einsum spec ts opt = prim S.__npi_einsum (#data := ts
 
 abs_, relu, sigmoid :: (HasCallStack, PrimTensorOp t, DType u) => t u -> TensorMonad t (t u)
 abs_ a = prim S.__npi_absolute (#x := a .& Nil)
-relu a = prim S.__npx_relu (#data := a .& Nil)
-sigmoid a = prim S.__npx_sigmoid (#data := a .& Nil)
 
 logSoftmax :: (HasCallStack, PrimTensorOp t, DType u) => t u -> Int -> Maybe Double -> TensorMonad t (t u)
 logSoftmax a axis temp = prim S._log_softmax (#data := a .& #axis := axis .& #temperature := temp .& Nil)

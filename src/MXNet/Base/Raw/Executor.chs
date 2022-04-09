@@ -144,7 +144,6 @@ fun MXExecutorBind as mxExecutorBind_
     } -> `CInt'
 #}
 
-makeNullNDArrayHandle  = NDArrayHandle  <$> newForeignPtr_ C2HSImp.nullPtr
 makeNullExecutorHandle = ExecutorHandle <$> newForeignPtr_ C2HSImp.nullPtr
 
 mxExecutorBind :: HasCallStack

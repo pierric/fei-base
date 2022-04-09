@@ -4,12 +4,9 @@
 {-# LANGUAGE FlexibleInstances      #-}
 {-# LANGUAGE GADTs                  #-}
 {-# LANGUAGE MultiParamTypeClasses  #-}
-{-# LANGUAGE OverloadedLabels       #-}
 {-# LANGUAGE PartialTypeSignatures  #-}
 {-# LANGUAGE PolyKinds              #-}
 {-# LANGUAGE ScopedTypeVariables    #-}
-{-# LANGUAGE TypeApplications       #-}
-{-# LANGUAGE TypeFamilies           #-}
 {-# LANGUAGE TypeFamilyDependencies #-}
 {-# LANGUAGE TypeOperators          #-}
 {-# LANGUAGE UndecidableInstances   #-}
@@ -182,6 +179,17 @@ type family Fullfilled (s :: Symbol) (t :: kind) (args :: [*]) :: Constraint whe
   Fullfilled s t args = ( KvSubset ( FilterRequired (ParameterList s t)) (AsKVs args)
                         , GenAccess s t args (FilterRequired (ParameterList s t))
                         , GenQuery  s t args (AllArgs (ParameterList s t)))
+
+
+type family Relax (n :: [Symbol]) (pl :: [(k, *)]) :: [(k, *)] where
+  Relax n '[] = '[]
+  Relax n ('(s, t) ': pl) = IfThenElse (HasElement s n) (Relax n pl) ('(s,t) ': Relax n pl)
+
+type family Satisfying (s :: Symbol) (n :: [Symbol]) (t :: kind) (args :: [*]) :: Constraint where
+  Satisfying s n t args = ( KvSubset (Relax n (FilterRequired (ParameterList s t))) (AsKVs args)
+                          , GenAccess s t args (Relax n (FilterRequired (ParameterList s t)))
+                          , GenQuery  s t args (Relax n (AllArgs (ParameterList s t))))
+
 
 -- type family HasOptArg (s :: Symbol) (args :: [*]) (k :: [Symbol]) :: Constraint where
 --   HasOptArg s args '[] = ()

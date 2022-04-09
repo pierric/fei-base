@@ -6,7 +6,7 @@ import RIO.List (unzip)
 import Foreign.Marshal (alloca, withArray, peekArray)
 import Foreign.Storable (Storable(..))
 import Foreign.Concurrent (newForeignPtr)
-import Foreign.ForeignPtr (touchForeignPtr)
+import Foreign.ForeignPtr (touchForeignPtr, newForeignPtr_)
 import Foreign.ForeignPtr.Unsafe (unsafeForeignPtrToPtr)
 import Foreign.C.Types
 import Foreign.C.String (CString)
@@ -53,6 +53,10 @@ withNDArrayHandleArray array io = do
     r <- withArray (map (unsafeForeignPtrToPtr . unNDArrayHandle) array) io
     mapM_ (touchForeignPtr . unNDArrayHandle) array
     return r
+
+makeNullNDArrayHandle  = NDArrayHandle  <$> newForeignPtr_ C2HSImp.nullPtr
+
+isNullNDArrayHandle (NDArrayHandle fptr) = unsafeForeignPtrToPtr fptr == C2HSImp.nullPtr
 
 {#
 fun MXNDArrayFree as mxNDArrayFree_
@@ -357,3 +361,25 @@ mxNDArrayLoad path = do
     arrays <- mapM newNDArrayHandle pa
     names <- peekCStringArrayT (fromIntegral numNames) ptrNames
     return $ zip names arrays
+
+{#
+fun MXNDArrayGetGrad as mxNDArrayGetGrad_
+    {
+        `NDArrayHandle',
+        alloca- `NDArrayHandle' peekNDArrayHandle*
+    } -> `CInt'
+#}
+
+mxNDArrayGetGrad :: NDArrayHandle -> IO NDArrayHandle
+mxNDArrayGetGrad = checked . mxNDArrayGetGrad_
+
+{#
+fun MXNDArrayDetach as mxNDArrayDetach_
+    {
+        `NDArrayHandle',
+        alloca- `NDArrayHandle' peekNDArrayHandle*
+    } -> `CInt'
+#}
+
+mxNDArrayDetach :: NDArrayHandle -> IO NDArrayHandle
+mxNDArrayDetach = checked . mxNDArrayDetach_

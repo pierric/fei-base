@@ -14,6 +14,7 @@ import           MXNet.Base.NDArray       hiding (ones, zeros)
 import           MXNet.Base.Raw
 import           MXNet.Base.Spec.HMap     (HMap (..), (.&))
 import           MXNet.Base.Spec.Operator
-import           MXNet.Base.Symbol
+import           MXNet.Base.Symbol        hiding (CustomOperation (..),
+                                           CustomOperationProp (..))
 import           MXNet.Base.Tensor
 import           MXNet.Base.Types

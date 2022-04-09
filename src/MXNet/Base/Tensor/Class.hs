@@ -17,7 +17,7 @@ import {-# SOURCE #-}           MXNet.Base.NDArray
 import                          MXNet.Base.Raw.Common
 import                          MXNet.Base.Raw.NDArray
 import                          MXNet.Base.Raw.Symbol
-import                          MXNet.Base.Spec.Operator (ArgsHMap)
+import                          MXNet.Base.Spec.Operator (ArgOf, ArgsHMap)
 import                          MXNet.Base.Symbol
 import                          MXNet.Base.Types
 
@@ -91,4 +91,11 @@ instance PrimTensorOp NDArray where
                         [x] -> return x
                         _   -> error "the operation returns multiple ndarrays"
     primMulti op args = op args Nothing
+
+type family BuildListArgOf (n :: L.Symbol) t (ks :: [(L.Symbol, *)]) :: [*] where
+    BuildListArgOf n t '[] = '[]
+    BuildListArgOf n t ('(k, v) ': rs) = ArgOf n '(NDArray, t) k v : BuildListArgOf n t rs
+
+type BuildArgsHMap (n :: L.Symbol) t (ks :: [(L.Symbol, *)]) = ArgsHMap n '(NDArray, t) (BuildListArgOf n t ks)
+
 

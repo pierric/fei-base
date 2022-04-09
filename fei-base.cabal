@@ -68,8 +68,12 @@ library
                        attoparsec,
                        rio,
                        store,
+                       data-default-class,
                        type-sets,
-                       resourcet
+                       resourcet,
+                       conduit >= 1.2 && < 1.4,
+                       conduit-combinators >= 1.1.2 && < 1.4,
+                       stm-conduit
   default-language:    Haskell2010
   build-tool-depends:  c2hs:c2hs == 0.28.8
   default-extensions:  FlexibleContexts,
@@ -103,6 +107,18 @@ library
                        MXNet.Base.Operators.Tensor,
                        MXNet.Base.DataIter,
                        MXNet.Base.Profiler
+  if flag(mxnet_geq_10600) || flag(mxnet_geq_10700) || flag(mxnet_geq_10800) {
+    exposed-modules:   MXNet.NN.Types,
+                       MXNet.NN.LrScheduler,
+                       MXNet.NN.Optimizer,
+                       MXNet.NN.Initializer,
+                       MXNet.NN.Module,
+                       MXNet.NN.Module.Class,
+                       MXNet.NN.Module.Conv,
+                       MXNet.NN.Module.Basic,
+                       MXNet.NN.DataIter.Class,
+                       MXNet.NN.DataIter.Conduit
+  }
   other-modules:       MXNet.Base.Raw.Common,
                        MXNet.Base.Raw.NDArray,
                        MXNet.Base.Raw.Symbol,
