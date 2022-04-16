@@ -1,11 +1,14 @@
 {-# LANGUAGE CPP                 #-}
 {-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE TypeApplications    #-}
+{-# OPTIONS_GHC -fplugin=Data.Record.Anon.Plugin #-}
 module MXNet.Base.NDArray where
 
 #ifdef USE_REPA
 import qualified Data.Array.Repa              as Repa
 #endif
 
+import qualified Data.Record.Anon.Simple      as Anon
 import qualified Data.Store                   as S
 import qualified Data.Vector.Storable.Mutable as VMut
 import           Foreign.Ptr                  (castPtr)
@@ -21,8 +24,6 @@ import           Text.Printf
 
 import           MXNet.Base.Operators.Tensor  (__copyto)
 import qualified MXNet.Base.Raw               as I
-import           MXNet.Base.Spec.HMap         (HMap (..), (.&))
-import           MXNet.Base.Spec.Operator     (ArgOf (..))
 import           MXNet.Base.Types             (Context (..), DType (..),
                                                ForeignData (..), NumericDType,
                                                contextCPU)
@@ -152,7 +153,7 @@ toContext arr cxt = do
     then return arr
     else do
         narr <- makeNDArrayLike arr cxt
-        void $ (__copyto (#data :≅ arr .& Nil) (Just [narr]) :: IO [NDArray a])
+        void $ __copyto @NDArray @a ANON{_data = arr} (Just [narr])
         return narr
 
 toCPU :: (HasCallStack, DType a) => NDArray a -> IO (NDArray a)

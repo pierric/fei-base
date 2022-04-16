@@ -7,17 +7,17 @@
 {-# LANGUAGE UndecidableInstances   #-}
 module MXNet.Base.Tensor.Class where
 
-import                          Data.Bifunctor           (bimap)
-import                          Data.Kind                (Constraint)
-import                qualified GHC.TypeLits             as L
+import                          Data.Bifunctor          (bimap)
+import                          Data.Kind               (Constraint)
+import                          Data.Record.Anon.Simple (Record)
+import                qualified GHC.TypeLits            as L
 import                          RIO
-import                          RIO.List                 (unzip)
+import                          RIO.List                (unzip)
 
 import {-# SOURCE #-}           MXNet.Base.NDArray
 import                          MXNet.Base.Raw.Common
 import                          MXNet.Base.Raw.NDArray
 import                          MXNet.Base.Raw.Symbol
-import                          MXNet.Base.Spec.Operator (ArgOf, ArgsHMap)
 import                          MXNet.Base.Symbol
 import                          MXNet.Base.Types
 
@@ -34,10 +34,9 @@ type family TensorDType t :: L.Symbol where
     TensorDType (Symbol  t) = DTypeName t
     TensorDType _           = "unknown"
 
-type family TensorWithDType t s where
-    TensorWithDType (NDArray t) s = NDArray s
-    TensorWithDType (Symbol  t) s = Symbol  s
-    TensorWithDType t _ = t
+type family TensorAs t a = u | u -> t a where
+    TensorAs NDArray t = NDArray t
+    TensorAs Symbol  t = Symbol  t
 
 class Tensor (t :: * -> *) where
     type RawTensor t = s | s -> t
@@ -82,20 +81,13 @@ type instance TensorMonad NDArray = IO
 
 class (MonadIO (TensorMonad t), Tensor t) => PrimTensorOp t where
     prim      :: (HasCallStack, DType v)
-              => (ArgsHMap s (p :: kind) a -> TensorApply (t v)) -> ArgsHMap s p a -> TensorMonad t (t v)
+              => (Record rec -> TensorApply (t v)) -> Record rec -> TensorMonad t (t v)
     primMulti :: (HasCallStack, DType v)
-              => (ArgsHMap s (p :: kind) a -> TensorApply (t v)) -> ArgsHMap s p a -> TensorMonad t [t v]
+              => (Record rec -> TensorApply (t v)) -> Record rec -> TensorMonad t [t v]
 
 instance PrimTensorOp NDArray where
     prim op args = op args Nothing >>= \case
                         [x] -> return x
                         _   -> error "the operation returns multiple ndarrays"
     primMulti op args = op args Nothing
-
-type family BuildListArgOf (n :: L.Symbol) t (ks :: [(L.Symbol, *)]) :: [*] where
-    BuildListArgOf n t '[] = '[]
-    BuildListArgOf n t ('(k, v) ': rs) = ArgOf n '(NDArray, t) k v : BuildListArgOf n t rs
-
-type BuildArgsHMap (n :: L.Symbol) t (ks :: [(L.Symbol, *)]) = ArgsHMap n '(NDArray, t) (BuildListArgOf n t ks)
-
 

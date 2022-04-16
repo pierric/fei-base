@@ -1,4 +1,3 @@
-{-# LANGUAGE AllowAmbiguousTypes    #-}
 {-# LANGUAGE CPP                    #-}
 {-# LANGUAGE ConstraintKinds        #-}
 {-# LANGUAGE DataKinds              #-}
@@ -8,15 +7,12 @@
 {-# LANGUAGE UndecidableInstances   #-}
 module MXNet.Base.Types where
 
-import           Data.Constraint
-import           Data.Proxy         (Proxy (..))
-import           Data.Type.Bool
-import           Data.Typeable      (eqT, (:~:) (..))
-import           GHC.TypeLits       (KnownSymbol, Symbol)
+import           Data.Proxy           (Proxy (..))
+import           GHC.TypeLits         (KnownSymbol, Symbol)
 import           RIO
-import           RIO.Vector.Unboxed (Unbox)
-import           Type.Set
-import           Unsafe.Coerce      (unsafeCoerce)
+import           RIO.Vector.Unboxed   (Unbox)
+
+import           MXNet.Base.Core.Enum (InEnum, Insert, enumWeaken)
 
 data Context = Context
     { _device_type :: Int
@@ -83,27 +79,8 @@ data ReqType = ReqNull
     | ReqAdd
     deriving (Bounded, Enum, Show)
 
-type InEnum x e = Member x e ~ True
-
--- | InEnum has its weakness. When having a `InEnum s e1`, the compier
---   cannot deduce the fact that `InEnum s e2`, where e2 is an extension
---   of e1. The utility function is a proof of the fact.
---
---   Note: delay to the future, only a fake proof at the moment.
---
-type family (s :: TypeSet k) :⊆ (t :: TypeSet k) :: Bool where
-    Empty :⊆ t = True
-    (Branch a lbst rbst) :⊆ t = Member a t && lbst :⊆ t && rbst :⊆ t
-
-enumWeaken :: forall s t x. (InEnum x s, s :⊆ t ~ True) :- InEnum x t
-enumWeaken = Sub $ unsafeCoerce (Dict :: Dict ())
-
-type family SetFromList (e :: [k]) :: TypeSet k where
-    SetFromList '[] = Empty
-    SetFromList (x ': xs) = Insert x (SetFromList xs)
-
-type BasicNumericDTypes = SetFromList '["float16", "float32", "float64", "int32", "int64", "int8", "uint8"]
-type BasicFloatDTypes = SetFromList '["float16" ,"float32", "float64"]
+type BasicNumericDTypes = '["float16", "float32", "float64", "int32", "int64", "int8", "uint8"]
+type BasicFloatDTypes   = '["float16" ,"float32", "float64"]
 
 #if MXNET_VERSION < 10700
 type NumericDTypes = BasicNumericDTypes
