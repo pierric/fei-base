@@ -56,7 +56,7 @@ main = do
 
   where
     opts = info (args_spec <**> helper) (fullDesc <> progDesc "Generate MXNet operators")
-    pragma = LanguagePragma () $ map name ["AllowAmbiguousTypes", "PolyKinds", "TypeOperators"]
+    pragma = LanguagePragma () $ map name ["AllowAmbiguousTypes", "PolyKinds", "TypeOperators", "TypeApplications"]
     ghc_opts = OptionsPragma () (Just GHC) "-fplugin=Data.Record.Anon.Plugin"
     modTensor = Module () (Just $ ModuleHead () (moduleName "MXNet.Base.Operators.Tensor") Nothing Nothing)
                 [pragma, ghc_opts]
@@ -71,14 +71,16 @@ main = do
                 , simpleImportVars "Data.Record.Anon.Simple" ["Record"]
                 , simpleImportAs   "Data.Record.Anon.Simple" "Anon"
                 ]
-    modDataIter = Module () (Just $ ModuleHead () (moduleName "MXNet.Base.DataIter") Nothing Nothing) []
+    modDataIter = Module () (Just $ ModuleHead () (moduleName "MXNet.Base.DataIter") Nothing Nothing)
+                  [pragma, ghc_opts]
                   [ simpleImport "RIO"
                   , simpleImport "RIO.List"
                   , simpleImportVars "RIO.List.Partial" ["(!!)"]
-                  , simpleImportVars "MXNet.Base.Types" ["DType"]
                   , simpleImport "MXNet.Base.Raw"
                   , simpleImport "MXNet.Base.Core.Spec"
                   , simpleImport "MXNet.Base.Core.Enum"
+                  , simpleImport "MXNet.Base.Tensor.Class"
+                  , simpleImportVars "MXNet.Base.Types" ["DType"]
                   , simpleImportVars "Data.Maybe" ["catMaybes", "fromMaybe"]
                   , simpleImportVars "Data.Record.Anon.Simple" ["Record"]
                   , simpleImportAs   "Data.Record.Anon.Simple" "Anon"
@@ -106,8 +108,8 @@ data GenFlag = GenSymbolOp
     | GenNDArrayReturn
     | GenNDArrayUpdate
 
-makeSignature :: String -> [Name ()] -> Type () -> [Asst ()] -> Decl ()
-makeSignature symname din dout extra_constraints =
+makeSignature :: String -> [Name ()] -> Type () -> [Asst ()] -> Type ()  -> Decl ()
+makeSignature symname din dout extra_constraints result_f =
     let dtype_vars = nub (gatherDtyVarsFromType dout ++ din)
         hargs_var  = tyVarIdent "r"
         vars       = case din of
@@ -118,19 +120,20 @@ makeSignature symname din dout extra_constraints =
         -- FieldsAcc parmlist rec
         cxfields   = appA (name "FieldsAcc") [paramlist, hargs_var]
         -- Tensor t
-        cxtensor   = appA (name "Tensor") [tyVarIdent "t"]
+        cxtensor   = if null dtype_vars then [] else [appA (name "Tensor") [tyVarIdent "t"]]
         -- DType u, DType v, etc.
         cxdtype    = map (\v -> appA (name "DType") [tyVar v]) dtype_vars
         callstack  = appA (name "HasCallStack") []
-        cx_all     = cxTuple (cxtensor : cxfields : callstack : (cxdtype ++ extra_constraints))
+        cx_all     = cxTuple (cxtensor ++  [cxfields, callstack] ++ cxdtype ++ extra_constraints)
 
         -- Record r -> TensorApply (t u)
         in_type    = appT (name "Record") [hargs_var]
-        out_type   = (tyCon $ unQual $ name "TensorApply") `tyApp` dout
+        out_type   = tyApp result_f dout
         fun        = tyFun in_type out_type
 
         dtype_var_names = map (\case {Ident () n -> n}) dtype_vars
-        sig_vars   = map (unkindedVar . name) $ "t" : dtype_var_names ++ ["r"]
+        tensor_var = if null dtype_var_names then [] else ["t"]
+        sig_vars   = map (unkindedVar . name) $ tensor_var ++ dtype_var_names ++ ["r"]
     in tySig [name symname] $ tyForall sig_vars cx_all fun
 
 patchOutputTensor :: String -> [Name ()] -> Type ()
@@ -195,39 +198,15 @@ attrToMaybe attr = case attr of
     TyCon () (UnQual () (Ident () "AttrReq")) -> app (con $ unQual $ name "Just")
     TyCon () (UnQual () (Ident () "AttrOpt")) -> id
 
--- fullargs = Anon.inject args $ Anon.insert #key1 undefined $ ...
-buildFullParams :: String -> [Name ()] -> [ResolvedType] -> Exp ()
-buildFullParams fn targs vargs =
-    expTypeSig
-        (appE (qvar (moduleName "Anon") (name "inject")) [
-            var (name "args"),
-            foldr insert (qvar (moduleName "Anon") (name "empty")) vargs
-        ])
-        (let con1 = name "ParamListFull"
-             con2 = name $ "ParameterList" ++ fn
-             vars = map tyVar $ case targs of
-                        [] -> []
-                        _  -> name "t" : targs
-          in appT con1 [appT con2 vars])
-
-    where
-        insert (key, attr, _) acc =
-            appE (qvar (moduleName "Anon") (name "insert")) [
-                OverloadedLabel () key,
-                defaultValue attr,
-                acc
-            ]
-
+buildFullParamsStruct :: String -> [Name ()] -> Exp () -> Exp ()
 buildFullParamsStruct fn targs vargs =
-    let fields =  [FieldUpdate () (unQual $ name key) (defaultValue attr) | (key, attr, _) <- vargs]
-     in expTypeSig (RecConstr () (unQual $ name "ANON") fields) fulltype
-    where
-        con1 = name "ParamListFull"
-        con2 = name $ "ParameterList" ++ fn
-        vars = map tyVar $ case targs of
-                   [] -> []
-                   _  -> name "t" : targs
-        fulltype = appT con1 [appT con2 vars]
+    let all_vars = case targs of
+                      [] -> []
+                      _  -> map tyVar $ name "t" : targs
+        paramListTyp = tyParen $ appT (name $ "ParameterList" ++ fn) all_vars
+        inj = var $ name "paramListWithDefault"
+        dummy = appE (con $ unQual $ name "Proxy") [TypeApp () paramListTyp]
+     in appE inj [dummy, vargs]
 
 genTensorOp :: AtomicSymbolCreator -> IO [Decl ()]
 genTensorOp sc = do
@@ -261,10 +240,10 @@ genTensorOp sc = do
                 extraCst      = patchConstraints   symname dvars
                 allArgs       = renameArg (scalarTypes ++ tensorKeyArgs ++ tensorVarTypes)
                 paramListInst = makeParamInst symname_ dvars allArgs
-                sig           = makeSignature symname_ dvars outTensor extraCst
+                sig           = makeSignature symname_ dvars outTensor extraCst (tyCon $ unQual $ name "TensorApply")
                 fun           = sfun (name symname_) [name "args"] (UnGuardedRhs () body) Nothing
 
-                fullargs      = buildFullParamsStruct symname_ dvars allArgs
+                fullargs      = buildFullParamsStruct symname_ dvars (var $ name "args")
 
                 --  catMaybes [("KEY",) . showValue <$> (Just $ Anon.get args #KEY), ... ]
                 scalarArgs    = function "catMaybes" `app`
@@ -344,16 +323,13 @@ genDataIter (dataitercreator, index) = do
 
         -- parameter list
         paramInst = makeParamInst diname [] scalarTypes
-        out_type  = tyApp (tyCon $ unQual $ name "IO") (tyCon $ unQual $ name "DataIterHandle")
-        tysig     = makeSignature diname [] out_type []
+        out_type  = tyCon $ unQual $ name "DataIterHandle"
+        tysig     = makeSignature diname [] out_type [] (tyCon $ unQual $ name "IO")
 
         -- function
         fun = sfun (name diname) [name "args"] (UnGuardedRhs () body) Nothing
 
-        fullargs = let parmlistcon = "ParameterList" ++ diname
-                       fulltype = appT (name "ParamListFull") [tyConUnQual parmlistcon]
-                       fields =  [FieldUpdate () (unQual $ name key) (defaultValue attr) | (key, attr, _) <- scalarTypes]
-                    in expTypeSig (RecConstr () (unQual $ name "ANON") fields) fulltype
+        fullargs = buildFullParamsStruct diname [] (var $ name "args")
 
         --  [("KEY",) . showValue $ (Anon.get args #KEY), ... ]
         scalarArgs = listE ([infixApp (infixApp (tupleSection [Just $ strE argkey, Nothing])
@@ -362,7 +338,7 @@ genDataIter (dataitercreator, index) = do
                                       (op $ sym "$")
                                       (appE (qvar (moduleName "Anon") (name "get")) [
                                          (OverloadedLabel () argkey),
-                                         var (name "fullargs")
+                                         var (name "fullArgs")
                                       ])
                             | (argkey, _, typ) <- scalarTypes])
 

@@ -6,7 +6,7 @@ import           MXNet.Base.Core.Spec
 import           MXNet.Base.Tensor.Class
 import           MXNet.Base.Types        (DType)
 
-type ParameterList_copyto t u = '[ '("data", AttrOpt (t u))]
+type ParameterList_copyto t u = '[ '("_data", AttrReq (t u))]
 
 __copyto :: forall t u . (Tensor t, DType u, HasCallStack)
          => ParamListFull (ParameterList_copyto t u) -> TensorApply (t u)

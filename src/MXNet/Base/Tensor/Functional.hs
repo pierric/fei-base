@@ -44,7 +44,7 @@ _common_pool :: (PrimTensorOp t, DType u)
 _common_pool pool_type global_pool t kernel_size stride padding =
     let stride'  = fromMaybe kernel_size stride
         padding' = fromMaybe (replicate (length kernel_size) 0) padding
-     in pooling ANON{_data = t, kernel = kernel_size, stride = stride, pad = padding, pool_type = pool_type, global_pool = global_pool}
+     in pooling ANON{_data = t, kernel = Just kernel_size, stride = stride, pad = padding, pool_type = Just pool_type, global_pool = Just global_pool}
 
 maxPool :: (PrimTensorOp t, DType u)
         => t u -> [Int] -> Maybe [Int] -> Maybe [Int] -> TensorMonad t (t u)
@@ -66,27 +66,27 @@ activation :: (PrimTensorOp t, DType u, FieldsAcc (S.ParameterList_Activation t 
            => Record r -> TensorMonad t (t u)
 activation = prim S._Activation
 
+relu, sigmoid, softrelu, softsign, gelu, selu :: (HasCallStack, PrimTensorOp t, DType u) => t u -> TensorMonad t (t u)
 relu a = prim S.__npx_relu ANON{_data = a}
-
 sigmoid a = prim S.__npx_sigmoid ANON{_data = a}
-
 softrelu a = activation ANON{_data = a, act_type = #softrelu}
-
 softsign a = activation ANON{_data = a, act_type = #softsign}
 
 tanh :: (PrimTensorOp t, DType u) => t u -> TensorMonad t (t u)
-tanh a = prim S.__npi_tanh ANON{x = a}
+tanh a = prim S.__npi_tanh ANON{x = Just a}
 
-gelu a = prim S._LeakyReLU ANON{_data = a, act_type = #gelu}
+gelu a = prim S._LeakyReLU ANON{_data = a, act_type = Just $ #gelu}
+selu a = prim S._LeakyReLU ANON{_data = a, act_type = Just $ #selu}
 
-selu a = prim S._LeakyReLU ANON{_data = a, act_type = #selu}
+elu :: (HasCallStack, PrimTensorOp t, DType u) => Float -> t u -> TensorMonad t (t u)
+elu alpha a = prim S._LeakyReLU ANON{_data = a, slope = Just alpha, act_type = Just #elu}
 
-elu alpha a = prim S._LeakyReLU ANON{_data = a, slope = alpha, act_type = #elu}
+leaky :: (HasCallStack, PrimTensorOp t, DType u) => Float -> t u -> TensorMonad t (t u)
+leaky negative_slope a = prim S._LeakyReLU ANON{_data = a, act_type = Just #leaky, slope = Just negative_slope}
 
-leaky negative_slope a = prim S._LeakyReLU ANON{_data = a, act_type = #leaky, slope = negative_slope}
-
+rrelu :: (HasCallStack, PrimTensorOp t, DType u) => Float -> Float -> t u -> TensorMonad t (t u)
 rrelu lower_bound upper_bound a =
-    prim S._LeakyReLU ANON{_data = a, act_type = #rrelu, lower_bound = lower_bound, upper_bound = upper_bound}
+    prim S._LeakyReLU ANON{_data = a, act_type = Just #rrelu, lower_bound = Just lower_bound, upper_bound = Just upper_bound}
 
 softmax :: (PrimTensorOp t, DType u, FieldsAcc (S.ParameterList_softmax t u) r)
         => Record r -> TensorMonad t (t u)
@@ -102,7 +102,7 @@ dropout t p = prim S._Dropout ANON{_data = t, p = p}
 -- | create a new tensor like the provided one
 -- The dtype will be the same as the input.
 fullLike :: (HasCallStack, PrimTensorOp t, DType u) => Double -> t u -> TensorMonad t (t u)
-fullLike v a = prim S.__npi_full_like ANON{a = a, fill_value = v}
+fullLike v a = prim S.__npi_full_like ANON{a = Just a, fill_value = v}
 
 zerosLike, onesLike :: (HasCallStack, PrimTensorOp t, DType u) => t u -> TensorMonad t (t u)
 zerosLike = fullLike 0
@@ -110,8 +110,8 @@ onesLike  = fullLike 1
 
 ones, zeros :: (HasCallStack, PrimTensorOp t, DType u, KnownSymbol dty, InEnum dty AllDTypes, DTypeName u ~ dty)
             => Proxy dty -> [Int] -> TensorMonad t (t u)
-zeros dty shp = prim S.__npi_zeros ANON{shape = shp, dtype = EnumType dty}
-ones  dty shp = prim S.__npi_ones  ANON{shape = shp, dtype = EnumType dty}
+zeros dty shp = prim S.__npi_zeros ANON{shape = Just shp, dtype = Just $ EnumType dty}
+ones  dty shp = prim S.__npi_ones  ANON{shape = Just shp, dtype = Just $ EnumType dty}
 
 onesF, zerosF :: forall t u dty . (HasCallStack, PrimTensorOp t, FloatDType u, KnownSymbol dty, DTypeName u ~ dty)
             => Proxy dty -> [Int] -> TensorMonad t (t u)
@@ -122,7 +122,7 @@ zerosF = case enumWeaken @FloatDTypes @AllDTypes @dty of
 
 eye :: (HasCallStack, PrimTensorOp t, DType u, KnownSymbol dty, InEnum dty AllDTypes, DTypeName u ~ dty)
     => Proxy dty -> [Int] -> TensorMonad t (t u)
-eye dtype shape = prim S.__npi_identity ANON{shape = shape, dtype = EnumType dtype}
+eye dtype shape = prim S.__npi_identity ANON{shape = Just shape, dtype = Just $ EnumType dtype}
 
 eyeF :: forall t u dty . (HasCallStack, PrimTensorOp t, FloatDType u, KnownSymbol dty, DTypeName u ~ dty)
     => Proxy dty -> [Int] -> TensorMonad t (t u)
@@ -132,10 +132,10 @@ eyeF = case enumWeaken @FloatDTypes @AllDTypes @dty of
 arange :: (HasCallStack, PrimTensorOp t, DType u, KnownSymbol dty, InEnum dty NumericDTypes, DTypeName u ~ dty)
        => Proxy dty -> Double -> Maybe Double -> Maybe Double -> TensorMonad t (t u)
 arange dtype start stop step =
-    let args = ANON{start = start, stop = stop, dtype = EnumType dtype}
+    let args = ANON{start = start, stop = Just stop, dtype = Just $ EnumType dtype}
      in case step of
           Nothing -> prim S.__npi_arange args
-          Just st -> prim S.__npi_arange (Anon.insert #step st args)
+          Just st -> prim S.__npi_arange (Anon.insert #step (Just st) args)
 
 arangeF :: forall t u dty . (HasCallStack, PrimTensorOp t, FloatDType u, KnownSymbol dty, DTypeName u ~ dty)
         => Proxy dty -> Double -> Maybe Double -> Maybe Double -> TensorMonad t (t u)
@@ -144,36 +144,36 @@ arangeF = case enumWeaken @FloatDTypes @NumericDTypes @dty of
 
 addNoBroadcast, subNoBroadcast, mulNoBroadcast, divNoBroadcast ::
     (HasCallStack, PrimTensorOp t, DType u) => t u -> t u -> TensorMonad t (t u)
-addNoBroadcast a b = prim S._elemwise_add ANON{lhs = a, rhs = b}
-subNoBroadcast a b = prim S._elemwise_sub ANON{lhs = a, rhs = b}
-mulNoBroadcast a b = prim S._elemwise_mul ANON{lhs = a, rhs = b}
-divNoBroadcast a b = prim S._elemwise_div ANON{lhs = a, rhs = b}
+addNoBroadcast a b = prim S._elemwise_add ANON{lhs = Just a, rhs = Just b}
+subNoBroadcast a b = prim S._elemwise_sub ANON{lhs = Just a, rhs = Just b}
+mulNoBroadcast a b = prim S._elemwise_mul ANON{lhs = Just a, rhs = Just b}
+divNoBroadcast a b = prim S._elemwise_div ANON{lhs = Just a, rhs = Just b}
 
 add_, sub_, mul_, div_, and_, or_, xor_ ::
     (HasCallStack, PrimTensorOp t, DType u) => t u -> t u -> TensorMonad t (t u)
-add_ a b = prim S.__npi_add          ANON{lhs = a, rhs = b}
-sub_ a b = prim S.__npi_subtract     ANON{lhs = a, rhs = b}
-mul_ a b = prim S.__npi_multiply     ANON{lhs = a, rhs = b}
-div_ a b = prim S.__npi_true_divide  ANON{lhs = a, rhs = b}
-and_  a b = prim S.__npi_bitwise_and ANON{lhs = a, rhs = b}
-or_   a b = prim S.__npi_bitwise_or  ANON{lhs = a, rhs = b}
-xor_  a b = prim S.__npi_bitwise_xor ANON{lhs = a, rhs = b}
+add_ a b = prim S.__npi_add          ANON{lhs = Just a, rhs = Just b}
+sub_ a b = prim S.__npi_subtract     ANON{lhs = Just a, rhs = Just b}
+mul_ a b = prim S.__npi_multiply     ANON{lhs = Just a, rhs = Just b}
+div_ a b = prim S.__npi_true_divide  ANON{lhs = Just a, rhs = Just b}
+and_  a b = prim S.__npi_bitwise_and ANON{lhs = Just a, rhs = Just b}
+or_   a b = prim S.__npi_bitwise_or  ANON{lhs = Just a, rhs = Just b}
+xor_  a b = prim S.__npi_bitwise_xor ANON{lhs = Just a, rhs = Just b}
 
 eq_, neq_, lt_, leq_, gt_, geq_ ::
     (HasCallStack, PrimTensorOp t, DType u)
     => t u -> t u -> TensorMonad t (t Bool)
-eq_   a b = prim S.__npi_equal         ANON{lhs = a, rhs = b}
-neq_  a b = prim S.__npi_not_equal     ANON{lhs = a, rhs = b}
-lt_   a b = prim S.__npi_less          ANON{lhs = a, rhs = b}
-leq_  a b = prim S.__npi_less_equal    ANON{lhs = a, rhs = b}
-gt_   a b = prim S.__npi_greater       ANON{lhs = a, rhs = b}
-geq_  a b = prim S.__npi_greater_equal ANON{lhs = a, rhs = b}
+eq_   a b = prim S.__npi_equal         ANON{lhs = Just a, rhs = Just b}
+neq_  a b = prim S.__npi_not_equal     ANON{lhs = Just a, rhs = Just b}
+lt_   a b = prim S.__npi_less          ANON{lhs = Just a, rhs = Just b}
+leq_  a b = prim S.__npi_less_equal    ANON{lhs = Just a, rhs = Just b}
+gt_   a b = prim S.__npi_greater       ANON{lhs = Just a, rhs = Just b}
+geq_  a b = prim S.__npi_greater_equal ANON{lhs = Just a, rhs = Just b}
 
 bitwise_not, logical_not, invert ::
     (HasCallStack, PrimTensorOp t, DType u) => t u -> TensorMonad t (t u)
-bitwise_not a = prim S.__npi_bitwise_not  ANON{x = a}
+bitwise_not a = prim S.__npi_bitwise_not  ANON{x = Just a}
 invert        = bitwise_not
-logical_not a = prim S.__npi_logical_not  ANON{x = a}
+logical_not a = prim S.__npi_logical_not  ANON{x = Just a}
 
 #if MXNET_VERSION == 10600
 _adaptDouble = double2Float
@@ -183,67 +183,67 @@ _adaptDouble = id
 
 addScalar, subScalar, rsubScalar, mulScalar, divScalar, rdivScalar ::
     (HasCallStack, PrimTensorOp t, DType u) => Double -> t u -> TensorMonad t (t u)
-addScalar  b a = prim S.__npi_add_scalar       ANON{_data = a, scalar = _adaptDouble b}
-subScalar  b a = prim S.__npi_subtract_scalar  ANON{_data = a, scalar = _adaptDouble b}
-rsubScalar b a = prim S.__npi_rsubtract_scalar ANON{_data = a, scalar = _adaptDouble b}
-mulScalar  b a = prim S.__npi_multiply_scalar  ANON{_data = a, scalar = _adaptDouble b}
-divScalar  b a = prim S.__npi_true_divide_scalar  ANON{_data = a, scalar = _adaptDouble b}
-rdivScalar b a = prim S.__npi_rtrue_divide_scalar ANON{_data = a, scalar = _adaptDouble b}
+addScalar  b a = prim S.__npi_add_scalar       ANON{_data = a, scalar = Just $ _adaptDouble b}
+subScalar  b a = prim S.__npi_subtract_scalar  ANON{_data = a, scalar = Just $ _adaptDouble b}
+rsubScalar b a = prim S.__npi_rsubtract_scalar ANON{_data = a, scalar = Just $ _adaptDouble b}
+mulScalar  b a = prim S.__npi_multiply_scalar  ANON{_data = a, scalar = Just $ _adaptDouble b}
+divScalar  b a = prim S.__npi_true_divide_scalar  ANON{_data = a, scalar = Just $ _adaptDouble b}
+rdivScalar b a = prim S.__npi_rtrue_divide_scalar ANON{_data = a, scalar = Just $ _adaptDouble b}
 
 eqScalar, neqScalar, ltScalar, leqScalar, gtScalar, geqScalar ::
     (HasCallStack, PrimTensorOp t, DType u)
     => Double -> t u -> TensorMonad t (t Bool)
-eqScalar  b a = prim S.__npi_equal_scalar      ANON{_data = a, scalar = _adaptDouble b}
-neqScalar b a = prim S.__npi_not_equal_scalar  ANON{_data = a, scalar = _adaptDouble b}
-ltScalar  b a = prim S.__npi_less_scalar       ANON{_data = a, scalar = _adaptDouble b}
-leqScalar b a = prim S.__npi_less_equal_scalar ANON{_data = a, scalar = _adaptDouble b}
-gtScalar  b a = prim S.__npi_greater_scalar    ANON{_data = a, scalar = _adaptDouble b}
-geqScalar b a = prim S.__npi_greater_equal_scalar ANON{_data = a, scalar = _adaptDouble b}
+eqScalar  b a = prim S.__npi_equal_scalar      ANON{_data = a, scalar = Just $ _adaptDouble b}
+neqScalar b a = prim S.__npi_not_equal_scalar  ANON{_data = a, scalar = Just $ _adaptDouble b}
+ltScalar  b a = prim S.__npi_less_scalar       ANON{_data = a, scalar = Just $ _adaptDouble b}
+leqScalar b a = prim S.__npi_less_equal_scalar ANON{_data = a, scalar = Just $ _adaptDouble b}
+gtScalar  b a = prim S.__npi_greater_scalar    ANON{_data = a, scalar = Just $ _adaptDouble b}
+geqScalar b a = prim S.__npi_greater_equal_scalar ANON{_data = a, scalar = Just $ _adaptDouble b}
 
 
 andScalar, orScalar, xorScalar ::
     (HasCallStack, PrimTensorOp t, DType u) => Double -> t u -> TensorMonad t (t u)
-andScalar b a = prim S.__npi_bitwise_and_scalar ANON{_data = a, scalar = _adaptDouble b}
-orScalar  b a = prim S.__npi_bitwise_or_scalar  ANON{_data = a, scalar = _adaptDouble b}
-xorScalar b a = prim S.__npi_bitwise_xor_scalar ANON{_data = a, scalar = _adaptDouble b}
+andScalar b a = prim S.__npi_bitwise_and_scalar ANON{_data = a, scalar = Just $ _adaptDouble b}
+orScalar  b a = prim S.__npi_bitwise_or_scalar  ANON{_data = a, scalar = Just $ _adaptDouble b}
+xorScalar b a = prim S.__npi_bitwise_xor_scalar ANON{_data = a, scalar = Just $ _adaptDouble b}
 
 ceil_, floor_, sqrt_, log2_, square_ ::
     (HasCallStack, PrimTensorOp t, DType u) => t u -> TensorMonad t (t u)
-ceil_   a = prim S.__npi_ceil   ANON{x = a}
-floor_  a = prim S.__npi_floor  ANON{x = a}
-sqrt_   a = prim S.__npi_sqrt   ANON{x = a}
-log2_   a = prim S.__npi_log2   ANON{x = a}
-square_ a = prim S.__npi_square ANON{x = a}
+ceil_   a = prim S.__npi_ceil   ANON{x = Just a}
+floor_  a = prim S.__npi_floor  ANON{x = Just a}
+sqrt_   a = prim S.__npi_sqrt   ANON{x = Just a}
+log2_   a = prim S.__npi_log2   ANON{x = Just a}
+square_ a = prim S.__npi_square ANON{x = Just a}
 
 mean, sum_, max_ :: (HasCallStack, PrimTensorOp t, DType u)
                  => t u -> Maybe [Int] -> Bool -> TensorMonad t (t u)
-sum_ s axis keepdims = prim S.__np_sum   ANON{a = s, axis = axis, keepdims = keepdims}
-max_ s axis keepdims = prim S.__np_max   ANON{a = s, axis = axis, keepdims = keepdims}
-mean a axis keepdims = prim S.__npi_mean ANON{a = a, axis = axis, keepdims = keepdims}
+sum_ s axis keepdims = prim S.__np_sum   ANON{a = Just s, axis = Just axis, keepdims = Just keepdims}
+max_ s axis keepdims = prim S.__np_max   ANON{a = Just s, axis = Just axis, keepdims = Just keepdims}
+mean a axis keepdims = prim S.__npi_mean ANON{a = Just a, axis = Just axis, keepdims = Just keepdims}
 
 argmax, argmin :: (HasCallStack, PrimTensorOp t, DType u)
                => t u -> Maybe Int -> Bool -> TensorMonad t (t Int64)
-argmax a axis keepdims = prim S.__npi_argmax ANON{_data = a, axis = axis, keepdims = keepdims}
-argmin a axis keepdims = prim S.__npi_argmin ANON{_data = a, axis = axis, keepdims = keepdims}
+argmax a axis keepdims = prim S.__npi_argmax ANON{_data = a, axis = Just axis, keepdims = Just keepdims}
+argmin a axis keepdims = prim S.__npi_argmin ANON{_data = a, axis = Just axis, keepdims = Just keepdims}
 
 einsum :: (HasCallStack, PrimTensorOp t, DType u)
        => Text -> [t u] -> Bool -> TensorMonad t (t u)
-einsum spec ts opt = prim S.__npi_einsum ANON{_data = ts, num_args = length(ts), subscripts = spec, optimize = fromEnum opt}
+einsum spec ts opt = prim S.__npi_einsum ANON{_data = ts, num_args = length(ts), subscripts = Just spec, optimize = Just $ fromEnum opt}
 
-abs_, relu, sigmoid :: (HasCallStack, PrimTensorOp t, DType u) => t u -> TensorMonad t (t u)
-abs_ a = prim S.__npi_absolute ANON{x = a}
+abs_ :: (HasCallStack, PrimTensorOp t, DType u) => t u -> TensorMonad t (t u)
+abs_ a = prim S.__npi_absolute ANON{x = Just a}
 
 logSoftmax :: (HasCallStack, PrimTensorOp t, DType u) => t u -> Int -> Maybe Double -> TensorMonad t (t u)
-logSoftmax a axis temp = prim S._log_softmax ANON{_data = a, axis = axis, temperature = temp}
+logSoftmax a axis temp = prim S._log_softmax ANON{_data = a, axis = Just axis, temperature = Just temp}
 
 identity :: (HasCallStack, PrimTensorOp t, DType u) => t u -> TensorMonad t (t u)
-identity a = prim S.__np_copy ANON{a = a}
+identity a = prim S.__np_copy ANON{a = Just a}
 
 stack :: (HasCallStack, PrimTensorOp t, DType u) => Int -> [t u] -> TensorMonad t (t u)
-stack axis ts = prim S._stack ANON{num_args = length ts,  _data = ts, axis = axis}
+stack axis ts = prim S._stack ANON{num_args = length ts,  _data = ts, axis = Just axis}
 
 reshape :: (HasCallStack, PrimTensorOp t, DType u) => [Int] -> t u -> TensorMonad t (t u)
-reshape shape a = prim S.__npx_reshape ANON{a = a, newshape = shape}
+reshape shape a = prim S.__npx_reshape ANON{a = Just a, newshape = shape}
 
 -- reshapeLegacy has a few magic numbers:
 -- *  0 copy this dimension from the input to the output shape.
@@ -252,18 +252,18 @@ reshape shape a = prim S.__npx_reshape ANON{a = a, newshape = shape}
 -- * -3 use the product of two consecutive dimensions of the input shape as the output dimension.
 -- * -4 split one dimension of the input into two dimensions passed subsequent to -4 in shape (can contain -1).
 reshapeLegacy :: (HasCallStack, PrimTensorOp t, DType u) => [Int] -> t u -> TensorMonad t (t u)
-reshapeLegacy shape a = prim S._Reshape ANON{_data = a, shape = shape}
+reshapeLegacy shape a = prim S._Reshape ANON{_data = a, shape = Just shape}
 
 reshapeLike :: (HasCallStack, PrimTensorOp t, DType u)
             => t u -> Maybe Int -> Maybe Int
             -> t u -> Maybe Int -> Maybe Int
             -> TensorMonad t (t u)
 reshapeLike lhs lhs_beg lhs_end rhs rhs_beg rhs_end =
-    prim S._reshape_like ANON{lhs = lhs, lhs_begin = lhs_beg, lhs_end = lhs_end
-                             ,rhs = rhs, rhs_begin = rhs_beg, rhs_end = rhs_end}
+    prim S._reshape_like ANON{lhs = Just lhs, lhs_begin = Just lhs_beg, lhs_end = Just lhs_end
+                             ,rhs = Just rhs, rhs_begin = Just rhs_beg, rhs_end = Just rhs_end}
 
 concat_ :: (HasCallStack, PrimTensorOp t, DType u) => Int -> [t u] -> TensorMonad t (t u)
-concat_ a s = prim S.__npi_concatenate ANON{_data = s, num_args = length s, axis = a}
+concat_ a s = prim S.__npi_concatenate ANON{_data = s, num_args = length s, axis = Just a}
 
 takeI :: (HasCallStack, PrimTensorOp t, DType u)
       => t u -> t u -> TensorMonad t (t u)

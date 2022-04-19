@@ -1,4 +1,5 @@
-{-# LANGUAGE AllowAmbiguousTypes, PolyKinds, TypeOperators #-}
+{-# LANGUAGE AllowAmbiguousTypes, PolyKinds, TypeOperators,
+  TypeApplications #-}
 {-# OPTIONS_GHC -fplugin=Data.Record.Anon.Plugin#-}
 module MXNet.Base.Operators.Tensor where
 import RIO
@@ -25,8 +26,7 @@ _Activation ::
               Record r -> TensorApply (t u)
 _Activation args
   = let fullArgs
-          = ANON{act_type = undefined, _data = undefined} ::
-              ParamListFull (ParameterList_Activation t u)
+          = paramListWithDefault (Proxy @(ParameterList_Activation t u)) args
         scalarArgs
           = catMaybes
               [("act_type",) . showValue <$> Just (Anon.get #act_type fullArgs)]
@@ -54,12 +54,7 @@ _BatchNorm ::
              Record r -> TensorApply (t u)
 _BatchNorm args
   = let fullArgs
-          = ANON{eps = Nothing, momentum = Nothing, fix_gamma = Nothing,
-                 use_global_stats = Nothing, output_mean_var = Nothing,
-                 axis = Nothing, cudnn_off = Nothing, min_calib_range = Nothing,
-                 max_calib_range = Nothing, _data = undefined, gamma = Nothing,
-                 beta = Nothing, moving_mean = Nothing, moving_var = Nothing}
-              :: ParamListFull (ParameterList_BatchNorm t u)
+          = paramListWithDefault (Proxy @(ParameterList_BatchNorm t u)) args
         scalarArgs
           = catMaybes
               [("eps",) . showValue <$> Anon.get #eps fullArgs,
@@ -99,10 +94,8 @@ _BatchNorm_v1 ::
                 Record r -> TensorApply (t u)
 _BatchNorm_v1 args
   = let fullArgs
-          = ANON{eps = Nothing, momentum = Nothing, fix_gamma = Nothing,
-                 use_global_stats = Nothing, output_mean_var = Nothing,
-                 _data = undefined, gamma = Nothing, beta = Nothing}
-              :: ParamListFull (ParameterList_BatchNorm_v1 t u)
+          = paramListWithDefault (Proxy @(ParameterList_BatchNorm_v1 t u))
+              args
         scalarArgs
           = catMaybes
               [("eps",) . showValue <$> Anon.get #eps fullArgs,
@@ -132,8 +125,8 @@ _BilinearSampler ::
                    Record r -> TensorApply (t u)
 _BilinearSampler args
   = let fullArgs
-          = ANON{cudnn_off = Nothing, _data = undefined, grid = Nothing} ::
-              ParamListFull (ParameterList_BilinearSampler t u)
+          = paramListWithDefault (Proxy @(ParameterList_BilinearSampler t u))
+              args
         scalarArgs
           = catMaybes
               [("cudnn_off",) . showValue <$> Anon.get #cudnn_off fullArgs]
@@ -154,8 +147,7 @@ _BlockGrad ::
              Record r -> TensorApply (t u)
 _BlockGrad args
   = let fullArgs
-          = ANON{_data = undefined} ::
-              ParamListFull (ParameterList_BlockGrad t u)
+          = paramListWithDefault (Proxy @(ParameterList_BlockGrad t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes [("data",) . toRaw <$> Just (Anon.get #_data fullArgs)]
@@ -178,10 +170,7 @@ _CTCLoss ::
            Record r -> TensorApply (t u)
 _CTCLoss args
   = let fullArgs
-          = ANON{use_data_lengths = Nothing, use_label_lengths = Nothing,
-                 blank_label = Nothing, _data = undefined, label = Nothing,
-                 data_lengths = Nothing, label_lengths = Nothing}
-              :: ParamListFull (ParameterList_CTCLoss t u)
+          = paramListWithDefault (Proxy @(ParameterList_CTCLoss t u)) args
         scalarArgs
           = catMaybes
               [("use_data_lengths",) . showValue <$>
@@ -214,8 +203,7 @@ _Cast ::
         Record r -> TensorApply (t v)
 _Cast args
   = let fullArgs
-          = ANON{dtype = undefined, _data = undefined} ::
-              ParamListFull (ParameterList_Cast t u)
+          = paramListWithDefault (Proxy @(ParameterList_Cast t u)) args
         scalarArgs
           = catMaybes
               [("dtype",) . showValue <$> Just (Anon.get #dtype fullArgs)]
@@ -236,8 +224,7 @@ _Concat ::
           Record r -> TensorApply (t u)
 _Concat args
   = let fullArgs
-          = ANON{num_args = undefined, dim = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList_Concat t u)
+          = paramListWithDefault (Proxy @(ParameterList_Concat t u)) args
         scalarArgs
           = catMaybes
               [("num_args",) . showValue <$> Just (Anon.get #num_args fullArgs),
@@ -269,12 +256,8 @@ _Convolution ::
                Record r -> TensorApply (t u)
 _Convolution args
   = let fullArgs
-          = ANON{kernel = undefined, stride = Nothing, dilate = Nothing,
-                 pad = Nothing, num_filter = undefined, num_group = Nothing,
-                 workspace = Nothing, no_bias = Nothing, cudnn_tune = Nothing,
-                 cudnn_off = Nothing, layout = Nothing, _data = undefined,
-                 weight = Nothing, bias = Nothing}
-              :: ParamListFull (ParameterList_Convolution t u)
+          = paramListWithDefault (Proxy @(ParameterList_Convolution t u))
+              args
         scalarArgs
           = catMaybes
               [("kernel",) . showValue <$> Just (Anon.get #kernel fullArgs),
@@ -319,12 +302,8 @@ _Convolution_v1 ::
                   Record r -> TensorApply (t u)
 _Convolution_v1 args
   = let fullArgs
-          = ANON{kernel = undefined, stride = Nothing, dilate = Nothing,
-                 pad = Nothing, num_filter = undefined, num_group = Nothing,
-                 workspace = Nothing, no_bias = Nothing, cudnn_tune = Nothing,
-                 cudnn_off = Nothing, layout = Nothing, _data = undefined,
-                 weight = Nothing, bias = Nothing}
-              :: ParamListFull (ParameterList_Convolution_v1 t u)
+          = paramListWithDefault (Proxy @(ParameterList_Convolution_v1 t u))
+              args
         scalarArgs
           = catMaybes
               [("kernel",) . showValue <$> Just (Anon.get #kernel fullArgs),
@@ -362,10 +341,8 @@ _Correlation ::
                Record r -> TensorApply (t u)
 _Correlation args
   = let fullArgs
-          = ANON{kernel_size = Nothing, max_displacement = Nothing,
-                 stride1 = Nothing, stride2 = Nothing, pad_size = Nothing,
-                 is_multiply = Nothing, data1 = Nothing, data2 = Nothing}
-              :: ParamListFull (ParameterList_Correlation t u)
+          = paramListWithDefault (Proxy @(ParameterList_Correlation t u))
+              args
         scalarArgs
           = catMaybes
               [("kernel_size",) . showValue <$> Anon.get #kernel_size fullArgs,
@@ -395,9 +372,7 @@ _Crop ::
         Record r -> TensorApply (t u)
 _Crop args
   = let fullArgs
-          = ANON{num_args = undefined, offset = Nothing, h_w = Nothing,
-                 center_crop = Nothing, _data = undefined}
-              :: ParamListFull (ParameterList_Crop t u)
+          = paramListWithDefault (Proxy @(ParameterList_Crop t u)) args
         scalarArgs
           = catMaybes
               [("num_args",) . showValue <$> Just (Anon.get #num_args fullArgs),
@@ -427,12 +402,8 @@ _CuDNNBatchNorm ::
                   Record r -> TensorApply (t u)
 _CuDNNBatchNorm args
   = let fullArgs
-          = ANON{eps = Nothing, momentum = Nothing, fix_gamma = Nothing,
-                 use_global_stats = Nothing, output_mean_var = Nothing,
-                 axis = Nothing, cudnn_off = Nothing, min_calib_range = Nothing,
-                 max_calib_range = Nothing, _data = undefined, gamma = Nothing,
-                 beta = Nothing, moving_mean = Nothing, moving_var = Nothing}
-              :: ParamListFull (ParameterList_CuDNNBatchNorm t u)
+          = paramListWithDefault (Proxy @(ParameterList_CuDNNBatchNorm t u))
+              args
         scalarArgs
           = catMaybes
               [("eps",) . showValue <$> Anon.get #eps fullArgs,
@@ -469,8 +440,7 @@ _Custom ::
           Record r -> TensorApply (t u)
 _Custom args
   = let fullArgs
-          = ANON{op_type = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList_Custom t u)
+          = paramListWithDefault (Proxy @(ParameterList_Custom t u)) args
         scalarArgs
           = catMaybes
               [("op_type",) . showValue <$> Anon.get #op_type fullArgs]
@@ -502,13 +472,8 @@ _Deconvolution ::
                  Record r -> TensorApply (t u)
 _Deconvolution args
   = let fullArgs
-          = ANON{kernel = undefined, stride = Nothing, dilate = Nothing,
-                 pad = Nothing, adj = Nothing, target_shape = Nothing,
-                 num_filter = undefined, num_group = Nothing, workspace = Nothing,
-                 no_bias = Nothing, cudnn_tune = Nothing, cudnn_off = Nothing,
-                 layout = Nothing, _data = undefined, weight = Nothing,
-                 bias = Nothing}
-              :: ParamListFull (ParameterList_Deconvolution t u)
+          = paramListWithDefault (Proxy @(ParameterList_Deconvolution t u))
+              args
         scalarArgs
           = catMaybes
               [("kernel",) . showValue <$> Just (Anon.get #kernel fullArgs),
@@ -547,9 +512,7 @@ _Dropout ::
            Record r -> TensorApply (t u)
 _Dropout args
   = let fullArgs
-          = ANON{p = Nothing, mode = Nothing, axes = Nothing,
-                 cudnn_off = Nothing, _data = undefined}
-              :: ParamListFull (ParameterList_Dropout t u)
+          = paramListWithDefault (Proxy @(ParameterList_Dropout t u)) args
         scalarArgs
           = catMaybes
               [("p",) . showValue <$> Anon.get #p fullArgs,
@@ -579,10 +542,7 @@ _Embedding ::
              Record r -> TensorApply (t u)
 _Embedding args
   = let fullArgs
-          = ANON{input_dim = undefined, output_dim = undefined,
-                 dtype = Nothing, sparse_grad = Nothing, _data = undefined,
-                 weight = Nothing}
-              :: ParamListFull (ParameterList_Embedding t u)
+          = paramListWithDefault (Proxy @(ParameterList_Embedding t u)) args
         scalarArgs
           = catMaybes
               [("input_dim",) . showValue <$>
@@ -608,8 +568,7 @@ _Flatten ::
            Record r -> TensorApply (t u)
 _Flatten args
   = let fullArgs
-          = ANON{_data = undefined} ::
-              ParamListFull (ParameterList_Flatten t u)
+          = paramListWithDefault (Proxy @(ParameterList_Flatten t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes [("data",) . toRaw <$> Just (Anon.get #_data fullArgs)]
@@ -629,10 +588,8 @@ _FullyConnected ::
                   Record r -> TensorApply (t u)
 _FullyConnected args
   = let fullArgs
-          = ANON{num_hidden = undefined, no_bias = Nothing,
-                 flatten = Nothing, _data = undefined, weight = Nothing,
-                 bias = Nothing}
-              :: ParamListFull (ParameterList_FullyConnected t u)
+          = paramListWithDefault (Proxy @(ParameterList_FullyConnected t u))
+              args
         scalarArgs
           = catMaybes
               [("num_hidden",) . showValue <$>
@@ -659,9 +616,8 @@ _GridGenerator ::
                  Record r -> TensorApply (t u)
 _GridGenerator args
   = let fullArgs
-          = ANON{transform_type = undefined, target_shape = Nothing,
-                 _data = undefined}
-              :: ParamListFull (ParameterList_GridGenerator t u)
+          = paramListWithDefault (Proxy @(ParameterList_GridGenerator t u))
+              args
         scalarArgs
           = catMaybes
               [("transform_type",) . showValue <$>
@@ -685,10 +641,7 @@ _GroupNorm ::
              Record r -> TensorApply (t u)
 _GroupNorm args
   = let fullArgs
-          = ANON{num_groups = Nothing, eps = Nothing,
-                 output_mean_var = Nothing, _data = undefined, gamma = Nothing,
-                 beta = Nothing}
-              :: ParamListFull (ParameterList_GroupNorm t u)
+          = paramListWithDefault (Proxy @(ParameterList_GroupNorm t u)) args
         scalarArgs
           = catMaybes
               [("num_groups",) . showValue <$> Anon.get #num_groups fullArgs,
@@ -717,9 +670,9 @@ _IdentityAttachKLSparseReg ::
                              Record r -> TensorApply (t u)
 _IdentityAttachKLSparseReg args
   = let fullArgs
-          = ANON{sparseness_target = Nothing, penalty = Nothing,
-                 momentum = Nothing, _data = undefined}
-              :: ParamListFull (ParameterList_IdentityAttachKLSparseReg t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList_IdentityAttachKLSparseReg t u))
+              args
         scalarArgs
           = catMaybes
               [("sparseness_target",) . showValue <$>
@@ -743,9 +696,8 @@ _InstanceNorm ::
                 Record r -> TensorApply (t u)
 _InstanceNorm args
   = let fullArgs
-          = ANON{eps = Nothing, _data = undefined, gamma = Nothing,
-                 beta = Nothing}
-              :: ParamListFull (ParameterList_InstanceNorm t u)
+          = paramListWithDefault (Proxy @(ParameterList_InstanceNorm t u))
+              args
         scalarArgs
           = catMaybes [("eps",) . showValue <$> Anon.get #eps fullArgs]
         tensorKeyArgs
@@ -769,8 +721,8 @@ _L2Normalization ::
                    Record r -> TensorApply (t u)
 _L2Normalization args
   = let fullArgs
-          = ANON{eps = Nothing, mode = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList_L2Normalization t u)
+          = paramListWithDefault (Proxy @(ParameterList_L2Normalization t u))
+              args
         scalarArgs
           = catMaybes
               [("eps",) . showValue <$> Anon.get #eps fullArgs,
@@ -793,9 +745,7 @@ _LRN ::
        Record r -> TensorApply (t u)
 _LRN args
   = let fullArgs
-          = ANON{alpha = Nothing, beta = Nothing, knorm = Nothing,
-                 nsize = undefined, _data = undefined}
-              :: ParamListFull (ParameterList_LRN t u)
+          = paramListWithDefault (Proxy @(ParameterList_LRN t u)) args
         scalarArgs
           = catMaybes
               [("alpha",) . showValue <$> Anon.get #alpha fullArgs,
@@ -820,9 +770,7 @@ _LayerNorm ::
              Record r -> TensorApply (t u)
 _LayerNorm args
   = let fullArgs
-          = ANON{axis = Nothing, eps = Nothing, output_mean_var = Nothing,
-                 _data = undefined, gamma = Nothing, beta = Nothing}
-              :: ParamListFull (ParameterList_LayerNorm t u)
+          = paramListWithDefault (Proxy @(ParameterList_LayerNorm t u)) args
         scalarArgs
           = catMaybes
               [("axis",) . showValue <$> Anon.get #axis fullArgs,
@@ -853,9 +801,7 @@ _LeakyReLU ::
              Record r -> TensorApply (t u)
 _LeakyReLU args
   = let fullArgs
-          = ANON{act_type = Nothing, slope = Nothing, lower_bound = Nothing,
-                 upper_bound = Nothing, _data = undefined, gamma = Nothing}
-              :: ParamListFull (ParameterList_LeakyReLU t u)
+          = paramListWithDefault (Proxy @(ParameterList_LeakyReLU t u)) args
         scalarArgs
           = catMaybes
               [("act_type",) . showValue <$> Anon.get #act_type fullArgs,
@@ -881,8 +827,9 @@ _LinearRegressionOutput ::
                           Record r -> TensorApply (t u)
 _LinearRegressionOutput args
   = let fullArgs
-          = ANON{grad_scale = Nothing, _data = undefined, label = Nothing} ::
-              ParamListFull (ParameterList_LinearRegressionOutput t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList_LinearRegressionOutput t u))
+              args
         scalarArgs
           = catMaybes
               [("grad_scale",) . showValue <$> Anon.get #grad_scale fullArgs]
@@ -906,8 +853,9 @@ _LogisticRegressionOutput ::
                             Record r -> TensorApply (t u)
 _LogisticRegressionOutput args
   = let fullArgs
-          = ANON{grad_scale = Nothing, _data = undefined, label = Nothing} ::
-              ParamListFull (ParameterList_LogisticRegressionOutput t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList_LogisticRegressionOutput t u))
+              args
         scalarArgs
           = catMaybes
               [("grad_scale",) . showValue <$> Anon.get #grad_scale fullArgs]
@@ -930,8 +878,9 @@ _MAERegressionOutput ::
                        Record r -> TensorApply (t u)
 _MAERegressionOutput args
   = let fullArgs
-          = ANON{grad_scale = Nothing, _data = undefined, label = Nothing} ::
-              ParamListFull (ParameterList_MAERegressionOutput t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList_MAERegressionOutput t u))
+              args
         scalarArgs
           = catMaybes
               [("grad_scale",) . showValue <$> Anon.get #grad_scale fullArgs]
@@ -956,9 +905,7 @@ _MakeLoss ::
             Record r -> TensorApply (t u)
 _MakeLoss args
   = let fullArgs
-          = ANON{grad_scale = Nothing, valid_thresh = Nothing,
-                 normalization = Nothing, _data = undefined}
-              :: ParamListFull (ParameterList_MakeLoss t u)
+          = paramListWithDefault (Proxy @(ParameterList_MakeLoss t u)) args
         scalarArgs
           = catMaybes
               [("grad_scale",) . showValue <$> Anon.get #grad_scale fullArgs,
@@ -983,9 +930,7 @@ _Pad ::
        Record r -> TensorApply (t u)
 _Pad args
   = let fullArgs
-          = ANON{mode = undefined, pad_width = undefined,
-                 constant_value = Nothing, _data = undefined}
-              :: ParamListFull (ParameterList_Pad t u)
+          = paramListWithDefault (Proxy @(ParameterList_Pad t u)) args
         scalarArgs
           = catMaybes
               [("mode",) . showValue <$> Just (Anon.get #mode fullArgs),
@@ -1020,12 +965,7 @@ _Pooling ::
            Record r -> TensorApply (t u)
 _Pooling args
   = let fullArgs
-          = ANON{kernel = Nothing, pool_type = Nothing,
-                 global_pool = Nothing, cudnn_off = Nothing,
-                 pooling_convention = Nothing, stride = Nothing, pad = Nothing,
-                 p_value = Nothing, count_include_pad = Nothing, layout = Nothing,
-                 _data = undefined}
-              :: ParamListFull (ParameterList_Pooling t u)
+          = paramListWithDefault (Proxy @(ParameterList_Pooling t u)) args
         scalarArgs
           = catMaybes
               [("kernel",) . showValue <$> Anon.get #kernel fullArgs,
@@ -1061,10 +1001,7 @@ _Pooling_v1 ::
               Record r -> TensorApply (t u)
 _Pooling_v1 args
   = let fullArgs
-          = ANON{kernel = Nothing, pool_type = Nothing,
-                 global_pool = Nothing, pooling_convention = Nothing,
-                 stride = Nothing, pad = Nothing, _data = undefined}
-              :: ParamListFull (ParameterList_Pooling_v1 t u)
+          = paramListWithDefault (Proxy @(ParameterList_Pooling_v1 t u)) args
         scalarArgs
           = catMaybes
               [("kernel",) . showValue <$> Anon.get #kernel fullArgs,
@@ -1102,14 +1039,7 @@ _RNN ::
        Record r -> TensorApply (t u)
 _RNN args
   = let fullArgs
-          = ANON{state_size = undefined, num_layers = undefined,
-                 bidirectional = Nothing, mode = undefined, p = Nothing,
-                 state_outputs = Nothing, projection_size = Nothing,
-                 lstm_state_clip_min = Nothing, lstm_state_clip_max = Nothing,
-                 lstm_state_clip_nan = Nothing, use_sequence_length = Nothing,
-                 _data = undefined, parameters = Nothing, state = Nothing,
-                 state_cell = Nothing, sequence_length = Nothing}
-              :: ParamListFull (ParameterList_RNN t u)
+          = paramListWithDefault (Proxy @(ParameterList_RNN t u)) args
         scalarArgs
           = catMaybes
               [("state_size",) . showValue <$>
@@ -1156,9 +1086,7 @@ _ROIPooling ::
               Record r -> TensorApply (t u)
 _ROIPooling args
   = let fullArgs
-          = ANON{pooled_size = undefined, spatial_scale = undefined,
-                 _data = undefined, rois = Nothing}
-              :: ParamListFull (ParameterList_ROIPooling t u)
+          = paramListWithDefault (Proxy @(ParameterList_ROIPooling t u)) args
         scalarArgs
           = catMaybes
               [("pooled_size",) . showValue <$>
@@ -1185,9 +1113,7 @@ _Reshape ::
            Record r -> TensorApply (t u)
 _Reshape args
   = let fullArgs
-          = ANON{shape = Nothing, reverse = Nothing, target_shape = Nothing,
-                 keep_highest = Nothing, _data = undefined}
-              :: ParamListFull (ParameterList_Reshape t u)
+          = paramListWithDefault (Proxy @(ParameterList_Reshape t u)) args
         scalarArgs
           = catMaybes
               [("shape",) . showValue <$> Anon.get #shape fullArgs,
@@ -1213,9 +1139,7 @@ _SVMOutput ::
              Record r -> TensorApply (t u)
 _SVMOutput args
   = let fullArgs
-          = ANON{margin = Nothing, regularization_coefficient = Nothing,
-                 use_linear = Nothing, _data = undefined, label = Nothing}
-              :: ParamListFull (ParameterList_SVMOutput t u)
+          = paramListWithDefault (Proxy @(ParameterList_SVMOutput t u)) args
         scalarArgs
           = catMaybes
               [("margin",) . showValue <$> Anon.get #margin fullArgs,
@@ -1241,9 +1165,8 @@ _SequenceLast ::
                 Record r -> TensorApply (t u)
 _SequenceLast args
   = let fullArgs
-          = ANON{use_sequence_length = Nothing, axis = Nothing,
-                 _data = undefined, sequence_length = Nothing}
-              :: ParamListFull (ParameterList_SequenceLast t u)
+          = paramListWithDefault (Proxy @(ParameterList_SequenceLast t u))
+              args
         scalarArgs
           = catMaybes
               [("use_sequence_length",) . showValue <$>
@@ -1270,9 +1193,8 @@ _SequenceMask ::
                 Record r -> TensorApply (t u)
 _SequenceMask args
   = let fullArgs
-          = ANON{use_sequence_length = Nothing, value = Nothing,
-                 axis = Nothing, _data = undefined, sequence_length = Nothing}
-              :: ParamListFull (ParameterList_SequenceMask t u)
+          = paramListWithDefault (Proxy @(ParameterList_SequenceMask t u))
+              args
         scalarArgs
           = catMaybes
               [("use_sequence_length",) . showValue <$>
@@ -1299,9 +1221,8 @@ _SequenceReverse ::
                    Record r -> TensorApply (t u)
 _SequenceReverse args
   = let fullArgs
-          = ANON{use_sequence_length = Nothing, axis = Nothing,
-                 _data = undefined, sequence_length = Nothing}
-              :: ParamListFull (ParameterList_SequenceReverse t u)
+          = paramListWithDefault (Proxy @(ParameterList_SequenceReverse t u))
+              args
         scalarArgs
           = catMaybes
               [("use_sequence_length",) . showValue <$>
@@ -1327,9 +1248,8 @@ _SliceChannel ::
                 Record r -> TensorApply (t u)
 _SliceChannel args
   = let fullArgs
-          = ANON{num_outputs = undefined, axis = Nothing,
-                 squeeze_axis = Nothing, _data = undefined}
-              :: ParamListFull (ParameterList_SliceChannel t u)
+          = paramListWithDefault (Proxy @(ParameterList_SliceChannel t u))
+              args
         scalarArgs
           = catMaybes
               [("num_outputs",) . showValue <$>
@@ -1353,8 +1273,9 @@ _SoftmaxActivation ::
                      Record r -> TensorApply (t u)
 _SoftmaxActivation args
   = let fullArgs
-          = ANON{mode = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList_SoftmaxActivation t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList_SoftmaxActivation t u))
+              args
         scalarArgs
           = catMaybes [("mode",) . showValue <$> Anon.get #mode fullArgs]
         tensorKeyArgs
@@ -1378,12 +1299,8 @@ _SoftmaxOutput ::
                  Record r -> TensorApply (t u)
 _SoftmaxOutput args
   = let fullArgs
-          = ANON{grad_scale = Nothing, ignore_label = Nothing,
-                 multi_output = Nothing, use_ignore = Nothing,
-                 preserve_shape = Nothing, normalization = Nothing,
-                 out_grad = Nothing, smooth_alpha = Nothing, _data = undefined,
-                 label = Nothing}
-              :: ParamListFull (ParameterList_SoftmaxOutput t u)
+          = paramListWithDefault (Proxy @(ParameterList_SoftmaxOutput t u))
+              args
         scalarArgs
           = catMaybes
               [("grad_scale",) . showValue <$> Anon.get #grad_scale fullArgs,
@@ -1418,10 +1335,9 @@ _SpatialTransformer ::
                       Record r -> TensorApply (t u)
 _SpatialTransformer args
   = let fullArgs
-          = ANON{target_shape = Nothing, transform_type = undefined,
-                 sampler_type = undefined, cudnn_off = Nothing, _data = undefined,
-                 loc = Nothing}
-              :: ParamListFull (ParameterList_SpatialTransformer t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList_SpatialTransformer t u))
+              args
         scalarArgs
           = catMaybes
               [("target_shape",) . showValue <$> Anon.get #target_shape fullArgs,
@@ -1449,8 +1365,7 @@ _SwapAxis ::
             Record r -> TensorApply (t u)
 _SwapAxis args
   = let fullArgs
-          = ANON{dim1 = Nothing, dim2 = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList_SwapAxis t u)
+          = paramListWithDefault (Proxy @(ParameterList_SwapAxis t u)) args
         scalarArgs
           = catMaybes
               [("dim1",) . showValue <$> Anon.get #dim1 fullArgs,
@@ -1475,10 +1390,7 @@ _UpSampling ::
               Record r -> TensorApply (t u)
 _UpSampling args
   = let fullArgs
-          = ANON{scale = undefined, num_filter = Nothing,
-                 sample_type = undefined, multi_input_mode = Nothing,
-                 num_args = undefined, workspace = Nothing, _data = undefined}
-              :: ParamListFull (ParameterList_UpSampling t u)
+          = paramListWithDefault (Proxy @(ParameterList_UpSampling t u)) args
         scalarArgs
           = catMaybes
               [("scale",) . showValue <$> Just (Anon.get #scale fullArgs),
@@ -1503,8 +1415,7 @@ __CachedOp ::
              Record r -> TensorApply (t u)
 __CachedOp args
   = let fullArgs
-          = ANON{_data = undefined} ::
-              ParamListFull (ParameterList__CachedOp t u)
+          = paramListWithDefault (Proxy @(ParameterList__CachedOp t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
         tensorVarArgs
@@ -1521,8 +1432,9 @@ __CachedOpThreadSafe ::
                        Record r -> TensorApply (t u)
 __CachedOpThreadSafe args
   = let fullArgs
-          = ANON{_data = undefined} ::
-              ParamListFull (ParameterList__CachedOpThreadSafe t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__CachedOpThreadSafe t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
         tensorVarArgs
@@ -1538,8 +1450,7 @@ __FusedOp ::
             Record r -> TensorApply (t u)
 __FusedOp args
   = let fullArgs
-          = ANON{_data = undefined} ::
-              ParamListFull (ParameterList__FusedOp t u)
+          = paramListWithDefault (Proxy @(ParameterList__FusedOp t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
         tensorVarArgs
@@ -1554,7 +1465,8 @@ __NoGradient ::
                 DType u) =>
                Record r -> TensorApply (t u)
 __NoGradient args
-  = let fullArgs = ANON{} :: ParamListFull ParameterList__NoGradient
+  = let fullArgs
+          = paramListWithDefault (Proxy @(ParameterList__NoGradient)) args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -1576,11 +1488,8 @@ __adamw_update ::
                  Record r -> TensorApply (t u)
 __adamw_update args
   = let fullArgs
-          = ANON{lr = undefined, beta1 = Nothing, beta2 = Nothing,
-                 epsilon = Nothing, wd = Nothing, eta = undefined,
-                 clip_gradient = Nothing, weight = Nothing, grad = Nothing,
-                 mean = Nothing, var = Nothing, rescale_grad = Nothing}
-              :: ParamListFull (ParameterList__adamw_update t u)
+          = paramListWithDefault (Proxy @(ParameterList__adamw_update t u))
+              args
         scalarArgs
           = catMaybes
               [("lr",) . showValue <$> Just (Anon.get #lr fullArgs),
@@ -1619,10 +1528,7 @@ __arange ::
            Record r -> TensorApply (t u)
 __arange args
   = let fullArgs
-          = ANON{start = undefined, stop = Nothing, step = Nothing,
-                 repeat = Nothing, infer_range = Nothing, ctx = Nothing,
-                 dtype = Nothing}
-              :: ParamListFull ParameterList__arange
+          = paramListWithDefault (Proxy @(ParameterList__arange)) args
         scalarArgs
           = catMaybes
               [("start",) . showValue <$> Just (Anon.get #start fullArgs),
@@ -1646,7 +1552,9 @@ __backward_Activation ::
                         Record r -> TensorApply (t u)
 __backward_Activation args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_Activation
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_Activation))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -1662,7 +1570,8 @@ __backward_BatchNorm ::
                        Record r -> TensorApply (t u)
 __backward_BatchNorm args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_BatchNorm
+          = paramListWithDefault (Proxy @(ParameterList__backward_BatchNorm))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -1678,7 +1587,9 @@ __backward_BatchNorm_v1 ::
                           Record r -> TensorApply (t u)
 __backward_BatchNorm_v1 args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_BatchNorm_v1
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_BatchNorm_v1))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -1694,7 +1605,9 @@ __backward_BilinearSampler ::
                              Record r -> TensorApply (t u)
 __backward_BilinearSampler args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_BilinearSampler
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_BilinearSampler))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -1710,7 +1623,8 @@ __backward_CachedOp ::
                       Record r -> TensorApply (t u)
 __backward_CachedOp args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_CachedOp
+          = paramListWithDefault (Proxy @(ParameterList__backward_CachedOp))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -1726,7 +1640,8 @@ __backward_Concat ::
                     Record r -> TensorApply (t u)
 __backward_Concat args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_Concat
+          = paramListWithDefault (Proxy @(ParameterList__backward_Concat))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -1742,7 +1657,9 @@ __backward_Convolution ::
                          Record r -> TensorApply (t u)
 __backward_Convolution args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_Convolution
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_Convolution))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -1758,7 +1675,9 @@ __backward_Convolution_v1 ::
                             Record r -> TensorApply (t u)
 __backward_Convolution_v1 args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_Convolution_v1
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_Convolution_v1))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -1774,7 +1693,9 @@ __backward_Correlation ::
                          Record r -> TensorApply (t u)
 __backward_Correlation args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_Correlation
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_Correlation))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -1790,7 +1711,7 @@ __backward_Crop ::
                   Record r -> TensorApply (t u)
 __backward_Crop args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_Crop
+          = paramListWithDefault (Proxy @(ParameterList__backward_Crop)) args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -1806,7 +1727,9 @@ __backward_CuDNNBatchNorm ::
                             Record r -> TensorApply (t u)
 __backward_CuDNNBatchNorm args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_CuDNNBatchNorm
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_CuDNNBatchNorm))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -1822,7 +1745,8 @@ __backward_Custom ::
                     Record r -> TensorApply (t u)
 __backward_Custom args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_Custom
+          = paramListWithDefault (Proxy @(ParameterList__backward_Custom))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -1838,7 +1762,9 @@ __backward_CustomFunction ::
                             Record r -> TensorApply (t u)
 __backward_CustomFunction args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_CustomFunction
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_CustomFunction))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -1854,7 +1780,9 @@ __backward_Deconvolution ::
                            Record r -> TensorApply (t u)
 __backward_Deconvolution args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_Deconvolution
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_Deconvolution))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -1870,7 +1798,8 @@ __backward_Dropout ::
                      Record r -> TensorApply (t u)
 __backward_Dropout args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_Dropout
+          = paramListWithDefault (Proxy @(ParameterList__backward_Dropout))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -1886,7 +1815,8 @@ __backward_Embedding ::
                        Record r -> TensorApply (t u)
 __backward_Embedding args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_Embedding
+          = paramListWithDefault (Proxy @(ParameterList__backward_Embedding))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -1902,7 +1832,9 @@ __backward_FullyConnected ::
                             Record r -> TensorApply (t u)
 __backward_FullyConnected args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_FullyConnected
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_FullyConnected))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -1918,7 +1850,9 @@ __backward_GridGenerator ::
                            Record r -> TensorApply (t u)
 __backward_GridGenerator args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_GridGenerator
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_GridGenerator))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -1934,7 +1868,8 @@ __backward_GroupNorm ::
                        Record r -> TensorApply (t u)
 __backward_GroupNorm args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_GroupNorm
+          = paramListWithDefault (Proxy @(ParameterList__backward_GroupNorm))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -1952,8 +1887,9 @@ __backward_IdentityAttachKLSparseReg ::
                                        Record r -> TensorApply (t u)
 __backward_IdentityAttachKLSparseReg args
   = let fullArgs
-          = ANON{} ::
-              ParamListFull ParameterList__backward_IdentityAttachKLSparseReg
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_IdentityAttachKLSparseReg))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -1969,7 +1905,9 @@ __backward_InstanceNorm ::
                           Record r -> TensorApply (t u)
 __backward_InstanceNorm args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_InstanceNorm
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_InstanceNorm))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -1985,7 +1923,9 @@ __backward_L2Normalization ::
                              Record r -> TensorApply (t u)
 __backward_L2Normalization args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_L2Normalization
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_L2Normalization))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -2001,7 +1941,7 @@ __backward_LRN ::
                  Record r -> TensorApply (t u)
 __backward_LRN args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_LRN
+          = paramListWithDefault (Proxy @(ParameterList__backward_LRN)) args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -2017,7 +1957,8 @@ __backward_LayerNorm ::
                        Record r -> TensorApply (t u)
 __backward_LayerNorm args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_LayerNorm
+          = paramListWithDefault (Proxy @(ParameterList__backward_LayerNorm))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -2033,7 +1974,8 @@ __backward_LeakyReLU ::
                        Record r -> TensorApply (t u)
 __backward_LeakyReLU args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_LeakyReLU
+          = paramListWithDefault (Proxy @(ParameterList__backward_LeakyReLU))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -2049,7 +1991,8 @@ __backward_MakeLoss ::
                       Record r -> TensorApply (t u)
 __backward_MakeLoss args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_MakeLoss
+          = paramListWithDefault (Proxy @(ParameterList__backward_MakeLoss))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -2065,7 +2008,7 @@ __backward_Pad ::
                  Record r -> TensorApply (t u)
 __backward_Pad args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_Pad
+          = paramListWithDefault (Proxy @(ParameterList__backward_Pad)) args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -2081,7 +2024,8 @@ __backward_Pooling ::
                      Record r -> TensorApply (t u)
 __backward_Pooling args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_Pooling
+          = paramListWithDefault (Proxy @(ParameterList__backward_Pooling))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -2097,7 +2041,9 @@ __backward_Pooling_v1 ::
                         Record r -> TensorApply (t u)
 __backward_Pooling_v1 args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_Pooling_v1
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_Pooling_v1))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -2113,7 +2059,7 @@ __backward_RNN ::
                  Record r -> TensorApply (t u)
 __backward_RNN args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_RNN
+          = paramListWithDefault (Proxy @(ParameterList__backward_RNN)) args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -2129,7 +2075,8 @@ __backward_ROIAlign ::
                       Record r -> TensorApply (t u)
 __backward_ROIAlign args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_ROIAlign
+          = paramListWithDefault (Proxy @(ParameterList__backward_ROIAlign))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -2145,7 +2092,9 @@ __backward_ROIPooling ::
                         Record r -> TensorApply (t u)
 __backward_ROIPooling args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_ROIPooling
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_ROIPooling))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -2161,7 +2110,8 @@ __backward_RROIAlign ::
                        Record r -> TensorApply (t u)
 __backward_RROIAlign args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_RROIAlign
+          = paramListWithDefault (Proxy @(ParameterList__backward_RROIAlign))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -2177,7 +2127,8 @@ __backward_SVMOutput ::
                        Record r -> TensorApply (t u)
 __backward_SVMOutput args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_SVMOutput
+          = paramListWithDefault (Proxy @(ParameterList__backward_SVMOutput))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -2193,7 +2144,9 @@ __backward_SequenceLast ::
                           Record r -> TensorApply (t u)
 __backward_SequenceLast args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_SequenceLast
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_SequenceLast))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -2209,7 +2162,9 @@ __backward_SequenceMask ::
                           Record r -> TensorApply (t u)
 __backward_SequenceMask args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_SequenceMask
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_SequenceMask))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -2225,7 +2180,9 @@ __backward_SequenceReverse ::
                              Record r -> TensorApply (t u)
 __backward_SequenceReverse args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_SequenceReverse
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_SequenceReverse))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -2241,7 +2198,9 @@ __backward_SliceChannel ::
                           Record r -> TensorApply (t u)
 __backward_SliceChannel args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_SliceChannel
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_SliceChannel))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -2257,7 +2216,9 @@ __backward_SoftmaxActivation ::
                                Record r -> TensorApply (t u)
 __backward_SoftmaxActivation args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_SoftmaxActivation
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_SoftmaxActivation))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -2273,7 +2234,9 @@ __backward_SoftmaxOutput ::
                            Record r -> TensorApply (t u)
 __backward_SoftmaxOutput args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_SoftmaxOutput
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_SoftmaxOutput))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -2289,7 +2252,9 @@ __backward_SparseEmbedding ::
                              Record r -> TensorApply (t u)
 __backward_SparseEmbedding args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_SparseEmbedding
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_SparseEmbedding))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -2305,8 +2270,9 @@ __backward_SpatialTransformer ::
                                 Record r -> TensorApply (t u)
 __backward_SpatialTransformer args
   = let fullArgs
-          = ANON{} ::
-              ParamListFull ParameterList__backward_SpatialTransformer
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_SpatialTransformer))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -2322,7 +2288,8 @@ __backward_SwapAxis ::
                       Record r -> TensorApply (t u)
 __backward_SwapAxis args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_SwapAxis
+          = paramListWithDefault (Proxy @(ParameterList__backward_SwapAxis))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -2338,7 +2305,9 @@ __backward_UpSampling ::
                         Record r -> TensorApply (t u)
 __backward_UpSampling args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_UpSampling
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_UpSampling))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -2354,7 +2323,9 @@ __backward__CrossDeviceCopy ::
                               Record r -> TensorApply (t u)
 __backward__CrossDeviceCopy args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward__CrossDeviceCopy
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward__CrossDeviceCopy))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -2370,7 +2341,8 @@ __backward__NDArray ::
                       Record r -> TensorApply (t u)
 __backward__NDArray args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward__NDArray
+          = paramListWithDefault (Proxy @(ParameterList__backward__NDArray))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -2386,7 +2358,8 @@ __backward__Native ::
                      Record r -> TensorApply (t u)
 __backward__Native args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward__Native
+          = paramListWithDefault (Proxy @(ParameterList__backward__Native))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -2405,9 +2378,9 @@ __backward__contrib_DeformableConvolution ::
                                             Record r -> TensorApply (t u)
 __backward__contrib_DeformableConvolution args
   = let fullArgs
-          = ANON{} ::
-              ParamListFull
-                ParameterList__backward__contrib_DeformableConvolution
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward__contrib_DeformableConvolution))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -2426,9 +2399,9 @@ __backward__contrib_DeformablePSROIPooling ::
                                              Record r -> TensorApply (t u)
 __backward__contrib_DeformablePSROIPooling args
   = let fullArgs
-          = ANON{} ::
-              ParamListFull
-                ParameterList__backward__contrib_DeformablePSROIPooling
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward__contrib_DeformablePSROIPooling))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -2448,9 +2421,10 @@ __backward__contrib_ModulatedDeformableConvolution ::
                                                      Record r -> TensorApply (t u)
 __backward__contrib_ModulatedDeformableConvolution args
   = let fullArgs
-          = ANON{} ::
-              ParamListFull
-                ParameterList__backward__contrib_ModulatedDeformableConvolution
+          = paramListWithDefault
+              (Proxy
+                 @(ParameterList__backward__contrib_ModulatedDeformableConvolution))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -2470,8 +2444,9 @@ __backward__contrib_MultiBoxDetection ::
                                         Record r -> TensorApply (t u)
 __backward__contrib_MultiBoxDetection args
   = let fullArgs
-          = ANON{} ::
-              ParamListFull ParameterList__backward__contrib_MultiBoxDetection
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward__contrib_MultiBoxDetection))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -2488,8 +2463,9 @@ __backward__contrib_MultiBoxPrior ::
                                     Record r -> TensorApply (t u)
 __backward__contrib_MultiBoxPrior args
   = let fullArgs
-          = ANON{} ::
-              ParamListFull ParameterList__backward__contrib_MultiBoxPrior
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward__contrib_MultiBoxPrior))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -2506,8 +2482,9 @@ __backward__contrib_MultiBoxTarget ::
                                      Record r -> TensorApply (t u)
 __backward__contrib_MultiBoxTarget args
   = let fullArgs
-          = ANON{} ::
-              ParamListFull ParameterList__backward__contrib_MultiBoxTarget
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward__contrib_MultiBoxTarget))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -2524,8 +2501,9 @@ __backward__contrib_MultiProposal ::
                                     Record r -> TensorApply (t u)
 __backward__contrib_MultiProposal args
   = let fullArgs
-          = ANON{} ::
-              ParamListFull ParameterList__backward__contrib_MultiProposal
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward__contrib_MultiProposal))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -2542,8 +2520,9 @@ __backward__contrib_PSROIPooling ::
                                    Record r -> TensorApply (t u)
 __backward__contrib_PSROIPooling args
   = let fullArgs
-          = ANON{} ::
-              ParamListFull ParameterList__backward__contrib_PSROIPooling
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward__contrib_PSROIPooling))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -2559,7 +2538,9 @@ __backward__contrib_Proposal ::
                                Record r -> TensorApply (t u)
 __backward__contrib_Proposal args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward__contrib_Proposal
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward__contrib_Proposal))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -2576,8 +2557,9 @@ __backward__contrib_SyncBatchNorm ::
                                     Record r -> TensorApply (t u)
 __backward__contrib_SyncBatchNorm args
   = let fullArgs
-          = ANON{} ::
-              ParamListFull ParameterList__backward__contrib_SyncBatchNorm
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward__contrib_SyncBatchNorm))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -2594,8 +2576,9 @@ __backward__contrib_count_sketch ::
                                    Record r -> TensorApply (t u)
 __backward__contrib_count_sketch args
   = let fullArgs
-          = ANON{} ::
-              ParamListFull ParameterList__backward__contrib_count_sketch
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward__contrib_count_sketch))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -2611,7 +2594,9 @@ __backward__contrib_fft ::
                           Record r -> TensorApply (t u)
 __backward__contrib_fft args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward__contrib_fft
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward__contrib_fft))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -2627,7 +2612,9 @@ __backward__contrib_ifft ::
                            Record r -> TensorApply (t u)
 __backward__contrib_ifft args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward__contrib_ifft
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward__contrib_ifft))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -2644,8 +2631,8 @@ __backward_abs ::
                  Record r -> TensorApply (t u)
 __backward_abs args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList__backward_abs t u)
+          = paramListWithDefault (Proxy @(ParameterList__backward_abs t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -2664,7 +2651,7 @@ __backward_add ::
                  Record r -> TensorApply (t u)
 __backward_add args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_add
+          = paramListWithDefault (Proxy @(ParameterList__backward_add)) args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -2680,7 +2667,8 @@ __backward_amp_cast ::
                       Record r -> TensorApply (t u)
 __backward_amp_cast args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_amp_cast
+          = paramListWithDefault (Proxy @(ParameterList__backward_amp_cast))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -2698,9 +2686,9 @@ __backward_amp_multicast ::
                            Record r -> TensorApply (t u)
 __backward_amp_multicast args
   = let fullArgs
-          = ANON{num_outputs = undefined, cast_narrow = Nothing,
-                 grad = undefined}
-              :: ParamListFull (ParameterList__backward_amp_multicast t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_amp_multicast t u))
+              args
         scalarArgs
           = catMaybes
               [("num_outputs",) . showValue <$>
@@ -2722,8 +2710,9 @@ __backward_arccos ::
                     Record r -> TensorApply (t u)
 __backward_arccos args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList__backward_arccos t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_arccos t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -2743,8 +2732,9 @@ __backward_arccosh ::
                      Record r -> TensorApply (t u)
 __backward_arccosh args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList__backward_arccosh t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_arccosh t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -2764,8 +2754,9 @@ __backward_arcsin ::
                     Record r -> TensorApply (t u)
 __backward_arcsin args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList__backward_arcsin t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_arcsin t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -2785,8 +2776,9 @@ __backward_arcsinh ::
                      Record r -> TensorApply (t u)
 __backward_arcsinh args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList__backward_arcsinh t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_arcsinh t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -2806,8 +2798,9 @@ __backward_arctan ::
                     Record r -> TensorApply (t u)
 __backward_arctan args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList__backward_arctan t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_arctan t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -2827,8 +2820,9 @@ __backward_arctanh ::
                      Record r -> TensorApply (t u)
 __backward_arctanh args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList__backward_arctanh t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_arctanh t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -2848,8 +2842,9 @@ __backward_backward_FullyConnected ::
                                      Record r -> TensorApply (t u)
 __backward_backward_FullyConnected args
   = let fullArgs
-          = ANON{} ::
-              ParamListFull ParameterList__backward_backward_FullyConnected
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_backward_FullyConnected))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -2865,7 +2860,9 @@ __backward_broadcast_add ::
                            Record r -> TensorApply (t u)
 __backward_broadcast_add args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_broadcast_add
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_broadcast_add))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -2881,7 +2878,9 @@ __backward_broadcast_div ::
                            Record r -> TensorApply (t u)
 __backward_broadcast_div args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_broadcast_div
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_broadcast_div))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -2900,8 +2899,9 @@ __backward_broadcast_exponential ::
                                    Record r -> TensorApply (t u)
 __backward_broadcast_exponential args
   = let fullArgs
-          = ANON{scale = Nothing, size = Nothing, ctx = Nothing} ::
-              ParamListFull ParameterList__backward_broadcast_exponential
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_broadcast_exponential))
+              args
         scalarArgs
           = catMaybes
               [("scale",) . showValue <$> Anon.get #scale fullArgs,
@@ -2924,9 +2924,9 @@ __backward_broadcast_gumbel ::
                               Record r -> TensorApply (t u)
 __backward_broadcast_gumbel args
   = let fullArgs
-          = ANON{loc = undefined, scale = undefined, size = Nothing,
-                 ctx = Nothing}
-              :: ParamListFull ParameterList__backward_broadcast_gumbel
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_broadcast_gumbel))
+              args
         scalarArgs
           = catMaybes
               [("loc",) . showValue <$> Just (Anon.get #loc fullArgs),
@@ -2947,7 +2947,9 @@ __backward_broadcast_hypot ::
                              Record r -> TensorApply (t u)
 __backward_broadcast_hypot args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_broadcast_hypot
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_broadcast_hypot))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -2966,9 +2968,9 @@ __backward_broadcast_logistic ::
                                 Record r -> TensorApply (t u)
 __backward_broadcast_logistic args
   = let fullArgs
-          = ANON{loc = undefined, scale = undefined, size = Nothing,
-                 ctx = Nothing}
-              :: ParamListFull ParameterList__backward_broadcast_logistic
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_broadcast_logistic))
+              args
         scalarArgs
           = catMaybes
               [("loc",) . showValue <$> Just (Anon.get #loc fullArgs),
@@ -2989,7 +2991,9 @@ __backward_broadcast_maximum ::
                                Record r -> TensorApply (t u)
 __backward_broadcast_maximum args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_broadcast_maximum
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_broadcast_maximum))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -3005,7 +3009,9 @@ __backward_broadcast_minimum ::
                                Record r -> TensorApply (t u)
 __backward_broadcast_minimum args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_broadcast_minimum
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_broadcast_minimum))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -3021,7 +3027,9 @@ __backward_broadcast_mod ::
                            Record r -> TensorApply (t u)
 __backward_broadcast_mod args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_broadcast_mod
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_broadcast_mod))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -3037,7 +3045,9 @@ __backward_broadcast_mul ::
                            Record r -> TensorApply (t u)
 __backward_broadcast_mul args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_broadcast_mul
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_broadcast_mul))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -3057,9 +3067,9 @@ __backward_broadcast_normal ::
                               Record r -> TensorApply (t u)
 __backward_broadcast_normal args
   = let fullArgs
-          = ANON{loc = undefined, scale = undefined, size = Nothing,
-                 ctx = Nothing, dtype = Nothing}
-              :: ParamListFull ParameterList__backward_broadcast_normal
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_broadcast_normal))
+              args
         scalarArgs
           = catMaybes
               [("loc",) . showValue <$> Just (Anon.get #loc fullArgs),
@@ -3083,8 +3093,9 @@ __backward_broadcast_pareto ::
                               Record r -> TensorApply (t u)
 __backward_broadcast_pareto args
   = let fullArgs
-          = ANON{a = Nothing, size = Nothing, ctx = Nothing} ::
-              ParamListFull ParameterList__backward_broadcast_pareto
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_broadcast_pareto))
+              args
         scalarArgs
           = catMaybes
               [("a",) . showValue <$> Anon.get #a fullArgs,
@@ -3104,7 +3115,9 @@ __backward_broadcast_power ::
                              Record r -> TensorApply (t u)
 __backward_broadcast_power args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_broadcast_power
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_broadcast_power))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -3122,8 +3135,9 @@ __backward_broadcast_rayleigh ::
                                 Record r -> TensorApply (t u)
 __backward_broadcast_rayleigh args
   = let fullArgs
-          = ANON{scale = Nothing, size = Nothing, ctx = Nothing} ::
-              ParamListFull ParameterList__backward_broadcast_rayleigh
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_broadcast_rayleigh))
+              args
         scalarArgs
           = catMaybes
               [("scale",) . showValue <$> Anon.get #scale fullArgs,
@@ -3143,7 +3157,9 @@ __backward_broadcast_sub ::
                            Record r -> TensorApply (t u)
 __backward_broadcast_sub args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_broadcast_sub
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_broadcast_sub))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -3161,8 +3177,9 @@ __backward_broadcast_weibull ::
                                Record r -> TensorApply (t u)
 __backward_broadcast_weibull args
   = let fullArgs
-          = ANON{a = Nothing, size = Nothing, ctx = Nothing} ::
-              ParamListFull ParameterList__backward_broadcast_weibull
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_broadcast_weibull))
+              args
         scalarArgs
           = catMaybes
               [("a",) . showValue <$> Anon.get #a fullArgs,
@@ -3182,7 +3199,7 @@ __backward_cast ::
                   Record r -> TensorApply (t u)
 __backward_cast args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_cast
+          = paramListWithDefault (Proxy @(ParameterList__backward_cast)) args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -3199,8 +3216,8 @@ __backward_cbrt ::
                   Record r -> TensorApply (t u)
 __backward_cbrt args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList__backward_cbrt t u)
+          = paramListWithDefault (Proxy @(ParameterList__backward_cbrt t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -3219,7 +3236,7 @@ __backward_clip ::
                   Record r -> TensorApply (t u)
 __backward_clip args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_clip
+          = paramListWithDefault (Proxy @(ParameterList__backward_clip)) args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -3235,7 +3252,8 @@ __backward_col2im ::
                     Record r -> TensorApply (t u)
 __backward_col2im args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_col2im
+          = paramListWithDefault (Proxy @(ParameterList__backward_col2im))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -3251,7 +3269,7 @@ __backward_cond ::
                   Record r -> TensorApply (t u)
 __backward_cond args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_cond
+          = paramListWithDefault (Proxy @(ParameterList__backward_cond)) args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -3270,8 +3288,9 @@ __backward_contrib_AdaptiveAvgPooling2D ::
                                           Record r -> TensorApply (t u)
 __backward_contrib_AdaptiveAvgPooling2D args
   = let fullArgs
-          = ANON{} ::
-              ParamListFull ParameterList__backward_contrib_AdaptiveAvgPooling2D
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_contrib_AdaptiveAvgPooling2D))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -3289,8 +3308,9 @@ __backward_contrib_BatchNormWithReLU ::
                                        Record r -> TensorApply (t u)
 __backward_contrib_BatchNormWithReLU args
   = let fullArgs
-          = ANON{} ::
-              ParamListFull ParameterList__backward_contrib_BatchNormWithReLU
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_contrib_BatchNormWithReLU))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -3307,8 +3327,9 @@ __backward_contrib_BilinearResize2D ::
                                       Record r -> TensorApply (t u)
 __backward_contrib_BilinearResize2D args
   = let fullArgs
-          = ANON{} ::
-              ParamListFull ParameterList__backward_contrib_BilinearResize2D
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_contrib_BilinearResize2D))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -3329,8 +3350,9 @@ __backward_contrib_bipartite_matching ::
                                         Record r -> TensorApply (t u)
 __backward_contrib_bipartite_matching args
   = let fullArgs
-          = ANON{is_ascend = Nothing, threshold = undefined, topk = Nothing}
-              :: ParamListFull ParameterList__backward_contrib_bipartite_matching
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_contrib_bipartite_matching))
+              args
         scalarArgs
           = catMaybes
               [("is_ascend",) . showValue <$> Anon.get #is_ascend fullArgs,
@@ -3352,8 +3374,9 @@ __backward_contrib_boolean_mask ::
                                   Record r -> TensorApply (t u)
 __backward_contrib_boolean_mask args
   = let fullArgs
-          = ANON{axis = Nothing} ::
-              ParamListFull ParameterList__backward_contrib_boolean_mask
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_contrib_boolean_mask))
+              args
         scalarArgs
           = catMaybes [("axis",) . showValue <$> Anon.get #axis fullArgs]
         tensorKeyArgs = catMaybes []
@@ -3371,8 +3394,9 @@ __backward_contrib_box_iou ::
                              Record r -> TensorApply (t u)
 __backward_contrib_box_iou args
   = let fullArgs
-          = ANON{format = Nothing} ::
-              ParamListFull ParameterList__backward_contrib_box_iou
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_contrib_box_iou))
+              args
         scalarArgs
           = catMaybes [("format",) . showValue <$> Anon.get #format fullArgs]
         tensorKeyArgs = catMaybes []
@@ -3396,12 +3420,9 @@ __backward_contrib_box_nms ::
                              Record r -> TensorApply (t u)
 __backward_contrib_box_nms args
   = let fullArgs
-          = ANON{overlap_thresh = Nothing, valid_thresh = Nothing,
-                 topk = Nothing, coord_start = Nothing, score_index = Nothing,
-                 id_index = Nothing, background_id = Nothing,
-                 force_suppress = Nothing, in_format = Nothing,
-                 out_format = Nothing}
-              :: ParamListFull ParameterList__backward_contrib_box_nms
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_contrib_box_nms))
+              args
         scalarArgs
           = catMaybes
               [("overlap_thresh",) . showValue <$>
@@ -3431,7 +3452,7 @@ __backward_copy ::
                   Record r -> TensorApply (t u)
 __backward_copy args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_copy
+          = paramListWithDefault (Proxy @(ParameterList__backward_copy)) args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -3448,8 +3469,8 @@ __backward_cos ::
                  Record r -> TensorApply (t u)
 __backward_cos args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList__backward_cos t u)
+          = paramListWithDefault (Proxy @(ParameterList__backward_cos t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -3469,8 +3490,8 @@ __backward_cosh ::
                   Record r -> TensorApply (t u)
 __backward_cosh args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList__backward_cosh t u)
+          = paramListWithDefault (Proxy @(ParameterList__backward_cosh t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -3489,7 +3510,8 @@ __backward_ctc_loss ::
                       Record r -> TensorApply (t u)
 __backward_ctc_loss args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_ctc_loss
+          = paramListWithDefault (Proxy @(ParameterList__backward_ctc_loss))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -3506,8 +3528,9 @@ __backward_degrees ::
                      Record r -> TensorApply (t u)
 __backward_degrees args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList__backward_degrees t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_degrees t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -3526,7 +3549,7 @@ __backward_diag ::
                   Record r -> TensorApply (t u)
 __backward_diag args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_diag
+          = paramListWithDefault (Proxy @(ParameterList__backward_diag)) args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -3542,7 +3565,7 @@ __backward_div ::
                  Record r -> TensorApply (t u)
 __backward_div args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_div
+          = paramListWithDefault (Proxy @(ParameterList__backward_div)) args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -3560,8 +3583,9 @@ __backward_div_scalar ::
                         Record r -> TensorApply (t u)
 __backward_div_scalar args
   = let fullArgs
-          = ANON{scalar = Nothing, is_int = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__backward_div_scalar t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_div_scalar t u))
+              args
         scalarArgs
           = catMaybes
               [("scalar",) . showValue <$> Anon.get #scalar fullArgs,
@@ -3584,9 +3608,7 @@ __backward_dot ::
                  Record r -> TensorApply (t u)
 __backward_dot args
   = let fullArgs
-          = ANON{transpose_a = Nothing, transpose_b = Nothing,
-                 forward_stype = Nothing}
-              :: ParamListFull ParameterList__backward_dot
+          = paramListWithDefault (Proxy @(ParameterList__backward_dot)) args
         scalarArgs
           = catMaybes
               [("transpose_a",) . showValue <$> Anon.get #transpose_a fullArgs,
@@ -3608,8 +3630,8 @@ __backward_erf ::
                  Record r -> TensorApply (t u)
 __backward_erf args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList__backward_erf t u)
+          = paramListWithDefault (Proxy @(ParameterList__backward_erf t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -3629,8 +3651,9 @@ __backward_erfinv ::
                     Record r -> TensorApply (t u)
 __backward_erfinv args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList__backward_erfinv t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_erfinv t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -3650,8 +3673,8 @@ __backward_expm1 ::
                    Record r -> TensorApply (t u)
 __backward_expm1 args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList__backward_expm1 t u)
+          = paramListWithDefault (Proxy @(ParameterList__backward_expm1 t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -3670,7 +3693,8 @@ __backward_foreach ::
                      Record r -> TensorApply (t u)
 __backward_foreach args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_foreach
+          = paramListWithDefault (Proxy @(ParameterList__backward_foreach))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -3687,8 +3711,8 @@ __backward_gamma ::
                    Record r -> TensorApply (t u)
 __backward_gamma args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList__backward_gamma t u)
+          = paramListWithDefault (Proxy @(ParameterList__backward_gamma t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -3708,8 +3732,9 @@ __backward_gammaln ::
                      Record r -> TensorApply (t u)
 __backward_gammaln args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList__backward_gammaln t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_gammaln t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -3730,8 +3755,9 @@ __backward_gather_nd ::
                        Record r -> TensorApply (t u)
 __backward_gather_nd args
   = let fullArgs
-          = ANON{shape = undefined, _data = undefined, indices = Nothing} ::
-              ParamListFull (ParameterList__backward_gather_nd t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_gather_nd t u))
+              args
         scalarArgs
           = catMaybes
               [("shape",) . showValue <$> Just (Anon.get #shape fullArgs)]
@@ -3752,7 +3778,9 @@ __backward_hard_sigmoid ::
                           Record r -> TensorApply (t u)
 __backward_hard_sigmoid args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_hard_sigmoid
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_hard_sigmoid))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -3768,7 +3796,8 @@ __backward_hypot ::
                    Record r -> TensorApply (t u)
 __backward_hypot args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_hypot
+          = paramListWithDefault (Proxy @(ParameterList__backward_hypot))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -3786,9 +3815,9 @@ __backward_hypot_scalar ::
                           Record r -> TensorApply (t u)
 __backward_hypot_scalar args
   = let fullArgs
-          = ANON{scalar = Nothing, is_int = Nothing, lhs = Nothing,
-                 rhs = Nothing}
-              :: ParamListFull (ParameterList__backward_hypot_scalar t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_hypot_scalar t u))
+              args
         scalarArgs
           = catMaybes
               [("scalar",) . showValue <$> Anon.get #scalar fullArgs,
@@ -3810,7 +3839,8 @@ __backward_im2col ::
                     Record r -> TensorApply (t u)
 __backward_im2col args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_im2col
+          = paramListWithDefault (Proxy @(ParameterList__backward_im2col))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -3826,7 +3856,9 @@ __backward_image_crop ::
                         Record r -> TensorApply (t u)
 __backward_image_crop args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_image_crop
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_image_crop))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -3842,7 +3874,9 @@ __backward_image_normalize ::
                              Record r -> TensorApply (t u)
 __backward_image_normalize args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_image_normalize
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_image_normalize))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -3861,8 +3895,9 @@ __backward_interleaved_matmul_encdec_qk ::
                                           Record r -> TensorApply (t u)
 __backward_interleaved_matmul_encdec_qk args
   = let fullArgs
-          = ANON{} ::
-              ParamListFull ParameterList__backward_interleaved_matmul_encdec_qk
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_interleaved_matmul_encdec_qk))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -3881,9 +3916,9 @@ __backward_interleaved_matmul_encdec_valatt ::
                                               Record r -> TensorApply (t u)
 __backward_interleaved_matmul_encdec_valatt args
   = let fullArgs
-          = ANON{} ::
-              ParamListFull
-                ParameterList__backward_interleaved_matmul_encdec_valatt
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_interleaved_matmul_encdec_valatt))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -3902,8 +3937,9 @@ __backward_interleaved_matmul_selfatt_qk ::
                                            Record r -> TensorApply (t u)
 __backward_interleaved_matmul_selfatt_qk args
   = let fullArgs
-          = ANON{} ::
-              ParamListFull ParameterList__backward_interleaved_matmul_selfatt_qk
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_interleaved_matmul_selfatt_qk))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -3923,9 +3959,10 @@ __backward_interleaved_matmul_selfatt_valatt ::
                                                Record r -> TensorApply (t u)
 __backward_interleaved_matmul_selfatt_valatt args
   = let fullArgs
-          = ANON{} ::
-              ParamListFull
-                ParameterList__backward_interleaved_matmul_selfatt_valatt
+          = paramListWithDefault
+              (Proxy
+                 @(ParameterList__backward_interleaved_matmul_selfatt_valatt))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -3941,7 +3978,9 @@ __backward_linalg_det ::
                         Record r -> TensorApply (t u)
 __backward_linalg_det args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_linalg_det
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_linalg_det))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -3957,8 +3996,9 @@ __backward_linalg_extractdiag ::
                                 Record r -> TensorApply (t u)
 __backward_linalg_extractdiag args
   = let fullArgs
-          = ANON{} ::
-              ParamListFull ParameterList__backward_linalg_extractdiag
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_linalg_extractdiag))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -3974,8 +4014,9 @@ __backward_linalg_extracttrian ::
                                  Record r -> TensorApply (t u)
 __backward_linalg_extracttrian args
   = let fullArgs
-          = ANON{} ::
-              ParamListFull ParameterList__backward_linalg_extracttrian
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_linalg_extracttrian))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -3991,7 +4032,9 @@ __backward_linalg_gelqf ::
                           Record r -> TensorApply (t u)
 __backward_linalg_gelqf args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_linalg_gelqf
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_linalg_gelqf))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -4007,7 +4050,9 @@ __backward_linalg_gemm ::
                          Record r -> TensorApply (t u)
 __backward_linalg_gemm args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_linalg_gemm
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_linalg_gemm))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -4023,7 +4068,9 @@ __backward_linalg_gemm2 ::
                           Record r -> TensorApply (t u)
 __backward_linalg_gemm2 args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_linalg_gemm2
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_linalg_gemm2))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -4039,7 +4086,9 @@ __backward_linalg_inverse ::
                             Record r -> TensorApply (t u)
 __backward_linalg_inverse args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_linalg_inverse
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_linalg_inverse))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -4055,7 +4104,9 @@ __backward_linalg_makediag ::
                              Record r -> TensorApply (t u)
 __backward_linalg_makediag args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_linalg_makediag
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_linalg_makediag))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -4071,7 +4122,9 @@ __backward_linalg_maketrian ::
                               Record r -> TensorApply (t u)
 __backward_linalg_maketrian args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_linalg_maketrian
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_linalg_maketrian))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -4087,7 +4140,9 @@ __backward_linalg_potrf ::
                           Record r -> TensorApply (t u)
 __backward_linalg_potrf args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_linalg_potrf
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_linalg_potrf))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -4103,7 +4158,9 @@ __backward_linalg_potri ::
                           Record r -> TensorApply (t u)
 __backward_linalg_potri args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_linalg_potri
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_linalg_potri))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -4119,7 +4176,9 @@ __backward_linalg_slogdet ::
                             Record r -> TensorApply (t u)
 __backward_linalg_slogdet args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_linalg_slogdet
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_linalg_slogdet))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -4135,7 +4194,9 @@ __backward_linalg_sumlogdiag ::
                                Record r -> TensorApply (t u)
 __backward_linalg_sumlogdiag args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_linalg_sumlogdiag
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_linalg_sumlogdiag))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -4151,7 +4212,9 @@ __backward_linalg_syevd ::
                           Record r -> TensorApply (t u)
 __backward_linalg_syevd args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_linalg_syevd
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_linalg_syevd))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -4167,7 +4230,9 @@ __backward_linalg_syrk ::
                          Record r -> TensorApply (t u)
 __backward_linalg_syrk args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_linalg_syrk
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_linalg_syrk))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -4183,7 +4248,9 @@ __backward_linalg_trmm ::
                          Record r -> TensorApply (t u)
 __backward_linalg_trmm args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_linalg_trmm
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_linalg_trmm))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -4199,7 +4266,9 @@ __backward_linalg_trsm ::
                          Record r -> TensorApply (t u)
 __backward_linalg_trsm args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_linalg_trsm
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_linalg_trsm))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -4215,7 +4284,9 @@ __backward_linear_reg_out ::
                             Record r -> TensorApply (t u)
 __backward_linear_reg_out args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_linear_reg_out
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_linear_reg_out))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -4232,8 +4303,8 @@ __backward_log ::
                  Record r -> TensorApply (t u)
 __backward_log args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList__backward_log t u)
+          = paramListWithDefault (Proxy @(ParameterList__backward_log t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -4253,8 +4324,8 @@ __backward_log10 ::
                    Record r -> TensorApply (t u)
 __backward_log10 args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList__backward_log10 t u)
+          = paramListWithDefault (Proxy @(ParameterList__backward_log10 t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -4274,8 +4345,8 @@ __backward_log1p ::
                    Record r -> TensorApply (t u)
 __backward_log1p args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList__backward_log1p t u)
+          = paramListWithDefault (Proxy @(ParameterList__backward_log1p t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -4295,8 +4366,8 @@ __backward_log2 ::
                   Record r -> TensorApply (t u)
 __backward_log2 args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList__backward_log2 t u)
+          = paramListWithDefault (Proxy @(ParameterList__backward_log2 t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -4316,8 +4387,9 @@ __backward_log_softmax ::
                          Record r -> TensorApply (t u)
 __backward_log_softmax args
   = let fullArgs
-          = ANON{args = undefined} ::
-              ParamListFull (ParameterList__backward_log_softmax t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_log_softmax t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
         tensorVarArgs
@@ -4334,7 +4406,9 @@ __backward_logistic_reg_out ::
                               Record r -> TensorApply (t u)
 __backward_logistic_reg_out args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_logistic_reg_out
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_logistic_reg_out))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -4350,7 +4424,9 @@ __backward_mae_reg_out ::
                          Record r -> TensorApply (t u)
 __backward_mae_reg_out args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_mae_reg_out
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_mae_reg_out))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -4366,7 +4442,7 @@ __backward_max ::
                  Record r -> TensorApply (t u)
 __backward_max args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_max
+          = paramListWithDefault (Proxy @(ParameterList__backward_max)) args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -4382,7 +4458,8 @@ __backward_maximum ::
                      Record r -> TensorApply (t u)
 __backward_maximum args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_maximum
+          = paramListWithDefault (Proxy @(ParameterList__backward_maximum))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -4401,9 +4478,9 @@ __backward_maximum_scalar ::
                             Record r -> TensorApply (t u)
 __backward_maximum_scalar args
   = let fullArgs
-          = ANON{scalar = Nothing, is_int = Nothing, lhs = Nothing,
-                 rhs = Nothing}
-              :: ParamListFull (ParameterList__backward_maximum_scalar t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_maximum_scalar t u))
+              args
         scalarArgs
           = catMaybes
               [("scalar",) . showValue <$> Anon.get #scalar fullArgs,
@@ -4425,7 +4502,7 @@ __backward_mean ::
                   Record r -> TensorApply (t u)
 __backward_mean args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_mean
+          = paramListWithDefault (Proxy @(ParameterList__backward_mean)) args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -4441,7 +4518,7 @@ __backward_min ::
                  Record r -> TensorApply (t u)
 __backward_min args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_min
+          = paramListWithDefault (Proxy @(ParameterList__backward_min)) args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -4457,7 +4534,8 @@ __backward_minimum ::
                      Record r -> TensorApply (t u)
 __backward_minimum args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_minimum
+          = paramListWithDefault (Proxy @(ParameterList__backward_minimum))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -4476,9 +4554,9 @@ __backward_minimum_scalar ::
                             Record r -> TensorApply (t u)
 __backward_minimum_scalar args
   = let fullArgs
-          = ANON{scalar = Nothing, is_int = Nothing, lhs = Nothing,
-                 rhs = Nothing}
-              :: ParamListFull (ParameterList__backward_minimum_scalar t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_minimum_scalar t u))
+              args
         scalarArgs
           = catMaybes
               [("scalar",) . showValue <$> Anon.get #scalar fullArgs,
@@ -4500,7 +4578,7 @@ __backward_mod ::
                  Record r -> TensorApply (t u)
 __backward_mod args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_mod
+          = paramListWithDefault (Proxy @(ParameterList__backward_mod)) args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -4518,9 +4596,9 @@ __backward_mod_scalar ::
                         Record r -> TensorApply (t u)
 __backward_mod_scalar args
   = let fullArgs
-          = ANON{scalar = Nothing, is_int = Nothing, lhs = Nothing,
-                 rhs = Nothing}
-              :: ParamListFull (ParameterList__backward_mod_scalar t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_mod_scalar t u))
+              args
         scalarArgs
           = catMaybes
               [("scalar",) . showValue <$> Anon.get #scalar fullArgs,
@@ -4542,7 +4620,8 @@ __backward_moments ::
                      Record r -> TensorApply (t u)
 __backward_moments args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_moments
+          = paramListWithDefault (Proxy @(ParameterList__backward_moments))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -4558,7 +4637,7 @@ __backward_mul ::
                  Record r -> TensorApply (t u)
 __backward_mul args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_mul
+          = paramListWithDefault (Proxy @(ParameterList__backward_mul)) args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -4576,8 +4655,9 @@ __backward_mul_scalar ::
                         Record r -> TensorApply (t u)
 __backward_mul_scalar args
   = let fullArgs
-          = ANON{scalar = Nothing, is_int = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__backward_mul_scalar t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_mul_scalar t u))
+              args
         scalarArgs
           = catMaybes
               [("scalar",) . showValue <$> Anon.get #scalar fullArgs,
@@ -4597,7 +4677,8 @@ __backward_nanprod ::
                      Record r -> TensorApply (t u)
 __backward_nanprod args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_nanprod
+          = paramListWithDefault (Proxy @(ParameterList__backward_nanprod))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -4613,7 +4694,8 @@ __backward_nansum ::
                     Record r -> TensorApply (t u)
 __backward_nansum args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_nansum
+          = paramListWithDefault (Proxy @(ParameterList__backward_nansum))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -4629,7 +4711,7 @@ __backward_norm ::
                   Record r -> TensorApply (t u)
 __backward_norm args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_norm
+          = paramListWithDefault (Proxy @(ParameterList__backward_norm)) args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -4645,7 +4727,9 @@ __backward_np_average ::
                         Record r -> TensorApply (t u)
 __backward_np_average args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_np_average
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_np_average))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -4661,7 +4745,9 @@ __backward_np_broadcast_to ::
                              Record r -> TensorApply (t u)
 __backward_np_broadcast_to args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_np_broadcast_to
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_np_broadcast_to))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -4677,7 +4763,9 @@ __backward_np_column_stack ::
                              Record r -> TensorApply (t u)
 __backward_np_column_stack args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_np_column_stack
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_np_column_stack))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -4693,7 +4781,8 @@ __backward_np_concat ::
                        Record r -> TensorApply (t u)
 __backward_np_concat args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_np_concat
+          = paramListWithDefault (Proxy @(ParameterList__backward_np_concat))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -4709,7 +4798,8 @@ __backward_np_cumsum ::
                        Record r -> TensorApply (t u)
 __backward_np_cumsum args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_np_cumsum
+          = paramListWithDefault (Proxy @(ParameterList__backward_np_cumsum))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -4725,7 +4815,8 @@ __backward_np_diag ::
                      Record r -> TensorApply (t u)
 __backward_np_diag args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_np_diag
+          = paramListWithDefault (Proxy @(ParameterList__backward_np_diag))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -4741,7 +4832,9 @@ __backward_np_diagflat ::
                          Record r -> TensorApply (t u)
 __backward_np_diagflat args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_np_diagflat
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_np_diagflat))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -4757,7 +4850,9 @@ __backward_np_diagonal ::
                          Record r -> TensorApply (t u)
 __backward_np_diagonal args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_np_diagonal
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_np_diagonal))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -4773,7 +4868,8 @@ __backward_np_dot ::
                     Record r -> TensorApply (t u)
 __backward_np_dot args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_np_dot
+          = paramListWithDefault (Proxy @(ParameterList__backward_np_dot))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -4789,7 +4885,8 @@ __backward_np_dstack ::
                        Record r -> TensorApply (t u)
 __backward_np_dstack args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_np_dstack
+          = paramListWithDefault (Proxy @(ParameterList__backward_np_dstack))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -4805,7 +4902,8 @@ __backward_np_hstack ::
                        Record r -> TensorApply (t u)
 __backward_np_hstack args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_np_hstack
+          = paramListWithDefault (Proxy @(ParameterList__backward_np_hstack))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -4821,7 +4919,8 @@ __backward_np_matmul ::
                        Record r -> TensorApply (t u)
 __backward_np_matmul args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_np_matmul
+          = paramListWithDefault (Proxy @(ParameterList__backward_np_matmul))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -4837,7 +4936,8 @@ __backward_np_max ::
                     Record r -> TensorApply (t u)
 __backward_np_max args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_np_max
+          = paramListWithDefault (Proxy @(ParameterList__backward_np_max))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -4853,7 +4953,8 @@ __backward_np_mean ::
                      Record r -> TensorApply (t u)
 __backward_np_mean args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_np_mean
+          = paramListWithDefault (Proxy @(ParameterList__backward_np_mean))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -4869,7 +4970,8 @@ __backward_np_min ::
                     Record r -> TensorApply (t u)
 __backward_np_min args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_np_min
+          = paramListWithDefault (Proxy @(ParameterList__backward_np_min))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -4885,7 +4987,8 @@ __backward_np_prod ::
                      Record r -> TensorApply (t u)
 __backward_np_prod args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_np_prod
+          = paramListWithDefault (Proxy @(ParameterList__backward_np_prod))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -4901,7 +5004,8 @@ __backward_np_sum ::
                     Record r -> TensorApply (t u)
 __backward_np_sum args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_np_sum
+          = paramListWithDefault (Proxy @(ParameterList__backward_np_sum))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -4917,7 +5021,8 @@ __backward_np_trace ::
                       Record r -> TensorApply (t u)
 __backward_np_trace args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_np_trace
+          = paramListWithDefault (Proxy @(ParameterList__backward_np_trace))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -4933,7 +5038,8 @@ __backward_np_vstack ::
                        Record r -> TensorApply (t u)
 __backward_np_vstack args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_np_vstack
+          = paramListWithDefault (Proxy @(ParameterList__backward_np_vstack))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -4949,7 +5055,8 @@ __backward_np_where ::
                       Record r -> TensorApply (t u)
 __backward_np_where args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_np_where
+          = paramListWithDefault (Proxy @(ParameterList__backward_np_where))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -4965,7 +5072,9 @@ __backward_np_where_lscalar ::
                               Record r -> TensorApply (t u)
 __backward_np_where_lscalar args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_np_where_lscalar
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_np_where_lscalar))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -4981,7 +5090,9 @@ __backward_np_where_rscalar ::
                               Record r -> TensorApply (t u)
 __backward_np_where_rscalar args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_np_where_rscalar
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_np_where_rscalar))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -4997,7 +5108,9 @@ __backward_npi_arctan2 ::
                          Record r -> TensorApply (t u)
 __backward_npi_arctan2 args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_npi_arctan2
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_npi_arctan2))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -5016,9 +5129,9 @@ __backward_npi_arctan2_scalar ::
                                 Record r -> TensorApply (t u)
 __backward_npi_arctan2_scalar args
   = let fullArgs
-          = ANON{scalar = Nothing, is_int = Nothing, lhs = Nothing,
-                 rhs = Nothing}
-              :: ParamListFull (ParameterList__backward_npi_arctan2_scalar t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_npi_arctan2_scalar t u))
+              args
         scalarArgs
           = catMaybes
               [("scalar",) . showValue <$> Anon.get #scalar fullArgs,
@@ -5040,7 +5153,9 @@ __backward_npi_broadcast_add ::
                                Record r -> TensorApply (t u)
 __backward_npi_broadcast_add args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_npi_broadcast_add
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_npi_broadcast_add))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -5056,7 +5171,9 @@ __backward_npi_broadcast_div ::
                                Record r -> TensorApply (t u)
 __backward_npi_broadcast_div args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_npi_broadcast_div
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_npi_broadcast_div))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -5072,7 +5189,9 @@ __backward_npi_broadcast_mod ::
                                Record r -> TensorApply (t u)
 __backward_npi_broadcast_mod args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_npi_broadcast_mod
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_npi_broadcast_mod))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -5088,7 +5207,9 @@ __backward_npi_broadcast_mul ::
                                Record r -> TensorApply (t u)
 __backward_npi_broadcast_mul args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_npi_broadcast_mul
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_npi_broadcast_mul))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -5104,8 +5225,9 @@ __backward_npi_broadcast_power ::
                                  Record r -> TensorApply (t u)
 __backward_npi_broadcast_power args
   = let fullArgs
-          = ANON{} ::
-              ParamListFull ParameterList__backward_npi_broadcast_power
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_npi_broadcast_power))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -5121,7 +5243,9 @@ __backward_npi_broadcast_sub ::
                                Record r -> TensorApply (t u)
 __backward_npi_broadcast_sub args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_npi_broadcast_sub
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_npi_broadcast_sub))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -5137,7 +5261,9 @@ __backward_npi_copysign ::
                           Record r -> TensorApply (t u)
 __backward_npi_copysign args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_npi_copysign
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_npi_copysign))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -5156,8 +5282,9 @@ __backward_npi_copysign_scalar ::
                                  Record r -> TensorApply (t u)
 __backward_npi_copysign_scalar args
   = let fullArgs
-          = ANON{scalar = Nothing, is_int = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__backward_npi_copysign_scalar t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_npi_copysign_scalar t u))
+              args
         scalarArgs
           = catMaybes
               [("scalar",) . showValue <$> Anon.get #scalar fullArgs,
@@ -5177,7 +5304,8 @@ __backward_npi_diff ::
                       Record r -> TensorApply (t u)
 __backward_npi_diff args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_npi_diff
+          = paramListWithDefault (Proxy @(ParameterList__backward_npi_diff))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -5193,7 +5321,9 @@ __backward_npi_einsum ::
                         Record r -> TensorApply (t u)
 __backward_npi_einsum args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_npi_einsum
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_npi_einsum))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -5209,7 +5339,8 @@ __backward_npi_flip ::
                       Record r -> TensorApply (t u)
 __backward_npi_flip args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_npi_flip
+          = paramListWithDefault (Proxy @(ParameterList__backward_npi_flip))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -5225,7 +5356,8 @@ __backward_npi_hypot ::
                        Record r -> TensorApply (t u)
 __backward_npi_hypot args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_npi_hypot
+          = paramListWithDefault (Proxy @(ParameterList__backward_npi_hypot))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -5241,7 +5373,8 @@ __backward_npi_ldexp ::
                        Record r -> TensorApply (t u)
 __backward_npi_ldexp args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_npi_ldexp
+          = paramListWithDefault (Proxy @(ParameterList__backward_npi_ldexp))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -5260,9 +5393,9 @@ __backward_npi_ldexp_scalar ::
                               Record r -> TensorApply (t u)
 __backward_npi_ldexp_scalar args
   = let fullArgs
-          = ANON{scalar = Nothing, is_int = Nothing, lhs = Nothing,
-                 rhs = Nothing}
-              :: ParamListFull (ParameterList__backward_npi_ldexp_scalar t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_npi_ldexp_scalar t u))
+              args
         scalarArgs
           = catMaybes
               [("scalar",) . showValue <$> Anon.get #scalar fullArgs,
@@ -5284,7 +5417,8 @@ __backward_npi_norm ::
                       Record r -> TensorApply (t u)
 __backward_npi_norm args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_npi_norm
+          = paramListWithDefault (Proxy @(ParameterList__backward_npi_norm))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -5300,7 +5434,8 @@ __backward_npi_pad ::
                      Record r -> TensorApply (t u)
 __backward_npi_pad args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_npi_pad
+          = paramListWithDefault (Proxy @(ParameterList__backward_npi_pad))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -5319,9 +5454,9 @@ __backward_npi_rarctan2_scalar ::
                                  Record r -> TensorApply (t u)
 __backward_npi_rarctan2_scalar args
   = let fullArgs
-          = ANON{scalar = Nothing, is_int = Nothing, lhs = Nothing,
-                 rhs = Nothing}
-              :: ParamListFull (ParameterList__backward_npi_rarctan2_scalar t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_npi_rarctan2_scalar t u))
+              args
         scalarArgs
           = catMaybes
               [("scalar",) . showValue <$> Anon.get #scalar fullArgs,
@@ -5346,8 +5481,9 @@ __backward_npi_rcopysign_scalar ::
                                   Record r -> TensorApply (t u)
 __backward_npi_rcopysign_scalar args
   = let fullArgs
-          = ANON{scalar = Nothing, is_int = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__backward_npi_rcopysign_scalar t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_npi_rcopysign_scalar t u))
+              args
         scalarArgs
           = catMaybes
               [("scalar",) . showValue <$> Anon.get #scalar fullArgs,
@@ -5370,9 +5506,9 @@ __backward_npi_rldexp_scalar ::
                                Record r -> TensorApply (t u)
 __backward_npi_rldexp_scalar args
   = let fullArgs
-          = ANON{scalar = Nothing, is_int = Nothing, lhs = Nothing,
-                 rhs = Nothing}
-              :: ParamListFull (ParameterList__backward_npi_rldexp_scalar t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_npi_rldexp_scalar t u))
+              args
         scalarArgs
           = catMaybes
               [("scalar",) . showValue <$> Anon.get #scalar fullArgs,
@@ -5394,7 +5530,8 @@ __backward_npi_solve ::
                        Record r -> TensorApply (t u)
 __backward_npi_solve args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_npi_solve
+          = paramListWithDefault (Proxy @(ParameterList__backward_npi_solve))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -5410,7 +5547,8 @@ __backward_npi_svd ::
                      Record r -> TensorApply (t u)
 __backward_npi_svd args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_npi_svd
+          = paramListWithDefault (Proxy @(ParameterList__backward_npi_svd))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -5426,7 +5564,9 @@ __backward_npi_tensordot ::
                            Record r -> TensorApply (t u)
 __backward_npi_tensordot args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_npi_tensordot
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_npi_tensordot))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -5443,8 +5583,9 @@ __backward_npi_tensordot_int_axes ::
                                     Record r -> TensorApply (t u)
 __backward_npi_tensordot_int_axes args
   = let fullArgs
-          = ANON{} ::
-              ParamListFull ParameterList__backward_npi_tensordot_int_axes
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_npi_tensordot_int_axes))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -5460,7 +5601,9 @@ __backward_npi_tensorinv ::
                            Record r -> TensorApply (t u)
 __backward_npi_tensorinv args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_npi_tensorinv
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_npi_tensorinv))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -5476,7 +5619,9 @@ __backward_npi_tensorsolve ::
                              Record r -> TensorApply (t u)
 __backward_npi_tensorsolve args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_npi_tensorsolve
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_npi_tensorsolve))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -5492,7 +5637,9 @@ __backward_pdf_dirichlet ::
                            Record r -> TensorApply (t u)
 __backward_pdf_dirichlet args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_pdf_dirichlet
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_pdf_dirichlet))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -5508,7 +5655,9 @@ __backward_pdf_exponential ::
                              Record r -> TensorApply (t u)
 __backward_pdf_exponential args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_pdf_exponential
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_pdf_exponential))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -5524,7 +5673,8 @@ __backward_pdf_gamma ::
                        Record r -> TensorApply (t u)
 __backward_pdf_gamma args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_pdf_gamma
+          = paramListWithDefault (Proxy @(ParameterList__backward_pdf_gamma))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -5544,9 +5694,10 @@ __backward_pdf_generalized_negative_binomial ::
                                                Record r -> TensorApply (t u)
 __backward_pdf_generalized_negative_binomial args
   = let fullArgs
-          = ANON{} ::
-              ParamListFull
-                ParameterList__backward_pdf_generalized_negative_binomial
+          = paramListWithDefault
+              (Proxy
+                 @(ParameterList__backward_pdf_generalized_negative_binomial))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -5563,8 +5714,9 @@ __backward_pdf_negative_binomial ::
                                    Record r -> TensorApply (t u)
 __backward_pdf_negative_binomial args
   = let fullArgs
-          = ANON{} ::
-              ParamListFull ParameterList__backward_pdf_negative_binomial
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_pdf_negative_binomial))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -5580,7 +5732,9 @@ __backward_pdf_normal ::
                         Record r -> TensorApply (t u)
 __backward_pdf_normal args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_pdf_normal
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_pdf_normal))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -5596,7 +5750,9 @@ __backward_pdf_poisson ::
                          Record r -> TensorApply (t u)
 __backward_pdf_poisson args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_pdf_poisson
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_pdf_poisson))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -5612,7 +5768,9 @@ __backward_pdf_uniform ::
                          Record r -> TensorApply (t u)
 __backward_pdf_uniform args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_pdf_uniform
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_pdf_uniform))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -5628,7 +5786,7 @@ __backward_pick ::
                   Record r -> TensorApply (t u)
 __backward_pick args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_pick
+          = paramListWithDefault (Proxy @(ParameterList__backward_pick)) args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -5644,7 +5802,8 @@ __backward_power ::
                    Record r -> TensorApply (t u)
 __backward_power args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_power
+          = paramListWithDefault (Proxy @(ParameterList__backward_power))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -5662,9 +5821,9 @@ __backward_power_scalar ::
                           Record r -> TensorApply (t u)
 __backward_power_scalar args
   = let fullArgs
-          = ANON{scalar = Nothing, is_int = Nothing, lhs = Nothing,
-                 rhs = Nothing}
-              :: ParamListFull (ParameterList__backward_power_scalar t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_power_scalar t u))
+              args
         scalarArgs
           = catMaybes
               [("scalar",) . showValue <$> Anon.get #scalar fullArgs,
@@ -5686,7 +5845,7 @@ __backward_prod ::
                   Record r -> TensorApply (t u)
 __backward_prod args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_prod
+          = paramListWithDefault (Proxy @(ParameterList__backward_prod)) args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -5703,8 +5862,9 @@ __backward_radians ::
                      Record r -> TensorApply (t u)
 __backward_radians args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList__backward_radians t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_radians t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -5724,8 +5884,8 @@ __backward_rcbrt ::
                    Record r -> TensorApply (t u)
 __backward_rcbrt args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList__backward_rcbrt t u)
+          = paramListWithDefault (Proxy @(ParameterList__backward_rcbrt t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -5746,9 +5906,9 @@ __backward_rdiv_scalar ::
                          Record r -> TensorApply (t u)
 __backward_rdiv_scalar args
   = let fullArgs
-          = ANON{scalar = Nothing, is_int = Nothing, lhs = Nothing,
-                 rhs = Nothing}
-              :: ParamListFull (ParameterList__backward_rdiv_scalar t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_rdiv_scalar t u))
+              args
         scalarArgs
           = catMaybes
               [("scalar",) . showValue <$> Anon.get #scalar fullArgs,
@@ -5771,8 +5931,9 @@ __backward_reciprocal ::
                         Record r -> TensorApply (t u)
 __backward_reciprocal args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList__backward_reciprocal t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_reciprocal t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -5792,8 +5953,8 @@ __backward_relu ::
                   Record r -> TensorApply (t u)
 __backward_relu args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList__backward_relu t u)
+          = paramListWithDefault (Proxy @(ParameterList__backward_relu t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -5812,7 +5973,8 @@ __backward_repeat ::
                     Record r -> TensorApply (t u)
 __backward_repeat args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_repeat
+          = paramListWithDefault (Proxy @(ParameterList__backward_repeat))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -5828,7 +5990,8 @@ __backward_reshape ::
                      Record r -> TensorApply (t u)
 __backward_reshape args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_reshape
+          = paramListWithDefault (Proxy @(ParameterList__backward_reshape))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -5844,7 +6007,8 @@ __backward_reverse ::
                      Record r -> TensorApply (t u)
 __backward_reverse args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_reverse
+          = paramListWithDefault (Proxy @(ParameterList__backward_reverse))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -5862,9 +6026,9 @@ __backward_rmod_scalar ::
                          Record r -> TensorApply (t u)
 __backward_rmod_scalar args
   = let fullArgs
-          = ANON{scalar = Nothing, is_int = Nothing, lhs = Nothing,
-                 rhs = Nothing}
-              :: ParamListFull (ParameterList__backward_rmod_scalar t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_rmod_scalar t u))
+              args
         scalarArgs
           = catMaybes
               [("scalar",) . showValue <$> Anon.get #scalar fullArgs,
@@ -5888,9 +6052,9 @@ __backward_rpower_scalar ::
                            Record r -> TensorApply (t u)
 __backward_rpower_scalar args
   = let fullArgs
-          = ANON{scalar = Nothing, is_int = Nothing, lhs = Nothing,
-                 rhs = Nothing}
-              :: ParamListFull (ParameterList__backward_rpower_scalar t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_rpower_scalar t u))
+              args
         scalarArgs
           = catMaybes
               [("scalar",) . showValue <$> Anon.get #scalar fullArgs,
@@ -5913,8 +6077,8 @@ __backward_rsqrt ::
                    Record r -> TensorApply (t u)
 __backward_rsqrt args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList__backward_rsqrt t u)
+          = paramListWithDefault (Proxy @(ParameterList__backward_rsqrt t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -5933,8 +6097,9 @@ __backward_sample_multinomial ::
                                 Record r -> TensorApply (t u)
 __backward_sample_multinomial args
   = let fullArgs
-          = ANON{} ::
-              ParamListFull ParameterList__backward_sample_multinomial
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_sample_multinomial))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -5951,8 +6116,9 @@ __backward_sigmoid ::
                      Record r -> TensorApply (t u)
 __backward_sigmoid args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList__backward_sigmoid t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_sigmoid t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -5972,8 +6138,8 @@ __backward_sign ::
                   Record r -> TensorApply (t u)
 __backward_sign args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList__backward_sign t u)
+          = paramListWithDefault (Proxy @(ParameterList__backward_sign t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -5993,8 +6159,8 @@ __backward_sin ::
                  Record r -> TensorApply (t u)
 __backward_sin args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList__backward_sin t u)
+          = paramListWithDefault (Proxy @(ParameterList__backward_sin t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -6014,8 +6180,8 @@ __backward_sinh ::
                   Record r -> TensorApply (t u)
 __backward_sinh args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList__backward_sinh t u)
+          = paramListWithDefault (Proxy @(ParameterList__backward_sinh t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -6034,7 +6200,8 @@ __backward_slice ::
                    Record r -> TensorApply (t u)
 __backward_slice args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_slice
+          = paramListWithDefault (Proxy @(ParameterList__backward_slice))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -6050,7 +6217,9 @@ __backward_slice_axis ::
                         Record r -> TensorApply (t u)
 __backward_slice_axis args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_slice_axis
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_slice_axis))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -6066,7 +6235,9 @@ __backward_slice_like ::
                         Record r -> TensorApply (t u)
 __backward_slice_like args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_slice_like
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_slice_like))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -6083,8 +6254,9 @@ __backward_smooth_l1 ::
                        Record r -> TensorApply (t u)
 __backward_smooth_l1 args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList__backward_smooth_l1 t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_smooth_l1 t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -6104,8 +6276,9 @@ __backward_softmax ::
                      Record r -> TensorApply (t u)
 __backward_softmax args
   = let fullArgs
-          = ANON{args = undefined} ::
-              ParamListFull (ParameterList__backward_softmax t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_softmax t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
         tensorVarArgs
@@ -6122,8 +6295,9 @@ __backward_softmax_cross_entropy ::
                                    Record r -> TensorApply (t u)
 __backward_softmax_cross_entropy args
   = let fullArgs
-          = ANON{} ::
-              ParamListFull ParameterList__backward_softmax_cross_entropy
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_softmax_cross_entropy))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -6140,8 +6314,9 @@ __backward_softmin ::
                      Record r -> TensorApply (t u)
 __backward_softmin args
   = let fullArgs
-          = ANON{args = undefined} ::
-              ParamListFull (ParameterList__backward_softmin t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_softmin t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
         tensorVarArgs
@@ -6158,8 +6333,9 @@ __backward_softsign ::
                       Record r -> TensorApply (t u)
 __backward_softsign args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList__backward_softsign t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_softsign t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -6178,7 +6354,9 @@ __backward_sparse_retain ::
                            Record r -> TensorApply (t u)
 __backward_sparse_retain args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_sparse_retain
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_sparse_retain))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -6195,8 +6373,8 @@ __backward_sqrt ::
                   Record r -> TensorApply (t u)
 __backward_sqrt args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList__backward_sqrt t u)
+          = paramListWithDefault (Proxy @(ParameterList__backward_sqrt t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -6216,8 +6394,9 @@ __backward_square ::
                     Record r -> TensorApply (t u)
 __backward_square args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList__backward_square t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_square t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -6236,7 +6415,9 @@ __backward_square_sum ::
                         Record r -> TensorApply (t u)
 __backward_square_sum args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_square_sum
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_square_sum))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -6252,7 +6433,8 @@ __backward_squeeze ::
                      Record r -> TensorApply (t u)
 __backward_squeeze args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_squeeze
+          = paramListWithDefault (Proxy @(ParameterList__backward_squeeze))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -6268,7 +6450,8 @@ __backward_stack ::
                    Record r -> TensorApply (t u)
 __backward_stack args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_stack
+          = paramListWithDefault (Proxy @(ParameterList__backward_stack))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -6284,7 +6467,7 @@ __backward_sub ::
                  Record r -> TensorApply (t u)
 __backward_sub args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_sub
+          = paramListWithDefault (Proxy @(ParameterList__backward_sub)) args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -6300,7 +6483,7 @@ __backward_sum ::
                  Record r -> TensorApply (t u)
 __backward_sum args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_sum
+          = paramListWithDefault (Proxy @(ParameterList__backward_sum)) args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -6316,7 +6499,7 @@ __backward_take ::
                   Record r -> TensorApply (t u)
 __backward_take args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_take
+          = paramListWithDefault (Proxy @(ParameterList__backward_take)) args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -6333,8 +6516,8 @@ __backward_tan ::
                  Record r -> TensorApply (t u)
 __backward_tan args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList__backward_tan t u)
+          = paramListWithDefault (Proxy @(ParameterList__backward_tan t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -6354,8 +6537,8 @@ __backward_tanh ::
                   Record r -> TensorApply (t u)
 __backward_tanh args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList__backward_tanh t u)
+          = paramListWithDefault (Proxy @(ParameterList__backward_tanh t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -6374,7 +6557,7 @@ __backward_tile ::
                   Record r -> TensorApply (t u)
 __backward_tile args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_tile
+          = paramListWithDefault (Proxy @(ParameterList__backward_tile)) args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -6390,7 +6573,7 @@ __backward_topk ::
                   Record r -> TensorApply (t u)
 __backward_topk args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_topk
+          = paramListWithDefault (Proxy @(ParameterList__backward_topk)) args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -6406,7 +6589,7 @@ __backward_tril ::
                   Record r -> TensorApply (t u)
 __backward_tril args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_tril
+          = paramListWithDefault (Proxy @(ParameterList__backward_tril)) args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -6422,7 +6605,8 @@ __backward_where ::
                    Record r -> TensorApply (t u)
 __backward_where args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_where
+          = paramListWithDefault (Proxy @(ParameterList__backward_where))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -6438,7 +6622,9 @@ __backward_while_loop ::
                         Record r -> TensorApply (t u)
 __backward_while_loop args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__backward_while_loop
+          = paramListWithDefault
+              (Proxy @(ParameterList__backward_while_loop))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -6454,7 +6640,8 @@ __broadcast_backward ::
                        Record r -> TensorApply (t u)
 __broadcast_backward args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__broadcast_backward
+          = paramListWithDefault (Proxy @(ParameterList__broadcast_backward))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -6472,8 +6659,9 @@ __contrib_AdaptiveAvgPooling2D ::
                                  Record r -> TensorApply (t u)
 __contrib_AdaptiveAvgPooling2D args
   = let fullArgs
-          = ANON{output_size = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__contrib_AdaptiveAvgPooling2D t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__contrib_AdaptiveAvgPooling2D t u))
+              args
         scalarArgs
           = catMaybes
               [("output_size",) . showValue <$> Anon.get #output_size fullArgs]
@@ -6502,12 +6690,9 @@ __contrib_BatchNormWithReLU ::
                               Record r -> TensorApply (t u)
 __contrib_BatchNormWithReLU args
   = let fullArgs
-          = ANON{eps = Nothing, momentum = Nothing, fix_gamma = Nothing,
-                 use_global_stats = Nothing, output_mean_var = Nothing,
-                 axis = Nothing, cudnn_off = Nothing, min_calib_range = Nothing,
-                 max_calib_range = Nothing, _data = undefined, gamma = Nothing,
-                 beta = Nothing, moving_mean = Nothing, moving_var = Nothing}
-              :: ParamListFull (ParameterList__contrib_BatchNormWithReLU t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__contrib_BatchNormWithReLU t u))
+              args
         scalarArgs
           = catMaybes
               [("eps",) . showValue <$> Anon.get #eps fullArgs,
@@ -6554,10 +6739,9 @@ __contrib_BilinearResize2D ::
                              Record r -> TensorApply (t u)
 __contrib_BilinearResize2D args
   = let fullArgs
-          = ANON{height = Nothing, width = Nothing, scale_height = Nothing,
-                 scale_width = Nothing, mode = Nothing, align_corners = Nothing,
-                 _data = undefined, like = Nothing}
-              :: ParamListFull (ParameterList__contrib_BilinearResize2D t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__contrib_BilinearResize2D t u))
+              args
         scalarArgs
           = catMaybes
               [("height",) . showValue <$> Anon.get #height fullArgs,
@@ -6593,12 +6777,9 @@ __contrib_DeformableConvolution ::
                                   Record r -> TensorApply (t u)
 __contrib_DeformableConvolution args
   = let fullArgs
-          = ANON{kernel = undefined, stride = Nothing, dilate = Nothing,
-                 pad = Nothing, num_filter = undefined, num_group = Nothing,
-                 num_deformable_group = Nothing, workspace = Nothing,
-                 no_bias = Nothing, layout = Nothing, _data = undefined,
-                 offset = Nothing, weight = Nothing, bias = Nothing}
-              :: ParamListFull (ParameterList__contrib_DeformableConvolution t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__contrib_DeformableConvolution t u))
+              args
         scalarArgs
           = catMaybes
               [("kernel",) . showValue <$> Just (Anon.get #kernel fullArgs),
@@ -6639,13 +6820,9 @@ __contrib_DeformablePSROIPooling ::
                                    Record r -> TensorApply (t u)
 __contrib_DeformablePSROIPooling args
   = let fullArgs
-          = ANON{spatial_scale = undefined, output_dim = undefined,
-                 group_size = undefined, pooled_size = undefined,
-                 part_size = Nothing, sample_per_part = Nothing,
-                 trans_std = Nothing, no_trans = Nothing, _data = undefined,
-                 rois = Nothing, trans = Nothing}
-              ::
-              ParamListFull (ParameterList__contrib_DeformablePSROIPooling t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__contrib_DeformablePSROIPooling t u))
+              args
         scalarArgs
           = catMaybes
               [("spatial_scale",) . showValue <$>
@@ -6694,15 +6871,10 @@ __contrib_ModulatedDeformableConvolution ::
                                            Record r -> TensorApply (t u)
 __contrib_ModulatedDeformableConvolution args
   = let fullArgs
-          = ANON{kernel = undefined, stride = Nothing, dilate = Nothing,
-                 pad = Nothing, num_filter = undefined, num_group = Nothing,
-                 num_deformable_group = Nothing, workspace = Nothing,
-                 no_bias = Nothing, im2col_step = Nothing, layout = Nothing,
-                 _data = undefined, offset = Nothing, mask = Nothing,
-                 weight = Nothing, bias = Nothing}
-              ::
-              ParamListFull
-                (ParameterList__contrib_ModulatedDeformableConvolution t u)
+          = paramListWithDefault
+              (Proxy
+                 @(ParameterList__contrib_ModulatedDeformableConvolution t u))
+              args
         scalarArgs
           = catMaybes
               [("kernel",) . showValue <$> Just (Anon.get #kernel fullArgs),
@@ -6744,11 +6916,9 @@ __contrib_MultiBoxDetection ::
                               Record r -> TensorApply (t u)
 __contrib_MultiBoxDetection args
   = let fullArgs
-          = ANON{clip = Nothing, threshold = Nothing,
-                 background_id = Nothing, nms_threshold = Nothing,
-                 force_suppress = Nothing, variances = Nothing, nms_topk = Nothing,
-                 cls_prob = Nothing, loc_pred = Nothing, anchor = Nothing}
-              :: ParamListFull (ParameterList__contrib_MultiBoxDetection t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__contrib_MultiBoxDetection t u))
+              args
         scalarArgs
           = catMaybes
               [("clip",) . showValue <$> Anon.get #clip fullArgs,
@@ -6782,9 +6952,9 @@ __contrib_MultiBoxPrior ::
                           Record r -> TensorApply (t u)
 __contrib_MultiBoxPrior args
   = let fullArgs
-          = ANON{sizes = Nothing, ratios = Nothing, clip = Nothing,
-                 steps = Nothing, offsets = Nothing, _data = undefined}
-              :: ParamListFull (ParameterList__contrib_MultiBoxPrior t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__contrib_MultiBoxPrior t u))
+              args
         scalarArgs
           = catMaybes
               [("sizes",) . showValue <$> Anon.get #sizes fullArgs,
@@ -6814,11 +6984,9 @@ __contrib_MultiBoxTarget ::
                            Record r -> TensorApply (t u)
 __contrib_MultiBoxTarget args
   = let fullArgs
-          = ANON{overlap_threshold = Nothing, ignore_label = Nothing,
-                 negative_mining_ratio = Nothing, negative_mining_thresh = Nothing,
-                 minimum_negative_samples = Nothing, variances = Nothing,
-                 anchor = Nothing, label = Nothing, cls_pred = Nothing}
-              :: ParamListFull (ParameterList__contrib_MultiBoxTarget t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__contrib_MultiBoxTarget t u))
+              args
         scalarArgs
           = catMaybes
               [("overlap_threshold",) . showValue <$>
@@ -6856,12 +7024,9 @@ __contrib_MultiProposal ::
                           Record r -> TensorApply (t u)
 __contrib_MultiProposal args
   = let fullArgs
-          = ANON{rpn_pre_nms_top_n = Nothing, rpn_post_nms_top_n = Nothing,
-                 threshold = Nothing, rpn_min_size = Nothing, scales = Nothing,
-                 ratios = Nothing, feature_stride = Nothing, output_score = Nothing,
-                 iou_loss = Nothing, cls_prob = Nothing, bbox_pred = Nothing,
-                 im_info = Nothing}
-              :: ParamListFull (ParameterList__contrib_MultiProposal t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__contrib_MultiProposal t u))
+              args
         scalarArgs
           = catMaybes
               [("rpn_pre_nms_top_n",) . showValue <$>
@@ -6897,10 +7062,9 @@ __contrib_PSROIPooling ::
                          Record r -> TensorApply (t u)
 __contrib_PSROIPooling args
   = let fullArgs
-          = ANON{spatial_scale = undefined, output_dim = undefined,
-                 pooled_size = undefined, group_size = Nothing, _data = undefined,
-                 rois = Nothing}
-              :: ParamListFull (ParameterList__contrib_PSROIPooling t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__contrib_PSROIPooling t u))
+              args
         scalarArgs
           = catMaybes
               [("spatial_scale",) . showValue <$>
@@ -6934,12 +7098,9 @@ __contrib_Proposal ::
                      Record r -> TensorApply (t u)
 __contrib_Proposal args
   = let fullArgs
-          = ANON{rpn_pre_nms_top_n = Nothing, rpn_post_nms_top_n = Nothing,
-                 threshold = Nothing, rpn_min_size = Nothing, scales = Nothing,
-                 ratios = Nothing, feature_stride = Nothing, output_score = Nothing,
-                 iou_loss = Nothing, cls_prob = Nothing, bbox_pred = Nothing,
-                 im_info = Nothing}
-              :: ParamListFull (ParameterList__contrib_Proposal t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__contrib_Proposal t u))
+              args
         scalarArgs
           = catMaybes
               [("rpn_pre_nms_top_n",) . showValue <$>
@@ -6976,10 +7137,9 @@ __contrib_ROIAlign ::
                      Record r -> TensorApply (t u)
 __contrib_ROIAlign args
   = let fullArgs
-          = ANON{pooled_size = undefined, spatial_scale = undefined,
-                 sample_ratio = Nothing, position_sensitive = Nothing,
-                 aligned = Nothing, _data = undefined, rois = Nothing}
-              :: ParamListFull (ParameterList__contrib_ROIAlign t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__contrib_ROIAlign t u))
+              args
         scalarArgs
           = catMaybes
               [("pooled_size",) . showValue <$>
@@ -7011,9 +7171,9 @@ __contrib_RROIAlign ::
                       Record r -> TensorApply (t u)
 __contrib_RROIAlign args
   = let fullArgs
-          = ANON{pooled_size = undefined, spatial_scale = undefined,
-                 sampling_ratio = Nothing, _data = undefined, rois = Nothing}
-              :: ParamListFull (ParameterList__contrib_RROIAlign t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__contrib_RROIAlign t u))
+              args
         scalarArgs
           = catMaybes
               [("pooled_size",) . showValue <$>
@@ -7048,10 +7208,9 @@ __contrib_SparseEmbedding ::
                             Record r -> TensorApply (t u)
 __contrib_SparseEmbedding args
   = let fullArgs
-          = ANON{input_dim = undefined, output_dim = undefined,
-                 dtype = Nothing, sparse_grad = Nothing, _data = undefined,
-                 weight = Nothing}
-              :: ParamListFull (ParameterList__contrib_SparseEmbedding t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__contrib_SparseEmbedding t u))
+              args
         scalarArgs
           = catMaybes
               [("input_dim",) . showValue <$>
@@ -7083,12 +7242,9 @@ __contrib_SyncBatchNorm ::
                           Record r -> TensorApply (t u)
 __contrib_SyncBatchNorm args
   = let fullArgs
-          = ANON{eps = Nothing, momentum = Nothing, fix_gamma = Nothing,
-                 use_global_stats = Nothing, output_mean_var = Nothing,
-                 ndev = Nothing, key = undefined, _data = undefined,
-                 gamma = Nothing, beta = Nothing, moving_mean = Nothing,
-                 moving_var = Nothing}
-              :: ParamListFull (ParameterList__contrib_SyncBatchNorm t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__contrib_SyncBatchNorm t u))
+              args
         scalarArgs
           = catMaybes
               [("eps",) . showValue <$> Anon.get #eps fullArgs,
@@ -7123,9 +7279,9 @@ __contrib_allclose ::
                      Record r -> TensorApply (t u)
 __contrib_allclose args
   = let fullArgs
-          = ANON{rtol = Nothing, atol = Nothing, equal_nan = Nothing,
-                 a = Nothing, b = Nothing}
-              :: ParamListFull (ParameterList__contrib_allclose t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__contrib_allclose t u))
+              args
         scalarArgs
           = catMaybes
               [("rtol",) . showValue <$> Anon.get #rtol fullArgs,
@@ -7151,9 +7307,9 @@ __contrib_arange_like ::
                         Record r -> TensorApply (t u)
 __contrib_arange_like args
   = let fullArgs
-          = ANON{start = Nothing, step = Nothing, repeat = Nothing,
-                 ctx = Nothing, axis = Nothing, _data = undefined}
-              :: ParamListFull (ParameterList__contrib_arange_like t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__contrib_arange_like t u))
+              args
         scalarArgs
           = catMaybes
               [("start",) . showValue <$> Anon.get #start fullArgs,
@@ -7181,9 +7337,9 @@ __contrib_backward_gradientmultiplier ::
                                         Record r -> TensorApply (t u)
 __contrib_backward_gradientmultiplier args
   = let fullArgs
-          = ANON{scalar = Nothing, is_int = Nothing, _data = undefined} ::
-              ParamListFull
-                (ParameterList__contrib_backward_gradientmultiplier t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__contrib_backward_gradientmultiplier t u))
+              args
         scalarArgs
           = catMaybes
               [("scalar",) . showValue <$> Anon.get #scalar fullArgs,
@@ -7203,7 +7359,9 @@ __contrib_backward_hawkesll ::
                               Record r -> TensorApply (t u)
 __contrib_backward_hawkesll args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__contrib_backward_hawkesll
+          = paramListWithDefault
+              (Proxy @(ParameterList__contrib_backward_hawkesll))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -7219,8 +7377,9 @@ __contrib_backward_index_copy ::
                                 Record r -> TensorApply (t u)
 __contrib_backward_index_copy args
   = let fullArgs
-          = ANON{} ::
-              ParamListFull ParameterList__contrib_backward_index_copy
+          = paramListWithDefault
+              (Proxy @(ParameterList__contrib_backward_index_copy))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -7236,7 +7395,9 @@ __contrib_backward_quadratic ::
                                Record r -> TensorApply (t u)
 __contrib_backward_quadratic args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__contrib_backward_quadratic
+          = paramListWithDefault
+              (Proxy @(ParameterList__contrib_backward_quadratic))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -7255,9 +7416,9 @@ __contrib_bipartite_matching ::
                                Record r -> TensorApply (t u)
 __contrib_bipartite_matching args
   = let fullArgs
-          = ANON{is_ascend = Nothing, threshold = undefined, topk = Nothing,
-                 _data = undefined}
-              :: ParamListFull (ParameterList__contrib_bipartite_matching t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__contrib_bipartite_matching t u))
+              args
         scalarArgs
           = catMaybes
               [("is_ascend",) . showValue <$> Anon.get #is_ascend fullArgs,
@@ -7280,8 +7441,9 @@ __contrib_boolean_mask ::
                          Record r -> TensorApply (t u)
 __contrib_boolean_mask args
   = let fullArgs
-          = ANON{axis = Nothing, _data = undefined, index = Nothing} ::
-              ParamListFull (ParameterList__contrib_boolean_mask t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__contrib_boolean_mask t u))
+              args
         scalarArgs
           = catMaybes [("axis",) . showValue <$> Anon.get #axis fullArgs]
         tensorKeyArgs
@@ -7306,10 +7468,9 @@ __contrib_box_decode ::
                        Record r -> TensorApply (t u)
 __contrib_box_decode args
   = let fullArgs
-          = ANON{std0 = Nothing, std1 = Nothing, std2 = Nothing,
-                 std3 = Nothing, clip = Nothing, format = Nothing,
-                 _data = undefined, anchors = Nothing}
-              :: ParamListFull (ParameterList__contrib_box_decode t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__contrib_box_decode t u))
+              args
         scalarArgs
           = catMaybes
               [("std0",) . showValue <$> Anon.get #std0 fullArgs,
@@ -7338,9 +7499,9 @@ __contrib_box_encode ::
                        Record r -> TensorApply (t u)
 __contrib_box_encode args
   = let fullArgs
-          = ANON{samples = Nothing, matches = Nothing, anchors = Nothing,
-                 refs = Nothing, means = Nothing, stds = Nothing}
-              :: ParamListFull (ParameterList__contrib_box_encode t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__contrib_box_encode t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -7365,8 +7526,9 @@ __contrib_box_iou ::
                     Record r -> TensorApply (t u)
 __contrib_box_iou args
   = let fullArgs
-          = ANON{format = Nothing, lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList__contrib_box_iou t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__contrib_box_iou t u))
+              args
         scalarArgs
           = catMaybes [("format",) . showValue <$> Anon.get #format fullArgs]
         tensorKeyArgs
@@ -7394,12 +7556,9 @@ __contrib_box_nms ::
                     Record r -> TensorApply (t u)
 __contrib_box_nms args
   = let fullArgs
-          = ANON{overlap_thresh = Nothing, valid_thresh = Nothing,
-                 topk = Nothing, coord_start = Nothing, score_index = Nothing,
-                 id_index = Nothing, background_id = Nothing,
-                 force_suppress = Nothing, in_format = Nothing,
-                 out_format = Nothing, _data = undefined}
-              :: ParamListFull (ParameterList__contrib_box_nms t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__contrib_box_nms t u))
+              args
         scalarArgs
           = catMaybes
               [("overlap_thresh",) . showValue <$>
@@ -7433,9 +7592,9 @@ __contrib_calibrate_entropy ::
                               Record r -> TensorApply (t u)
 __contrib_calibrate_entropy args
   = let fullArgs
-          = ANON{num_quantized_bins = Nothing, hist = Nothing,
-                 hist_edges = Nothing}
-              :: ParamListFull (ParameterList__contrib_calibrate_entropy t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__contrib_calibrate_entropy t u))
+              args
         scalarArgs
           = catMaybes
               [("num_quantized_bins",) . showValue <$>
@@ -7460,9 +7619,9 @@ __contrib_count_sketch ::
                          Record r -> TensorApply (t u)
 __contrib_count_sketch args
   = let fullArgs
-          = ANON{out_dim = undefined, processing_batch_size = Nothing,
-                 _data = undefined, h = Nothing, s = Nothing}
-              :: ParamListFull (ParameterList__contrib_count_sketch t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__contrib_count_sketch t u))
+              args
         scalarArgs
           = catMaybes
               [("out_dim",) . showValue <$> Just (Anon.get #out_dim fullArgs),
@@ -7489,9 +7648,9 @@ __contrib_dequantize ::
                        Record r -> TensorApply (t u)
 __contrib_dequantize args
   = let fullArgs
-          = ANON{out_type = Nothing, _data = undefined, min_range = Nothing,
-                 max_range = Nothing}
-              :: ParamListFull (ParameterList__contrib_dequantize t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__contrib_dequantize t u))
+              args
         scalarArgs
           = catMaybes
               [("out_type",) . showValue <$> Anon.get #out_type fullArgs]
@@ -7514,8 +7673,9 @@ __contrib_dgl_adjacency ::
                           Record r -> TensorApply (t u)
 __contrib_dgl_adjacency args
   = let fullArgs
-          = ANON{_data = undefined} ::
-              ParamListFull (ParameterList__contrib_dgl_adjacency t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__contrib_dgl_adjacency t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes [("data",) . toRaw <$> Just (Anon.get #_data fullArgs)]
@@ -7533,8 +7693,9 @@ __contrib_div_sqrt_dim ::
                          Record r -> TensorApply (t u)
 __contrib_div_sqrt_dim args
   = let fullArgs
-          = ANON{_data = undefined} ::
-              ParamListFull (ParameterList__contrib_div_sqrt_dim t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__contrib_div_sqrt_dim t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes [("data",) . toRaw <$> Just (Anon.get #_data fullArgs)]
@@ -7553,8 +7714,9 @@ __contrib_edge_id ::
                     Record r -> TensorApply (t u)
 __contrib_edge_id args
   = let fullArgs
-          = ANON{_data = undefined, u = Nothing, v = Nothing} ::
-              ParamListFull (ParameterList__contrib_edge_id t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__contrib_edge_id t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -7575,8 +7737,8 @@ __contrib_fft ::
                 Record r -> TensorApply (t u)
 __contrib_fft args
   = let fullArgs
-          = ANON{compute_size = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__contrib_fft t u)
+          = paramListWithDefault (Proxy @(ParameterList__contrib_fft t u))
+              args
         scalarArgs
           = catMaybes
               [("compute_size",) . showValue <$> Anon.get #compute_size fullArgs]
@@ -7596,8 +7758,8 @@ __contrib_getnnz ::
                    Record r -> TensorApply (t u)
 __contrib_getnnz args
   = let fullArgs
-          = ANON{axis = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__contrib_getnnz t u)
+          = paramListWithDefault (Proxy @(ParameterList__contrib_getnnz t u))
+              args
         scalarArgs
           = catMaybes [("axis",) . showValue <$> Anon.get #axis fullArgs]
         tensorKeyArgs
@@ -7618,8 +7780,9 @@ __contrib_gradientmultiplier ::
                                Record r -> TensorApply (t u)
 __contrib_gradientmultiplier args
   = let fullArgs
-          = ANON{scalar = Nothing, is_int = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__contrib_gradientmultiplier t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__contrib_gradientmultiplier t u))
+              args
         scalarArgs
           = catMaybes
               [("scalar",) . showValue <$> Anon.get #scalar fullArgs,
@@ -7644,10 +7807,9 @@ __contrib_group_adagrad_update ::
                                  Record r -> TensorApply (t u)
 __contrib_group_adagrad_update args
   = let fullArgs
-          = ANON{lr = undefined, rescale_grad = Nothing,
-                 clip_gradient = Nothing, epsilon = Nothing, weight = Nothing,
-                 grad = Nothing, history = Nothing}
-              :: ParamListFull (ParameterList__contrib_group_adagrad_update t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__contrib_group_adagrad_update t u))
+              args
         scalarArgs
           = catMaybes
               [("lr",) . showValue <$> Just (Anon.get #lr fullArgs),
@@ -7677,10 +7839,9 @@ __contrib_hawkesll ::
                      Record r -> TensorApply (t u)
 __contrib_hawkesll args
   = let fullArgs
-          = ANON{lda = Nothing, alpha = Nothing, beta = Nothing,
-                 state = Nothing, lags = Nothing, marks = Nothing,
-                 valid_length = Nothing, max_time = Nothing}
-              :: ParamListFull (ParameterList__contrib_hawkesll t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__contrib_hawkesll t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -7706,8 +7867,8 @@ __contrib_ifft ::
                  Record r -> TensorApply (t u)
 __contrib_ifft args
   = let fullArgs
-          = ANON{compute_size = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__contrib_ifft t u)
+          = paramListWithDefault (Proxy @(ParameterList__contrib_ifft t u))
+              args
         scalarArgs
           = catMaybes
               [("compute_size",) . showValue <$> Anon.get #compute_size fullArgs]
@@ -7727,8 +7888,9 @@ __contrib_index_array ::
                         Record r -> TensorApply (t u)
 __contrib_index_array args
   = let fullArgs
-          = ANON{axes = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__contrib_index_array t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__contrib_index_array t u))
+              args
         scalarArgs
           = catMaybes [("axes",) . showValue <$> Anon.get #axes fullArgs]
         tensorKeyArgs
@@ -7748,9 +7910,9 @@ __contrib_index_copy ::
                        Record r -> TensorApply (t u)
 __contrib_index_copy args
   = let fullArgs
-          = ANON{old_tensor = Nothing, index_vector = Nothing,
-                 new_tensor = Nothing}
-              :: ParamListFull (ParameterList__contrib_index_copy t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__contrib_index_copy t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -7776,10 +7938,9 @@ __contrib_interleaved_matmul_encdec_qk ::
                                          Record r -> TensorApply (t u)
 __contrib_interleaved_matmul_encdec_qk args
   = let fullArgs
-          = ANON{heads = undefined, queries = Nothing, keys_values = Nothing}
-              ::
-              ParamListFull
-                (ParameterList__contrib_interleaved_matmul_encdec_qk t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__contrib_interleaved_matmul_encdec_qk t u))
+              args
         scalarArgs
           = catMaybes
               [("heads",) . showValue <$> Just (Anon.get #heads fullArgs)]
@@ -7807,11 +7968,10 @@ __contrib_interleaved_matmul_encdec_valatt ::
                                              Record r -> TensorApply (t u)
 __contrib_interleaved_matmul_encdec_valatt args
   = let fullArgs
-          = ANON{heads = undefined, keys_values = Nothing,
-                 attention = Nothing}
-              ::
-              ParamListFull
-                (ParameterList__contrib_interleaved_matmul_encdec_valatt t u)
+          = paramListWithDefault
+              (Proxy
+                 @(ParameterList__contrib_interleaved_matmul_encdec_valatt t u))
+              args
         scalarArgs
           = catMaybes
               [("heads",) . showValue <$> Just (Anon.get #heads fullArgs)]
@@ -7838,9 +7998,9 @@ __contrib_interleaved_matmul_selfatt_qk ::
                                           Record r -> TensorApply (t u)
 __contrib_interleaved_matmul_selfatt_qk args
   = let fullArgs
-          = ANON{heads = undefined, queries_keys_values = Nothing} ::
-              ParamListFull
-                (ParameterList__contrib_interleaved_matmul_selfatt_qk t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__contrib_interleaved_matmul_selfatt_qk t u))
+              args
         scalarArgs
           = catMaybes
               [("heads",) . showValue <$> Just (Anon.get #heads fullArgs)]
@@ -7869,11 +8029,10 @@ __contrib_interleaved_matmul_selfatt_valatt ::
                                               Record r -> TensorApply (t u)
 __contrib_interleaved_matmul_selfatt_valatt args
   = let fullArgs
-          = ANON{heads = undefined, queries_keys_values = Nothing,
-                 attention = Nothing}
-              ::
-              ParamListFull
-                (ParameterList__contrib_interleaved_matmul_selfatt_valatt t u)
+          = paramListWithDefault
+              (Proxy
+                 @(ParameterList__contrib_interleaved_matmul_selfatt_valatt t u))
+              args
         scalarArgs
           = catMaybes
               [("heads",) . showValue <$> Just (Anon.get #heads fullArgs)]
@@ -7902,11 +8061,9 @@ __contrib_intgemm_fully_connected ::
                                     Record r -> TensorApply (t u)
 __contrib_intgemm_fully_connected args
   = let fullArgs
-          = ANON{num_hidden = undefined, no_bias = Nothing,
-                 flatten = Nothing, out_type = Nothing, _data = undefined,
-                 weight = Nothing, scaling = Nothing, bias = Nothing}
-              ::
-              ParamListFull (ParameterList__contrib_intgemm_fully_connected t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__contrib_intgemm_fully_connected t u))
+              args
         scalarArgs
           = catMaybes
               [("num_hidden",) . showValue <$>
@@ -7935,8 +8092,9 @@ __contrib_intgemm_maxabsolute ::
                                 Record r -> TensorApply (t u)
 __contrib_intgemm_maxabsolute args
   = let fullArgs
-          = ANON{_data = undefined} ::
-              ParamListFull (ParameterList__contrib_intgemm_maxabsolute t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__contrib_intgemm_maxabsolute t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes [("data",) . toRaw <$> Just (Anon.get #_data fullArgs)]
@@ -7955,8 +8113,9 @@ __contrib_intgemm_prepare_data ::
                                  Record r -> TensorApply (t u)
 __contrib_intgemm_prepare_data args
   = let fullArgs
-          = ANON{_data = undefined, maxabs = Nothing} ::
-              ParamListFull (ParameterList__contrib_intgemm_prepare_data t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__contrib_intgemm_prepare_data t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -7978,10 +8137,9 @@ __contrib_intgemm_prepare_weight ::
                                    Record r -> TensorApply (t u)
 __contrib_intgemm_prepare_weight args
   = let fullArgs
-          = ANON{already_quantized = Nothing, weight = Nothing,
-                 maxabs = Nothing}
-              ::
-              ParamListFull (ParameterList__contrib_intgemm_prepare_weight t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__contrib_intgemm_prepare_weight t u))
+              args
         scalarArgs
           = catMaybes
               [("already_quantized",) . showValue <$>
@@ -8005,8 +8163,9 @@ __contrib_intgemm_take_weight ::
                                 Record r -> TensorApply (t u)
 __contrib_intgemm_take_weight args
   = let fullArgs
-          = ANON{weight = Nothing, indices = Nothing} ::
-              ParamListFull (ParameterList__contrib_intgemm_take_weight t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__contrib_intgemm_take_weight t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -8031,11 +8190,9 @@ __contrib_mrcnn_mask_target ::
                               Record r -> TensorApply (t u)
 __contrib_mrcnn_mask_target args
   = let fullArgs
-          = ANON{num_rois = undefined, num_classes = undefined,
-                 mask_size = undefined, sample_ratio = Nothing, aligned = Nothing,
-                 rois = Nothing, gt_masks = Nothing, matches = Nothing,
-                 cls_targets = Nothing}
-              :: ParamListFull (ParameterList__contrib_mrcnn_mask_target t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__contrib_mrcnn_mask_target t u))
+              args
         scalarArgs
           = catMaybes
               [("num_rois",) . showValue <$> Just (Anon.get #num_rois fullArgs),
@@ -8065,8 +8222,9 @@ __contrib_quadratic ::
                       Record r -> TensorApply (t u)
 __contrib_quadratic args
   = let fullArgs
-          = ANON{a = Nothing, b = Nothing, c = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__contrib_quadratic t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__contrib_quadratic t u))
+              args
         scalarArgs
           = catMaybes
               [("a",) . showValue <$> Anon.get #a fullArgs,
@@ -8090,9 +8248,9 @@ __contrib_quantize ::
                      Record r -> TensorApply (t u)
 __contrib_quantize args
   = let fullArgs
-          = ANON{out_type = Nothing, _data = undefined, min_range = Nothing,
-                 max_range = Nothing}
-              :: ParamListFull (ParameterList__contrib_quantize t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__contrib_quantize t u))
+              args
         scalarArgs
           = catMaybes
               [("out_type",) . showValue <$> Anon.get #out_type fullArgs]
@@ -8118,9 +8276,9 @@ __contrib_quantize_v2 ::
                         Record r -> TensorApply (t u)
 __contrib_quantize_v2 args
   = let fullArgs
-          = ANON{out_type = Nothing, min_calib_range = Nothing,
-                 max_calib_range = Nothing, _data = undefined}
-              :: ParamListFull (ParameterList__contrib_quantize_v2 t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__contrib_quantize_v2 t u))
+              args
         scalarArgs
           = catMaybes
               [("out_type",) . showValue <$> Anon.get #out_type fullArgs,
@@ -8148,9 +8306,9 @@ __contrib_quantized_act ::
                           Record r -> TensorApply (t u)
 __contrib_quantized_act args
   = let fullArgs
-          = ANON{act_type = undefined, _data = undefined, min_data = Nothing,
-                 max_data = Nothing}
-              :: ParamListFull (ParameterList__contrib_quantized_act t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__contrib_quantized_act t u))
+              args
         scalarArgs
           = catMaybes
               [("act_type",) . showValue <$> Just (Anon.get #act_type fullArgs)]
@@ -8183,13 +8341,9 @@ __contrib_quantized_batch_norm ::
                                  Record r -> TensorApply (t u)
 __contrib_quantized_batch_norm args
   = let fullArgs
-          = ANON{eps = Nothing, momentum = Nothing, fix_gamma = Nothing,
-                 use_global_stats = Nothing, output_mean_var = Nothing,
-                 axis = Nothing, cudnn_off = Nothing, min_calib_range = Nothing,
-                 max_calib_range = Nothing, _data = undefined, gamma = Nothing,
-                 beta = Nothing, moving_mean = Nothing, moving_var = Nothing,
-                 min_data = Nothing, max_data = Nothing}
-              :: ParamListFull (ParameterList__contrib_quantized_batch_norm t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__contrib_quantized_batch_norm t u))
+              args
         scalarArgs
           = catMaybes
               [("eps",) . showValue <$> Anon.get #eps fullArgs,
@@ -8230,8 +8384,9 @@ __contrib_quantized_concat ::
                              Record r -> TensorApply (t u)
 __contrib_quantized_concat args
   = let fullArgs
-          = ANON{num_args = undefined, dim = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__contrib_quantized_concat t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__contrib_quantized_concat t u))
+              args
         scalarArgs
           = catMaybes
               [("num_args",) . showValue <$> Just (Anon.get #num_args fullArgs),
@@ -8268,14 +8423,9 @@ __contrib_quantized_conv ::
                            Record r -> TensorApply (t u)
 __contrib_quantized_conv args
   = let fullArgs
-          = ANON{kernel = undefined, stride = Nothing, dilate = Nothing,
-                 pad = Nothing, num_filter = undefined, num_group = Nothing,
-                 workspace = Nothing, no_bias = Nothing, cudnn_tune = Nothing,
-                 cudnn_off = Nothing, layout = Nothing, _data = undefined,
-                 weight = Nothing, bias = Nothing, min_data = Nothing,
-                 max_data = Nothing, min_weight = Nothing, max_weight = Nothing,
-                 min_bias = Nothing, max_bias = Nothing}
-              :: ParamListFull (ParameterList__contrib_quantized_conv t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__contrib_quantized_conv t u))
+              args
         scalarArgs
           = catMaybes
               [("kernel",) . showValue <$> Just (Anon.get #kernel fullArgs),
@@ -8320,11 +8470,9 @@ __contrib_quantized_elemwise_add ::
                                    Record r -> TensorApply (t u)
 __contrib_quantized_elemwise_add args
   = let fullArgs
-          = ANON{min_calib_range = Nothing, max_calib_range = Nothing,
-                 lhs = Nothing, rhs = Nothing, lhs_min = Nothing, lhs_max = Nothing,
-                 rhs_min = Nothing, rhs_max = Nothing}
-              ::
-              ParamListFull (ParameterList__contrib_quantized_elemwise_add t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__contrib_quantized_elemwise_add t u))
+              args
         scalarArgs
           = catMaybes
               [("min_calib_range",) . showValue <$>
@@ -8359,12 +8507,9 @@ __contrib_quantized_elemwise_mul ::
                                    Record r -> TensorApply (t u)
 __contrib_quantized_elemwise_mul args
   = let fullArgs
-          = ANON{min_calib_range = Nothing, max_calib_range = Nothing,
-                 enable_float_output = Nothing, lhs = Nothing, rhs = Nothing,
-                 lhs_min = Nothing, lhs_max = Nothing, rhs_min = Nothing,
-                 rhs_max = Nothing}
-              ::
-              ParamListFull (ParameterList__contrib_quantized_elemwise_mul t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__contrib_quantized_elemwise_mul t u))
+              args
         scalarArgs
           = catMaybes
               [("min_calib_range",) . showValue <$>
@@ -8404,10 +8549,9 @@ __contrib_quantized_embedding ::
                                 Record r -> TensorApply (t u)
 __contrib_quantized_embedding args
   = let fullArgs
-          = ANON{input_dim = undefined, output_dim = undefined,
-                 dtype = Nothing, sparse_grad = Nothing, _data = undefined,
-                 weight = Nothing, min_weight = Nothing, max_weight = Nothing}
-              :: ParamListFull (ParameterList__contrib_quantized_embedding t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__contrib_quantized_embedding t u))
+              args
         scalarArgs
           = catMaybes
               [("input_dim",) . showValue <$>
@@ -8438,8 +8582,9 @@ __contrib_quantized_flatten ::
                               Record r -> TensorApply (t u)
 __contrib_quantized_flatten args
   = let fullArgs
-          = ANON{_data = undefined, min_data = Nothing, max_data = Nothing}
-              :: ParamListFull (ParameterList__contrib_quantized_flatten t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__contrib_quantized_flatten t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -8468,14 +8613,9 @@ __contrib_quantized_fully_connected ::
                                       Record r -> TensorApply (t u)
 __contrib_quantized_fully_connected args
   = let fullArgs
-          = ANON{num_hidden = undefined, no_bias = Nothing,
-                 flatten = Nothing, _data = undefined, weight = Nothing,
-                 bias = Nothing, min_data = Nothing, max_data = Nothing,
-                 min_weight = Nothing, max_weight = Nothing, min_bias = Nothing,
-                 max_bias = Nothing}
-              ::
-              ParamListFull
-                (ParameterList__contrib_quantized_fully_connected t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__contrib_quantized_fully_connected t u))
+              args
         scalarArgs
           = catMaybes
               [("num_hidden",) . showValue <$>
@@ -8521,12 +8661,9 @@ __contrib_quantized_pooling ::
                               Record r -> TensorApply (t u)
 __contrib_quantized_pooling args
   = let fullArgs
-          = ANON{kernel = Nothing, pool_type = Nothing,
-                 global_pool = Nothing, cudnn_off = Nothing,
-                 pooling_convention = Nothing, stride = Nothing, pad = Nothing,
-                 p_value = Nothing, count_include_pad = Nothing, layout = Nothing,
-                 _data = undefined, min_data = Nothing, max_data = Nothing}
-              :: ParamListFull (ParameterList__contrib_quantized_pooling t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__contrib_quantized_pooling t u))
+              args
         scalarArgs
           = catMaybes
               [("kernel",) . showValue <$> Anon.get #kernel fullArgs,
@@ -8564,10 +8701,9 @@ __contrib_requantize ::
                        Record r -> TensorApply (t u)
 __contrib_requantize args
   = let fullArgs
-          = ANON{out_type = Nothing, min_calib_range = Nothing,
-                 max_calib_range = Nothing, _data = undefined, min_range = Nothing,
-                 max_range = Nothing}
-              :: ParamListFull (ParameterList__contrib_requantize t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__contrib_requantize t u))
+              args
         scalarArgs
           = catMaybes
               [("out_type",) . showValue <$> Anon.get #out_type fullArgs,
@@ -8594,8 +8730,9 @@ __contrib_round_ste ::
                       Record r -> TensorApply (t u)
 __contrib_round_ste args
   = let fullArgs
-          = ANON{_data = undefined} ::
-              ParamListFull (ParameterList__contrib_round_ste t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__contrib_round_ste t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes [("data",) . toRaw <$> Just (Anon.get #_data fullArgs)]
@@ -8613,8 +8750,9 @@ __contrib_sign_ste ::
                      Record r -> TensorApply (t u)
 __contrib_sign_ste args
   = let fullArgs
-          = ANON{_data = undefined} ::
-              ParamListFull (ParameterList__contrib_sign_ste t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__contrib_sign_ste t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes [("data",) . toRaw <$> Just (Anon.get #_data fullArgs)]
@@ -8631,8 +8769,7 @@ __copy ::
          Record r -> TensorApply (t u)
 __copy args
   = let fullArgs
-          = ANON{_data = undefined} ::
-              ParamListFull (ParameterList__copy t u)
+          = paramListWithDefault (Proxy @(ParameterList__copy t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes [("data",) . toRaw <$> Just (Anon.get #_data fullArgs)]
@@ -8649,8 +8786,7 @@ __copyto ::
            Record r -> TensorApply (t u)
 __copyto args
   = let fullArgs
-          = ANON{_data = undefined} ::
-              ParamListFull (ParameterList__copyto t u)
+          = paramListWithDefault (Proxy @(ParameterList__copyto t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes [("data",) . toRaw <$> Just (Anon.get #_data fullArgs)]
@@ -8671,10 +8807,9 @@ __cvcopyMakeBorder ::
                      Record r -> TensorApply (t u)
 __cvcopyMakeBorder args
   = let fullArgs
-          = ANON{top = undefined, bot = undefined, left = undefined,
-                 right = undefined, _type = Nothing, value = Nothing,
-                 values = Nothing, src = Nothing}
-              :: ParamListFull (ParameterList__cvcopyMakeBorder t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__cvcopyMakeBorder t u))
+              args
         scalarArgs
           = catMaybes
               [("top",) . showValue <$> Just (Anon.get #top fullArgs),
@@ -8701,8 +8836,8 @@ __cvimdecode ::
                Record r -> TensorApply (t u)
 __cvimdecode args
   = let fullArgs
-          = ANON{flag = Nothing, to_rgb = Nothing, buf = Nothing} ::
-              ParamListFull (ParameterList__cvimdecode t u)
+          = paramListWithDefault (Proxy @(ParameterList__cvimdecode t u))
+              args
         scalarArgs
           = catMaybes
               [("flag",) . showValue <$> Anon.get #flag fullArgs,
@@ -8724,8 +8859,7 @@ __cvimread ::
              Record r -> TensorApply (t u)
 __cvimread args
   = let fullArgs
-          = ANON{filename = undefined, flag = Nothing, to_rgb = Nothing} ::
-              ParamListFull ParameterList__cvimread
+          = paramListWithDefault (Proxy @(ParameterList__cvimread)) args
         scalarArgs
           = catMaybes
               [("filename",) . showValue <$> Just (Anon.get #filename fullArgs),
@@ -8747,9 +8881,8 @@ __cvimresize ::
                Record r -> TensorApply (t u)
 __cvimresize args
   = let fullArgs
-          = ANON{w = undefined, h = undefined, interp = Nothing,
-                 src = Nothing}
-              :: ParamListFull (ParameterList__cvimresize t u)
+          = paramListWithDefault (Proxy @(ParameterList__cvimresize t u))
+              args
         scalarArgs
           = catMaybes
               [("w",) . showValue <$> Just (Anon.get #w fullArgs),
@@ -8772,8 +8905,8 @@ __div_scalar ::
                Record r -> TensorApply (t u)
 __div_scalar args
   = let fullArgs
-          = ANON{scalar = Nothing, is_int = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__div_scalar t u)
+          = paramListWithDefault (Proxy @(ParameterList__div_scalar t u))
+              args
         scalarArgs
           = catMaybes
               [("scalar",) . showValue <$> Anon.get #scalar fullArgs,
@@ -8794,8 +8927,7 @@ __equal ::
           Record r -> TensorApply (t u)
 __equal args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList__equal t u)
+          = paramListWithDefault (Proxy @(ParameterList__equal t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -8816,8 +8948,8 @@ __equal_scalar ::
                  Record r -> TensorApply (t u)
 __equal_scalar args
   = let fullArgs
-          = ANON{scalar = Nothing, is_int = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__equal_scalar t u)
+          = paramListWithDefault (Proxy @(ParameterList__equal_scalar t u))
+              args
         scalarArgs
           = catMaybes
               [("scalar",) . showValue <$> Anon.get #scalar fullArgs,
@@ -8844,9 +8976,7 @@ __full ::
          Record r -> TensorApply (t u)
 __full args
   = let fullArgs
-          = ANON{shape = Nothing, ctx = Nothing, dtype = Nothing,
-                 value = undefined}
-              :: ParamListFull ParameterList__full
+          = paramListWithDefault (Proxy @(ParameterList__full)) args
         scalarArgs
           = catMaybes
               [("shape",) . showValue <$> Anon.get #shape fullArgs,
@@ -8868,8 +8998,7 @@ __grad_add ::
              Record r -> TensorApply (t u)
 __grad_add args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList__grad_add t u)
+          = paramListWithDefault (Proxy @(ParameterList__grad_add t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -8889,8 +9018,7 @@ __greater ::
             Record r -> TensorApply (t u)
 __greater args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList__greater t u)
+          = paramListWithDefault (Proxy @(ParameterList__greater t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -8910,8 +9038,8 @@ __greater_equal ::
                   Record r -> TensorApply (t u)
 __greater_equal args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList__greater_equal t u)
+          = paramListWithDefault (Proxy @(ParameterList__greater_equal t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -8932,8 +9060,9 @@ __greater_equal_scalar ::
                          Record r -> TensorApply (t u)
 __greater_equal_scalar args
   = let fullArgs
-          = ANON{scalar = Nothing, is_int = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__greater_equal_scalar t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__greater_equal_scalar t u))
+              args
         scalarArgs
           = catMaybes
               [("scalar",) . showValue <$> Anon.get #scalar fullArgs,
@@ -8955,8 +9084,8 @@ __greater_scalar ::
                    Record r -> TensorApply (t u)
 __greater_scalar args
   = let fullArgs
-          = ANON{scalar = Nothing, is_int = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__greater_scalar t u)
+          = paramListWithDefault (Proxy @(ParameterList__greater_scalar t u))
+              args
         scalarArgs
           = catMaybes
               [("scalar",) . showValue <$> Anon.get #scalar fullArgs,
@@ -8978,9 +9107,7 @@ __histogram ::
               Record r -> TensorApply (t u)
 __histogram args
   = let fullArgs
-          = ANON{bin_cnt = Nothing, range = Nothing, _data = undefined,
-                 bins = Nothing}
-              :: ParamListFull (ParameterList__histogram t u)
+          = paramListWithDefault (Proxy @(ParameterList__histogram t u)) args
         scalarArgs
           = catMaybes
               [("bin_cnt",) . showValue <$> Anon.get #bin_cnt fullArgs,
@@ -9003,8 +9130,7 @@ __hypot ::
           Record r -> TensorApply (t u)
 __hypot args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList__hypot t u)
+          = paramListWithDefault (Proxy @(ParameterList__hypot t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -9025,8 +9151,8 @@ __hypot_scalar ::
                  Record r -> TensorApply (t u)
 __hypot_scalar args
   = let fullArgs
-          = ANON{scalar = Nothing, is_int = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__hypot_scalar t u)
+          = paramListWithDefault (Proxy @(ParameterList__hypot_scalar t u))
+              args
         scalarArgs
           = catMaybes
               [("scalar",) . showValue <$> Anon.get #scalar fullArgs,
@@ -9048,8 +9174,9 @@ __identity_with_attr_like_rhs ::
                                 Record r -> TensorApply (t u)
 __identity_with_attr_like_rhs args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList__identity_with_attr_like_rhs t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__identity_with_attr_like_rhs t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -9069,8 +9196,9 @@ __image_adjust_lighting ::
                           Record r -> TensorApply (t u)
 __image_adjust_lighting args
   = let fullArgs
-          = ANON{alpha = undefined, _data = undefined} ::
-              ParamListFull (ParameterList__image_adjust_lighting t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__image_adjust_lighting t u))
+              args
         scalarArgs
           = catMaybes
               [("alpha",) . showValue <$> Just (Anon.get #alpha fullArgs)]
@@ -9092,9 +9220,8 @@ __image_crop ::
                Record r -> TensorApply (t u)
 __image_crop args
   = let fullArgs
-          = ANON{x = undefined, y = undefined, width = undefined,
-                 height = undefined, _data = undefined}
-              :: ParamListFull (ParameterList__image_crop t u)
+          = paramListWithDefault (Proxy @(ParameterList__image_crop t u))
+              args
         scalarArgs
           = catMaybes
               [("x",) . showValue <$> Just (Anon.get #x fullArgs),
@@ -9117,8 +9244,9 @@ __image_flip_left_right ::
                           Record r -> TensorApply (t u)
 __image_flip_left_right args
   = let fullArgs
-          = ANON{_data = undefined} ::
-              ParamListFull (ParameterList__image_flip_left_right t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__image_flip_left_right t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes [("data",) . toRaw <$> Just (Anon.get #_data fullArgs)]
@@ -9136,8 +9264,9 @@ __image_flip_top_bottom ::
                           Record r -> TensorApply (t u)
 __image_flip_top_bottom args
   = let fullArgs
-          = ANON{_data = undefined} ::
-              ParamListFull (ParameterList__image_flip_top_bottom t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__image_flip_top_bottom t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes [("data",) . toRaw <$> Just (Anon.get #_data fullArgs)]
@@ -9156,8 +9285,9 @@ __image_normalize ::
                     Record r -> TensorApply (t u)
 __image_normalize args
   = let fullArgs
-          = ANON{mean = Nothing, std = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__image_normalize t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__image_normalize t u))
+              args
         scalarArgs
           = catMaybes
               [("mean",) . showValue <$> Anon.get #mean fullArgs,
@@ -9180,9 +9310,9 @@ __image_random_brightness ::
                             Record r -> TensorApply (t u)
 __image_random_brightness args
   = let fullArgs
-          = ANON{min_factor = undefined, max_factor = undefined,
-                 _data = undefined}
-              :: ParamListFull (ParameterList__image_random_brightness t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__image_random_brightness t u))
+              args
         scalarArgs
           = catMaybes
               [("min_factor",) . showValue <$>
@@ -9208,9 +9338,9 @@ __image_random_color_jitter ::
                               Record r -> TensorApply (t u)
 __image_random_color_jitter args
   = let fullArgs
-          = ANON{brightness = undefined, contrast = undefined,
-                 saturation = undefined, hue = undefined, _data = undefined}
-              :: ParamListFull (ParameterList__image_random_color_jitter t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__image_random_color_jitter t u))
+              args
         scalarArgs
           = catMaybes
               [("brightness",) . showValue <$>
@@ -9236,9 +9366,9 @@ __image_random_contrast ::
                           Record r -> TensorApply (t u)
 __image_random_contrast args
   = let fullArgs
-          = ANON{min_factor = undefined, max_factor = undefined,
-                 _data = undefined}
-              :: ParamListFull (ParameterList__image_random_contrast t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__image_random_contrast t u))
+              args
         scalarArgs
           = catMaybes
               [("min_factor",) . showValue <$>
@@ -9262,8 +9392,9 @@ __image_random_flip_left_right ::
                                  Record r -> TensorApply (t u)
 __image_random_flip_left_right args
   = let fullArgs
-          = ANON{_data = undefined} ::
-              ParamListFull (ParameterList__image_random_flip_left_right t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__image_random_flip_left_right t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes [("data",) . toRaw <$> Just (Anon.get #_data fullArgs)]
@@ -9282,8 +9413,9 @@ __image_random_flip_top_bottom ::
                                  Record r -> TensorApply (t u)
 __image_random_flip_top_bottom args
   = let fullArgs
-          = ANON{_data = undefined} ::
-              ParamListFull (ParameterList__image_random_flip_top_bottom t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__image_random_flip_top_bottom t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes [("data",) . toRaw <$> Just (Anon.get #_data fullArgs)]
@@ -9302,9 +9434,9 @@ __image_random_hue ::
                      Record r -> TensorApply (t u)
 __image_random_hue args
   = let fullArgs
-          = ANON{min_factor = undefined, max_factor = undefined,
-                 _data = undefined}
-              :: ParamListFull (ParameterList__image_random_hue t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__image_random_hue t u))
+              args
         scalarArgs
           = catMaybes
               [("min_factor",) . showValue <$>
@@ -9327,8 +9459,9 @@ __image_random_lighting ::
                           Record r -> TensorApply (t u)
 __image_random_lighting args
   = let fullArgs
-          = ANON{alpha_std = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__image_random_lighting t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__image_random_lighting t u))
+              args
         scalarArgs
           = catMaybes
               [("alpha_std",) . showValue <$> Anon.get #alpha_std fullArgs]
@@ -9350,9 +9483,9 @@ __image_random_saturation ::
                             Record r -> TensorApply (t u)
 __image_random_saturation args
   = let fullArgs
-          = ANON{min_factor = undefined, max_factor = undefined,
-                 _data = undefined}
-              :: ParamListFull (ParameterList__image_random_saturation t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__image_random_saturation t u))
+              args
         scalarArgs
           = catMaybes
               [("min_factor",) . showValue <$>
@@ -9376,9 +9509,8 @@ __image_resize ::
                  Record r -> TensorApply (t u)
 __image_resize args
   = let fullArgs
-          = ANON{size = Nothing, keep_ratio = Nothing, interp = Nothing,
-                 _data = undefined}
-              :: ParamListFull (ParameterList__image_resize t u)
+          = paramListWithDefault (Proxy @(ParameterList__image_resize t u))
+              args
         scalarArgs
           = catMaybes
               [("size",) . showValue <$> Anon.get #size fullArgs,
@@ -9400,8 +9532,9 @@ __image_to_tensor ::
                     Record r -> TensorApply (t u)
 __image_to_tensor args
   = let fullArgs
-          = ANON{_data = undefined} ::
-              ParamListFull (ParameterList__image_to_tensor t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__image_to_tensor t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes [("data",) . toRaw <$> Just (Anon.get #_data fullArgs)]
@@ -9422,9 +9555,7 @@ __imdecode ::
              Record r -> TensorApply (t u)
 __imdecode args
   = let fullArgs
-          = ANON{index = Nothing, x0 = Nothing, y0 = Nothing, x1 = Nothing,
-                 y1 = Nothing, c = Nothing, size = Nothing, mean = Nothing}
-              :: ParamListFull (ParameterList__imdecode t u)
+          = paramListWithDefault (Proxy @(ParameterList__imdecode t u)) args
         scalarArgs
           = catMaybes
               [("index",) . showValue <$> Anon.get #index fullArgs,
@@ -9450,8 +9581,7 @@ __lesser ::
            Record r -> TensorApply (t u)
 __lesser args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList__lesser t u)
+          = paramListWithDefault (Proxy @(ParameterList__lesser t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -9471,8 +9601,8 @@ __lesser_equal ::
                  Record r -> TensorApply (t u)
 __lesser_equal args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList__lesser_equal t u)
+          = paramListWithDefault (Proxy @(ParameterList__lesser_equal t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -9493,8 +9623,9 @@ __lesser_equal_scalar ::
                         Record r -> TensorApply (t u)
 __lesser_equal_scalar args
   = let fullArgs
-          = ANON{scalar = Nothing, is_int = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__lesser_equal_scalar t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__lesser_equal_scalar t u))
+              args
         scalarArgs
           = catMaybes
               [("scalar",) . showValue <$> Anon.get #scalar fullArgs,
@@ -9516,8 +9647,8 @@ __lesser_scalar ::
                   Record r -> TensorApply (t u)
 __lesser_scalar args
   = let fullArgs
-          = ANON{scalar = Nothing, is_int = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__lesser_scalar t u)
+          = paramListWithDefault (Proxy @(ParameterList__lesser_scalar t u))
+              args
         scalarArgs
           = catMaybes
               [("scalar",) . showValue <$> Anon.get #scalar fullArgs,
@@ -9537,8 +9668,8 @@ __linalg_det ::
                Record r -> TensorApply (t u)
 __linalg_det args
   = let fullArgs
-          = ANON{a = Nothing} ::
-              ParamListFull (ParameterList__linalg_det t u)
+          = paramListWithDefault (Proxy @(ParameterList__linalg_det t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes [("a",) . toRaw <$> Anon.get #a fullArgs]
       in
@@ -9555,8 +9686,9 @@ __linalg_extractdiag ::
                        Record r -> TensorApply (t u)
 __linalg_extractdiag args
   = let fullArgs
-          = ANON{offset = Nothing, a = Nothing} ::
-              ParamListFull (ParameterList__linalg_extractdiag t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__linalg_extractdiag t u))
+              args
         scalarArgs
           = catMaybes [("offset",) . showValue <$> Anon.get #offset fullArgs]
         tensorKeyArgs = catMaybes [("a",) . toRaw <$> Anon.get #a fullArgs]
@@ -9575,8 +9707,9 @@ __linalg_extracttrian ::
                         Record r -> TensorApply (t u)
 __linalg_extracttrian args
   = let fullArgs
-          = ANON{offset = Nothing, lower = Nothing, a = Nothing} ::
-              ParamListFull (ParameterList__linalg_extracttrian t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__linalg_extracttrian t u))
+              args
         scalarArgs
           = catMaybes
               [("offset",) . showValue <$> Anon.get #offset fullArgs,
@@ -9595,8 +9728,8 @@ __linalg_gelqf ::
                  Record r -> TensorApply (t u)
 __linalg_gelqf args
   = let fullArgs
-          = ANON{a = Nothing} ::
-              ParamListFull (ParameterList__linalg_gelqf t u)
+          = paramListWithDefault (Proxy @(ParameterList__linalg_gelqf t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes [("a",) . toRaw <$> Anon.get #a fullArgs]
       in
@@ -9616,10 +9749,8 @@ __linalg_gemm ::
                 Record r -> TensorApply (t u)
 __linalg_gemm args
   = let fullArgs
-          = ANON{transpose_a = Nothing, transpose_b = Nothing,
-                 alpha = Nothing, beta = Nothing, axis = Nothing, a = Nothing,
-                 b = Nothing, c = Nothing}
-              :: ParamListFull (ParameterList__linalg_gemm t u)
+          = paramListWithDefault (Proxy @(ParameterList__linalg_gemm t u))
+              args
         scalarArgs
           = catMaybes
               [("transpose_a",) . showValue <$> Anon.get #transpose_a fullArgs,
@@ -9648,9 +9779,8 @@ __linalg_gemm2 ::
                  Record r -> TensorApply (t u)
 __linalg_gemm2 args
   = let fullArgs
-          = ANON{transpose_a = Nothing, transpose_b = Nothing,
-                 alpha = Nothing, axis = Nothing, a = Nothing, b = Nothing}
-              :: ParamListFull (ParameterList__linalg_gemm2 t u)
+          = paramListWithDefault (Proxy @(ParameterList__linalg_gemm2 t u))
+              args
         scalarArgs
           = catMaybes
               [("transpose_a",) . showValue <$> Anon.get #transpose_a fullArgs,
@@ -9674,8 +9804,8 @@ __linalg_inverse ::
                    Record r -> TensorApply (t u)
 __linalg_inverse args
   = let fullArgs
-          = ANON{a = Nothing} ::
-              ParamListFull (ParameterList__linalg_inverse t u)
+          = paramListWithDefault (Proxy @(ParameterList__linalg_inverse t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes [("a",) . toRaw <$> Anon.get #a fullArgs]
       in
@@ -9692,8 +9822,9 @@ __linalg_makediag ::
                     Record r -> TensorApply (t u)
 __linalg_makediag args
   = let fullArgs
-          = ANON{offset = Nothing, a = Nothing} ::
-              ParamListFull (ParameterList__linalg_makediag t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__linalg_makediag t u))
+              args
         scalarArgs
           = catMaybes [("offset",) . showValue <$> Anon.get #offset fullArgs]
         tensorKeyArgs = catMaybes [("a",) . toRaw <$> Anon.get #a fullArgs]
@@ -9712,8 +9843,9 @@ __linalg_maketrian ::
                      Record r -> TensorApply (t u)
 __linalg_maketrian args
   = let fullArgs
-          = ANON{offset = Nothing, lower = Nothing, a = Nothing} ::
-              ParamListFull (ParameterList__linalg_maketrian t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__linalg_maketrian t u))
+              args
         scalarArgs
           = catMaybes
               [("offset",) . showValue <$> Anon.get #offset fullArgs,
@@ -9732,8 +9864,8 @@ __linalg_potrf ::
                  Record r -> TensorApply (t u)
 __linalg_potrf args
   = let fullArgs
-          = ANON{a = Nothing} ::
-              ParamListFull (ParameterList__linalg_potrf t u)
+          = paramListWithDefault (Proxy @(ParameterList__linalg_potrf t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes [("a",) . toRaw <$> Anon.get #a fullArgs]
       in
@@ -9749,8 +9881,8 @@ __linalg_potri ::
                  Record r -> TensorApply (t u)
 __linalg_potri args
   = let fullArgs
-          = ANON{a = Nothing} ::
-              ParamListFull (ParameterList__linalg_potri t u)
+          = paramListWithDefault (Proxy @(ParameterList__linalg_potri t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes [("a",) . toRaw <$> Anon.get #a fullArgs]
       in
@@ -9766,8 +9898,8 @@ __linalg_slogdet ::
                    Record r -> TensorApply (t u)
 __linalg_slogdet args
   = let fullArgs
-          = ANON{a = Nothing} ::
-              ParamListFull (ParameterList__linalg_slogdet t u)
+          = paramListWithDefault (Proxy @(ParameterList__linalg_slogdet t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes [("a",) . toRaw <$> Anon.get #a fullArgs]
       in
@@ -9784,8 +9916,9 @@ __linalg_sumlogdiag ::
                       Record r -> TensorApply (t u)
 __linalg_sumlogdiag args
   = let fullArgs
-          = ANON{a = Nothing} ::
-              ParamListFull (ParameterList__linalg_sumlogdiag t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__linalg_sumlogdiag t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes [("a",) . toRaw <$> Anon.get #a fullArgs]
       in
@@ -9801,8 +9934,8 @@ __linalg_syevd ::
                  Record r -> TensorApply (t u)
 __linalg_syevd args
   = let fullArgs
-          = ANON{a = Nothing} ::
-              ParamListFull (ParameterList__linalg_syevd t u)
+          = paramListWithDefault (Proxy @(ParameterList__linalg_syevd t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes [("a",) . toRaw <$> Anon.get #a fullArgs]
       in
@@ -9820,8 +9953,8 @@ __linalg_syrk ::
                 Record r -> TensorApply (t u)
 __linalg_syrk args
   = let fullArgs
-          = ANON{transpose = Nothing, alpha = Nothing, a = Nothing} ::
-              ParamListFull (ParameterList__linalg_syrk t u)
+          = paramListWithDefault (Proxy @(ParameterList__linalg_syrk t u))
+              args
         scalarArgs
           = catMaybes
               [("transpose",) . showValue <$> Anon.get #transpose fullArgs,
@@ -9843,9 +9976,8 @@ __linalg_trmm ::
                 Record r -> TensorApply (t u)
 __linalg_trmm args
   = let fullArgs
-          = ANON{transpose = Nothing, rightside = Nothing, lower = Nothing,
-                 alpha = Nothing, a = Nothing, b = Nothing}
-              :: ParamListFull (ParameterList__linalg_trmm t u)
+          = paramListWithDefault (Proxy @(ParameterList__linalg_trmm t u))
+              args
         scalarArgs
           = catMaybes
               [("transpose",) . showValue <$> Anon.get #transpose fullArgs,
@@ -9872,9 +10004,8 @@ __linalg_trsm ::
                 Record r -> TensorApply (t u)
 __linalg_trsm args
   = let fullArgs
-          = ANON{transpose = Nothing, rightside = Nothing, lower = Nothing,
-                 alpha = Nothing, a = Nothing, b = Nothing}
-              :: ParamListFull (ParameterList__linalg_trsm t u)
+          = paramListWithDefault (Proxy @(ParameterList__linalg_trsm t u))
+              args
         scalarArgs
           = catMaybes
               [("transpose",) . showValue <$> Anon.get #transpose fullArgs,
@@ -9906,10 +10037,7 @@ __linspace ::
              Record r -> TensorApply (t u)
 __linspace args
   = let fullArgs
-          = ANON{start = undefined, stop = Nothing, step = Nothing,
-                 repeat = Nothing, infer_range = Nothing, ctx = Nothing,
-                 dtype = Nothing}
-              :: ParamListFull ParameterList__linspace
+          = paramListWithDefault (Proxy @(ParameterList__linspace)) args
         scalarArgs
           = catMaybes
               [("start",) . showValue <$> Just (Anon.get #start fullArgs),
@@ -9934,8 +10062,8 @@ __logical_and ::
                 Record r -> TensorApply (t u)
 __logical_and args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList__logical_and t u)
+          = paramListWithDefault (Proxy @(ParameterList__logical_and t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -9956,8 +10084,9 @@ __logical_and_scalar ::
                        Record r -> TensorApply (t u)
 __logical_and_scalar args
   = let fullArgs
-          = ANON{scalar = Nothing, is_int = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__logical_and_scalar t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__logical_and_scalar t u))
+              args
         scalarArgs
           = catMaybes
               [("scalar",) . showValue <$> Anon.get #scalar fullArgs,
@@ -9978,8 +10107,8 @@ __logical_or ::
                Record r -> TensorApply (t u)
 __logical_or args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList__logical_or t u)
+          = paramListWithDefault (Proxy @(ParameterList__logical_or t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -10000,8 +10129,9 @@ __logical_or_scalar ::
                       Record r -> TensorApply (t u)
 __logical_or_scalar args
   = let fullArgs
-          = ANON{scalar = Nothing, is_int = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__logical_or_scalar t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__logical_or_scalar t u))
+              args
         scalarArgs
           = catMaybes
               [("scalar",) . showValue <$> Anon.get #scalar fullArgs,
@@ -10022,8 +10152,8 @@ __logical_xor ::
                 Record r -> TensorApply (t u)
 __logical_xor args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList__logical_xor t u)
+          = paramListWithDefault (Proxy @(ParameterList__logical_xor t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -10044,8 +10174,9 @@ __logical_xor_scalar ::
                        Record r -> TensorApply (t u)
 __logical_xor_scalar args
   = let fullArgs
-          = ANON{scalar = Nothing, is_int = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__logical_xor_scalar t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__logical_xor_scalar t u))
+              args
         scalarArgs
           = catMaybes
               [("scalar",) . showValue <$> Anon.get #scalar fullArgs,
@@ -10066,8 +10197,7 @@ __maximum ::
             Record r -> TensorApply (t u)
 __maximum args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList__maximum t u)
+          = paramListWithDefault (Proxy @(ParameterList__maximum t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -10088,8 +10218,8 @@ __maximum_scalar ::
                    Record r -> TensorApply (t u)
 __maximum_scalar args
   = let fullArgs
-          = ANON{scalar = Nothing, is_int = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__maximum_scalar t u)
+          = paramListWithDefault (Proxy @(ParameterList__maximum_scalar t u))
+              args
         scalarArgs
           = catMaybes
               [("scalar",) . showValue <$> Anon.get #scalar fullArgs,
@@ -10110,8 +10240,7 @@ __minimum ::
             Record r -> TensorApply (t u)
 __minimum args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList__minimum t u)
+          = paramListWithDefault (Proxy @(ParameterList__minimum t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -10132,8 +10261,8 @@ __minimum_scalar ::
                    Record r -> TensorApply (t u)
 __minimum_scalar args
   = let fullArgs
-          = ANON{scalar = Nothing, is_int = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__minimum_scalar t u)
+          = paramListWithDefault (Proxy @(ParameterList__minimum_scalar t u))
+              args
         scalarArgs
           = catMaybes
               [("scalar",) . showValue <$> Anon.get #scalar fullArgs,
@@ -10155,8 +10284,8 @@ __minus_scalar ::
                  Record r -> TensorApply (t u)
 __minus_scalar args
   = let fullArgs
-          = ANON{scalar = Nothing, is_int = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__minus_scalar t u)
+          = paramListWithDefault (Proxy @(ParameterList__minus_scalar t u))
+              args
         scalarArgs
           = catMaybes
               [("scalar",) . showValue <$> Anon.get #scalar fullArgs,
@@ -10177,8 +10306,7 @@ __mod ::
         Record r -> TensorApply (t u)
 __mod args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList__mod t u)
+          = paramListWithDefault (Proxy @(ParameterList__mod t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -10199,8 +10327,8 @@ __mod_scalar ::
                Record r -> TensorApply (t u)
 __mod_scalar args
   = let fullArgs
-          = ANON{scalar = Nothing, is_int = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__mod_scalar t u)
+          = paramListWithDefault (Proxy @(ParameterList__mod_scalar t u))
+              args
         scalarArgs
           = catMaybes
               [("scalar",) . showValue <$> Anon.get #scalar fullArgs,
@@ -10227,12 +10355,9 @@ __mp_adamw_update ::
                     Record r -> TensorApply (t u)
 __mp_adamw_update args
   = let fullArgs
-          = ANON{lr = undefined, beta1 = Nothing, beta2 = Nothing,
-                 epsilon = Nothing, wd = Nothing, eta = undefined,
-                 clip_gradient = Nothing, weight = Nothing, grad = Nothing,
-                 mean = Nothing, var = Nothing, weight32 = Nothing,
-                 rescale_grad = Nothing}
-              :: ParamListFull (ParameterList__mp_adamw_update t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__mp_adamw_update t u))
+              args
         scalarArgs
           = catMaybes
               [("lr",) . showValue <$> Just (Anon.get #lr fullArgs),
@@ -10266,8 +10391,8 @@ __mul_scalar ::
                Record r -> TensorApply (t u)
 __mul_scalar args
   = let fullArgs
-          = ANON{scalar = Nothing, is_int = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__mul_scalar t u)
+          = paramListWithDefault (Proxy @(ParameterList__mul_scalar t u))
+              args
         scalarArgs
           = catMaybes
               [("scalar",) . showValue <$> Anon.get #scalar fullArgs,
@@ -10292,10 +10417,9 @@ __multi_adamw_update ::
                        Record r -> TensorApply (t u)
 __multi_adamw_update args
   = let fullArgs
-          = ANON{lrs = undefined, beta1 = Nothing, beta2 = Nothing,
-                 epsilon = Nothing, wds = undefined, etas = undefined,
-                 clip_gradient = Nothing, num_weights = Nothing, _data = undefined}
-              :: ParamListFull (ParameterList__multi_adamw_update t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__multi_adamw_update t u))
+              args
         scalarArgs
           = catMaybes
               [("lrs",) . showValue <$> Just (Anon.get #lrs fullArgs),
@@ -10328,13 +10452,9 @@ __multi_lamb_update ::
                       Record r -> TensorApply (t u)
 __multi_lamb_update args
   = let fullArgs
-          = ANON{learning_rates = undefined, beta1 = Nothing,
-                 beta2 = Nothing, epsilon = Nothing, wds = undefined,
-                 rescale_grad = Nothing, lower_bound = Nothing,
-                 upper_bound = Nothing, clip_gradient = Nothing,
-                 bias_correction = Nothing, step_count = undefined,
-                 num_tensors = Nothing, _data = undefined}
-              :: ParamListFull (ParameterList__multi_lamb_update t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__multi_lamb_update t u))
+              args
         scalarArgs
           = catMaybes
               [("learning_rates",) . showValue <$>
@@ -10372,10 +10492,9 @@ __multi_mp_adamw_update ::
                           Record r -> TensorApply (t u)
 __multi_mp_adamw_update args
   = let fullArgs
-          = ANON{lrs = undefined, beta1 = Nothing, beta2 = Nothing,
-                 epsilon = Nothing, wds = undefined, etas = undefined,
-                 clip_gradient = Nothing, num_weights = Nothing, _data = undefined}
-              :: ParamListFull (ParameterList__multi_mp_adamw_update t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__multi_mp_adamw_update t u))
+              args
         scalarArgs
           = catMaybes
               [("lrs",) . showValue <$> Just (Anon.get #lrs fullArgs),
@@ -10409,13 +10528,9 @@ __multi_mp_lamb_update ::
                          Record r -> TensorApply (t u)
 __multi_mp_lamb_update args
   = let fullArgs
-          = ANON{learning_rates = undefined, beta1 = Nothing,
-                 beta2 = Nothing, epsilon = Nothing, wds = undefined,
-                 rescale_grad = Nothing, lower_bound = Nothing,
-                 upper_bound = Nothing, clip_gradient = Nothing,
-                 bias_correction = Nothing, step_count = undefined,
-                 num_tensors = Nothing, _data = undefined}
-              :: ParamListFull (ParameterList__multi_mp_lamb_update t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__multi_mp_lamb_update t u))
+              args
         scalarArgs
           = catMaybes
               [("learning_rates",) . showValue <$>
@@ -10450,8 +10565,7 @@ __not_equal ::
               Record r -> TensorApply (t u)
 __not_equal args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList__not_equal t u)
+          = paramListWithDefault (Proxy @(ParameterList__not_equal t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -10472,8 +10586,9 @@ __not_equal_scalar ::
                      Record r -> TensorApply (t u)
 __not_equal_scalar args
   = let fullArgs
-          = ANON{scalar = Nothing, is_int = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__not_equal_scalar t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__not_equal_scalar t u))
+              args
         scalarArgs
           = catMaybes
               [("scalar",) . showValue <$> Anon.get #scalar fullArgs,
@@ -10495,8 +10610,7 @@ __np_all ::
            Record r -> TensorApply (t u)
 __np_all args
   = let fullArgs
-          = ANON{axis = Nothing, keepdims = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__np_all t u)
+          = paramListWithDefault (Proxy @(ParameterList__np_all t u)) args
         scalarArgs
           = catMaybes
               [("axis",) . showValue <$> Anon.get #axis fullArgs,
@@ -10518,8 +10632,7 @@ __np_any ::
            Record r -> TensorApply (t u)
 __np_any args
   = let fullArgs
-          = ANON{axis = Nothing, keepdims = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__np_any t u)
+          = paramListWithDefault (Proxy @(ParameterList__np_any t u)) args
         scalarArgs
           = catMaybes
               [("axis",) . showValue <$> Anon.get #axis fullArgs,
@@ -10540,8 +10653,8 @@ __np_atleast_1d ::
                   Record r -> TensorApply (t u)
 __np_atleast_1d args
   = let fullArgs
-          = ANON{num_args = undefined, arys = undefined} ::
-              ParamListFull (ParameterList__np_atleast_1d t u)
+          = paramListWithDefault (Proxy @(ParameterList__np_atleast_1d t u))
+              args
         scalarArgs
           = catMaybes
               [("num_args",) . showValue <$> Just (Anon.get #num_args fullArgs)]
@@ -10560,8 +10673,8 @@ __np_atleast_2d ::
                   Record r -> TensorApply (t u)
 __np_atleast_2d args
   = let fullArgs
-          = ANON{num_args = undefined, arys = undefined} ::
-              ParamListFull (ParameterList__np_atleast_2d t u)
+          = paramListWithDefault (Proxy @(ParameterList__np_atleast_2d t u))
+              args
         scalarArgs
           = catMaybes
               [("num_args",) . showValue <$> Just (Anon.get #num_args fullArgs)]
@@ -10580,8 +10693,8 @@ __np_atleast_3d ::
                   Record r -> TensorApply (t u)
 __np_atleast_3d args
   = let fullArgs
-          = ANON{num_args = undefined, arys = undefined} ::
-              ParamListFull (ParameterList__np_atleast_3d t u)
+          = paramListWithDefault (Proxy @(ParameterList__np_atleast_3d t u))
+              args
         scalarArgs
           = catMaybes
               [("num_args",) . showValue <$> Just (Anon.get #num_args fullArgs)]
@@ -10599,7 +10712,7 @@ __np_copy ::
             Record r -> TensorApply (t u)
 __np_copy args
   = let fullArgs
-          = ANON{a = Nothing} :: ParamListFull (ParameterList__np_copy t u)
+          = paramListWithDefault (Proxy @(ParameterList__np_copy t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes [("a",) . toRaw <$> Anon.get #a fullArgs]
       in
@@ -10622,8 +10735,7 @@ __np_cumsum ::
               Record r -> TensorApply (t u)
 __np_cumsum args
   = let fullArgs
-          = ANON{axis = Nothing, dtype = Nothing, a = Nothing} ::
-              ParamListFull (ParameterList__np_cumsum t u)
+          = paramListWithDefault (Proxy @(ParameterList__np_cumsum t u)) args
         scalarArgs
           = catMaybes
               [("axis",) . showValue <$> Anon.get #axis fullArgs,
@@ -10643,8 +10755,7 @@ __np_diag ::
             Record r -> TensorApply (t u)
 __np_diag args
   = let fullArgs
-          = ANON{k = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__np_diag t u)
+          = paramListWithDefault (Proxy @(ParameterList__np_diag t u)) args
         scalarArgs
           = catMaybes [("k",) . showValue <$> Anon.get #k fullArgs]
         tensorKeyArgs
@@ -10663,8 +10774,8 @@ __np_diagflat ::
                 Record r -> TensorApply (t u)
 __np_diagflat args
   = let fullArgs
-          = ANON{k = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__np_diagflat t u)
+          = paramListWithDefault (Proxy @(ParameterList__np_diagflat t u))
+              args
         scalarArgs
           = catMaybes [("k",) . showValue <$> Anon.get #k fullArgs]
         tensorKeyArgs
@@ -10684,9 +10795,8 @@ __np_diagonal ::
                 Record r -> TensorApply (t u)
 __np_diagonal args
   = let fullArgs
-          = ANON{offset = Nothing, axis1 = Nothing, axis2 = Nothing,
-                 _data = undefined}
-              :: ParamListFull (ParameterList__np_diagonal t u)
+          = paramListWithDefault (Proxy @(ParameterList__np_diagonal t u))
+              args
         scalarArgs
           = catMaybes
               [("offset",) . showValue <$> Anon.get #offset fullArgs,
@@ -10708,8 +10818,7 @@ __np_dot ::
            Record r -> TensorApply (t u)
 __np_dot args
   = let fullArgs
-          = ANON{a = Nothing, b = Nothing} ::
-              ParamListFull (ParameterList__np_dot t u)
+          = paramListWithDefault (Proxy @(ParameterList__np_dot t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -10730,9 +10839,7 @@ __np_max ::
            Record r -> TensorApply (t u)
 __np_max args
   = let fullArgs
-          = ANON{axis = Nothing, keepdims = Nothing, initial = Nothing,
-                 a = Nothing}
-              :: ParamListFull (ParameterList__np_max t u)
+          = paramListWithDefault (Proxy @(ParameterList__np_max t u)) args
         scalarArgs
           = catMaybes
               [("axis",) . showValue <$> Anon.get #axis fullArgs,
@@ -10754,9 +10861,7 @@ __np_min ::
            Record r -> TensorApply (t u)
 __np_min args
   = let fullArgs
-          = ANON{axis = Nothing, keepdims = Nothing, initial = Nothing,
-                 a = Nothing}
-              :: ParamListFull (ParameterList__np_min t u)
+          = paramListWithDefault (Proxy @(ParameterList__np_min t u)) args
         scalarArgs
           = catMaybes
               [("axis",) . showValue <$> Anon.get #axis fullArgs,
@@ -10778,8 +10883,8 @@ __np_moveaxis ::
                 Record r -> TensorApply (t u)
 __np_moveaxis args
   = let fullArgs
-          = ANON{source = undefined, destination = undefined, a = Nothing} ::
-              ParamListFull (ParameterList__np_moveaxis t u)
+          = paramListWithDefault (Proxy @(ParameterList__np_moveaxis t u))
+              args
         scalarArgs
           = catMaybes
               [("source",) . showValue <$> Just (Anon.get #source fullArgs),
@@ -10808,9 +10913,7 @@ __np_prod ::
             Record r -> TensorApply (t u)
 __np_prod args
   = let fullArgs
-          = ANON{axis = Nothing, dtype = Nothing, keepdims = Nothing,
-                 initial = Nothing, a = Nothing}
-              :: ParamListFull (ParameterList__np_prod t u)
+          = paramListWithDefault (Proxy @(ParameterList__np_prod t u)) args
         scalarArgs
           = catMaybes
               [("axis",) . showValue <$> Anon.get #axis fullArgs,
@@ -10833,8 +10936,8 @@ __np_reshape ::
                Record r -> TensorApply (t u)
 __np_reshape args
   = let fullArgs
-          = ANON{newshape = undefined, order = Nothing, a = Nothing} ::
-              ParamListFull (ParameterList__np_reshape t u)
+          = paramListWithDefault (Proxy @(ParameterList__np_reshape t u))
+              args
         scalarArgs
           = catMaybes
               [("newshape",) . showValue <$> Just (Anon.get #newshape fullArgs),
@@ -10855,8 +10958,7 @@ __np_roll ::
             Record r -> TensorApply (t u)
 __np_roll args
   = let fullArgs
-          = ANON{shift = Nothing, axis = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__np_roll t u)
+          = paramListWithDefault (Proxy @(ParameterList__np_roll t u)) args
         scalarArgs
           = catMaybes
               [("shift",) . showValue <$> Anon.get #shift fullArgs,
@@ -10877,8 +10979,8 @@ __np_squeeze ::
                Record r -> TensorApply (t u)
 __np_squeeze args
   = let fullArgs
-          = ANON{axis = Nothing, a = Nothing} ::
-              ParamListFull (ParameterList__np_squeeze t u)
+          = paramListWithDefault (Proxy @(ParameterList__np_squeeze t u))
+              args
         scalarArgs
           = catMaybes [("axis",) . showValue <$> Anon.get #axis fullArgs]
         tensorKeyArgs = catMaybes [("a",) . toRaw <$> Anon.get #a fullArgs]
@@ -10904,9 +11006,7 @@ __np_sum ::
            Record r -> TensorApply (t u)
 __np_sum args
   = let fullArgs
-          = ANON{axis = Nothing, dtype = Nothing, keepdims = Nothing,
-                 initial = Nothing, a = Nothing}
-              :: ParamListFull (ParameterList__np_sum t u)
+          = paramListWithDefault (Proxy @(ParameterList__np_sum t u)) args
         scalarArgs
           = catMaybes
               [("axis",) . showValue <$> Anon.get #axis fullArgs,
@@ -10929,9 +11029,7 @@ __np_trace ::
              Record r -> TensorApply (t u)
 __np_trace args
   = let fullArgs
-          = ANON{offset = Nothing, axis1 = Nothing, axis2 = Nothing,
-                 _data = undefined}
-              :: ParamListFull (ParameterList__np_trace t u)
+          = paramListWithDefault (Proxy @(ParameterList__np_trace t u)) args
         scalarArgs
           = catMaybes
               [("offset",) . showValue <$> Anon.get #offset fullArgs,
@@ -10953,8 +11051,8 @@ __np_transpose ::
                  Record r -> TensorApply (t u)
 __np_transpose args
   = let fullArgs
-          = ANON{axes = Nothing, a = Nothing} ::
-              ParamListFull (ParameterList__np_transpose t u)
+          = paramListWithDefault (Proxy @(ParameterList__np_transpose t u))
+              args
         scalarArgs
           = catMaybes [("axes",) . showValue <$> Anon.get #axes fullArgs]
         tensorKeyArgs = catMaybes [("a",) . toRaw <$> Anon.get #a fullArgs]
@@ -10971,8 +11069,8 @@ __npi_absolute ::
                  Record r -> TensorApply (t u)
 __npi_absolute args
   = let fullArgs
-          = ANON{x = Nothing} ::
-              ParamListFull (ParameterList__npi_absolute t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_absolute t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes [("x",) . toRaw <$> Anon.get #x fullArgs]
       in
@@ -10989,8 +11087,7 @@ __npi_add ::
             Record r -> TensorApply (t u)
 __npi_add args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList__npi_add t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_add t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -11011,8 +11108,8 @@ __npi_add_scalar ::
                    Record r -> TensorApply (t u)
 __npi_add_scalar args
   = let fullArgs
-          = ANON{scalar = Nothing, is_int = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__npi_add_scalar t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_add_scalar t u))
+              args
         scalarArgs
           = catMaybes
               [("scalar",) . showValue <$> Anon.get #scalar fullArgs,
@@ -11040,10 +11137,7 @@ __npi_arange ::
                Record r -> TensorApply (t u)
 __npi_arange args
   = let fullArgs
-          = ANON{start = undefined, stop = Nothing, step = Nothing,
-                 repeat = Nothing, infer_range = Nothing, ctx = Nothing,
-                 dtype = Nothing}
-              :: ParamListFull ParameterList__npi_arange
+          = paramListWithDefault (Proxy @(ParameterList__npi_arange)) args
         scalarArgs
           = catMaybes
               [("start",) . showValue <$> Just (Anon.get #start fullArgs),
@@ -11067,8 +11161,8 @@ __npi_arccos ::
                Record r -> TensorApply (t u)
 __npi_arccos args
   = let fullArgs
-          = ANON{x = Nothing} ::
-              ParamListFull (ParameterList__npi_arccos t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_arccos t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes [("x",) . toRaw <$> Anon.get #x fullArgs]
       in
@@ -11084,8 +11178,8 @@ __npi_arccosh ::
                 Record r -> TensorApply (t u)
 __npi_arccosh args
   = let fullArgs
-          = ANON{x = Nothing} ::
-              ParamListFull (ParameterList__npi_arccosh t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_arccosh t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes [("x",) . toRaw <$> Anon.get #x fullArgs]
       in
@@ -11101,8 +11195,8 @@ __npi_arcsin ::
                Record r -> TensorApply (t u)
 __npi_arcsin args
   = let fullArgs
-          = ANON{x = Nothing} ::
-              ParamListFull (ParameterList__npi_arcsin t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_arcsin t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes [("x",) . toRaw <$> Anon.get #x fullArgs]
       in
@@ -11118,8 +11212,8 @@ __npi_arcsinh ::
                 Record r -> TensorApply (t u)
 __npi_arcsinh args
   = let fullArgs
-          = ANON{x = Nothing} ::
-              ParamListFull (ParameterList__npi_arcsinh t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_arcsinh t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes [("x",) . toRaw <$> Anon.get #x fullArgs]
       in
@@ -11135,8 +11229,8 @@ __npi_arctan ::
                Record r -> TensorApply (t u)
 __npi_arctan args
   = let fullArgs
-          = ANON{x = Nothing} ::
-              ParamListFull (ParameterList__npi_arctan t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_arctan t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes [("x",) . toRaw <$> Anon.get #x fullArgs]
       in
@@ -11153,8 +11247,8 @@ __npi_arctan2 ::
                 Record r -> TensorApply (t u)
 __npi_arctan2 args
   = let fullArgs
-          = ANON{x1 = Nothing, x2 = Nothing} ::
-              ParamListFull (ParameterList__npi_arctan2 t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_arctan2 t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -11175,8 +11269,9 @@ __npi_arctan2_scalar ::
                        Record r -> TensorApply (t u)
 __npi_arctan2_scalar args
   = let fullArgs
-          = ANON{scalar = Nothing, is_int = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__npi_arctan2_scalar t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__npi_arctan2_scalar t u))
+              args
         scalarArgs
           = catMaybes
               [("scalar",) . showValue <$> Anon.get #scalar fullArgs,
@@ -11196,8 +11291,8 @@ __npi_arctanh ::
                 Record r -> TensorApply (t u)
 __npi_arctanh args
   = let fullArgs
-          = ANON{x = Nothing} ::
-              ParamListFull (ParameterList__npi_arctanh t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_arctanh t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes [("x",) . toRaw <$> Anon.get #x fullArgs]
       in
@@ -11215,8 +11310,8 @@ __npi_argmax ::
                Record r -> TensorApply (t Int64)
 __npi_argmax args
   = let fullArgs
-          = ANON{axis = Nothing, keepdims = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__npi_argmax t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_argmax t u))
+              args
         scalarArgs
           = catMaybes
               [("axis",) . showValue <$> Anon.get #axis fullArgs,
@@ -11238,8 +11333,8 @@ __npi_argmin ::
                Record r -> TensorApply (t Int64)
 __npi_argmin args
   = let fullArgs
-          = ANON{axis = Nothing, keepdims = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__npi_argmin t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_argmin t u))
+              args
         scalarArgs
           = catMaybes
               [("axis",) . showValue <$> Anon.get #axis fullArgs,
@@ -11260,8 +11355,8 @@ __npi_around ::
                Record r -> TensorApply (t u)
 __npi_around args
   = let fullArgs
-          = ANON{decimals = Nothing, x = Nothing} ::
-              ParamListFull (ParameterList__npi_around t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_around t u))
+              args
         scalarArgs
           = catMaybes
               [("decimals",) . showValue <$> Anon.get #decimals fullArgs]
@@ -11282,9 +11377,8 @@ __npi_average ::
                 Record r -> TensorApply (t u)
 __npi_average args
   = let fullArgs
-          = ANON{axis = Nothing, returned = Nothing, weighted = Nothing,
-                 a = Nothing, weights = Nothing}
-              :: ParamListFull (ParameterList__npi_average t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_average t u))
+              args
         scalarArgs
           = catMaybes
               [("axis",) . showValue <$> Anon.get #axis fullArgs,
@@ -11307,7 +11401,9 @@ __npi_backward_ediff1d ::
                          Record r -> TensorApply (t u)
 __npi_backward_ediff1d args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__npi_backward_ediff1d
+          = paramListWithDefault
+              (Proxy @(ParameterList__npi_backward_ediff1d))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -11323,7 +11419,9 @@ __npi_backward_nan_to_num ::
                             Record r -> TensorApply (t u)
 __npi_backward_nan_to_num args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__npi_backward_nan_to_num
+          = paramListWithDefault
+              (Proxy @(ParameterList__npi_backward_nan_to_num))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -11339,7 +11437,9 @@ __npi_backward_polyval ::
                          Record r -> TensorApply (t u)
 __npi_backward_polyval args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__npi_backward_polyval
+          = paramListWithDefault
+              (Proxy @(ParameterList__npi_backward_polyval))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -11363,10 +11463,8 @@ __npi_bernoulli ::
                   Record r -> TensorApply (t u)
 __npi_bernoulli args
   = let fullArgs
-          = ANON{prob = undefined, logit = undefined, size = Nothing,
-                 ctx = Nothing, dtype = Nothing, is_logit = undefined,
-                 input1 = Nothing}
-              :: ParamListFull (ParameterList__npi_bernoulli t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_bernoulli t u))
+              args
         scalarArgs
           = catMaybes
               [("prob",) . showValue <$> Just (Anon.get #prob fullArgs),
@@ -11392,9 +11490,8 @@ __npi_bincount ::
                  Record r -> TensorApply (t u)
 __npi_bincount args
   = let fullArgs
-          = ANON{minlength = Nothing, has_weights = Nothing,
-                 _data = undefined, weights = Nothing}
-              :: ParamListFull (ParameterList__npi_bincount t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_bincount t u))
+              args
         scalarArgs
           = catMaybes
               [("minlength",) . showValue <$> Anon.get #minlength fullArgs,
@@ -11417,8 +11514,9 @@ __npi_bitwise_and ::
                     Record r -> TensorApply (t u)
 __npi_bitwise_and args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList__npi_bitwise_and t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__npi_bitwise_and t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -11439,8 +11537,9 @@ __npi_bitwise_and_scalar ::
                            Record r -> TensorApply (t u)
 __npi_bitwise_and_scalar args
   = let fullArgs
-          = ANON{scalar = Nothing, is_int = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__npi_bitwise_and_scalar t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__npi_bitwise_and_scalar t u))
+              args
         scalarArgs
           = catMaybes
               [("scalar",) . showValue <$> Anon.get #scalar fullArgs,
@@ -11460,8 +11559,9 @@ __npi_bitwise_not ::
                     Record r -> TensorApply (t u)
 __npi_bitwise_not args
   = let fullArgs
-          = ANON{x = Nothing} ::
-              ParamListFull (ParameterList__npi_bitwise_not t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__npi_bitwise_not t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes [("x",) . toRaw <$> Anon.get #x fullArgs]
       in
@@ -11478,8 +11578,8 @@ __npi_bitwise_or ::
                    Record r -> TensorApply (t u)
 __npi_bitwise_or args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList__npi_bitwise_or t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_bitwise_or t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -11500,8 +11600,9 @@ __npi_bitwise_or_scalar ::
                           Record r -> TensorApply (t u)
 __npi_bitwise_or_scalar args
   = let fullArgs
-          = ANON{scalar = Nothing, is_int = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__npi_bitwise_or_scalar t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__npi_bitwise_or_scalar t u))
+              args
         scalarArgs
           = catMaybes
               [("scalar",) . showValue <$> Anon.get #scalar fullArgs,
@@ -11522,8 +11623,9 @@ __npi_bitwise_xor ::
                     Record r -> TensorApply (t u)
 __npi_bitwise_xor args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList__npi_bitwise_xor t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__npi_bitwise_xor t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -11544,8 +11646,9 @@ __npi_bitwise_xor_scalar ::
                            Record r -> TensorApply (t u)
 __npi_bitwise_xor_scalar args
   = let fullArgs
-          = ANON{scalar = Nothing, is_int = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__npi_bitwise_xor_scalar t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__npi_bitwise_xor_scalar t u))
+              args
         scalarArgs
           = catMaybes
               [("scalar",) . showValue <$> Anon.get #scalar fullArgs,
@@ -11571,8 +11674,7 @@ __npi_blackman ::
                  Record r -> TensorApply (t u)
 __npi_blackman args
   = let fullArgs
-          = ANON{m = Nothing, ctx = Nothing, dtype = Nothing} ::
-              ParamListFull ParameterList__npi_blackman
+          = paramListWithDefault (Proxy @(ParameterList__npi_blackman)) args
         scalarArgs
           = catMaybes
               [("m",) . showValue <$> Anon.get #m fullArgs,
@@ -11595,10 +11697,9 @@ __npi_boolean_mask_assign_scalar ::
                                    Record r -> TensorApply (t u)
 __npi_boolean_mask_assign_scalar args
   = let fullArgs
-          = ANON{value = Nothing, start_axis = Nothing, _data = undefined,
-                 mask = Nothing}
-              ::
-              ParamListFull (ParameterList__npi_boolean_mask_assign_scalar t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__npi_boolean_mask_assign_scalar t u))
+              args
         scalarArgs
           = catMaybes
               [("value",) . showValue <$> Anon.get #value fullArgs,
@@ -11623,10 +11724,9 @@ __npi_boolean_mask_assign_tensor ::
                                    Record r -> TensorApply (t u)
 __npi_boolean_mask_assign_tensor args
   = let fullArgs
-          = ANON{start_axis = Nothing, _data = undefined, mask = Nothing,
-                 value = Nothing}
-              ::
-              ParamListFull (ParameterList__npi_boolean_mask_assign_tensor t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__npi_boolean_mask_assign_tensor t u))
+              args
         scalarArgs
           = catMaybes
               [("start_axis",) . showValue <$> Anon.get #start_axis fullArgs]
@@ -11649,8 +11749,9 @@ __npi_broadcast_to ::
                      Record r -> TensorApply (t u)
 __npi_broadcast_to args
   = let fullArgs
-          = ANON{shape = Nothing, array = Nothing} ::
-              ParamListFull (ParameterList__npi_broadcast_to t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__npi_broadcast_to t u))
+              args
         scalarArgs
           = catMaybes [("shape",) . showValue <$> Anon.get #shape fullArgs]
         tensorKeyArgs
@@ -11668,7 +11769,7 @@ __npi_cbrt ::
              Record r -> TensorApply (t u)
 __npi_cbrt args
   = let fullArgs
-          = ANON{x = Nothing} :: ParamListFull (ParameterList__npi_cbrt t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_cbrt t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes [("x",) . toRaw <$> Anon.get #x fullArgs]
       in
@@ -11684,7 +11785,7 @@ __npi_ceil ::
              Record r -> TensorApply (t u)
 __npi_ceil args
   = let fullArgs
-          = ANON{x = Nothing} :: ParamListFull (ParameterList__npi_ceil t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_ceil t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes [("x",) . toRaw <$> Anon.get #x fullArgs]
       in
@@ -11704,10 +11805,8 @@ __npi_choice ::
                Record r -> TensorApply (t u)
 __npi_choice args
   = let fullArgs
-          = ANON{a = undefined, size = undefined, ctx = Nothing,
-                 replace = Nothing, weighted = Nothing, input1 = Nothing,
-                 input2 = Nothing}
-              :: ParamListFull (ParameterList__npi_choice t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_choice t u))
+              args
         scalarArgs
           = catMaybes
               [("a",) . showValue <$> Just (Anon.get #a fullArgs),
@@ -11732,8 +11831,8 @@ __npi_cholesky ::
                  Record r -> TensorApply (t u)
 __npi_cholesky args
   = let fullArgs
-          = ANON{a = Nothing} ::
-              ParamListFull (ParameterList__npi_cholesky t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_cholesky t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes [("a",) . toRaw <$> Anon.get #a fullArgs]
       in
@@ -11750,8 +11849,9 @@ __npi_column_stack ::
                      Record r -> TensorApply (t u)
 __npi_column_stack args
   = let fullArgs
-          = ANON{num_args = undefined, _data = undefined} ::
-              ParamListFull (ParameterList__npi_column_stack t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__npi_column_stack t u))
+              args
         scalarArgs
           = catMaybes
               [("num_args",) . showValue <$> Just (Anon.get #num_args fullArgs)]
@@ -11771,8 +11871,9 @@ __npi_concatenate ::
                     Record r -> TensorApply (t u)
 __npi_concatenate args
   = let fullArgs
-          = ANON{num_args = undefined, axis = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__npi_concatenate t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__npi_concatenate t u))
+              args
         scalarArgs
           = catMaybes
               [("num_args",) . showValue <$> Just (Anon.get #num_args fullArgs),
@@ -11792,8 +11893,8 @@ __npi_copysign ::
                  Record r -> TensorApply (t u)
 __npi_copysign args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList__npi_copysign t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_copysign t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -11814,8 +11915,9 @@ __npi_copysign_scalar ::
                         Record r -> TensorApply (t u)
 __npi_copysign_scalar args
   = let fullArgs
-          = ANON{scalar = Nothing, is_int = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__npi_copysign_scalar t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__npi_copysign_scalar t u))
+              args
         scalarArgs
           = catMaybes
               [("scalar",) . showValue <$> Anon.get #scalar fullArgs,
@@ -11835,7 +11937,7 @@ __npi_cos ::
             Record r -> TensorApply (t u)
 __npi_cos args
   = let fullArgs
-          = ANON{x = Nothing} :: ParamListFull (ParameterList__npi_cos t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_cos t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes [("x",) . toRaw <$> Anon.get #x fullArgs]
       in
@@ -11851,7 +11953,7 @@ __npi_cosh ::
              Record r -> TensorApply (t u)
 __npi_cosh args
   = let fullArgs
-          = ANON{x = Nothing} :: ParamListFull (ParameterList__npi_cosh t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_cosh t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes [("x",) . toRaw <$> Anon.get #x fullArgs]
       in
@@ -11867,8 +11969,8 @@ __npi_degrees ::
                 Record r -> TensorApply (t u)
 __npi_degrees args
   = let fullArgs
-          = ANON{x = Nothing} ::
-              ParamListFull (ParameterList__npi_degrees t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_degrees t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes [("x",) . toRaw <$> Anon.get #x fullArgs]
       in
@@ -11888,9 +11990,8 @@ __npi_delete ::
                Record r -> TensorApply (t u)
 __npi_delete args
   = let fullArgs
-          = ANON{start = Nothing, stop = Nothing, step = Nothing,
-                 int_ind = Nothing, axis = Nothing, arr = Nothing, obj = Nothing}
-              :: ParamListFull (ParameterList__npi_delete t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_delete t u))
+              args
         scalarArgs
           = catMaybes
               [("start",) . showValue <$> Anon.get #start fullArgs,
@@ -11916,8 +12017,9 @@ __npi_diag_indices_from ::
                           Record r -> TensorApply (t u)
 __npi_diag_indices_from args
   = let fullArgs
-          = ANON{_data = undefined} ::
-              ParamListFull (ParameterList__npi_diag_indices_from t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__npi_diag_indices_from t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes [("data",) . toRaw <$> Just (Anon.get #_data fullArgs)]
@@ -11936,8 +12038,7 @@ __npi_diff ::
              Record r -> TensorApply (t u)
 __npi_diff args
   = let fullArgs
-          = ANON{n = Nothing, axis = Nothing, a = Nothing} ::
-              ParamListFull (ParameterList__npi_diff t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_diff t u)) args
         scalarArgs
           = catMaybes
               [("n",) . showValue <$> Anon.get #n fullArgs,
@@ -11959,9 +12060,8 @@ __npi_dsplit ::
                Record r -> TensorApply (t u)
 __npi_dsplit args
   = let fullArgs
-          = ANON{indices = undefined, axis = Nothing, squeeze_axis = Nothing,
-                 sections = Nothing, _data = undefined}
-              :: ParamListFull (ParameterList__npi_dsplit t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_dsplit t u))
+              args
         scalarArgs
           = catMaybes
               [("indices",) . showValue <$> Just (Anon.get #indices fullArgs),
@@ -11985,8 +12085,8 @@ __npi_dstack ::
                Record r -> TensorApply (t u)
 __npi_dstack args
   = let fullArgs
-          = ANON{num_args = undefined, dim = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__npi_dstack t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_dstack t u))
+              args
         scalarArgs
           = catMaybes
               [("num_args",) . showValue <$> Just (Anon.get #num_args fullArgs),
@@ -12011,10 +12111,8 @@ __npi_ediff1d ::
                 Record r -> TensorApply (t u)
 __npi_ediff1d args
   = let fullArgs
-          = ANON{to_begin_arr_given = Nothing, to_end_arr_given = Nothing,
-                 to_begin_scalar = Nothing, to_end_scalar = Nothing,
-                 input1 = Nothing, input2 = Nothing, input3 = Nothing}
-              :: ParamListFull (ParameterList__npi_ediff1d t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_ediff1d t u))
+              args
         scalarArgs
           = catMaybes
               [("to_begin_arr_given",) . showValue <$>
@@ -12043,7 +12141,7 @@ __npi_eig ::
             Record r -> TensorApply (t u)
 __npi_eig args
   = let fullArgs
-          = ANON{a = Nothing} :: ParamListFull (ParameterList__npi_eig t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_eig t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes [("a",) . toRaw <$> Anon.get #a fullArgs]
       in
@@ -12060,8 +12158,7 @@ __npi_eigh ::
              Record r -> TensorApply (t u)
 __npi_eigh args
   = let fullArgs
-          = ANON{uPLO = Nothing, a = Nothing} ::
-              ParamListFull (ParameterList__npi_eigh t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_eigh t u)) args
         scalarArgs
           = catMaybes [("uPLO",) . showValue <$> Anon.get #uPLO fullArgs]
         tensorKeyArgs = catMaybes [("a",) . toRaw <$> Anon.get #a fullArgs]
@@ -12078,8 +12175,8 @@ __npi_eigvals ::
                 Record r -> TensorApply (t u)
 __npi_eigvals args
   = let fullArgs
-          = ANON{a = Nothing} ::
-              ParamListFull (ParameterList__npi_eigvals t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_eigvals t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes [("a",) . toRaw <$> Anon.get #a fullArgs]
       in
@@ -12096,8 +12193,8 @@ __npi_eigvalsh ::
                  Record r -> TensorApply (t u)
 __npi_eigvalsh args
   = let fullArgs
-          = ANON{uPLO = Nothing, a = Nothing} ::
-              ParamListFull (ParameterList__npi_eigvalsh t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_eigvalsh t u))
+              args
         scalarArgs
           = catMaybes [("uPLO",) . showValue <$> Anon.get #uPLO fullArgs]
         tensorKeyArgs = catMaybes [("a",) . toRaw <$> Anon.get #a fullArgs]
@@ -12116,9 +12213,8 @@ __npi_einsum ::
                Record r -> TensorApply (t u)
 __npi_einsum args
   = let fullArgs
-          = ANON{num_args = undefined, subscripts = Nothing,
-                 optimize = Nothing, _data = undefined}
-              :: ParamListFull (ParameterList__npi_einsum t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_einsum t u))
+              args
         scalarArgs
           = catMaybes
               [("num_args",) . showValue <$> Just (Anon.get #num_args fullArgs),
@@ -12139,8 +12235,7 @@ __npi_equal ::
               Record r -> TensorApply (t Bool)
 __npi_equal args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList__npi_equal t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_equal t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -12161,8 +12256,9 @@ __npi_equal_scalar ::
                      Record r -> TensorApply (t Bool)
 __npi_equal_scalar args
   = let fullArgs
-          = ANON{scalar = Nothing, is_int = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__npi_equal_scalar t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__npi_equal_scalar t u))
+              args
         scalarArgs
           = catMaybes
               [("scalar",) . showValue <$> Anon.get #scalar fullArgs,
@@ -12182,7 +12278,7 @@ __npi_exp ::
             Record r -> TensorApply (t u)
 __npi_exp args
   = let fullArgs
-          = ANON{x = Nothing} :: ParamListFull (ParameterList__npi_exp t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_exp t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes [("x",) . toRaw <$> Anon.get #x fullArgs]
       in
@@ -12198,7 +12294,7 @@ __npi_expm1 ::
               Record r -> TensorApply (t u)
 __npi_expm1 args
   = let fullArgs
-          = ANON{x = Nothing} :: ParamListFull (ParameterList__npi_expm1 t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_expm1 t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes [("x",) . toRaw <$> Anon.get #x fullArgs]
       in
@@ -12217,9 +12313,9 @@ __npi_exponential ::
                     Record r -> TensorApply (t u)
 __npi_exponential args
   = let fullArgs
-          = ANON{scale = Nothing, size = Nothing, ctx = Nothing,
-                 input1 = Nothing}
-              :: ParamListFull (ParameterList__npi_exponential t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__npi_exponential t u))
+              args
         scalarArgs
           = catMaybes
               [("scale",) . showValue <$> Anon.get #scale fullArgs,
@@ -12240,7 +12336,7 @@ __npi_fix ::
             Record r -> TensorApply (t u)
 __npi_fix args
   = let fullArgs
-          = ANON{x = Nothing} :: ParamListFull (ParameterList__npi_fix t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_fix t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes [("x",) . toRaw <$> Anon.get #x fullArgs]
       in
@@ -12257,8 +12353,7 @@ __npi_flip ::
              Record r -> TensorApply (t u)
 __npi_flip args
   = let fullArgs
-          = ANON{axis = undefined, _data = undefined} ::
-              ParamListFull (ParameterList__npi_flip t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_flip t u)) args
         scalarArgs
           = catMaybes
               [("axis",) . showValue <$> Just (Anon.get #axis fullArgs)]
@@ -12277,7 +12372,7 @@ __npi_floor ::
               Record r -> TensorApply (t u)
 __npi_floor args
   = let fullArgs
-          = ANON{x = Nothing} :: ParamListFull (ParameterList__npi_floor t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_floor t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes [("x",) . toRaw <$> Anon.get #x fullArgs]
       in
@@ -12301,9 +12396,8 @@ __npi_full_like ::
                   Record r -> TensorApply (t u)
 __npi_full_like args
   = let fullArgs
-          = ANON{fill_value = undefined, ctx = Nothing, dtype = Nothing,
-                 a = Nothing}
-              :: ParamListFull (ParameterList__npi_full_like t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_full_like t u))
+              args
         scalarArgs
           = catMaybes
               [("fill_value",) . showValue <$>
@@ -12329,9 +12423,7 @@ __npi_gamma ::
               Record r -> TensorApply (t u)
 __npi_gamma args
   = let fullArgs
-          = ANON{shape = undefined, scale = undefined, size = Nothing,
-                 ctx = Nothing, dtype = Nothing, input1 = Nothing, input2 = Nothing}
-              :: ParamListFull (ParameterList__npi_gamma t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_gamma t u)) args
         scalarArgs
           = catMaybes
               [("shape",) . showValue <$> Just (Anon.get #shape fullArgs),
@@ -12357,8 +12449,8 @@ __npi_greater ::
                 Record r -> TensorApply (t Bool)
 __npi_greater args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList__npi_greater t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_greater t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -12378,8 +12470,9 @@ __npi_greater_equal ::
                       Record r -> TensorApply (t Bool)
 __npi_greater_equal args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList__npi_greater_equal t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__npi_greater_equal t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -12401,8 +12494,9 @@ __npi_greater_equal_scalar ::
                              Record r -> TensorApply (t Bool)
 __npi_greater_equal_scalar args
   = let fullArgs
-          = ANON{scalar = Nothing, is_int = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__npi_greater_equal_scalar t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__npi_greater_equal_scalar t u))
+              args
         scalarArgs
           = catMaybes
               [("scalar",) . showValue <$> Anon.get #scalar fullArgs,
@@ -12424,8 +12518,9 @@ __npi_greater_scalar ::
                        Record r -> TensorApply (t Bool)
 __npi_greater_scalar args
   = let fullArgs
-          = ANON{scalar = Nothing, is_int = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__npi_greater_scalar t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__npi_greater_scalar t u))
+              args
         scalarArgs
           = catMaybes
               [("scalar",) . showValue <$> Anon.get #scalar fullArgs,
@@ -12449,9 +12544,8 @@ __npi_gumbel ::
                Record r -> TensorApply (t u)
 __npi_gumbel args
   = let fullArgs
-          = ANON{loc = undefined, scale = undefined, size = Nothing,
-                 ctx = Nothing, input1 = Nothing, input2 = Nothing}
-              :: ParamListFull (ParameterList__npi_gumbel t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_gumbel t u))
+              args
         scalarArgs
           = catMaybes
               [("loc",) . showValue <$> Just (Anon.get #loc fullArgs),
@@ -12481,8 +12575,7 @@ __npi_hamming ::
                 Record r -> TensorApply (t u)
 __npi_hamming args
   = let fullArgs
-          = ANON{m = Nothing, ctx = Nothing, dtype = Nothing} ::
-              ParamListFull ParameterList__npi_hamming
+          = paramListWithDefault (Proxy @(ParameterList__npi_hamming)) args
         scalarArgs
           = catMaybes
               [("m",) . showValue <$> Anon.get #m fullArgs,
@@ -12508,8 +12601,7 @@ __npi_hanning ::
                 Record r -> TensorApply (t u)
 __npi_hanning args
   = let fullArgs
-          = ANON{m = Nothing, ctx = Nothing, dtype = Nothing} ::
-              ParamListFull ParameterList__npi_hanning
+          = paramListWithDefault (Proxy @(ParameterList__npi_hanning)) args
         scalarArgs
           = catMaybes
               [("m",) . showValue <$> Anon.get #m fullArgs,
@@ -12532,9 +12624,8 @@ __npi_hsplit ::
                Record r -> TensorApply (t u)
 __npi_hsplit args
   = let fullArgs
-          = ANON{indices = undefined, axis = Nothing, squeeze_axis = Nothing,
-                 sections = Nothing, _data = undefined}
-              :: ParamListFull (ParameterList__npi_hsplit t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_hsplit t u))
+              args
         scalarArgs
           = catMaybes
               [("indices",) . showValue <$> Just (Anon.get #indices fullArgs),
@@ -12556,7 +12647,9 @@ __npi_hsplit_backward ::
                         Record r -> TensorApply (t u)
 __npi_hsplit_backward args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__npi_hsplit_backward
+          = paramListWithDefault
+              (Proxy @(ParameterList__npi_hsplit_backward))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -12574,8 +12667,8 @@ __npi_hstack ::
                Record r -> TensorApply (t u)
 __npi_hstack args
   = let fullArgs
-          = ANON{num_args = undefined, dim = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__npi_hstack t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_hstack t u))
+              args
         scalarArgs
           = catMaybes
               [("num_args",) . showValue <$> Just (Anon.get #num_args fullArgs),
@@ -12595,8 +12688,7 @@ __npi_hypot ::
               Record r -> TensorApply (t u)
 __npi_hypot args
   = let fullArgs
-          = ANON{x1 = Nothing, x2 = Nothing} ::
-              ParamListFull (ParameterList__npi_hypot t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_hypot t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -12621,8 +12713,7 @@ __npi_identity ::
                  Record r -> TensorApply (t u)
 __npi_identity args
   = let fullArgs
-          = ANON{shape = Nothing, ctx = Nothing, dtype = Nothing} ::
-              ParamListFull ParameterList__npi_identity
+          = paramListWithDefault (Proxy @(ParameterList__npi_identity)) args
         scalarArgs
           = catMaybes
               [("shape",) . showValue <$> Anon.get #shape fullArgs,
@@ -12649,8 +12740,7 @@ __npi_indices ::
                 Record r -> TensorApply (t u)
 __npi_indices args
   = let fullArgs
-          = ANON{dimensions = undefined, dtype = Nothing, ctx = Nothing} ::
-              ParamListFull ParameterList__npi_indices
+          = paramListWithDefault (Proxy @(ParameterList__npi_indices)) args
         scalarArgs
           = catMaybes
               [("dimensions",) . showValue <$>
@@ -12676,10 +12766,9 @@ __npi_insert_scalar ::
                       Record r -> TensorApply (t u)
 __npi_insert_scalar args
   = let fullArgs
-          = ANON{val = Nothing, start = Nothing, stop = Nothing,
-                 step = Nothing, int_ind = Nothing, axis = Nothing, arr = Nothing,
-                 values = Nothing}
-              :: ParamListFull (ParameterList__npi_insert_scalar t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__npi_insert_scalar t u))
+              args
         scalarArgs
           = catMaybes
               [("val",) . showValue <$> Anon.get #val fullArgs,
@@ -12710,10 +12799,9 @@ __npi_insert_slice ::
                      Record r -> TensorApply (t u)
 __npi_insert_slice args
   = let fullArgs
-          = ANON{val = Nothing, start = Nothing, stop = Nothing,
-                 step = Nothing, int_ind = Nothing, axis = Nothing, arr = Nothing,
-                 values = Nothing}
-              :: ParamListFull (ParameterList__npi_insert_slice t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__npi_insert_slice t u))
+              args
         scalarArgs
           = catMaybes
               [("val",) . showValue <$> Anon.get #val fullArgs,
@@ -12744,10 +12832,9 @@ __npi_insert_tensor ::
                       Record r -> TensorApply (t u)
 __npi_insert_tensor args
   = let fullArgs
-          = ANON{val = Nothing, start = Nothing, stop = Nothing,
-                 step = Nothing, int_ind = Nothing, axis = Nothing, arr = Nothing,
-                 values = Nothing, obj = Nothing}
-              :: ParamListFull (ParameterList__npi_insert_tensor t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__npi_insert_tensor t u))
+              args
         scalarArgs
           = catMaybes
               [("val",) . showValue <$> Anon.get #val fullArgs,
@@ -12774,8 +12861,8 @@ __npi_isfinite ::
                  Record r -> TensorApply (t u)
 __npi_isfinite args
   = let fullArgs
-          = ANON{x = Nothing} ::
-              ParamListFull (ParameterList__npi_isfinite t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_isfinite t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes [("x",) . toRaw <$> Anon.get #x fullArgs]
       in
@@ -12791,7 +12878,7 @@ __npi_isinf ::
               Record r -> TensorApply (t u)
 __npi_isinf args
   = let fullArgs
-          = ANON{x = Nothing} :: ParamListFull (ParameterList__npi_isinf t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_isinf t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes [("x",) . toRaw <$> Anon.get #x fullArgs]
       in
@@ -12807,7 +12894,7 @@ __npi_isnan ::
               Record r -> TensorApply (t u)
 __npi_isnan args
   = let fullArgs
-          = ANON{x = Nothing} :: ParamListFull (ParameterList__npi_isnan t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_isnan t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes [("x",) . toRaw <$> Anon.get #x fullArgs]
       in
@@ -12823,8 +12910,8 @@ __npi_isneginf ::
                  Record r -> TensorApply (t u)
 __npi_isneginf args
   = let fullArgs
-          = ANON{x = Nothing} ::
-              ParamListFull (ParameterList__npi_isneginf t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_isneginf t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes [("x",) . toRaw <$> Anon.get #x fullArgs]
       in
@@ -12840,8 +12927,8 @@ __npi_isposinf ::
                  Record r -> TensorApply (t u)
 __npi_isposinf args
   = let fullArgs
-          = ANON{x = Nothing} ::
-              ParamListFull (ParameterList__npi_isposinf t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_isposinf t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes [("x",) . toRaw <$> Anon.get #x fullArgs]
       in
@@ -12858,8 +12945,7 @@ __npi_lcm ::
             Record r -> TensorApply (t u)
 __npi_lcm args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList__npi_lcm t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_lcm t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -12880,8 +12966,8 @@ __npi_lcm_scalar ::
                    Record r -> TensorApply (t u)
 __npi_lcm_scalar args
   = let fullArgs
-          = ANON{scalar = Nothing, is_int = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__npi_lcm_scalar t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_lcm_scalar t u))
+              args
         scalarArgs
           = catMaybes
               [("scalar",) . showValue <$> Anon.get #scalar fullArgs,
@@ -12902,8 +12988,7 @@ __npi_ldexp ::
               Record r -> TensorApply (t u)
 __npi_ldexp args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList__npi_ldexp t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_ldexp t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -12924,8 +13009,9 @@ __npi_ldexp_scalar ::
                      Record r -> TensorApply (t u)
 __npi_ldexp_scalar args
   = let fullArgs
-          = ANON{scalar = Nothing, is_int = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__npi_ldexp_scalar t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__npi_ldexp_scalar t u))
+              args
         scalarArgs
           = catMaybes
               [("scalar",) . showValue <$> Anon.get #scalar fullArgs,
@@ -12946,8 +13032,7 @@ __npi_less ::
              Record r -> TensorApply (t Bool)
 __npi_less args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList__npi_less t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_less t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -12967,8 +13052,8 @@ __npi_less_equal ::
                    Record r -> TensorApply (t Bool)
 __npi_less_equal args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList__npi_less_equal t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_less_equal t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -12989,8 +13074,9 @@ __npi_less_equal_scalar ::
                           Record r -> TensorApply (t Bool)
 __npi_less_equal_scalar args
   = let fullArgs
-          = ANON{scalar = Nothing, is_int = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__npi_less_equal_scalar t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__npi_less_equal_scalar t u))
+              args
         scalarArgs
           = catMaybes
               [("scalar",) . showValue <$> Anon.get #scalar fullArgs,
@@ -13012,8 +13098,9 @@ __npi_less_scalar ::
                     Record r -> TensorApply (t Bool)
 __npi_less_scalar args
   = let fullArgs
-          = ANON{scalar = Nothing, is_int = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__npi_less_scalar t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__npi_less_scalar t u))
+              args
         scalarArgs
           = catMaybes
               [("scalar",) . showValue <$> Anon.get #scalar fullArgs,
@@ -13033,7 +13120,7 @@ __npi_log ::
             Record r -> TensorApply (t u)
 __npi_log args
   = let fullArgs
-          = ANON{x = Nothing} :: ParamListFull (ParameterList__npi_log t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_log t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes [("x",) . toRaw <$> Anon.get #x fullArgs]
       in
@@ -13049,7 +13136,7 @@ __npi_log10 ::
               Record r -> TensorApply (t u)
 __npi_log10 args
   = let fullArgs
-          = ANON{x = Nothing} :: ParamListFull (ParameterList__npi_log10 t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_log10 t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes [("x",) . toRaw <$> Anon.get #x fullArgs]
       in
@@ -13065,7 +13152,7 @@ __npi_log1p ::
               Record r -> TensorApply (t u)
 __npi_log1p args
   = let fullArgs
-          = ANON{x = Nothing} :: ParamListFull (ParameterList__npi_log1p t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_log1p t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes [("x",) . toRaw <$> Anon.get #x fullArgs]
       in
@@ -13081,7 +13168,7 @@ __npi_log2 ::
              Record r -> TensorApply (t u)
 __npi_log2 args
   = let fullArgs
-          = ANON{x = Nothing} :: ParamListFull (ParameterList__npi_log2 t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_log2 t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes [("x",) . toRaw <$> Anon.get #x fullArgs]
       in
@@ -13097,8 +13184,9 @@ __npi_logical_not ::
                     Record r -> TensorApply (t u)
 __npi_logical_not args
   = let fullArgs
-          = ANON{x = Nothing} ::
-              ParamListFull (ParameterList__npi_logical_not t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__npi_logical_not t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes [("x",) . toRaw <$> Anon.get #x fullArgs]
       in
@@ -13118,9 +13206,8 @@ __npi_logistic ::
                  Record r -> TensorApply (t u)
 __npi_logistic args
   = let fullArgs
-          = ANON{loc = undefined, scale = undefined, size = Nothing,
-                 ctx = Nothing, input1 = Nothing, input2 = Nothing}
-              :: ParamListFull (ParameterList__npi_logistic t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_logistic t u))
+              args
         scalarArgs
           = catMaybes
               [("loc",) . showValue <$> Just (Anon.get #loc fullArgs),
@@ -13152,9 +13239,7 @@ __npi_logspace ::
                  Record r -> TensorApply (t u)
 __npi_logspace args
   = let fullArgs
-          = ANON{start = undefined, stop = undefined, num = undefined,
-                 endpoint = Nothing, base = Nothing, ctx = Nothing, dtype = Nothing}
-              :: ParamListFull ParameterList__npi_logspace
+          = paramListWithDefault (Proxy @(ParameterList__npi_logspace)) args
         scalarArgs
           = catMaybes
               [("start",) . showValue <$> Just (Anon.get #start fullArgs),
@@ -13179,8 +13264,8 @@ __npi_matmul ::
                Record r -> TensorApply (t u)
 __npi_matmul args
   = let fullArgs
-          = ANON{a = Nothing, b = Nothing} ::
-              ParamListFull (ParameterList__npi_matmul t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_matmul t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -13208,9 +13293,7 @@ __npi_mean ::
              Record r -> TensorApply (t u)
 __npi_mean args
   = let fullArgs
-          = ANON{axis = Nothing, dtype = Nothing, keepdims = Nothing,
-                 initial = Nothing, a = Nothing}
-              :: ParamListFull (ParameterList__npi_mean t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_mean t u)) args
         scalarArgs
           = catMaybes
               [("axis",) . showValue <$> Anon.get #axis fullArgs,
@@ -13232,8 +13315,7 @@ __npi_mod ::
             Record r -> TensorApply (t u)
 __npi_mod args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList__npi_mod t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_mod t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -13254,8 +13336,8 @@ __npi_mod_scalar ::
                    Record r -> TensorApply (t u)
 __npi_mod_scalar args
   = let fullArgs
-          = ANON{scalar = Nothing, is_int = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__npi_mod_scalar t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_mod_scalar t u))
+              args
         scalarArgs
           = catMaybes
               [("scalar",) . showValue <$> Anon.get #scalar fullArgs,
@@ -13277,8 +13359,9 @@ __npi_multinomial ::
                     Record r -> TensorApply (t u)
 __npi_multinomial args
   = let fullArgs
-          = ANON{n = undefined, pvals = Nothing, size = Nothing, a = Nothing}
-              :: ParamListFull (ParameterList__npi_multinomial t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__npi_multinomial t u))
+              args
         scalarArgs
           = catMaybes
               [("n",) . showValue <$> Just (Anon.get #n fullArgs),
@@ -13299,8 +13382,8 @@ __npi_multiply ::
                  Record r -> TensorApply (t u)
 __npi_multiply args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList__npi_multiply t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_multiply t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -13321,8 +13404,9 @@ __npi_multiply_scalar ::
                         Record r -> TensorApply (t u)
 __npi_multiply_scalar args
   = let fullArgs
-          = ANON{scalar = Nothing, is_int = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__npi_multiply_scalar t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__npi_multiply_scalar t u))
+              args
         scalarArgs
           = catMaybes
               [("scalar",) . showValue <$> Anon.get #scalar fullArgs,
@@ -13345,9 +13429,8 @@ __npi_nan_to_num ::
                    Record r -> TensorApply (t u)
 __npi_nan_to_num args
   = let fullArgs
-          = ANON{copy = Nothing, nan = Nothing, posinf = Nothing,
-                 neginf = Nothing, _data = undefined}
-              :: ParamListFull (ParameterList__npi_nan_to_num t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_nan_to_num t u))
+              args
         scalarArgs
           = catMaybes
               [("copy",) . showValue <$> Anon.get #copy fullArgs,
@@ -13369,8 +13452,8 @@ __npi_negative ::
                  Record r -> TensorApply (t u)
 __npi_negative args
   = let fullArgs
-          = ANON{x = Nothing} ::
-              ParamListFull (ParameterList__npi_negative t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_negative t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes [("x",) . toRaw <$> Anon.get #x fullArgs]
       in
@@ -13386,8 +13469,7 @@ __npi_norm ::
              Record r -> TensorApply (t u)
 __npi_norm args
   = let fullArgs
-          = ANON{_data = undefined} ::
-              ParamListFull (ParameterList__npi_norm t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_norm t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes [("data",) . toRaw <$> Just (Anon.get #_data fullArgs)]
@@ -13409,9 +13491,8 @@ __npi_normal ::
                Record r -> TensorApply (t u)
 __npi_normal args
   = let fullArgs
-          = ANON{loc = undefined, scale = undefined, size = Nothing,
-                 ctx = Nothing, dtype = Nothing, input1 = Nothing, input2 = Nothing}
-              :: ParamListFull (ParameterList__npi_normal t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_normal t u))
+              args
         scalarArgs
           = catMaybes
               [("loc",) . showValue <$> Just (Anon.get #loc fullArgs),
@@ -13441,9 +13522,8 @@ __npi_normal_n ::
                  Record r -> TensorApply (t u)
 __npi_normal_n args
   = let fullArgs
-          = ANON{loc = undefined, scale = undefined, size = Nothing,
-                 ctx = Nothing, dtype = Nothing, input1 = Nothing, input2 = Nothing}
-              :: ParamListFull (ParameterList__npi_normal_n t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_normal_n t u))
+              args
         scalarArgs
           = catMaybes
               [("loc",) . showValue <$> Just (Anon.get #loc fullArgs),
@@ -13469,8 +13549,8 @@ __npi_not_equal ::
                   Record r -> TensorApply (t Bool)
 __npi_not_equal args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList__npi_not_equal t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_not_equal t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -13491,8 +13571,9 @@ __npi_not_equal_scalar ::
                          Record r -> TensorApply (t Bool)
 __npi_not_equal_scalar args
   = let fullArgs
-          = ANON{scalar = Nothing, is_int = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__npi_not_equal_scalar t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__npi_not_equal_scalar t u))
+              args
         scalarArgs
           = catMaybes
               [("scalar",) . showValue <$> Anon.get #scalar fullArgs,
@@ -13518,8 +13599,7 @@ __npi_ones ::
              Record r -> TensorApply (t u)
 __npi_ones args
   = let fullArgs
-          = ANON{shape = Nothing, ctx = Nothing, dtype = Nothing} ::
-              ParamListFull ParameterList__npi_ones
+          = paramListWithDefault (Proxy @(ParameterList__npi_ones)) args
         scalarArgs
           = catMaybes
               [("shape",) . showValue <$> Anon.get #shape fullArgs,
@@ -13541,9 +13621,8 @@ __npi_pareto ::
                Record r -> TensorApply (t u)
 __npi_pareto args
   = let fullArgs
-          = ANON{a = Nothing, size = Nothing, ctx = Nothing,
-                 input1 = Nothing}
-              :: ParamListFull (ParameterList__npi_pareto t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_pareto t u))
+              args
         scalarArgs
           = catMaybes
               [("a",) . showValue <$> Anon.get #a fullArgs,
@@ -13570,9 +13649,8 @@ __npi_percentile ::
                    Record r -> TensorApply (t u)
 __npi_percentile args
   = let fullArgs
-          = ANON{axis = Nothing, interpolation = Nothing, keepdims = Nothing,
-                 q_scalar = Nothing, a = Nothing, q = Nothing}
-              :: ParamListFull (ParameterList__npi_percentile t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_percentile t u))
+              args
         scalarArgs
           = catMaybes
               [("axis",) . showValue <$> Anon.get #axis fullArgs,
@@ -13599,8 +13677,7 @@ __npi_pinv ::
              Record r -> TensorApply (t u)
 __npi_pinv args
   = let fullArgs
-          = ANON{hermitian = Nothing, a = Nothing, rcond = Nothing} ::
-              ParamListFull (ParameterList__npi_pinv t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_pinv t u)) args
         scalarArgs
           = catMaybes
               [("hermitian",) . showValue <$> Anon.get #hermitian fullArgs]
@@ -13623,8 +13700,9 @@ __npi_pinv_scalar_rcond ::
                           Record r -> TensorApply (t u)
 __npi_pinv_scalar_rcond args
   = let fullArgs
-          = ANON{rcond = Nothing, hermitian = Nothing, a = Nothing} ::
-              ParamListFull (ParameterList__npi_pinv_scalar_rcond t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__npi_pinv_scalar_rcond t u))
+              args
         scalarArgs
           = catMaybes
               [("rcond",) . showValue <$> Anon.get #rcond fullArgs,
@@ -13644,8 +13722,8 @@ __npi_polyval ::
                 Record r -> TensorApply (t u)
 __npi_polyval args
   = let fullArgs
-          = ANON{p = Nothing, x = Nothing} ::
-              ParamListFull (ParameterList__npi_polyval t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_polyval t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -13665,8 +13743,7 @@ __npi_power ::
               Record r -> TensorApply (t u)
 __npi_power args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList__npi_power t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_power t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -13687,8 +13764,9 @@ __npi_power_scalar ::
                      Record r -> TensorApply (t u)
 __npi_power_scalar args
   = let fullArgs
-          = ANON{scalar = Nothing, is_int = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__npi_power_scalar t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__npi_power_scalar t u))
+              args
         scalarArgs
           = catMaybes
               [("scalar",) . showValue <$> Anon.get #scalar fullArgs,
@@ -13710,8 +13788,8 @@ __npi_powerd ::
                Record r -> TensorApply (t u)
 __npi_powerd args
   = let fullArgs
-          = ANON{a = Nothing, size = Nothing, input1 = Nothing} ::
-              ParamListFull (ParameterList__npi_powerd t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_powerd t u))
+              args
         scalarArgs
           = catMaybes
               [("a",) . showValue <$> Anon.get #a fullArgs,
@@ -13731,8 +13809,8 @@ __npi_radians ::
                 Record r -> TensorApply (t u)
 __npi_radians args
   = let fullArgs
-          = ANON{x = Nothing} ::
-              ParamListFull (ParameterList__npi_radians t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_radians t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes [("x",) . toRaw <$> Anon.get #x fullArgs]
       in
@@ -13750,8 +13828,9 @@ __npi_rarctan2_scalar ::
                         Record r -> TensorApply (t u)
 __npi_rarctan2_scalar args
   = let fullArgs
-          = ANON{scalar = Nothing, is_int = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__npi_rarctan2_scalar t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__npi_rarctan2_scalar t u))
+              args
         scalarArgs
           = catMaybes
               [("scalar",) . showValue <$> Anon.get #scalar fullArgs,
@@ -13774,9 +13853,8 @@ __npi_rayleigh ::
                  Record r -> TensorApply (t u)
 __npi_rayleigh args
   = let fullArgs
-          = ANON{scale = Nothing, size = Nothing, ctx = Nothing,
-                 input1 = Nothing}
-              :: ParamListFull (ParameterList__npi_rayleigh t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_rayleigh t u))
+              args
         scalarArgs
           = catMaybes
               [("scale",) . showValue <$> Anon.get #scale fullArgs,
@@ -13799,8 +13877,9 @@ __npi_rcopysign_scalar ::
                          Record r -> TensorApply (t u)
 __npi_rcopysign_scalar args
   = let fullArgs
-          = ANON{scalar = Nothing, is_int = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__npi_rcopysign_scalar t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__npi_rcopysign_scalar t u))
+              args
         scalarArgs
           = catMaybes
               [("scalar",) . showValue <$> Anon.get #scalar fullArgs,
@@ -13820,8 +13899,8 @@ __npi_reciprocal ::
                    Record r -> TensorApply (t u)
 __npi_reciprocal args
   = let fullArgs
-          = ANON{x = Nothing} ::
-              ParamListFull (ParameterList__npi_reciprocal t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_reciprocal t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes [("x",) . toRaw <$> Anon.get #x fullArgs]
       in
@@ -13837,7 +13916,7 @@ __npi_rint ::
              Record r -> TensorApply (t u)
 __npi_rint args
   = let fullArgs
-          = ANON{x = Nothing} :: ParamListFull (ParameterList__npi_rint t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_rint t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes [("x",) . toRaw <$> Anon.get #x fullArgs]
       in
@@ -13855,8 +13934,9 @@ __npi_rldexp_scalar ::
                       Record r -> TensorApply (t u)
 __npi_rldexp_scalar args
   = let fullArgs
-          = ANON{scalar = Nothing, is_int = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__npi_rldexp_scalar t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__npi_rldexp_scalar t u))
+              args
         scalarArgs
           = catMaybes
               [("scalar",) . showValue <$> Anon.get #scalar fullArgs,
@@ -13878,8 +13958,9 @@ __npi_rmod_scalar ::
                     Record r -> TensorApply (t u)
 __npi_rmod_scalar args
   = let fullArgs
-          = ANON{scalar = Nothing, is_int = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__npi_rmod_scalar t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__npi_rmod_scalar t u))
+              args
         scalarArgs
           = catMaybes
               [("scalar",) . showValue <$> Anon.get #scalar fullArgs,
@@ -13901,8 +13982,7 @@ __npi_rot90 ::
               Record r -> TensorApply (t u)
 __npi_rot90 args
   = let fullArgs
-          = ANON{k = Nothing, axes = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__npi_rot90 t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_rot90 t u)) args
         scalarArgs
           = catMaybes
               [("k",) . showValue <$> Anon.get #k fullArgs,
@@ -13924,8 +14004,9 @@ __npi_rpower_scalar ::
                       Record r -> TensorApply (t u)
 __npi_rpower_scalar args
   = let fullArgs
-          = ANON{scalar = Nothing, is_int = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__npi_rpower_scalar t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__npi_rpower_scalar t u))
+              args
         scalarArgs
           = catMaybes
               [("scalar",) . showValue <$> Anon.get #scalar fullArgs,
@@ -13947,8 +14028,9 @@ __npi_rsubtract_scalar ::
                          Record r -> TensorApply (t u)
 __npi_rsubtract_scalar args
   = let fullArgs
-          = ANON{scalar = Nothing, is_int = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__npi_rsubtract_scalar t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__npi_rsubtract_scalar t u))
+              args
         scalarArgs
           = catMaybes
               [("scalar",) . showValue <$> Anon.get #scalar fullArgs,
@@ -13971,8 +14053,9 @@ __npi_rtrue_divide_scalar ::
                             Record r -> TensorApply (t u)
 __npi_rtrue_divide_scalar args
   = let fullArgs
-          = ANON{scalar = Nothing, is_int = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__npi_rtrue_divide_scalar t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__npi_rtrue_divide_scalar t u))
+              args
         scalarArgs
           = catMaybes
               [("scalar",) . showValue <$> Anon.get #scalar fullArgs,
@@ -13993,8 +14076,9 @@ __npi_share_memory ::
                      Record r -> TensorApply (t u)
 __npi_share_memory args
   = let fullArgs
-          = ANON{a = Nothing, b = Nothing} ::
-              ParamListFull (ParameterList__npi_share_memory t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__npi_share_memory t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -14013,7 +14097,7 @@ __npi_sign ::
              Record r -> TensorApply (t u)
 __npi_sign args
   = let fullArgs
-          = ANON{x = Nothing} :: ParamListFull (ParameterList__npi_sign t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_sign t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes [("x",) . toRaw <$> Anon.get #x fullArgs]
       in
@@ -14029,7 +14113,7 @@ __npi_sin ::
             Record r -> TensorApply (t u)
 __npi_sin args
   = let fullArgs
-          = ANON{x = Nothing} :: ParamListFull (ParameterList__npi_sin t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_sin t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes [("x",) . toRaw <$> Anon.get #x fullArgs]
       in
@@ -14045,7 +14129,7 @@ __npi_sinh ::
              Record r -> TensorApply (t u)
 __npi_sinh args
   = let fullArgs
-          = ANON{x = Nothing} :: ParamListFull (ParameterList__npi_sinh t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_sinh t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes [("x",) . toRaw <$> Anon.get #x fullArgs]
       in
@@ -14062,8 +14146,7 @@ __npi_solve ::
               Record r -> TensorApply (t u)
 __npi_solve args
   = let fullArgs
-          = ANON{a = Nothing, b = Nothing} ::
-              ParamListFull (ParameterList__npi_solve t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_solve t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -14082,7 +14165,7 @@ __npi_sqrt ::
              Record r -> TensorApply (t u)
 __npi_sqrt args
   = let fullArgs
-          = ANON{x = Nothing} :: ParamListFull (ParameterList__npi_sqrt t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_sqrt t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes [("x",) . toRaw <$> Anon.get #x fullArgs]
       in
@@ -14098,8 +14181,8 @@ __npi_square ::
                Record r -> TensorApply (t u)
 __npi_square args
   = let fullArgs
-          = ANON{x = Nothing} ::
-              ParamListFull (ParameterList__npi_square t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_square t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes [("x",) . toRaw <$> Anon.get #x fullArgs]
       in
@@ -14117,8 +14200,7 @@ __npi_stack ::
               Record r -> TensorApply (t u)
 __npi_stack args
   = let fullArgs
-          = ANON{axis = Nothing, num_args = undefined, _data = undefined} ::
-              ParamListFull (ParameterList__npi_stack t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_stack t u)) args
         scalarArgs
           = catMaybes
               [("axis",) . showValue <$> Anon.get #axis fullArgs,
@@ -14145,9 +14227,7 @@ __npi_std ::
             Record r -> TensorApply (t u)
 __npi_std args
   = let fullArgs
-          = ANON{axis = Nothing, dtype = Nothing, ddof = Nothing,
-                 keepdims = Nothing, a = Nothing}
-              :: ParamListFull (ParameterList__npi_std t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_std t u)) args
         scalarArgs
           = catMaybes
               [("axis",) . showValue <$> Anon.get #axis fullArgs,
@@ -14169,8 +14249,8 @@ __npi_subtract ::
                  Record r -> TensorApply (t u)
 __npi_subtract args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList__npi_subtract t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_subtract t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -14191,8 +14271,9 @@ __npi_subtract_scalar ::
                         Record r -> TensorApply (t u)
 __npi_subtract_scalar args
   = let fullArgs
-          = ANON{scalar = Nothing, is_int = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__npi_subtract_scalar t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__npi_subtract_scalar t u))
+              args
         scalarArgs
           = catMaybes
               [("scalar",) . showValue <$> Anon.get #scalar fullArgs,
@@ -14212,7 +14293,7 @@ __npi_svd ::
             Record r -> TensorApply (t u)
 __npi_svd args
   = let fullArgs
-          = ANON{a = Nothing} :: ParamListFull (ParameterList__npi_svd t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_svd t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes [("a",) . toRaw <$> Anon.get #a fullArgs]
       in
@@ -14228,7 +14309,7 @@ __npi_tan ::
             Record r -> TensorApply (t u)
 __npi_tan args
   = let fullArgs
-          = ANON{x = Nothing} :: ParamListFull (ParameterList__npi_tan t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_tan t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes [("x",) . toRaw <$> Anon.get #x fullArgs]
       in
@@ -14244,7 +14325,7 @@ __npi_tanh ::
              Record r -> TensorApply (t u)
 __npi_tanh args
   = let fullArgs
-          = ANON{x = Nothing} :: ParamListFull (ParameterList__npi_tanh t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_tanh t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes [("x",) . toRaw <$> Anon.get #x fullArgs]
       in
@@ -14263,9 +14344,8 @@ __npi_tensordot ::
                   Record r -> TensorApply (t u)
 __npi_tensordot args
   = let fullArgs
-          = ANON{a_axes_summed = undefined, b_axes_summed = undefined,
-                 a = Nothing, b = Nothing}
-              :: ParamListFull (ParameterList__npi_tensordot t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_tensordot t u))
+              args
         scalarArgs
           = catMaybes
               [("a_axes_summed",) . showValue <$>
@@ -14291,8 +14371,9 @@ __npi_tensordot_int_axes ::
                            Record r -> TensorApply (t u)
 __npi_tensordot_int_axes args
   = let fullArgs
-          = ANON{axes = undefined, a = Nothing, b = Nothing} ::
-              ParamListFull (ParameterList__npi_tensordot_int_axes t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__npi_tensordot_int_axes t u))
+              args
         scalarArgs
           = catMaybes
               [("axes",) . showValue <$> Just (Anon.get #axes fullArgs)]
@@ -14314,8 +14395,8 @@ __npi_tensorinv ::
                   Record r -> TensorApply (t u)
 __npi_tensorinv args
   = let fullArgs
-          = ANON{ind = Nothing, a = Nothing} ::
-              ParamListFull (ParameterList__npi_tensorinv t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_tensorinv t u))
+              args
         scalarArgs
           = catMaybes [("ind",) . showValue <$> Anon.get #ind fullArgs]
         tensorKeyArgs = catMaybes [("a",) . toRaw <$> Anon.get #a fullArgs]
@@ -14334,8 +14415,9 @@ __npi_tensorsolve ::
                     Record r -> TensorApply (t u)
 __npi_tensorsolve args
   = let fullArgs
-          = ANON{a_axes = Nothing, a = Nothing, b = Nothing} ::
-              ParamListFull (ParameterList__npi_tensorsolve t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__npi_tensorsolve t u))
+              args
         scalarArgs
           = catMaybes [("a_axes",) . showValue <$> Anon.get #a_axes fullArgs]
         tensorKeyArgs
@@ -14356,8 +14438,7 @@ __npi_tril ::
              Record r -> TensorApply (t u)
 __npi_tril args
   = let fullArgs
-          = ANON{k = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__npi_tril t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_tril t u)) args
         scalarArgs
           = catMaybes [("k",) . showValue <$> Anon.get #k fullArgs]
         tensorKeyArgs
@@ -14376,8 +14457,9 @@ __npi_true_divide ::
                     Record r -> TensorApply (t u)
 __npi_true_divide args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList__npi_true_divide t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__npi_true_divide t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -14398,8 +14480,9 @@ __npi_true_divide_scalar ::
                            Record r -> TensorApply (t u)
 __npi_true_divide_scalar args
   = let fullArgs
-          = ANON{scalar = Nothing, is_int = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__npi_true_divide_scalar t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__npi_true_divide_scalar t u))
+              args
         scalarArgs
           = catMaybes
               [("scalar",) . showValue <$> Anon.get #scalar fullArgs,
@@ -14419,7 +14502,7 @@ __npi_trunc ::
               Record r -> TensorApply (t u)
 __npi_trunc args
   = let fullArgs
-          = ANON{x = Nothing} :: ParamListFull (ParameterList__npi_trunc t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_trunc t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes [("x",) . toRaw <$> Anon.get #x fullArgs]
       in
@@ -14440,9 +14523,8 @@ __npi_uniform ::
                 Record r -> TensorApply (t u)
 __npi_uniform args
   = let fullArgs
-          = ANON{low = undefined, high = undefined, size = Nothing,
-                 ctx = Nothing, dtype = Nothing, input1 = Nothing, input2 = Nothing}
-              :: ParamListFull (ParameterList__npi_uniform t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_uniform t u))
+              args
         scalarArgs
           = catMaybes
               [("low",) . showValue <$> Just (Anon.get #low fullArgs),
@@ -14472,9 +14554,8 @@ __npi_uniform_n ::
                   Record r -> TensorApply (t u)
 __npi_uniform_n args
   = let fullArgs
-          = ANON{low = undefined, high = undefined, size = Nothing,
-                 ctx = Nothing, dtype = Nothing, input1 = Nothing, input2 = Nothing}
-              :: ParamListFull (ParameterList__npi_uniform_n t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_uniform_n t u))
+              args
         scalarArgs
           = catMaybes
               [("low",) . showValue <$> Just (Anon.get #low fullArgs),
@@ -14503,9 +14584,8 @@ __npi_unique ::
                Record r -> TensorApply (t u)
 __npi_unique args
   = let fullArgs
-          = ANON{return_index = Nothing, return_inverse = Nothing,
-                 return_counts = Nothing, axis = Nothing, _data = undefined}
-              :: ParamListFull (ParameterList__npi_unique t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_unique t u))
+              args
         scalarArgs
           = catMaybes
               [("return_index",) . showValue <$> Anon.get #return_index fullArgs,
@@ -14537,9 +14617,7 @@ __npi_var ::
             Record r -> TensorApply (t u)
 __npi_var args
   = let fullArgs
-          = ANON{axis = Nothing, dtype = Nothing, ddof = Nothing,
-                 keepdims = Nothing, a = Nothing}
-              :: ParamListFull (ParameterList__npi_var t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_var t u)) args
         scalarArgs
           = catMaybes
               [("axis",) . showValue <$> Anon.get #axis fullArgs,
@@ -14561,8 +14639,8 @@ __npi_vstack ::
                Record r -> TensorApply (t u)
 __npi_vstack args
   = let fullArgs
-          = ANON{num_args = undefined, _data = undefined} ::
-              ParamListFull (ParameterList__npi_vstack t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_vstack t u))
+              args
         scalarArgs
           = catMaybes
               [("num_args",) . showValue <$> Just (Anon.get #num_args fullArgs)]
@@ -14582,9 +14660,8 @@ __npi_weibull ::
                 Record r -> TensorApply (t u)
 __npi_weibull args
   = let fullArgs
-          = ANON{a = Nothing, size = Nothing, ctx = Nothing,
-                 input1 = Nothing}
-              :: ParamListFull (ParameterList__npi_weibull t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_weibull t u))
+              args
         scalarArgs
           = catMaybes
               [("a",) . showValue <$> Anon.get #a fullArgs,
@@ -14607,8 +14684,7 @@ __npi_where ::
               Record r -> TensorApply (t u)
 __npi_where args
   = let fullArgs
-          = ANON{condition = Nothing, x = Nothing, y = Nothing} ::
-              ParamListFull (ParameterList__npi_where t u)
+          = paramListWithDefault (Proxy @(ParameterList__npi_where t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -14630,8 +14706,9 @@ __npi_where_lscalar ::
                       Record r -> TensorApply (t u)
 __npi_where_lscalar args
   = let fullArgs
-          = ANON{scalar = Nothing, condition = Nothing, x = Nothing} ::
-              ParamListFull (ParameterList__npi_where_lscalar t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__npi_where_lscalar t u))
+              args
         scalarArgs
           = catMaybes [("scalar",) . showValue <$> Anon.get #scalar fullArgs]
         tensorKeyArgs
@@ -14653,8 +14730,9 @@ __npi_where_rscalar ::
                       Record r -> TensorApply (t u)
 __npi_where_rscalar args
   = let fullArgs
-          = ANON{scalar = Nothing, condition = Nothing, y = Nothing} ::
-              ParamListFull (ParameterList__npi_where_rscalar t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__npi_where_rscalar t u))
+              args
         scalarArgs
           = catMaybes [("scalar",) . showValue <$> Anon.get #scalar fullArgs]
         tensorKeyArgs
@@ -14676,8 +14754,9 @@ __npi_where_scalar2 ::
                       Record r -> TensorApply (t u)
 __npi_where_scalar2 args
   = let fullArgs
-          = ANON{x = Nothing, y = Nothing, condition = Nothing} ::
-              ParamListFull (ParameterList__npi_where_scalar2 t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__npi_where_scalar2 t u))
+              args
         scalarArgs
           = catMaybes
               [("x",) . showValue <$> Anon.get #x fullArgs,
@@ -14704,8 +14783,7 @@ __npi_zeros ::
               Record r -> TensorApply (t u)
 __npi_zeros args
   = let fullArgs
-          = ANON{shape = Nothing, ctx = Nothing, dtype = Nothing} ::
-              ParamListFull ParameterList__npi_zeros
+          = paramListWithDefault (Proxy @(ParameterList__npi_zeros)) args
         scalarArgs
           = catMaybes
               [("shape",) . showValue <$> Anon.get #shape fullArgs,
@@ -14726,8 +14804,9 @@ __npx_constraint_check ::
                          Record r -> TensorApply (t u)
 __npx_constraint_check args
   = let fullArgs
-          = ANON{msg = Nothing, input = Nothing} ::
-              ParamListFull (ParameterList__npx_constraint_check t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__npx_constraint_check t u))
+              args
         scalarArgs
           = catMaybes [("msg",) . showValue <$> Anon.get #msg fullArgs]
         tensorKeyArgs
@@ -14745,8 +14824,8 @@ __npx_nonzero ::
                 Record r -> TensorApply (t u)
 __npx_nonzero args
   = let fullArgs
-          = ANON{x = Nothing} ::
-              ParamListFull (ParameterList__npx_nonzero t u)
+          = paramListWithDefault (Proxy @(ParameterList__npx_nonzero t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes [("x",) . toRaw <$> Anon.get #x fullArgs]
       in
@@ -14762,8 +14841,7 @@ __npx_relu ::
              Record r -> TensorApply (t u)
 __npx_relu args
   = let fullArgs
-          = ANON{_data = undefined} ::
-              ParamListFull (ParameterList__npx_relu t u)
+          = paramListWithDefault (Proxy @(ParameterList__npx_relu t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes [("data",) . toRaw <$> Just (Anon.get #_data fullArgs)]
@@ -14782,9 +14860,8 @@ __npx_reshape ::
                 Record r -> TensorApply (t u)
 __npx_reshape args
   = let fullArgs
-          = ANON{newshape = undefined, reverse = Nothing, order = Nothing,
-                 a = Nothing}
-              :: ParamListFull (ParameterList__npx_reshape t u)
+          = paramListWithDefault (Proxy @(ParameterList__npx_reshape t u))
+              args
         scalarArgs
           = catMaybes
               [("newshape",) . showValue <$> Just (Anon.get #newshape fullArgs),
@@ -14804,8 +14881,8 @@ __npx_sigmoid ::
                 Record r -> TensorApply (t u)
 __npx_sigmoid args
   = let fullArgs
-          = ANON{_data = undefined} ::
-              ParamListFull (ParameterList__npx_sigmoid t u)
+          = paramListWithDefault (Proxy @(ParameterList__npx_sigmoid t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes [("data",) . toRaw <$> Just (Anon.get #_data fullArgs)]
@@ -14823,8 +14900,8 @@ __onehot_encode ::
                   Record r -> TensorApply (t u)
 __onehot_encode args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList__onehot_encode t u)
+          = paramListWithDefault (Proxy @(ParameterList__onehot_encode t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -14849,8 +14926,7 @@ __ones ::
          Record r -> TensorApply (t u)
 __ones args
   = let fullArgs
-          = ANON{shape = Nothing, ctx = Nothing, dtype = Nothing} ::
-              ParamListFull ParameterList__ones
+          = paramListWithDefault (Proxy @(ParameterList__ones)) args
         scalarArgs
           = catMaybes
               [("shape",) . showValue <$> Anon.get #shape fullArgs,
@@ -14872,8 +14948,8 @@ __plus_scalar ::
                 Record r -> TensorApply (t u)
 __plus_scalar args
   = let fullArgs
-          = ANON{scalar = Nothing, is_int = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__plus_scalar t u)
+          = paramListWithDefault (Proxy @(ParameterList__plus_scalar t u))
+              args
         scalarArgs
           = catMaybes
               [("scalar",) . showValue <$> Anon.get #scalar fullArgs,
@@ -14894,8 +14970,7 @@ __power ::
           Record r -> TensorApply (t u)
 __power args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList__power t u)
+          = paramListWithDefault (Proxy @(ParameterList__power t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -14916,8 +14991,8 @@ __power_scalar ::
                  Record r -> TensorApply (t u)
 __power_scalar args
   = let fullArgs
-          = ANON{scalar = Nothing, is_int = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__power_scalar t u)
+          = paramListWithDefault (Proxy @(ParameterList__power_scalar t u))
+              args
         scalarArgs
           = catMaybes
               [("scalar",) . showValue <$> Anon.get #scalar fullArgs,
@@ -14941,9 +15016,8 @@ __random_exponential ::
                        Record r -> TensorApply (t u)
 __random_exponential args
   = let fullArgs
-          = ANON{lam = Nothing, shape = Nothing, ctx = Nothing,
-                 dtype = Nothing}
-              :: ParamListFull ParameterList__random_exponential
+          = paramListWithDefault (Proxy @(ParameterList__random_exponential))
+              args
         scalarArgs
           = catMaybes
               [("lam",) . showValue <$> Anon.get #lam fullArgs,
@@ -14966,8 +15040,9 @@ __random_exponential_like ::
                             Record r -> TensorApply (t u)
 __random_exponential_like args
   = let fullArgs
-          = ANON{lam = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__random_exponential_like t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__random_exponential_like t u))
+              args
         scalarArgs
           = catMaybes [("lam",) . showValue <$> Anon.get #lam fullArgs]
         tensorKeyArgs
@@ -14989,9 +15064,7 @@ __random_gamma ::
                  Record r -> TensorApply (t u)
 __random_gamma args
   = let fullArgs
-          = ANON{alpha = Nothing, beta = Nothing, shape = Nothing,
-                 ctx = Nothing, dtype = Nothing}
-              :: ParamListFull ParameterList__random_gamma
+          = paramListWithDefault (Proxy @(ParameterList__random_gamma)) args
         scalarArgs
           = catMaybes
               [("alpha",) . showValue <$> Anon.get #alpha fullArgs,
@@ -15015,8 +15088,9 @@ __random_gamma_like ::
                       Record r -> TensorApply (t u)
 __random_gamma_like args
   = let fullArgs
-          = ANON{alpha = Nothing, beta = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__random_gamma_like t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__random_gamma_like t u))
+              args
         scalarArgs
           = catMaybes
               [("alpha",) . showValue <$> Anon.get #alpha fullArgs,
@@ -15043,10 +15117,9 @@ __random_generalized_negative_binomial ::
                                          Record r -> TensorApply (t u)
 __random_generalized_negative_binomial args
   = let fullArgs
-          = ANON{mu = Nothing, alpha = Nothing, shape = Nothing,
-                 ctx = Nothing, dtype = Nothing}
-              ::
-              ParamListFull ParameterList__random_generalized_negative_binomial
+          = paramListWithDefault
+              (Proxy @(ParameterList__random_generalized_negative_binomial))
+              args
         scalarArgs
           = catMaybes
               [("mu",) . showValue <$> Anon.get #mu fullArgs,
@@ -15075,9 +15148,10 @@ __random_generalized_negative_binomial_like ::
                                               Record r -> TensorApply (t u)
 __random_generalized_negative_binomial_like args
   = let fullArgs
-          = ANON{mu = Nothing, alpha = Nothing, _data = undefined} ::
-              ParamListFull
-                (ParameterList__random_generalized_negative_binomial_like t u)
+          = paramListWithDefault
+              (Proxy
+                 @(ParameterList__random_generalized_negative_binomial_like t u))
+              args
         scalarArgs
           = catMaybes
               [("mu",) . showValue <$> Anon.get #mu fullArgs,
@@ -15101,9 +15175,9 @@ __random_negative_binomial ::
                              Record r -> TensorApply (t u)
 __random_negative_binomial args
   = let fullArgs
-          = ANON{k = Nothing, p = Nothing, shape = Nothing, ctx = Nothing,
-                 dtype = Nothing}
-              :: ParamListFull ParameterList__random_negative_binomial
+          = paramListWithDefault
+              (Proxy @(ParameterList__random_negative_binomial))
+              args
         scalarArgs
           = catMaybes
               [("k",) . showValue <$> Anon.get #k fullArgs,
@@ -15128,8 +15202,9 @@ __random_negative_binomial_like ::
                                   Record r -> TensorApply (t u)
 __random_negative_binomial_like args
   = let fullArgs
-          = ANON{k = Nothing, p = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__random_negative_binomial_like t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__random_negative_binomial_like t u))
+              args
         scalarArgs
           = catMaybes
               [("k",) . showValue <$> Anon.get #k fullArgs,
@@ -15153,9 +15228,7 @@ __random_normal ::
                   Record r -> TensorApply (t u)
 __random_normal args
   = let fullArgs
-          = ANON{loc = Nothing, scale = Nothing, shape = Nothing,
-                 ctx = Nothing, dtype = Nothing}
-              :: ParamListFull ParameterList__random_normal
+          = paramListWithDefault (Proxy @(ParameterList__random_normal)) args
         scalarArgs
           = catMaybes
               [("loc",) . showValue <$> Anon.get #loc fullArgs,
@@ -15179,8 +15252,9 @@ __random_normal_like ::
                        Record r -> TensorApply (t u)
 __random_normal_like args
   = let fullArgs
-          = ANON{loc = Nothing, scale = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__random_normal_like t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__random_normal_like t u))
+              args
         scalarArgs
           = catMaybes
               [("loc",) . showValue <$> Anon.get #loc fullArgs,
@@ -15202,8 +15276,9 @@ __random_pdf_dirichlet ::
                          Record r -> TensorApply (t u)
 __random_pdf_dirichlet args
   = let fullArgs
-          = ANON{is_log = Nothing, sample = Nothing, alpha = Nothing} ::
-              ParamListFull (ParameterList__random_pdf_dirichlet t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__random_pdf_dirichlet t u))
+              args
         scalarArgs
           = catMaybes [("is_log",) . showValue <$> Anon.get #is_log fullArgs]
         tensorKeyArgs
@@ -15225,8 +15300,9 @@ __random_pdf_exponential ::
                            Record r -> TensorApply (t u)
 __random_pdf_exponential args
   = let fullArgs
-          = ANON{is_log = Nothing, sample = Nothing, lam = Nothing} ::
-              ParamListFull (ParameterList__random_pdf_exponential t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__random_pdf_exponential t u))
+              args
         scalarArgs
           = catMaybes [("is_log",) . showValue <$> Anon.get #is_log fullArgs]
         tensorKeyArgs
@@ -15248,9 +15324,9 @@ __random_pdf_gamma ::
                      Record r -> TensorApply (t u)
 __random_pdf_gamma args
   = let fullArgs
-          = ANON{is_log = Nothing, sample = Nothing, alpha = Nothing,
-                 beta = Nothing}
-              :: ParamListFull (ParameterList__random_pdf_gamma t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__random_pdf_gamma t u))
+              args
         scalarArgs
           = catMaybes [("is_log",) . showValue <$> Anon.get #is_log fullArgs]
         tensorKeyArgs
@@ -15278,11 +15354,10 @@ __random_pdf_generalized_negative_binomial ::
                                              Record r -> TensorApply (t u)
 __random_pdf_generalized_negative_binomial args
   = let fullArgs
-          = ANON{is_log = Nothing, sample = Nothing, mu = Nothing,
-                 alpha = Nothing}
-              ::
-              ParamListFull
-                (ParameterList__random_pdf_generalized_negative_binomial t u)
+          = paramListWithDefault
+              (Proxy
+                 @(ParameterList__random_pdf_generalized_negative_binomial t u))
+              args
         scalarArgs
           = catMaybes [("is_log",) . showValue <$> Anon.get #is_log fullArgs]
         tensorKeyArgs
@@ -15306,9 +15381,9 @@ __random_pdf_negative_binomial ::
                                  Record r -> TensorApply (t u)
 __random_pdf_negative_binomial args
   = let fullArgs
-          = ANON{is_log = Nothing, sample = Nothing, k = Nothing,
-                 p = Nothing}
-              :: ParamListFull (ParameterList__random_pdf_negative_binomial t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__random_pdf_negative_binomial t u))
+              args
         scalarArgs
           = catMaybes [("is_log",) . showValue <$> Anon.get #is_log fullArgs]
         tensorKeyArgs
@@ -15331,9 +15406,9 @@ __random_pdf_normal ::
                       Record r -> TensorApply (t u)
 __random_pdf_normal args
   = let fullArgs
-          = ANON{is_log = Nothing, sample = Nothing, mu = Nothing,
-                 sigma = Nothing}
-              :: ParamListFull (ParameterList__random_pdf_normal t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__random_pdf_normal t u))
+              args
         scalarArgs
           = catMaybes [("is_log",) . showValue <$> Anon.get #is_log fullArgs]
         tensorKeyArgs
@@ -15356,8 +15431,9 @@ __random_pdf_poisson ::
                        Record r -> TensorApply (t u)
 __random_pdf_poisson args
   = let fullArgs
-          = ANON{is_log = Nothing, sample = Nothing, lam = Nothing} ::
-              ParamListFull (ParameterList__random_pdf_poisson t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__random_pdf_poisson t u))
+              args
         scalarArgs
           = catMaybes [("is_log",) . showValue <$> Anon.get #is_log fullArgs]
         tensorKeyArgs
@@ -15379,9 +15455,9 @@ __random_pdf_uniform ::
                        Record r -> TensorApply (t u)
 __random_pdf_uniform args
   = let fullArgs
-          = ANON{is_log = Nothing, sample = Nothing, low = Nothing,
-                 high = Nothing}
-              :: ParamListFull (ParameterList__random_pdf_uniform t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__random_pdf_uniform t u))
+              args
         scalarArgs
           = catMaybes [("is_log",) . showValue <$> Anon.get #is_log fullArgs]
         tensorKeyArgs
@@ -15406,9 +15482,8 @@ __random_poisson ::
                    Record r -> TensorApply (t u)
 __random_poisson args
   = let fullArgs
-          = ANON{lam = Nothing, shape = Nothing, ctx = Nothing,
-                 dtype = Nothing}
-              :: ParamListFull ParameterList__random_poisson
+          = paramListWithDefault (Proxy @(ParameterList__random_poisson))
+              args
         scalarArgs
           = catMaybes
               [("lam",) . showValue <$> Anon.get #lam fullArgs,
@@ -15430,8 +15505,9 @@ __random_poisson_like ::
                         Record r -> TensorApply (t u)
 __random_poisson_like args
   = let fullArgs
-          = ANON{lam = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__random_poisson_like t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__random_poisson_like t u))
+              args
         scalarArgs
           = catMaybes [("lam",) . showValue <$> Anon.get #lam fullArgs]
         tensorKeyArgs
@@ -15453,9 +15529,8 @@ __random_uniform ::
                    Record r -> TensorApply (t u)
 __random_uniform args
   = let fullArgs
-          = ANON{low = Nothing, high = Nothing, shape = Nothing,
-                 ctx = Nothing, dtype = Nothing}
-              :: ParamListFull ParameterList__random_uniform
+          = paramListWithDefault (Proxy @(ParameterList__random_uniform))
+              args
         scalarArgs
           = catMaybes
               [("low",) . showValue <$> Anon.get #low fullArgs,
@@ -15479,8 +15554,9 @@ __random_uniform_like ::
                         Record r -> TensorApply (t u)
 __random_uniform_like args
   = let fullArgs
-          = ANON{low = Nothing, high = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__random_uniform_like t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__random_uniform_like t u))
+              args
         scalarArgs
           = catMaybes
               [("low",) . showValue <$> Anon.get #low fullArgs,
@@ -15501,8 +15577,9 @@ __ravel_multi_index ::
                       Record r -> TensorApply (t u)
 __ravel_multi_index args
   = let fullArgs
-          = ANON{shape = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__ravel_multi_index t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__ravel_multi_index t u))
+              args
         scalarArgs
           = catMaybes [("shape",) . showValue <$> Anon.get #shape fullArgs]
         tensorKeyArgs
@@ -15522,8 +15599,8 @@ __rdiv_scalar ::
                 Record r -> TensorApply (t u)
 __rdiv_scalar args
   = let fullArgs
-          = ANON{scalar = Nothing, is_int = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__rdiv_scalar t u)
+          = paramListWithDefault (Proxy @(ParameterList__rdiv_scalar t u))
+              args
         scalarArgs
           = catMaybes
               [("scalar",) . showValue <$> Anon.get #scalar fullArgs,
@@ -15545,8 +15622,8 @@ __rminus_scalar ::
                   Record r -> TensorApply (t u)
 __rminus_scalar args
   = let fullArgs
-          = ANON{scalar = Nothing, is_int = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__rminus_scalar t u)
+          = paramListWithDefault (Proxy @(ParameterList__rminus_scalar t u))
+              args
         scalarArgs
           = catMaybes
               [("scalar",) . showValue <$> Anon.get #scalar fullArgs,
@@ -15568,8 +15645,8 @@ __rmod_scalar ::
                 Record r -> TensorApply (t u)
 __rmod_scalar args
   = let fullArgs
-          = ANON{scalar = Nothing, is_int = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__rmod_scalar t u)
+          = paramListWithDefault (Proxy @(ParameterList__rmod_scalar t u))
+              args
         scalarArgs
           = catMaybes
               [("scalar",) . showValue <$> Anon.get #scalar fullArgs,
@@ -15591,8 +15668,9 @@ __rnn_param_concat ::
                      Record r -> TensorApply (t u)
 __rnn_param_concat args
   = let fullArgs
-          = ANON{num_args = undefined, dim = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__rnn_param_concat t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__rnn_param_concat t u))
+              args
         scalarArgs
           = catMaybes
               [("num_args",) . showValue <$> Just (Anon.get #num_args fullArgs),
@@ -15613,8 +15691,8 @@ __rpower_scalar ::
                   Record r -> TensorApply (t u)
 __rpower_scalar args
   = let fullArgs
-          = ANON{scalar = Nothing, is_int = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__rpower_scalar t u)
+          = paramListWithDefault (Proxy @(ParameterList__rpower_scalar t u))
+              args
         scalarArgs
           = catMaybes
               [("scalar",) . showValue <$> Anon.get #scalar fullArgs,
@@ -15638,8 +15716,9 @@ __sample_exponential ::
                        Record r -> TensorApply (t u)
 __sample_exponential args
   = let fullArgs
-          = ANON{shape = Nothing, dtype = Nothing, lam = Nothing} ::
-              ParamListFull (ParameterList__sample_exponential t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__sample_exponential t u))
+              args
         scalarArgs
           = catMaybes
               [("shape",) . showValue <$> Anon.get #shape fullArgs,
@@ -15663,9 +15742,8 @@ __sample_gamma ::
                  Record r -> TensorApply (t u)
 __sample_gamma args
   = let fullArgs
-          = ANON{shape = Nothing, dtype = Nothing, alpha = Nothing,
-                 beta = Nothing}
-              :: ParamListFull (ParameterList__sample_gamma t u)
+          = paramListWithDefault (Proxy @(ParameterList__sample_gamma t u))
+              args
         scalarArgs
           = catMaybes
               [("shape",) . showValue <$> Anon.get #shape fullArgs,
@@ -15695,11 +15773,9 @@ __sample_generalized_negative_binomial ::
                                          Record r -> TensorApply (t u)
 __sample_generalized_negative_binomial args
   = let fullArgs
-          = ANON{shape = Nothing, dtype = Nothing, mu = Nothing,
-                 alpha = Nothing}
-              ::
-              ParamListFull
-                (ParameterList__sample_generalized_negative_binomial t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__sample_generalized_negative_binomial t u))
+              args
         scalarArgs
           = catMaybes
               [("shape",) . showValue <$> Anon.get #shape fullArgs,
@@ -15726,9 +15802,9 @@ __sample_multinomial ::
                        Record r -> TensorApply (t u)
 __sample_multinomial args
   = let fullArgs
-          = ANON{shape = Nothing, get_prob = Nothing, dtype = Nothing,
-                 _data = undefined}
-              :: ParamListFull (ParameterList__sample_multinomial t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__sample_multinomial t u))
+              args
         scalarArgs
           = catMaybes
               [("shape",) . showValue <$> Anon.get #shape fullArgs,
@@ -15754,8 +15830,9 @@ __sample_negative_binomial ::
                              Record r -> TensorApply (t u)
 __sample_negative_binomial args
   = let fullArgs
-          = ANON{shape = Nothing, dtype = Nothing, k = Nothing, p = Nothing}
-              :: ParamListFull (ParameterList__sample_negative_binomial t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__sample_negative_binomial t u))
+              args
         scalarArgs
           = catMaybes
               [("shape",) . showValue <$> Anon.get #shape fullArgs,
@@ -15781,9 +15858,8 @@ __sample_normal ::
                   Record r -> TensorApply (t u)
 __sample_normal args
   = let fullArgs
-          = ANON{shape = Nothing, dtype = Nothing, mu = Nothing,
-                 sigma = Nothing}
-              :: ParamListFull (ParameterList__sample_normal t u)
+          = paramListWithDefault (Proxy @(ParameterList__sample_normal t u))
+              args
         scalarArgs
           = catMaybes
               [("shape",) . showValue <$> Anon.get #shape fullArgs,
@@ -15809,8 +15885,8 @@ __sample_poisson ::
                    Record r -> TensorApply (t u)
 __sample_poisson args
   = let fullArgs
-          = ANON{shape = Nothing, dtype = Nothing, lam = Nothing} ::
-              ParamListFull (ParameterList__sample_poisson t u)
+          = paramListWithDefault (Proxy @(ParameterList__sample_poisson t u))
+              args
         scalarArgs
           = catMaybes
               [("shape",) . showValue <$> Anon.get #shape fullArgs,
@@ -15834,9 +15910,8 @@ __sample_uniform ::
                    Record r -> TensorApply (t u)
 __sample_uniform args
   = let fullArgs
-          = ANON{shape = Nothing, dtype = Nothing, low = Nothing,
-                 high = Nothing}
-              :: ParamListFull (ParameterList__sample_uniform t u)
+          = paramListWithDefault (Proxy @(ParameterList__sample_uniform t u))
+              args
         scalarArgs
           = catMaybes
               [("shape",) . showValue <$> Anon.get #shape fullArgs,
@@ -15859,8 +15934,9 @@ __sample_unique_zipfian ::
                           Record r -> TensorApply (t u)
 __sample_unique_zipfian args
   = let fullArgs
-          = ANON{range_max = undefined, shape = Nothing} ::
-              ParamListFull ParameterList__sample_unique_zipfian
+          = paramListWithDefault
+              (Proxy @(ParameterList__sample_unique_zipfian))
+              args
         scalarArgs
           = catMaybes
               [("range_max",) . showValue <$>
@@ -15881,8 +15957,9 @@ __scatter_elemwise_div ::
                          Record r -> TensorApply (t u)
 __scatter_elemwise_div args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList__scatter_elemwise_div t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__scatter_elemwise_div t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -15903,8 +15980,9 @@ __scatter_minus_scalar ::
                          Record r -> TensorApply (t u)
 __scatter_minus_scalar args
   = let fullArgs
-          = ANON{scalar = Nothing, is_int = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__scatter_minus_scalar t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__scatter_minus_scalar t u))
+              args
         scalarArgs
           = catMaybes
               [("scalar",) . showValue <$> Anon.get #scalar fullArgs,
@@ -15926,8 +16004,9 @@ __scatter_plus_scalar ::
                         Record r -> TensorApply (t u)
 __scatter_plus_scalar args
   = let fullArgs
-          = ANON{scalar = Nothing, is_int = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__scatter_plus_scalar t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__scatter_plus_scalar t u))
+              args
         scalarArgs
           = catMaybes
               [("scalar",) . showValue <$> Anon.get #scalar fullArgs,
@@ -15949,9 +16028,8 @@ __scatter_set_nd ::
                    Record r -> TensorApply (t u)
 __scatter_set_nd args
   = let fullArgs
-          = ANON{shape = undefined, lhs = Nothing, rhs = Nothing,
-                 indices = Nothing}
-              :: ParamListFull (ParameterList__scatter_set_nd t u)
+          = paramListWithDefault (Proxy @(ParameterList__scatter_set_nd t u))
+              args
         scalarArgs
           = catMaybes
               [("shape",) . showValue <$> Just (Anon.get #shape fullArgs)]
@@ -15973,7 +16051,7 @@ __set_value ::
               Record r -> TensorApply (t u)
 __set_value args
   = let fullArgs
-          = ANON{src = Nothing} :: ParamListFull ParameterList__set_value
+          = paramListWithDefault (Proxy @(ParameterList__set_value)) args
         scalarArgs
           = catMaybes [("src",) . showValue <$> Anon.get #src fullArgs]
         tensorKeyArgs = catMaybes []
@@ -15990,7 +16068,8 @@ __sg_mkldnn_conv ::
                    Record r -> TensorApply (t u)
 __sg_mkldnn_conv args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__sg_mkldnn_conv
+          = paramListWithDefault (Proxy @(ParameterList__sg_mkldnn_conv))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -16006,7 +16085,9 @@ __sg_mkldnn_fully_connected ::
                               Record r -> TensorApply (t u)
 __sg_mkldnn_fully_connected args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__sg_mkldnn_fully_connected
+          = paramListWithDefault
+              (Proxy @(ParameterList__sg_mkldnn_fully_connected))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -16022,8 +16103,7 @@ __shuffle ::
             Record r -> TensorApply (t u)
 __shuffle args
   = let fullArgs
-          = ANON{_data = undefined} ::
-              ParamListFull (ParameterList__shuffle t u)
+          = paramListWithDefault (Proxy @(ParameterList__shuffle t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes [("data",) . toRaw <$> Just (Anon.get #_data fullArgs)]
@@ -16043,9 +16123,8 @@ __slice_assign ::
                  Record r -> TensorApply (t u)
 __slice_assign args
   = let fullArgs
-          = ANON{begin = undefined, end = undefined, step = Nothing,
-                 lhs = Nothing, rhs = Nothing}
-              :: ParamListFull (ParameterList__slice_assign t u)
+          = paramListWithDefault (Proxy @(ParameterList__slice_assign t u))
+              args
         scalarArgs
           = catMaybes
               [("begin",) . showValue <$> Just (Anon.get #begin fullArgs),
@@ -16071,9 +16150,9 @@ __slice_assign_scalar ::
                         Record r -> TensorApply (t u)
 __slice_assign_scalar args
   = let fullArgs
-          = ANON{scalar = Nothing, begin = undefined, end = undefined,
-                 step = Nothing, _data = undefined}
-              :: ParamListFull (ParameterList__slice_assign_scalar t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__slice_assign_scalar t u))
+              args
         scalarArgs
           = catMaybes
               [("scalar",) . showValue <$> Anon.get #scalar fullArgs,
@@ -16099,10 +16178,9 @@ __sparse_adagrad_update ::
                           Record r -> TensorApply (t u)
 __sparse_adagrad_update args
   = let fullArgs
-          = ANON{lr = undefined, epsilon = Nothing, wd = Nothing,
-                 rescale_grad = Nothing, clip_gradient = Nothing, weight = Nothing,
-                 grad = Nothing, history = Nothing}
-              :: ParamListFull (ParameterList__sparse_adagrad_update t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList__sparse_adagrad_update t u))
+              args
         scalarArgs
           = catMaybes
               [("lr",) . showValue <$> Just (Anon.get #lr fullArgs),
@@ -16130,8 +16208,8 @@ __sparse_retain ::
                   Record r -> TensorApply (t u)
 __sparse_retain args
   = let fullArgs
-          = ANON{_data = undefined, indices = Nothing} ::
-              ParamListFull (ParameterList__sparse_retain t u)
+          = paramListWithDefault (Proxy @(ParameterList__sparse_retain t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -16153,9 +16231,7 @@ __split_v2 ::
              Record r -> TensorApply (t u)
 __split_v2 args
   = let fullArgs
-          = ANON{indices = undefined, axis = Nothing, squeeze_axis = Nothing,
-                 sections = Nothing, _data = undefined}
-              :: ParamListFull (ParameterList__split_v2 t u)
+          = paramListWithDefault (Proxy @(ParameterList__split_v2 t u)) args
         scalarArgs
           = catMaybes
               [("indices",) . showValue <$> Just (Anon.get #indices fullArgs),
@@ -16177,7 +16253,8 @@ __split_v2_backward ::
                       Record r -> TensorApply (t u)
 __split_v2_backward args
   = let fullArgs
-          = ANON{} :: ParamListFull ParameterList__split_v2_backward
+          = paramListWithDefault (Proxy @(ParameterList__split_v2_backward))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs = catMaybes []
       in
@@ -16195,9 +16272,8 @@ __square_sum ::
                Record r -> TensorApply (t u)
 __square_sum args
   = let fullArgs
-          = ANON{axis = Nothing, keepdims = Nothing, exclude = Nothing,
-                 _data = undefined}
-              :: ParamListFull (ParameterList__square_sum t u)
+          = paramListWithDefault (Proxy @(ParameterList__square_sum t u))
+              args
         scalarArgs
           = catMaybes
               [("axis",) . showValue <$> Anon.get #axis fullArgs,
@@ -16219,8 +16295,8 @@ __unravel_index ::
                   Record r -> TensorApply (t u)
 __unravel_index args
   = let fullArgs
-          = ANON{shape = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList__unravel_index t u)
+          = paramListWithDefault (Proxy @(ParameterList__unravel_index t u))
+              args
         scalarArgs
           = catMaybes [("shape",) . showValue <$> Anon.get #shape fullArgs]
         tensorKeyArgs
@@ -16244,8 +16320,7 @@ __zeros ::
           Record r -> TensorApply (t u)
 __zeros args
   = let fullArgs
-          = ANON{shape = Nothing, ctx = Nothing, dtype = Nothing} ::
-              ParamListFull ParameterList__zeros
+          = paramListWithDefault (Proxy @(ParameterList__zeros)) args
         scalarArgs
           = catMaybes
               [("shape",) . showValue <$> Anon.get #shape fullArgs,
@@ -16267,8 +16342,9 @@ __zeros_without_dtype ::
                         Record r -> TensorApply (t u)
 __zeros_without_dtype args
   = let fullArgs
-          = ANON{shape = Nothing, ctx = Nothing, dtype = Nothing} ::
-              ParamListFull ParameterList__zeros_without_dtype
+          = paramListWithDefault
+              (Proxy @(ParameterList__zeros_without_dtype))
+              args
         scalarArgs
           = catMaybes
               [("shape",) . showValue <$> Anon.get #shape fullArgs,
@@ -16288,7 +16364,7 @@ _abs ::
        Record r -> TensorApply (t u)
 _abs args
   = let fullArgs
-          = ANON{_data = undefined} :: ParamListFull (ParameterList_abs t u)
+          = paramListWithDefault (Proxy @(ParameterList_abs t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes [("data",) . toRaw <$> Just (Anon.get #_data fullArgs)]
@@ -16311,11 +16387,8 @@ _adam_update ::
                Record r -> TensorApply (t u)
 _adam_update args
   = let fullArgs
-          = ANON{lr = undefined, beta1 = Nothing, beta2 = Nothing,
-                 epsilon = Nothing, wd = Nothing, rescale_grad = Nothing,
-                 clip_gradient = Nothing, lazy_update = Nothing, weight = Nothing,
-                 grad = Nothing, mean = Nothing, var = Nothing}
-              :: ParamListFull (ParameterList_adam_update t u)
+          = paramListWithDefault (Proxy @(ParameterList_adam_update t u))
+              args
         scalarArgs
           = catMaybes
               [("lr",) . showValue <$> Just (Anon.get #lr fullArgs),
@@ -16346,7 +16419,7 @@ _add_n ::
          Record r -> TensorApply (t u)
 _add_n args
   = let fullArgs
-          = ANON{args = undefined} :: ParamListFull (ParameterList_add_n t u)
+          = paramListWithDefault (Proxy @(ParameterList_add_n t u)) args
         scalarArgs
           = catMaybes [Just ("num_args", showValue (length tensorVarArgs))]
         tensorKeyArgs = catMaybes []
@@ -16364,8 +16437,7 @@ _all_finite ::
               Record r -> TensorApply (t u)
 _all_finite args
   = let fullArgs
-          = ANON{init_output = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList_all_finite t u)
+          = paramListWithDefault (Proxy @(ParameterList_all_finite t u)) args
         scalarArgs
           = catMaybes
               [("init_output",) . showValue <$> Anon.get #init_output fullArgs]
@@ -16390,8 +16462,7 @@ _amp_cast ::
             Record r -> TensorApply (t u)
 _amp_cast args
   = let fullArgs
-          = ANON{dtype = undefined, _data = undefined} ::
-              ParamListFull (ParameterList_amp_cast t u)
+          = paramListWithDefault (Proxy @(ParameterList_amp_cast t u)) args
         scalarArgs
           = catMaybes
               [("dtype",) . showValue <$> Just (Anon.get #dtype fullArgs)]
@@ -16412,9 +16483,8 @@ _amp_multicast ::
                  Record r -> TensorApply (t u)
 _amp_multicast args
   = let fullArgs
-          = ANON{num_outputs = undefined, cast_narrow = Nothing,
-                 _data = undefined}
-              :: ParamListFull (ParameterList_amp_multicast t u)
+          = paramListWithDefault (Proxy @(ParameterList_amp_multicast t u))
+              args
         scalarArgs
           = catMaybes
               [("num_outputs",) . showValue <$>
@@ -16434,8 +16504,7 @@ _arccos ::
           Record r -> TensorApply (t u)
 _arccos args
   = let fullArgs
-          = ANON{_data = undefined} ::
-              ParamListFull (ParameterList_arccos t u)
+          = paramListWithDefault (Proxy @(ParameterList_arccos t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes [("data",) . toRaw <$> Just (Anon.get #_data fullArgs)]
@@ -16452,8 +16521,7 @@ _arccosh ::
            Record r -> TensorApply (t u)
 _arccosh args
   = let fullArgs
-          = ANON{_data = undefined} ::
-              ParamListFull (ParameterList_arccosh t u)
+          = paramListWithDefault (Proxy @(ParameterList_arccosh t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes [("data",) . toRaw <$> Just (Anon.get #_data fullArgs)]
@@ -16470,8 +16538,7 @@ _arcsin ::
           Record r -> TensorApply (t u)
 _arcsin args
   = let fullArgs
-          = ANON{_data = undefined} ::
-              ParamListFull (ParameterList_arcsin t u)
+          = paramListWithDefault (Proxy @(ParameterList_arcsin t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes [("data",) . toRaw <$> Just (Anon.get #_data fullArgs)]
@@ -16488,8 +16555,7 @@ _arcsinh ::
            Record r -> TensorApply (t u)
 _arcsinh args
   = let fullArgs
-          = ANON{_data = undefined} ::
-              ParamListFull (ParameterList_arcsinh t u)
+          = paramListWithDefault (Proxy @(ParameterList_arcsinh t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes [("data",) . toRaw <$> Just (Anon.get #_data fullArgs)]
@@ -16506,8 +16572,7 @@ _arctan ::
           Record r -> TensorApply (t u)
 _arctan args
   = let fullArgs
-          = ANON{_data = undefined} ::
-              ParamListFull (ParameterList_arctan t u)
+          = paramListWithDefault (Proxy @(ParameterList_arctan t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes [("data",) . toRaw <$> Just (Anon.get #_data fullArgs)]
@@ -16524,8 +16589,7 @@ _arctanh ::
            Record r -> TensorApply (t u)
 _arctanh args
   = let fullArgs
-          = ANON{_data = undefined} ::
-              ParamListFull (ParameterList_arctanh t u)
+          = paramListWithDefault (Proxy @(ParameterList_arctanh t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes [("data",) . toRaw <$> Just (Anon.get #_data fullArgs)]
@@ -16544,8 +16608,7 @@ _argmax ::
           Record r -> TensorApply (t u)
 _argmax args
   = let fullArgs
-          = ANON{axis = Nothing, keepdims = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList_argmax t u)
+          = paramListWithDefault (Proxy @(ParameterList_argmax t u)) args
         scalarArgs
           = catMaybes
               [("axis",) . showValue <$> Anon.get #axis fullArgs,
@@ -16566,8 +16629,8 @@ _argmax_channel ::
                   Record r -> TensorApply (t u)
 _argmax_channel args
   = let fullArgs
-          = ANON{_data = undefined} ::
-              ParamListFull (ParameterList_argmax_channel t u)
+          = paramListWithDefault (Proxy @(ParameterList_argmax_channel t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes [("data",) . toRaw <$> Just (Anon.get #_data fullArgs)]
@@ -16586,8 +16649,7 @@ _argmin ::
           Record r -> TensorApply (t u)
 _argmin args
   = let fullArgs
-          = ANON{axis = Nothing, keepdims = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList_argmin t u)
+          = paramListWithDefault (Proxy @(ParameterList_argmin t u)) args
         scalarArgs
           = catMaybes
               [("axis",) . showValue <$> Anon.get #axis fullArgs,
@@ -16613,9 +16675,7 @@ _argsort ::
            Record r -> TensorApply (t u)
 _argsort args
   = let fullArgs
-          = ANON{axis = Nothing, is_ascend = Nothing, dtype = Nothing,
-                 _data = undefined}
-              :: ParamListFull (ParameterList_argsort t u)
+          = paramListWithDefault (Proxy @(ParameterList_argsort t u)) args
         scalarArgs
           = catMaybes
               [("axis",) . showValue <$> Anon.get #axis fullArgs,
@@ -16640,9 +16700,7 @@ _batch_dot ::
              Record r -> TensorApply (t u)
 _batch_dot args
   = let fullArgs
-          = ANON{transpose_a = Nothing, transpose_b = Nothing,
-                 forward_stype = Nothing, lhs = Nothing, rhs = Nothing}
-              :: ParamListFull (ParameterList_batch_dot t u)
+          = paramListWithDefault (Proxy @(ParameterList_batch_dot t u)) args
         scalarArgs
           = catMaybes
               [("transpose_a",) . showValue <$> Anon.get #transpose_a fullArgs,
@@ -16667,8 +16725,7 @@ _batch_take ::
               Record r -> TensorApply (t u)
 _batch_take args
   = let fullArgs
-          = ANON{a = Nothing, indices = Nothing} ::
-              ParamListFull (ParameterList_batch_take t u)
+          = paramListWithDefault (Proxy @(ParameterList_batch_take t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -16688,8 +16745,8 @@ _broadcast_add ::
                  Record r -> TensorApply (t u)
 _broadcast_add args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList_broadcast_add t u)
+          = paramListWithDefault (Proxy @(ParameterList_broadcast_add t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -16710,8 +16767,8 @@ _broadcast_axis ::
                   Record r -> TensorApply (t u)
 _broadcast_axis args
   = let fullArgs
-          = ANON{axis = Nothing, size = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList_broadcast_axis t u)
+          = paramListWithDefault (Proxy @(ParameterList_broadcast_axis t u))
+              args
         scalarArgs
           = catMaybes
               [("axis",) . showValue <$> Anon.get #axis fullArgs,
@@ -16732,8 +16789,8 @@ _broadcast_div ::
                  Record r -> TensorApply (t u)
 _broadcast_div args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList_broadcast_div t u)
+          = paramListWithDefault (Proxy @(ParameterList_broadcast_div t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -16753,8 +16810,8 @@ _broadcast_equal ::
                    Record r -> TensorApply (t u)
 _broadcast_equal args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList_broadcast_equal t u)
+          = paramListWithDefault (Proxy @(ParameterList_broadcast_equal t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -16774,8 +16831,9 @@ _broadcast_greater ::
                      Record r -> TensorApply (t u)
 _broadcast_greater args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList_broadcast_greater t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList_broadcast_greater t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -16795,8 +16853,9 @@ _broadcast_greater_equal ::
                            Record r -> TensorApply (t u)
 _broadcast_greater_equal args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList_broadcast_greater_equal t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList_broadcast_greater_equal t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -16816,8 +16875,8 @@ _broadcast_hypot ::
                    Record r -> TensorApply (t u)
 _broadcast_hypot args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList_broadcast_hypot t u)
+          = paramListWithDefault (Proxy @(ParameterList_broadcast_hypot t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -16837,8 +16896,9 @@ _broadcast_lesser ::
                     Record r -> TensorApply (t u)
 _broadcast_lesser args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList_broadcast_lesser t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList_broadcast_lesser t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -16858,8 +16918,9 @@ _broadcast_lesser_equal ::
                           Record r -> TensorApply (t u)
 _broadcast_lesser_equal args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList_broadcast_lesser_equal t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList_broadcast_lesser_equal t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -16881,9 +16942,8 @@ _broadcast_like ::
                   Record r -> TensorApply (t u)
 _broadcast_like args
   = let fullArgs
-          = ANON{lhs_axes = Nothing, rhs_axes = Nothing, lhs = Nothing,
-                 rhs = Nothing}
-              :: ParamListFull (ParameterList_broadcast_like t u)
+          = paramListWithDefault (Proxy @(ParameterList_broadcast_like t u))
+              args
         scalarArgs
           = catMaybes
               [("lhs_axes",) . showValue <$> Anon.get #lhs_axes fullArgs,
@@ -16906,8 +16966,9 @@ _broadcast_logical_and ::
                          Record r -> TensorApply (t u)
 _broadcast_logical_and args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList_broadcast_logical_and t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList_broadcast_logical_and t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -16927,8 +16988,9 @@ _broadcast_logical_or ::
                         Record r -> TensorApply (t u)
 _broadcast_logical_or args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList_broadcast_logical_or t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList_broadcast_logical_or t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -16948,8 +17010,9 @@ _broadcast_logical_xor ::
                          Record r -> TensorApply (t u)
 _broadcast_logical_xor args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList_broadcast_logical_xor t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList_broadcast_logical_xor t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -16969,8 +17032,9 @@ _broadcast_maximum ::
                      Record r -> TensorApply (t u)
 _broadcast_maximum args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList_broadcast_maximum t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList_broadcast_maximum t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -16990,8 +17054,9 @@ _broadcast_minimum ::
                      Record r -> TensorApply (t u)
 _broadcast_minimum args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList_broadcast_minimum t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList_broadcast_minimum t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -17011,8 +17076,8 @@ _broadcast_mod ::
                  Record r -> TensorApply (t u)
 _broadcast_mod args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList_broadcast_mod t u)
+          = paramListWithDefault (Proxy @(ParameterList_broadcast_mod t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -17032,8 +17097,8 @@ _broadcast_mul ::
                  Record r -> TensorApply (t u)
 _broadcast_mul args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList_broadcast_mul t u)
+          = paramListWithDefault (Proxy @(ParameterList_broadcast_mul t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -17053,8 +17118,9 @@ _broadcast_not_equal ::
                        Record r -> TensorApply (t u)
 _broadcast_not_equal args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList_broadcast_not_equal t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList_broadcast_not_equal t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -17074,8 +17140,8 @@ _broadcast_power ::
                    Record r -> TensorApply (t u)
 _broadcast_power args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList_broadcast_power t u)
+          = paramListWithDefault (Proxy @(ParameterList_broadcast_power t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -17095,8 +17161,8 @@ _broadcast_sub ::
                  Record r -> TensorApply (t u)
 _broadcast_sub args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList_broadcast_sub t u)
+          = paramListWithDefault (Proxy @(ParameterList_broadcast_sub t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -17116,8 +17182,8 @@ _broadcast_to ::
                 Record r -> TensorApply (t u)
 _broadcast_to args
   = let fullArgs
-          = ANON{shape = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList_broadcast_to t u)
+          = paramListWithDefault (Proxy @(ParameterList_broadcast_to t u))
+              args
         scalarArgs
           = catMaybes [("shape",) . showValue <$> Anon.get #shape fullArgs]
         tensorKeyArgs
@@ -17138,8 +17204,8 @@ _cast_storage ::
                 Record r -> TensorApply (t u)
 _cast_storage args
   = let fullArgs
-          = ANON{stype = undefined, _data = undefined} ::
-              ParamListFull (ParameterList_cast_storage t u)
+          = paramListWithDefault (Proxy @(ParameterList_cast_storage t u))
+              args
         scalarArgs
           = catMaybes
               [("stype",) . showValue <$> Just (Anon.get #stype fullArgs)]
@@ -17158,7 +17224,7 @@ _cbrt ::
         Record r -> TensorApply (t u)
 _cbrt args
   = let fullArgs
-          = ANON{_data = undefined} :: ParamListFull (ParameterList_cbrt t u)
+          = paramListWithDefault (Proxy @(ParameterList_cbrt t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes [("data",) . toRaw <$> Just (Anon.get #_data fullArgs)]
@@ -17175,7 +17241,7 @@ _ceil ::
         Record r -> TensorApply (t u)
 _ceil args
   = let fullArgs
-          = ANON{_data = undefined} :: ParamListFull (ParameterList_ceil t u)
+          = paramListWithDefault (Proxy @(ParameterList_ceil t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes [("data",) . toRaw <$> Just (Anon.get #_data fullArgs)]
@@ -17194,8 +17260,7 @@ _clip ::
         Record r -> TensorApply (t u)
 _clip args
   = let fullArgs
-          = ANON{a_min = undefined, a_max = undefined, _data = undefined} ::
-              ParamListFull (ParameterList_clip t u)
+          = paramListWithDefault (Proxy @(ParameterList_clip t u)) args
         scalarArgs
           = catMaybes
               [("a_min",) . showValue <$> Just (Anon.get #a_min fullArgs),
@@ -17218,10 +17283,7 @@ _col2im ::
           Record r -> TensorApply (t u)
 _col2im args
   = let fullArgs
-          = ANON{output_size = undefined, kernel = undefined,
-                 stride = Nothing, dilate = Nothing, pad = Nothing,
-                 _data = undefined}
-              :: ParamListFull (ParameterList_col2im t u)
+          = paramListWithDefault (Proxy @(ParameterList_col2im t u)) args
         scalarArgs
           = catMaybes
               [("output_size",) . showValue <$>
@@ -17245,7 +17307,7 @@ _cos ::
        Record r -> TensorApply (t u)
 _cos args
   = let fullArgs
-          = ANON{_data = undefined} :: ParamListFull (ParameterList_cos t u)
+          = paramListWithDefault (Proxy @(ParameterList_cos t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes [("data",) . toRaw <$> Just (Anon.get #_data fullArgs)]
@@ -17262,7 +17324,7 @@ _cosh ::
         Record r -> TensorApply (t u)
 _cosh args
   = let fullArgs
-          = ANON{_data = undefined} :: ParamListFull (ParameterList_cosh t u)
+          = paramListWithDefault (Proxy @(ParameterList_cosh t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes [("data",) . toRaw <$> Just (Anon.get #_data fullArgs)]
@@ -17279,8 +17341,7 @@ _degrees ::
            Record r -> TensorApply (t u)
 _degrees args
   = let fullArgs
-          = ANON{_data = undefined} ::
-              ParamListFull (ParameterList_degrees t u)
+          = paramListWithDefault (Proxy @(ParameterList_degrees t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes [("data",) . toRaw <$> Just (Anon.get #_data fullArgs)]
@@ -17298,8 +17359,8 @@ _depth_to_space ::
                   Record r -> TensorApply (t u)
 _depth_to_space args
   = let fullArgs
-          = ANON{block_size = undefined, _data = undefined} ::
-              ParamListFull (ParameterList_depth_to_space t u)
+          = paramListWithDefault (Proxy @(ParameterList_depth_to_space t u))
+              args
         scalarArgs
           = catMaybes
               [("block_size",) . showValue <$>
@@ -17321,9 +17382,7 @@ _diag ::
         Record r -> TensorApply (t u)
 _diag args
   = let fullArgs
-          = ANON{k = Nothing, axis1 = Nothing, axis2 = Nothing,
-                 _data = undefined}
-              :: ParamListFull (ParameterList_diag t u)
+          = paramListWithDefault (Proxy @(ParameterList_diag t u)) args
         scalarArgs
           = catMaybes
               [("k",) . showValue <$> Anon.get #k fullArgs,
@@ -17348,9 +17407,7 @@ _dot ::
        Record r -> TensorApply (t u)
 _dot args
   = let fullArgs
-          = ANON{transpose_a = Nothing, transpose_b = Nothing,
-                 forward_stype = Nothing, lhs = Nothing, rhs = Nothing}
-              :: ParamListFull (ParameterList_dot t u)
+          = paramListWithDefault (Proxy @(ParameterList_dot t u)) args
         scalarArgs
           = catMaybes
               [("transpose_a",) . showValue <$> Anon.get #transpose_a fullArgs,
@@ -17375,8 +17432,8 @@ _elemwise_add ::
                 Record r -> TensorApply (t u)
 _elemwise_add args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList_elemwise_add t u)
+          = paramListWithDefault (Proxy @(ParameterList_elemwise_add t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -17396,8 +17453,8 @@ _elemwise_div ::
                 Record r -> TensorApply (t u)
 _elemwise_div args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList_elemwise_div t u)
+          = paramListWithDefault (Proxy @(ParameterList_elemwise_div t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -17417,8 +17474,8 @@ _elemwise_mul ::
                 Record r -> TensorApply (t u)
 _elemwise_mul args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList_elemwise_mul t u)
+          = paramListWithDefault (Proxy @(ParameterList_elemwise_mul t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -17438,8 +17495,8 @@ _elemwise_sub ::
                 Record r -> TensorApply (t u)
 _elemwise_sub args
   = let fullArgs
-          = ANON{lhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList_elemwise_sub t u)
+          = paramListWithDefault (Proxy @(ParameterList_elemwise_sub t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -17458,7 +17515,7 @@ _erf ::
        Record r -> TensorApply (t u)
 _erf args
   = let fullArgs
-          = ANON{_data = undefined} :: ParamListFull (ParameterList_erf t u)
+          = paramListWithDefault (Proxy @(ParameterList_erf t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes [("data",) . toRaw <$> Just (Anon.get #_data fullArgs)]
@@ -17475,8 +17532,7 @@ _erfinv ::
           Record r -> TensorApply (t u)
 _erfinv args
   = let fullArgs
-          = ANON{_data = undefined} ::
-              ParamListFull (ParameterList_erfinv t u)
+          = paramListWithDefault (Proxy @(ParameterList_erfinv t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes [("data",) . toRaw <$> Just (Anon.get #_data fullArgs)]
@@ -17493,7 +17549,7 @@ _exp ::
        Record r -> TensorApply (t u)
 _exp args
   = let fullArgs
-          = ANON{_data = undefined} :: ParamListFull (ParameterList_exp t u)
+          = paramListWithDefault (Proxy @(ParameterList_exp t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes [("data",) . toRaw <$> Just (Anon.get #_data fullArgs)]
@@ -17511,8 +17567,8 @@ _expand_dims ::
                Record r -> TensorApply (t u)
 _expand_dims args
   = let fullArgs
-          = ANON{axis = undefined, _data = undefined} ::
-              ParamListFull (ParameterList_expand_dims t u)
+          = paramListWithDefault (Proxy @(ParameterList_expand_dims t u))
+              args
         scalarArgs
           = catMaybes
               [("axis",) . showValue <$> Just (Anon.get #axis fullArgs)]
@@ -17531,8 +17587,7 @@ _expm1 ::
          Record r -> TensorApply (t u)
 _expm1 args
   = let fullArgs
-          = ANON{_data = undefined} ::
-              ParamListFull (ParameterList_expm1 t u)
+          = paramListWithDefault (Proxy @(ParameterList_expm1 t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes [("data",) . toRaw <$> Just (Anon.get #_data fullArgs)]
@@ -17551,8 +17606,9 @@ _fill_element_0index ::
                        Record r -> TensorApply (t u)
 _fill_element_0index args
   = let fullArgs
-          = ANON{lhs = Nothing, mhs = Nothing, rhs = Nothing} ::
-              ParamListFull (ParameterList_fill_element_0index t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList_fill_element_0index t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -17572,7 +17628,7 @@ _fix ::
        Record r -> TensorApply (t u)
 _fix args
   = let fullArgs
-          = ANON{_data = undefined} :: ParamListFull (ParameterList_fix t u)
+          = paramListWithDefault (Proxy @(ParameterList_fix t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes [("data",) . toRaw <$> Just (Anon.get #_data fullArgs)]
@@ -17589,8 +17645,7 @@ _floor ::
          Record r -> TensorApply (t u)
 _floor args
   = let fullArgs
-          = ANON{_data = undefined} ::
-              ParamListFull (ParameterList_floor t u)
+          = paramListWithDefault (Proxy @(ParameterList_floor t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes [("data",) . toRaw <$> Just (Anon.get #_data fullArgs)]
@@ -17614,11 +17669,8 @@ _ftml_update ::
                Record r -> TensorApply (t u)
 _ftml_update args
   = let fullArgs
-          = ANON{lr = undefined, beta1 = Nothing, beta2 = Nothing,
-                 epsilon = Nothing, t = undefined, wd = Nothing,
-                 rescale_grad = Nothing, clip_grad = Nothing, weight = Nothing,
-                 grad = Nothing, d = Nothing, v = Nothing, z = Nothing}
-              :: ParamListFull (ParameterList_ftml_update t u)
+          = paramListWithDefault (Proxy @(ParameterList_ftml_update t u))
+              args
         scalarArgs
           = catMaybes
               [("lr",) . showValue <$> Just (Anon.get #lr fullArgs),
@@ -17655,10 +17707,8 @@ _ftrl_update ::
                Record r -> TensorApply (t u)
 _ftrl_update args
   = let fullArgs
-          = ANON{lr = undefined, lamda1 = Nothing, beta = Nothing,
-                 wd = Nothing, rescale_grad = Nothing, clip_gradient = Nothing,
-                 weight = Nothing, grad = Nothing, z = Nothing, n = Nothing}
-              :: ParamListFull (ParameterList_ftrl_update t u)
+          = paramListWithDefault (Proxy @(ParameterList_ftrl_update t u))
+              args
         scalarArgs
           = catMaybes
               [("lr",) . showValue <$> Just (Anon.get #lr fullArgs),
@@ -17687,8 +17737,7 @@ _gamma ::
          Record r -> TensorApply (t u)
 _gamma args
   = let fullArgs
-          = ANON{_data = undefined} ::
-              ParamListFull (ParameterList_gamma t u)
+          = paramListWithDefault (Proxy @(ParameterList_gamma t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes [("data",) . toRaw <$> Just (Anon.get #_data fullArgs)]
@@ -17705,8 +17754,7 @@ _gammaln ::
            Record r -> TensorApply (t u)
 _gammaln args
   = let fullArgs
-          = ANON{_data = undefined} ::
-              ParamListFull (ParameterList_gammaln t u)
+          = paramListWithDefault (Proxy @(ParameterList_gammaln t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes [("data",) . toRaw <$> Just (Anon.get #_data fullArgs)]
@@ -17724,8 +17772,7 @@ _gather_nd ::
              Record r -> TensorApply (t u)
 _gather_nd args
   = let fullArgs
-          = ANON{_data = undefined, indices = Nothing} ::
-              ParamListFull (ParameterList_gather_nd t u)
+          = paramListWithDefault (Proxy @(ParameterList_gather_nd t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -17746,8 +17793,8 @@ _hard_sigmoid ::
                 Record r -> TensorApply (t u)
 _hard_sigmoid args
   = let fullArgs
-          = ANON{alpha = Nothing, beta = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList_hard_sigmoid t u)
+          = paramListWithDefault (Proxy @(ParameterList_hard_sigmoid t u))
+              args
         scalarArgs
           = catMaybes
               [("alpha",) . showValue <$> Anon.get #alpha fullArgs,
@@ -17770,9 +17817,7 @@ _im2col ::
           Record r -> TensorApply (t u)
 _im2col args
   = let fullArgs
-          = ANON{kernel = undefined, stride = Nothing, dilate = Nothing,
-                 pad = Nothing, _data = undefined}
-              :: ParamListFull (ParameterList_im2col t u)
+          = paramListWithDefault (Proxy @(ParameterList_im2col t u)) args
         scalarArgs
           = catMaybes
               [("kernel",) . showValue <$> Just (Anon.get #kernel fullArgs),
@@ -17794,8 +17839,7 @@ _khatri_rao ::
               Record r -> TensorApply (t u)
 _khatri_rao args
   = let fullArgs
-          = ANON{args = undefined} ::
-              ParamListFull (ParameterList_khatri_rao t u)
+          = paramListWithDefault (Proxy @(ParameterList_khatri_rao t u)) args
         scalarArgs
           = catMaybes [Just ("num_args", showValue (length tensorVarArgs))]
         tensorKeyArgs = catMaybes []
@@ -17819,11 +17863,9 @@ _lamb_update_phase1 ::
                       Record r -> TensorApply (t u)
 _lamb_update_phase1 args
   = let fullArgs
-          = ANON{beta1 = Nothing, beta2 = Nothing, epsilon = Nothing,
-                 t = undefined, bias_correction = Nothing, wd = undefined,
-                 rescale_grad = Nothing, clip_gradient = Nothing, weight = Nothing,
-                 grad = Nothing, mean = Nothing, var = Nothing}
-              :: ParamListFull (ParameterList_lamb_update_phase1 t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList_lamb_update_phase1 t u))
+              args
         scalarArgs
           = catMaybes
               [("beta1",) . showValue <$> Anon.get #beta1 fullArgs,
@@ -17859,10 +17901,9 @@ _lamb_update_phase2 ::
                       Record r -> TensorApply (t u)
 _lamb_update_phase2 args
   = let fullArgs
-          = ANON{lr = undefined, lower_bound = Nothing,
-                 upper_bound = Nothing, weight = Nothing, g = Nothing, r1 = Nothing,
-                 r2 = Nothing}
-              :: ParamListFull (ParameterList_lamb_update_phase2 t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList_lamb_update_phase2 t u))
+              args
         scalarArgs
           = catMaybes
               [("lr",) . showValue <$> Just (Anon.get #lr fullArgs),
@@ -17887,7 +17928,7 @@ _log ::
        Record r -> TensorApply (t u)
 _log args
   = let fullArgs
-          = ANON{_data = undefined} :: ParamListFull (ParameterList_log t u)
+          = paramListWithDefault (Proxy @(ParameterList_log t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes [("data",) . toRaw <$> Just (Anon.get #_data fullArgs)]
@@ -17904,8 +17945,7 @@ _log10 ::
          Record r -> TensorApply (t u)
 _log10 args
   = let fullArgs
-          = ANON{_data = undefined} ::
-              ParamListFull (ParameterList_log10 t u)
+          = paramListWithDefault (Proxy @(ParameterList_log10 t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes [("data",) . toRaw <$> Just (Anon.get #_data fullArgs)]
@@ -17922,8 +17962,7 @@ _log1p ::
          Record r -> TensorApply (t u)
 _log1p args
   = let fullArgs
-          = ANON{_data = undefined} ::
-              ParamListFull (ParameterList_log1p t u)
+          = paramListWithDefault (Proxy @(ParameterList_log1p t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes [("data",) . toRaw <$> Just (Anon.get #_data fullArgs)]
@@ -17940,7 +17979,7 @@ _log2 ::
         Record r -> TensorApply (t u)
 _log2 args
   = let fullArgs
-          = ANON{_data = undefined} :: ParamListFull (ParameterList_log2 t u)
+          = paramListWithDefault (Proxy @(ParameterList_log2 t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes [("data",) . toRaw <$> Just (Anon.get #_data fullArgs)]
@@ -17962,9 +18001,8 @@ _log_softmax ::
                Record r -> TensorApply (t u)
 _log_softmax args
   = let fullArgs
-          = ANON{axis = Nothing, temperature = Nothing, dtype = Nothing,
-                 use_length = Nothing, _data = undefined}
-              :: ParamListFull (ParameterList_log_softmax t u)
+          = paramListWithDefault (Proxy @(ParameterList_log_softmax t u))
+              args
         scalarArgs
           = catMaybes
               [("axis",) . showValue <$> Anon.get #axis fullArgs,
@@ -17986,8 +18024,8 @@ _logical_not ::
                Record r -> TensorApply (t u)
 _logical_not args
   = let fullArgs
-          = ANON{_data = undefined} ::
-              ParamListFull (ParameterList_logical_not t u)
+          = paramListWithDefault (Proxy @(ParameterList_logical_not t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes [("data",) . toRaw <$> Just (Anon.get #_data fullArgs)]
@@ -18004,8 +18042,7 @@ _make_loss ::
              Record r -> TensorApply (t u)
 _make_loss args
   = let fullArgs
-          = ANON{_data = undefined} ::
-              ParamListFull (ParameterList_make_loss t u)
+          = paramListWithDefault (Proxy @(ParameterList_make_loss t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes [("data",) . toRaw <$> Just (Anon.get #_data fullArgs)]
@@ -18024,9 +18061,7 @@ _max ::
        Record r -> TensorApply (t u)
 _max args
   = let fullArgs
-          = ANON{axis = Nothing, keepdims = Nothing, exclude = Nothing,
-                 _data = undefined}
-              :: ParamListFull (ParameterList_max t u)
+          = paramListWithDefault (Proxy @(ParameterList_max t u)) args
         scalarArgs
           = catMaybes
               [("axis",) . showValue <$> Anon.get #axis fullArgs,
@@ -18049,9 +18084,7 @@ _mean ::
         Record r -> TensorApply (t u)
 _mean args
   = let fullArgs
-          = ANON{axis = Nothing, keepdims = Nothing, exclude = Nothing,
-                 _data = undefined}
-              :: ParamListFull (ParameterList_mean t u)
+          = paramListWithDefault (Proxy @(ParameterList_mean t u)) args
         scalarArgs
           = catMaybes
               [("axis",) . showValue <$> Anon.get #axis fullArgs,
@@ -18074,9 +18107,7 @@ _min ::
        Record r -> TensorApply (t u)
 _min args
   = let fullArgs
-          = ANON{axis = Nothing, keepdims = Nothing, exclude = Nothing,
-                 _data = undefined}
-              :: ParamListFull (ParameterList_min t u)
+          = paramListWithDefault (Proxy @(ParameterList_min t u)) args
         scalarArgs
           = catMaybes
               [("axis",) . showValue <$> Anon.get #axis fullArgs,
@@ -18099,8 +18130,7 @@ _moments ::
            Record r -> TensorApply (t u)
 _moments args
   = let fullArgs
-          = ANON{axes = Nothing, keepdims = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList_moments t u)
+          = paramListWithDefault (Proxy @(ParameterList_moments t u)) args
         scalarArgs
           = catMaybes
               [("axes",) . showValue <$> Anon.get #axes fullArgs,
@@ -18127,11 +18157,9 @@ _mp_lamb_update_phase1 ::
                          Record r -> TensorApply (t u)
 _mp_lamb_update_phase1 args
   = let fullArgs
-          = ANON{beta1 = Nothing, beta2 = Nothing, epsilon = Nothing,
-                 t = undefined, bias_correction = Nothing, wd = undefined,
-                 rescale_grad = Nothing, clip_gradient = Nothing, weight = Nothing,
-                 grad = Nothing, mean = Nothing, var = Nothing, weight32 = Nothing}
-              :: ParamListFull (ParameterList_mp_lamb_update_phase1 t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList_mp_lamb_update_phase1 t u))
+              args
         scalarArgs
           = catMaybes
               [("beta1",) . showValue <$> Anon.get #beta1 fullArgs,
@@ -18168,10 +18196,9 @@ _mp_lamb_update_phase2 ::
                          Record r -> TensorApply (t u)
 _mp_lamb_update_phase2 args
   = let fullArgs
-          = ANON{lr = undefined, lower_bound = Nothing,
-                 upper_bound = Nothing, weight = Nothing, g = Nothing, r1 = Nothing,
-                 r2 = Nothing, weight32 = Nothing}
-              :: ParamListFull (ParameterList_mp_lamb_update_phase2 t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList_mp_lamb_update_phase2 t u))
+              args
         scalarArgs
           = catMaybes
               [("lr",) . showValue <$> Just (Anon.get #lr fullArgs),
@@ -18202,10 +18229,9 @@ _mp_nag_mom_update ::
                      Record r -> TensorApply (t u)
 _mp_nag_mom_update args
   = let fullArgs
-          = ANON{lr = undefined, momentum = Nothing, wd = Nothing,
-                 rescale_grad = Nothing, clip_gradient = Nothing, weight = Nothing,
-                 grad = Nothing, mom = Nothing, weight32 = Nothing}
-              :: ParamListFull (ParameterList_mp_nag_mom_update t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList_mp_nag_mom_update t u))
+              args
         scalarArgs
           = catMaybes
               [("lr",) . showValue <$> Just (Anon.get #lr fullArgs),
@@ -18238,11 +18264,9 @@ _mp_sgd_mom_update ::
                      Record r -> TensorApply (t u)
 _mp_sgd_mom_update args
   = let fullArgs
-          = ANON{lr = undefined, momentum = Nothing, wd = Nothing,
-                 rescale_grad = Nothing, clip_gradient = Nothing,
-                 lazy_update = Nothing, weight = Nothing, grad = Nothing,
-                 mom = Nothing, weight32 = Nothing}
-              :: ParamListFull (ParameterList_mp_sgd_mom_update t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList_mp_sgd_mom_update t u))
+              args
         scalarArgs
           = catMaybes
               [("lr",) . showValue <$> Just (Anon.get #lr fullArgs),
@@ -18276,10 +18300,8 @@ _mp_sgd_update ::
                  Record r -> TensorApply (t u)
 _mp_sgd_update args
   = let fullArgs
-          = ANON{lr = undefined, wd = Nothing, rescale_grad = Nothing,
-                 clip_gradient = Nothing, lazy_update = Nothing, weight = Nothing,
-                 grad = Nothing, weight32 = Nothing}
-              :: ParamListFull (ParameterList_mp_sgd_update t u)
+          = paramListWithDefault (Proxy @(ParameterList_mp_sgd_update t u))
+              args
         scalarArgs
           = catMaybes
               [("lr",) . showValue <$> Just (Anon.get #lr fullArgs),
@@ -18308,9 +18330,9 @@ _multi_all_finite ::
                     Record r -> TensorApply (t u)
 _multi_all_finite args
   = let fullArgs
-          = ANON{num_arrays = Nothing, init_output = Nothing,
-                 _data = undefined}
-              :: ParamListFull (ParameterList_multi_all_finite t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList_multi_all_finite t u))
+              args
         scalarArgs
           = catMaybes
               [("num_arrays",) . showValue <$> Anon.get #num_arrays fullArgs,
@@ -18333,10 +18355,7 @@ _multi_lars ::
               Record r -> TensorApply (t u)
 _multi_lars args
   = let fullArgs
-          = ANON{eta = undefined, eps = undefined, rescale_grad = Nothing,
-                 lrs = Nothing, weights_sum_sq = Nothing, grads_sum_sq = Nothing,
-                 wds = Nothing}
-              :: ParamListFull (ParameterList_multi_lars t u)
+          = paramListWithDefault (Proxy @(ParameterList_multi_lars t u)) args
         scalarArgs
           = catMaybes
               [("eta",) . showValue <$> Just (Anon.get #eta fullArgs),
@@ -18365,10 +18384,9 @@ _multi_mp_sgd_mom_update ::
                            Record r -> TensorApply (t u)
 _multi_mp_sgd_mom_update args
   = let fullArgs
-          = ANON{lrs = undefined, wds = undefined, momentum = Nothing,
-                 rescale_grad = Nothing, clip_gradient = Nothing,
-                 num_weights = Nothing, _data = undefined}
-              :: ParamListFull (ParameterList_multi_mp_sgd_mom_update t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList_multi_mp_sgd_mom_update t u))
+              args
         scalarArgs
           = catMaybes
               [("lrs",) . showValue <$> Just (Anon.get #lrs fullArgs),
@@ -18397,9 +18415,9 @@ _multi_mp_sgd_update ::
                        Record r -> TensorApply (t u)
 _multi_mp_sgd_update args
   = let fullArgs
-          = ANON{lrs = undefined, wds = undefined, rescale_grad = Nothing,
-                 clip_gradient = Nothing, num_weights = Nothing, _data = undefined}
-              :: ParamListFull (ParameterList_multi_mp_sgd_update t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList_multi_mp_sgd_update t u))
+              args
         scalarArgs
           = catMaybes
               [("lrs",) . showValue <$> Just (Anon.get #lrs fullArgs),
@@ -18426,10 +18444,9 @@ _multi_sgd_mom_update ::
                         Record r -> TensorApply (t u)
 _multi_sgd_mom_update args
   = let fullArgs
-          = ANON{lrs = undefined, wds = undefined, momentum = Nothing,
-                 rescale_grad = Nothing, clip_gradient = Nothing,
-                 num_weights = Nothing, _data = undefined}
-              :: ParamListFull (ParameterList_multi_sgd_mom_update t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList_multi_sgd_mom_update t u))
+              args
         scalarArgs
           = catMaybes
               [("lrs",) . showValue <$> Just (Anon.get #lrs fullArgs),
@@ -18457,9 +18474,9 @@ _multi_sgd_update ::
                     Record r -> TensorApply (t u)
 _multi_sgd_update args
   = let fullArgs
-          = ANON{lrs = undefined, wds = undefined, rescale_grad = Nothing,
-                 clip_gradient = Nothing, num_weights = Nothing, _data = undefined}
-              :: ParamListFull (ParameterList_multi_sgd_update t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList_multi_sgd_update t u))
+              args
         scalarArgs
           = catMaybes
               [("lrs",) . showValue <$> Just (Anon.get #lrs fullArgs),
@@ -18483,8 +18500,8 @@ _multi_sum_sq ::
                 Record r -> TensorApply (t u)
 _multi_sum_sq args
   = let fullArgs
-          = ANON{num_arrays = undefined, _data = undefined} ::
-              ParamListFull (ParameterList_multi_sum_sq t u)
+          = paramListWithDefault (Proxy @(ParameterList_multi_sum_sq t u))
+              args
         scalarArgs
           = catMaybes
               [("num_arrays",) . showValue <$>
@@ -18507,10 +18524,8 @@ _nag_mom_update ::
                   Record r -> TensorApply (t u)
 _nag_mom_update args
   = let fullArgs
-          = ANON{lr = undefined, momentum = Nothing, wd = Nothing,
-                 rescale_grad = Nothing, clip_gradient = Nothing, weight = Nothing,
-                 grad = Nothing, mom = Nothing}
-              :: ParamListFull (ParameterList_nag_mom_update t u)
+          = paramListWithDefault (Proxy @(ParameterList_nag_mom_update t u))
+              args
         scalarArgs
           = catMaybes
               [("lr",) . showValue <$> Just (Anon.get #lr fullArgs),
@@ -18539,9 +18554,7 @@ _nanprod ::
            Record r -> TensorApply (t u)
 _nanprod args
   = let fullArgs
-          = ANON{axis = Nothing, keepdims = Nothing, exclude = Nothing,
-                 _data = undefined}
-              :: ParamListFull (ParameterList_nanprod t u)
+          = paramListWithDefault (Proxy @(ParameterList_nanprod t u)) args
         scalarArgs
           = catMaybes
               [("axis",) . showValue <$> Anon.get #axis fullArgs,
@@ -18564,9 +18577,7 @@ _nansum ::
           Record r -> TensorApply (t u)
 _nansum args
   = let fullArgs
-          = ANON{axis = Nothing, keepdims = Nothing, exclude = Nothing,
-                 _data = undefined}
-              :: ParamListFull (ParameterList_nansum t u)
+          = paramListWithDefault (Proxy @(ParameterList_nansum t u)) args
         scalarArgs
           = catMaybes
               [("axis",) . showValue <$> Anon.get #axis fullArgs,
@@ -18587,8 +18598,7 @@ _negative ::
             Record r -> TensorApply (t u)
 _negative args
   = let fullArgs
-          = ANON{_data = undefined} ::
-              ParamListFull (ParameterList_negative t u)
+          = paramListWithDefault (Proxy @(ParameterList_negative t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes [("data",) . toRaw <$> Just (Anon.get #_data fullArgs)]
@@ -18612,9 +18622,7 @@ _norm ::
         Record r -> TensorApply (t u)
 _norm args
   = let fullArgs
-          = ANON{ord = Nothing, axis = Nothing, out_dtype = Nothing,
-                 keepdims = Nothing, _data = undefined}
-              :: ParamListFull (ParameterList_norm t u)
+          = paramListWithDefault (Proxy @(ParameterList_norm t u)) args
         scalarArgs
           = catMaybes
               [("ord",) . showValue <$> Anon.get #ord fullArgs,
@@ -18644,9 +18652,7 @@ _one_hot ::
            Record r -> TensorApply (t u)
 _one_hot args
   = let fullArgs
-          = ANON{depth = undefined, on_value = Nothing, off_value = Nothing,
-                 dtype = Nothing, indices = Nothing}
-              :: ParamListFull (ParameterList_one_hot t u)
+          = paramListWithDefault (Proxy @(ParameterList_one_hot t u)) args
         scalarArgs
           = catMaybes
               [("depth",) . showValue <$> Just (Anon.get #depth fullArgs),
@@ -18668,8 +18674,7 @@ _ones_like ::
              Record r -> TensorApply (t u)
 _ones_like args
   = let fullArgs
-          = ANON{_data = undefined} ::
-              ParamListFull (ParameterList_ones_like t u)
+          = paramListWithDefault (Proxy @(ParameterList_ones_like t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes [("data",) . toRaw <$> Just (Anon.get #_data fullArgs)]
@@ -18689,9 +18694,7 @@ _pick ::
         Record r -> TensorApply (t u)
 _pick args
   = let fullArgs
-          = ANON{axis = Nothing, keepdims = Nothing, mode = Nothing,
-                 _data = undefined, index = Nothing}
-              :: ParamListFull (ParameterList_pick t u)
+          = paramListWithDefault (Proxy @(ParameterList_pick t u)) args
         scalarArgs
           = catMaybes
               [("axis",) . showValue <$> Anon.get #axis fullArgs,
@@ -18720,10 +18723,9 @@ _preloaded_multi_mp_sgd_mom_update ::
                                      Record r -> TensorApply (t u)
 _preloaded_multi_mp_sgd_mom_update args
   = let fullArgs
-          = ANON{momentum = Nothing, rescale_grad = Nothing,
-                 clip_gradient = Nothing, num_weights = Nothing, _data = undefined}
-              ::
-              ParamListFull (ParameterList_preloaded_multi_mp_sgd_mom_update t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList_preloaded_multi_mp_sgd_mom_update t u))
+              args
         scalarArgs
           = catMaybes
               [("momentum",) . showValue <$> Anon.get #momentum fullArgs,
@@ -18751,9 +18753,9 @@ _preloaded_multi_mp_sgd_update ::
                                  Record r -> TensorApply (t u)
 _preloaded_multi_mp_sgd_update args
   = let fullArgs
-          = ANON{rescale_grad = Nothing, clip_gradient = Nothing,
-                 num_weights = Nothing, _data = undefined}
-              :: ParamListFull (ParameterList_preloaded_multi_mp_sgd_update t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList_preloaded_multi_mp_sgd_update t u))
+              args
         scalarArgs
           = catMaybes
               [("rescale_grad",) . showValue <$> Anon.get #rescale_grad fullArgs,
@@ -18780,9 +18782,9 @@ _preloaded_multi_sgd_mom_update ::
                                   Record r -> TensorApply (t u)
 _preloaded_multi_sgd_mom_update args
   = let fullArgs
-          = ANON{momentum = Nothing, rescale_grad = Nothing,
-                 clip_gradient = Nothing, num_weights = Nothing, _data = undefined}
-              :: ParamListFull (ParameterList_preloaded_multi_sgd_mom_update t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList_preloaded_multi_sgd_mom_update t u))
+              args
         scalarArgs
           = catMaybes
               [("momentum",) . showValue <$> Anon.get #momentum fullArgs,
@@ -18810,9 +18812,9 @@ _preloaded_multi_sgd_update ::
                               Record r -> TensorApply (t u)
 _preloaded_multi_sgd_update args
   = let fullArgs
-          = ANON{rescale_grad = Nothing, clip_gradient = Nothing,
-                 num_weights = Nothing, _data = undefined}
-              :: ParamListFull (ParameterList_preloaded_multi_sgd_update t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList_preloaded_multi_sgd_update t u))
+              args
         scalarArgs
           = catMaybes
               [("rescale_grad",) . showValue <$> Anon.get #rescale_grad fullArgs,
@@ -18837,9 +18839,7 @@ _prod ::
         Record r -> TensorApply (t u)
 _prod args
   = let fullArgs
-          = ANON{axis = Nothing, keepdims = Nothing, exclude = Nothing,
-                 _data = undefined}
-              :: ParamListFull (ParameterList_prod t u)
+          = paramListWithDefault (Proxy @(ParameterList_prod t u)) args
         scalarArgs
           = catMaybes
               [("axis",) . showValue <$> Anon.get #axis fullArgs,
@@ -18860,8 +18860,7 @@ _radians ::
            Record r -> TensorApply (t u)
 _radians args
   = let fullArgs
-          = ANON{_data = undefined} ::
-              ParamListFull (ParameterList_radians t u)
+          = paramListWithDefault (Proxy @(ParameterList_radians t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes [("data",) . toRaw <$> Just (Anon.get #_data fullArgs)]
@@ -18878,8 +18877,7 @@ _rcbrt ::
          Record r -> TensorApply (t u)
 _rcbrt args
   = let fullArgs
-          = ANON{_data = undefined} ::
-              ParamListFull (ParameterList_rcbrt t u)
+          = paramListWithDefault (Proxy @(ParameterList_rcbrt t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes [("data",) . toRaw <$> Just (Anon.get #_data fullArgs)]
@@ -18896,8 +18894,7 @@ _reciprocal ::
               Record r -> TensorApply (t u)
 _reciprocal args
   = let fullArgs
-          = ANON{_data = undefined} ::
-              ParamListFull (ParameterList_reciprocal t u)
+          = paramListWithDefault (Proxy @(ParameterList_reciprocal t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes [("data",) . toRaw <$> Just (Anon.get #_data fullArgs)]
@@ -18914,7 +18911,7 @@ _relu ::
         Record r -> TensorApply (t u)
 _relu args
   = let fullArgs
-          = ANON{_data = undefined} :: ParamListFull (ParameterList_relu t u)
+          = paramListWithDefault (Proxy @(ParameterList_relu t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes [("data",) . toRaw <$> Just (Anon.get #_data fullArgs)]
@@ -18933,8 +18930,7 @@ _repeat ::
           Record r -> TensorApply (t u)
 _repeat args
   = let fullArgs
-          = ANON{repeats = undefined, axis = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList_repeat t u)
+          = paramListWithDefault (Proxy @(ParameterList_repeat t u)) args
         scalarArgs
           = catMaybes
               [("repeats",) . showValue <$> Just (Anon.get #repeats fullArgs),
@@ -18955,8 +18951,8 @@ _reset_arrays ::
                 Record r -> TensorApply (t u)
 _reset_arrays args
   = let fullArgs
-          = ANON{num_arrays = undefined, _data = undefined} ::
-              ParamListFull (ParameterList_reset_arrays t u)
+          = paramListWithDefault (Proxy @(ParameterList_reset_arrays t u))
+              args
         scalarArgs
           = catMaybes
               [("num_arrays",) . showValue <$>
@@ -18980,9 +18976,8 @@ _reshape_like ::
                 Record r -> TensorApply (t u)
 _reshape_like args
   = let fullArgs
-          = ANON{lhs_begin = Nothing, lhs_end = Nothing, rhs_begin = Nothing,
-                 rhs_end = Nothing, lhs = Nothing, rhs = Nothing}
-              :: ParamListFull (ParameterList_reshape_like t u)
+          = paramListWithDefault (Proxy @(ParameterList_reshape_like t u))
+              args
         scalarArgs
           = catMaybes
               [("lhs_begin",) . showValue <$> Anon.get #lhs_begin fullArgs,
@@ -19007,8 +19002,7 @@ _reverse ::
            Record r -> TensorApply (t u)
 _reverse args
   = let fullArgs
-          = ANON{axis = undefined, _data = undefined} ::
-              ParamListFull (ParameterList_reverse t u)
+          = paramListWithDefault (Proxy @(ParameterList_reverse t u)) args
         scalarArgs
           = catMaybes
               [("axis",) . showValue <$> Just (Anon.get #axis fullArgs)]
@@ -19027,7 +19021,7 @@ _rint ::
         Record r -> TensorApply (t u)
 _rint args
   = let fullArgs
-          = ANON{_data = undefined} :: ParamListFull (ParameterList_rint t u)
+          = paramListWithDefault (Proxy @(ParameterList_rint t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes [("data",) . toRaw <$> Just (Anon.get #_data fullArgs)]
@@ -19050,11 +19044,8 @@ _rmsprop_update ::
                   Record r -> TensorApply (t u)
 _rmsprop_update args
   = let fullArgs
-          = ANON{lr = undefined, gamma1 = Nothing, epsilon = Nothing,
-                 wd = Nothing, rescale_grad = Nothing, clip_gradient = Nothing,
-                 clip_weights = Nothing, weight = Nothing, grad = Nothing,
-                 n = Nothing}
-              :: ParamListFull (ParameterList_rmsprop_update t u)
+          = paramListWithDefault (Proxy @(ParameterList_rmsprop_update t u))
+              args
         scalarArgs
           = catMaybes
               [("lr",) . showValue <$> Just (Anon.get #lr fullArgs),
@@ -19090,11 +19081,9 @@ _rmspropalex_update ::
                       Record r -> TensorApply (t u)
 _rmspropalex_update args
   = let fullArgs
-          = ANON{lr = undefined, gamma1 = Nothing, gamma2 = Nothing,
-                 epsilon = Nothing, wd = Nothing, rescale_grad = Nothing,
-                 clip_gradient = Nothing, clip_weights = Nothing, weight = Nothing,
-                 grad = Nothing, n = Nothing, g = Nothing, delta = Nothing}
-              :: ParamListFull (ParameterList_rmspropalex_update t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList_rmspropalex_update t u))
+              args
         scalarArgs
           = catMaybes
               [("lr",) . showValue <$> Just (Anon.get #lr fullArgs),
@@ -19126,8 +19115,7 @@ _round ::
          Record r -> TensorApply (t u)
 _round args
   = let fullArgs
-          = ANON{_data = undefined} ::
-              ParamListFull (ParameterList_round t u)
+          = paramListWithDefault (Proxy @(ParameterList_round t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes [("data",) . toRaw <$> Just (Anon.get #_data fullArgs)]
@@ -19144,8 +19132,7 @@ _rsqrt ::
          Record r -> TensorApply (t u)
 _rsqrt args
   = let fullArgs
-          = ANON{_data = undefined} ::
-              ParamListFull (ParameterList_rsqrt t u)
+          = paramListWithDefault (Proxy @(ParameterList_rsqrt t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes [("data",) . toRaw <$> Just (Anon.get #_data fullArgs)]
@@ -19164,8 +19151,7 @@ _scatter_nd ::
               Record r -> TensorApply (t u)
 _scatter_nd args
   = let fullArgs
-          = ANON{shape = undefined, _data = undefined, indices = Nothing} ::
-              ParamListFull (ParameterList_scatter_nd t u)
+          = paramListWithDefault (Proxy @(ParameterList_scatter_nd t u)) args
         scalarArgs
           = catMaybes
               [("shape",) . showValue <$> Just (Anon.get #shape fullArgs)]
@@ -19191,11 +19177,8 @@ _sgd_mom_update ::
                   Record r -> TensorApply (t u)
 _sgd_mom_update args
   = let fullArgs
-          = ANON{lr = undefined, momentum = Nothing, wd = Nothing,
-                 rescale_grad = Nothing, clip_gradient = Nothing,
-                 lazy_update = Nothing, weight = Nothing, grad = Nothing,
-                 mom = Nothing}
-              :: ParamListFull (ParameterList_sgd_mom_update t u)
+          = paramListWithDefault (Proxy @(ParameterList_sgd_mom_update t u))
+              args
         scalarArgs
           = catMaybes
               [("lr",) . showValue <$> Just (Anon.get #lr fullArgs),
@@ -19227,10 +19210,7 @@ _sgd_update ::
               Record r -> TensorApply (t u)
 _sgd_update args
   = let fullArgs
-          = ANON{lr = undefined, wd = Nothing, rescale_grad = Nothing,
-                 clip_gradient = Nothing, lazy_update = Nothing, weight = Nothing,
-                 grad = Nothing}
-              :: ParamListFull (ParameterList_sgd_update t u)
+          = paramListWithDefault (Proxy @(ParameterList_sgd_update t u)) args
         scalarArgs
           = catMaybes
               [("lr",) . showValue <$> Just (Anon.get #lr fullArgs),
@@ -19256,8 +19236,8 @@ _shape_array ::
                Record r -> TensorApply (t u)
 _shape_array args
   = let fullArgs
-          = ANON{_data = undefined} ::
-              ParamListFull (ParameterList_shape_array t u)
+          = paramListWithDefault (Proxy @(ParameterList_shape_array t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes [("data",) . toRaw <$> Just (Anon.get #_data fullArgs)]
@@ -19274,8 +19254,7 @@ _sigmoid ::
            Record r -> TensorApply (t u)
 _sigmoid args
   = let fullArgs
-          = ANON{_data = undefined} ::
-              ParamListFull (ParameterList_sigmoid t u)
+          = paramListWithDefault (Proxy @(ParameterList_sigmoid t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes [("data",) . toRaw <$> Just (Anon.get #_data fullArgs)]
@@ -19292,7 +19271,7 @@ _sign ::
         Record r -> TensorApply (t u)
 _sign args
   = let fullArgs
-          = ANON{_data = undefined} :: ParamListFull (ParameterList_sign t u)
+          = paramListWithDefault (Proxy @(ParameterList_sign t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes [("data",) . toRaw <$> Just (Anon.get #_data fullArgs)]
@@ -19313,9 +19292,8 @@ _signsgd_update ::
                   Record r -> TensorApply (t u)
 _signsgd_update args
   = let fullArgs
-          = ANON{lr = undefined, wd = Nothing, rescale_grad = Nothing,
-                 clip_gradient = Nothing, weight = Nothing, grad = Nothing}
-              :: ParamListFull (ParameterList_signsgd_update t u)
+          = paramListWithDefault (Proxy @(ParameterList_signsgd_update t u))
+              args
         scalarArgs
           = catMaybes
               [("lr",) . showValue <$> Just (Anon.get #lr fullArgs),
@@ -19345,10 +19323,8 @@ _signum_update ::
                  Record r -> TensorApply (t u)
 _signum_update args
   = let fullArgs
-          = ANON{lr = undefined, momentum = Nothing, wd = Nothing,
-                 rescale_grad = Nothing, clip_gradient = Nothing, wd_lh = Nothing,
-                 weight = Nothing, grad = Nothing, mom = Nothing}
-              :: ParamListFull (ParameterList_signum_update t u)
+          = paramListWithDefault (Proxy @(ParameterList_signum_update t u))
+              args
         scalarArgs
           = catMaybes
               [("lr",) . showValue <$> Just (Anon.get #lr fullArgs),
@@ -19376,7 +19352,7 @@ _sin ::
        Record r -> TensorApply (t u)
 _sin args
   = let fullArgs
-          = ANON{_data = undefined} :: ParamListFull (ParameterList_sin t u)
+          = paramListWithDefault (Proxy @(ParameterList_sin t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes [("data",) . toRaw <$> Just (Anon.get #_data fullArgs)]
@@ -19393,7 +19369,7 @@ _sinh ::
         Record r -> TensorApply (t u)
 _sinh args
   = let fullArgs
-          = ANON{_data = undefined} :: ParamListFull (ParameterList_sinh t u)
+          = paramListWithDefault (Proxy @(ParameterList_sinh t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes [("data",) . toRaw <$> Just (Anon.get #_data fullArgs)]
@@ -19410,8 +19386,7 @@ _size_array ::
               Record r -> TensorApply (t u)
 _size_array args
   = let fullArgs
-          = ANON{_data = undefined} ::
-              ParamListFull (ParameterList_size_array t u)
+          = paramListWithDefault (Proxy @(ParameterList_size_array t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes [("data",) . toRaw <$> Just (Anon.get #_data fullArgs)]
@@ -19430,9 +19405,7 @@ _slice ::
          Record r -> TensorApply (t u)
 _slice args
   = let fullArgs
-          = ANON{begin = undefined, end = undefined, step = Nothing,
-                 _data = undefined}
-              :: ParamListFull (ParameterList_slice t u)
+          = paramListWithDefault (Proxy @(ParameterList_slice t u)) args
         scalarArgs
           = catMaybes
               [("begin",) . showValue <$> Just (Anon.get #begin fullArgs),
@@ -19455,9 +19428,7 @@ _slice_axis ::
               Record r -> TensorApply (t u)
 _slice_axis args
   = let fullArgs
-          = ANON{axis = undefined, begin = undefined, end = undefined,
-                 _data = undefined}
-              :: ParamListFull (ParameterList_slice_axis t u)
+          = paramListWithDefault (Proxy @(ParameterList_slice_axis t u)) args
         scalarArgs
           = catMaybes
               [("axis",) . showValue <$> Just (Anon.get #axis fullArgs),
@@ -19480,8 +19451,7 @@ _slice_like ::
               Record r -> TensorApply (t u)
 _slice_like args
   = let fullArgs
-          = ANON{axes = Nothing, _data = undefined, shape_like = Nothing} ::
-              ParamListFull (ParameterList_slice_like t u)
+          = paramListWithDefault (Proxy @(ParameterList_slice_like t u)) args
         scalarArgs
           = catMaybes [("axes",) . showValue <$> Anon.get #axes fullArgs]
         tensorKeyArgs
@@ -19502,8 +19472,7 @@ _smooth_l1 ::
              Record r -> TensorApply (t u)
 _smooth_l1 args
   = let fullArgs
-          = ANON{scalar = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList_smooth_l1 t u)
+          = paramListWithDefault (Proxy @(ParameterList_smooth_l1 t u)) args
         scalarArgs
           = catMaybes [("scalar",) . showValue <$> Anon.get #scalar fullArgs]
         tensorKeyArgs
@@ -19527,9 +19496,7 @@ _softmax ::
            Record r -> TensorApply (t u)
 _softmax args
   = let fullArgs
-          = ANON{axis = Nothing, temperature = Nothing, dtype = Nothing,
-                 use_length = Nothing, _data = undefined, length = Nothing}
-              :: ParamListFull (ParameterList_softmax t u)
+          = paramListWithDefault (Proxy @(ParameterList_softmax t u)) args
         scalarArgs
           = catMaybes
               [("axis",) . showValue <$> Anon.get #axis fullArgs,
@@ -19554,8 +19521,9 @@ _softmax_cross_entropy ::
                          Record r -> TensorApply (t u)
 _softmax_cross_entropy args
   = let fullArgs
-          = ANON{_data = undefined, label = Nothing} ::
-              ParamListFull (ParameterList_softmax_cross_entropy t u)
+          = paramListWithDefault
+              (Proxy @(ParameterList_softmax_cross_entropy t u))
+              args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -19579,9 +19547,7 @@ _softmin ::
            Record r -> TensorApply (t u)
 _softmin args
   = let fullArgs
-          = ANON{axis = Nothing, temperature = Nothing, dtype = Nothing,
-                 use_length = Nothing, _data = undefined}
-              :: ParamListFull (ParameterList_softmin t u)
+          = paramListWithDefault (Proxy @(ParameterList_softmin t u)) args
         scalarArgs
           = catMaybes
               [("axis",) . showValue <$> Anon.get #axis fullArgs,
@@ -19603,8 +19569,7 @@ _softsign ::
             Record r -> TensorApply (t u)
 _softsign args
   = let fullArgs
-          = ANON{_data = undefined} ::
-              ParamListFull (ParameterList_softsign t u)
+          = paramListWithDefault (Proxy @(ParameterList_softsign t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes [("data",) . toRaw <$> Just (Anon.get #_data fullArgs)]
@@ -19623,8 +19588,7 @@ _sort ::
         Record r -> TensorApply (t u)
 _sort args
   = let fullArgs
-          = ANON{axis = Nothing, is_ascend = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList_sort t u)
+          = paramListWithDefault (Proxy @(ParameterList_sort t u)) args
         scalarArgs
           = catMaybes
               [("axis",) . showValue <$> Anon.get #axis fullArgs,
@@ -19645,8 +19609,8 @@ _space_to_depth ::
                   Record r -> TensorApply (t u)
 _space_to_depth args
   = let fullArgs
-          = ANON{block_size = undefined, _data = undefined} ::
-              ParamListFull (ParameterList_space_to_depth t u)
+          = paramListWithDefault (Proxy @(ParameterList_space_to_depth t u))
+              args
         scalarArgs
           = catMaybes
               [("block_size",) . showValue <$>
@@ -19666,7 +19630,7 @@ _sqrt ::
         Record r -> TensorApply (t u)
 _sqrt args
   = let fullArgs
-          = ANON{_data = undefined} :: ParamListFull (ParameterList_sqrt t u)
+          = paramListWithDefault (Proxy @(ParameterList_sqrt t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes [("data",) . toRaw <$> Just (Anon.get #_data fullArgs)]
@@ -19683,8 +19647,7 @@ _square ::
           Record r -> TensorApply (t u)
 _square args
   = let fullArgs
-          = ANON{_data = undefined} ::
-              ParamListFull (ParameterList_square t u)
+          = paramListWithDefault (Proxy @(ParameterList_square t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes [("data",) . toRaw <$> Just (Anon.get #_data fullArgs)]
@@ -19702,8 +19665,7 @@ _squeeze ::
            Record r -> TensorApply (t u)
 _squeeze args
   = let fullArgs
-          = ANON{axis = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList_squeeze t u)
+          = paramListWithDefault (Proxy @(ParameterList_squeeze t u)) args
         scalarArgs
           = catMaybes [("axis",) . showValue <$> Anon.get #axis fullArgs]
         tensorKeyArgs
@@ -19723,8 +19685,7 @@ _stack ::
          Record r -> TensorApply (t u)
 _stack args
   = let fullArgs
-          = ANON{axis = Nothing, num_args = undefined, _data = undefined} ::
-              ParamListFull (ParameterList_stack t u)
+          = paramListWithDefault (Proxy @(ParameterList_stack t u)) args
         scalarArgs
           = catMaybes
               [("axis",) . showValue <$> Anon.get #axis fullArgs,
@@ -19745,9 +19706,7 @@ _sum ::
        Record r -> TensorApply (t u)
 _sum args
   = let fullArgs
-          = ANON{axis = Nothing, keepdims = Nothing, exclude = Nothing,
-                 _data = undefined}
-              :: ParamListFull (ParameterList_sum t u)
+          = paramListWithDefault (Proxy @(ParameterList_sum t u)) args
         scalarArgs
           = catMaybes
               [("axis",) . showValue <$> Anon.get #axis fullArgs,
@@ -19771,9 +19730,7 @@ _take ::
         Record r -> TensorApply (t u)
 _take args
   = let fullArgs
-          = ANON{axis = Nothing, mode = Nothing, a = Nothing,
-                 indices = Nothing}
-              :: ParamListFull (ParameterList_take t u)
+          = paramListWithDefault (Proxy @(ParameterList_take t u)) args
         scalarArgs
           = catMaybes
               [("axis",) . showValue <$> Anon.get #axis fullArgs,
@@ -19795,7 +19752,7 @@ _tan ::
        Record r -> TensorApply (t u)
 _tan args
   = let fullArgs
-          = ANON{_data = undefined} :: ParamListFull (ParameterList_tan t u)
+          = paramListWithDefault (Proxy @(ParameterList_tan t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes [("data",) . toRaw <$> Just (Anon.get #_data fullArgs)]
@@ -19812,7 +19769,7 @@ _tanh ::
         Record r -> TensorApply (t u)
 _tanh args
   = let fullArgs
-          = ANON{_data = undefined} :: ParamListFull (ParameterList_tanh t u)
+          = paramListWithDefault (Proxy @(ParameterList_tanh t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes [("data",) . toRaw <$> Just (Anon.get #_data fullArgs)]
@@ -19830,8 +19787,7 @@ _tile ::
         Record r -> TensorApply (t u)
 _tile args
   = let fullArgs
-          = ANON{reps = undefined, _data = undefined} ::
-              ParamListFull (ParameterList_tile t u)
+          = paramListWithDefault (Proxy @(ParameterList_tile t u)) args
         scalarArgs
           = catMaybes
               [("reps",) . showValue <$> Just (Anon.get #reps fullArgs)]
@@ -19859,9 +19815,7 @@ _topk ::
         Record r -> TensorApply (t u)
 _topk args
   = let fullArgs
-          = ANON{axis = Nothing, k = Nothing, ret_typ = Nothing,
-                 is_ascend = Nothing, dtype = Nothing, _data = undefined}
-              :: ParamListFull (ParameterList_topk t u)
+          = paramListWithDefault (Proxy @(ParameterList_topk t u)) args
         scalarArgs
           = catMaybes
               [("axis",) . showValue <$> Anon.get #axis fullArgs,
@@ -19885,8 +19839,7 @@ _transpose ::
              Record r -> TensorApply (t u)
 _transpose args
   = let fullArgs
-          = ANON{axes = Nothing, _data = undefined} ::
-              ParamListFull (ParameterList_transpose t u)
+          = paramListWithDefault (Proxy @(ParameterList_transpose t u)) args
         scalarArgs
           = catMaybes [("axes",) . showValue <$> Anon.get #axes fullArgs]
         tensorKeyArgs
@@ -19904,8 +19857,7 @@ _trunc ::
          Record r -> TensorApply (t u)
 _trunc args
   = let fullArgs
-          = ANON{_data = undefined} ::
-              ParamListFull (ParameterList_trunc t u)
+          = paramListWithDefault (Proxy @(ParameterList_trunc t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes [("data",) . toRaw <$> Just (Anon.get #_data fullArgs)]
@@ -19924,8 +19876,7 @@ _where ::
          Record r -> TensorApply (t u)
 _where args
   = let fullArgs
-          = ANON{condition = Nothing, x = Nothing, y = Nothing} ::
-              ParamListFull (ParameterList_where t u)
+          = paramListWithDefault (Proxy @(ParameterList_where t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes
@@ -19945,8 +19896,7 @@ _zeros_like ::
               Record r -> TensorApply (t u)
 _zeros_like args
   = let fullArgs
-          = ANON{_data = undefined} ::
-              ParamListFull (ParameterList_zeros_like t u)
+          = paramListWithDefault (Proxy @(ParameterList_zeros_like t u)) args
         scalarArgs = catMaybes []
         tensorKeyArgs
           = catMaybes [("data",) . toRaw <$> Just (Anon.get #_data fullArgs)]

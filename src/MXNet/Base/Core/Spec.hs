@@ -3,24 +3,28 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE PartialTypeSignatures #-}
 {-# LANGUAGE PolyKinds             #-}
+{-# LANGUAGE TypeApplications      #-}
 {-# LANGUAGE TypeOperators         #-}
 {-# LANGUAGE UndecidableInstances  #-}
 {-# OPTIONS_GHC -fplugin=Data.Record.Anon.Plugin #-}
 module MXNet.Base.Core.Spec where
 
+import           Data.Primitive.SmallArray (smallArrayFromList)
 import           Data.Record.Anon
 import qualified Data.Record.Anon.Advanced as AAnon
 import           Data.Record.Anon.Simple   (Record)
 import qualified Data.Record.Anon.Simple   as Anon
+import qualified Data.Record.Generic       as G (Generic (..), Rep (..))
 import           Data.Type.Bool
 import           Data.Type.Equality
-import           GHC.Exts                  (Constraint)
+import           GHC.Exts                  (Any, Constraint)
 import           GHC.TypeLits              (CmpSymbol, ErrorMessage ((:<>:)),
                                             Symbol, TypeError, symbolVal)
 import qualified GHC.TypeLits              as Lit (ErrorMessage (..))
 import           RIO
 import           RIO.List                  (intersperse)
 import qualified RIO.Text                  as RT
+import           Unsafe.Coerce             (unsafeCoerce)
 
 import           MXNet.Base.Core.Enum
 import           MXNet.Base.Types          (DType)
@@ -87,7 +91,25 @@ type family FieldsMin (pl :: [(Symbol, Attr)]) :: Row * where
     FieldsMin ('(s, AttrReq t) ': pl) = s := t ': FieldsMin pl
     FieldsMin ('(s, AttrOpt t) ': pl) = FieldsMin pl
 
+class ParamHasDefault (pl :: [(Symbol, Attr)]) where
+    defaultValues :: Proxy pl -> [I Any]
+
+instance ParamHasDefault '[] where
+    defaultValues _ = []
+
+instance (ParamHasDefault pl, KnownSymbol k) => ParamHasDefault ('(k, AttrReq (t :: *)) ': pl) where
+    defaultValues _ = I (unsafeCoerce undefined): defaultValues (Proxy @ pl)
+
+instance (ParamHasDefault pl, KnownSymbol k) => ParamHasDefault ('(k, AttrOpt (t :: *)) ': pl) where
+    defaultValues _ = I (unsafeCoerce Nothing): defaultValues (Proxy @ pl)
+
 type FieldsAcc pl rec = (SubRow rec (FieldsMin pl), SubRow (FieldsFull pl) rec)
+
+paramListWithDefault :: forall pl r. (KnownFields (FieldsFull pl), ParamHasDefault pl, FieldsAcc pl r) => Proxy pl -> Record r -> Record (FieldsFull pl)
+paramListWithDefault dummy r = Anon.inject r (paramListDefaults dummy)
+
+paramListDefaults :: forall pl. (KnownFields (FieldsFull pl), ParamHasDefault pl) => Proxy pl -> Record (FieldsFull pl)
+paramListDefaults dummy = G.to $ G.Rep $ smallArrayFromList $ defaultValues dummy
 
 class Value a where
     showValue :: a -> Text

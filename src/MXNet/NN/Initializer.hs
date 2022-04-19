@@ -1,11 +1,12 @@
 {-# LANGUAGE TypeApplications #-}
+{-# OPTIONS_GHC -fplugin=Data.Record.Anon.Plugin#-}
 module MXNet.NN.Initializer where
 
+import qualified Data.Record.Anon.Simple     as Anon
 import           RIO
 
-import           MXNet.Base                  (ArgOf (..), DType, HMap (..),
-                                              NDArray, ndshape, (.&))
-import qualified MXNet.Base.Operators.Tensor as O
+import           MXNet.Base                  (DType, NDArray, ndshape)
+import qualified MXNet.Base.Operators.Tensor as I
 
 void' :: IO [NDArray a] -> IO ()
 void' = void
@@ -13,7 +14,7 @@ void' = void
 type Initializer p t = p -> NDArray t -> IO ()
 
 initConstant :: forall t. DType t => Float -> NDArray t -> IO ()
-initConstant val arr = void' @t $ O.__set_value (#src := val .& Nil) (Just [arr])
+initConstant val arr = void' @t $ I.__set_value ANON{src = Just val} (Just [arr])
 
 initEmpty, initZeros, initOnes :: DType t => NDArray t -> IO ()
 initEmpty _ = return ()
@@ -21,8 +22,8 @@ initZeros   = initConstant 0
 initOnes    = initConstant 1
 
 initNormal, initUniform :: forall t. DType t => Float -> NDArray t -> IO ()
-initNormal sigma arr = void' @t $ O.__random_normal (#loc := (0 :: Float) .& #scale  := sigma .& Nil) (Just [arr])
-initUniform sca arr  = void' @t $ O.__random_uniform (#low := (-sca) .& #high   := sca .& Nil) (Just [arr])
+initNormal sigma arr = void' @t $ I.__random_normal ANON{loc = Just 0, scale= Just sigma} (Just [arr])
+initUniform sca arr  = void' @t $ I.__random_uniform ANON{low = Just (-sca), high = Just sca} (Just [arr])
 
 data XavierFactor = XavierAvg
     | XavierIn

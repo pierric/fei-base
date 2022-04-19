@@ -70,6 +70,8 @@ library
                        store,
                        data-default-class,
                        large-anon,
+                       large-generics,
+                       primitive,
                        resourcet,
                        conduit >= 1.2 && < 1.4,
                        conduit-combinators >= 1.1.2 && < 1.4,

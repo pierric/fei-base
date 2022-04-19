@@ -1,11 +1,15 @@
+{-# LANGUAGE AllowAmbiguousTypes, PolyKinds, TypeOperators,
+  TypeApplications #-}
+{-# OPTIONS_GHC -fplugin=Data.Record.Anon.Plugin#-}
 module MXNet.Base.DataIter where
 import RIO
 import RIO.List
 import RIO.List.Partial ((!!))
-import MXNet.Base.Types (DType)
 import MXNet.Base.Raw
 import MXNet.Base.Core.Spec
 import MXNet.Base.Core.Enum
+import MXNet.Base.Tensor.Class
+import MXNet.Base.Types (DType)
 import Data.Maybe (catMaybes, fromMaybe)
 import Data.Record.Anon.Simple (Record)
 import qualified Data.Record.Anon.Simple as Anon
@@ -24,27 +28,22 @@ type ParameterList_CSVIter =
                     "int8", "uint8"])))]
 
 _CSVIter ::
-         forall t r .
-           (Tensor t, FieldsAcc ParameterList_CSVIter r, HasCallStack) =>
-           Record r -> TensorApply (IO DataIterHandle)
+         forall r . (FieldsAcc ParameterList_CSVIter r, HasCallStack) =>
+           Record r -> IO DataIterHandle
 _CSVIter args
   = let fullArgs
-          = ANON{data_csv = undefined, data_shape = undefined,
-                 label_csv = Nothing, label_shape = Nothing, batch_size = undefined,
-                 round_batch = Nothing, prefetch_buffer = Nothing, ctx = Nothing,
-                 dtype = Nothing}
-              :: ParamListFull ParameterList_CSVIter
+          = paramListWithDefault (Proxy @(ParameterList_CSVIter)) args
         scalarArgs
-          = [("data_csv",) . showValue $ Anon.get #data_csv fullargs,
-             ("data_shape",) . showValue $ Anon.get #data_shape fullargs,
-             ("label_csv",) . showValue $ Anon.get #label_csv fullargs,
-             ("label_shape",) . showValue $ Anon.get #label_shape fullargs,
-             ("batch_size",) . showValue $ Anon.get #batch_size fullargs,
-             ("round_batch",) . showValue $ Anon.get #round_batch fullargs,
+          = [("data_csv",) . showValue $ Anon.get #data_csv fullArgs,
+             ("data_shape",) . showValue $ Anon.get #data_shape fullArgs,
+             ("label_csv",) . showValue $ Anon.get #label_csv fullArgs,
+             ("label_shape",) . showValue $ Anon.get #label_shape fullArgs,
+             ("batch_size",) . showValue $ Anon.get #batch_size fullArgs,
+             ("round_batch",) . showValue $ Anon.get #round_batch fullArgs,
              ("prefetch_buffer",) . showValue $
-               Anon.get #prefetch_buffer fullargs,
-             ("ctx",) . showValue $ Anon.get #ctx fullargs,
-             ("dtype",) . showValue $ Anon.get #dtype fullargs]
+               Anon.get #prefetch_buffer fullArgs,
+             ("ctx",) . showValue $ Anon.get #ctx fullArgs,
+             ("dtype",) . showValue $ Anon.get #dtype fullArgs]
         (keys, vals) = unzip scalarArgs
       in
       do dis <- mxListDataIters
@@ -107,139 +106,108 @@ type ParameterList_ImageDetRecordIter =
         '("scale", AttrOpt Float), '("verbose", AttrOpt Bool)]
 
 _ImageDetRecordIter ::
-                    forall t r .
-                      (Tensor t, FieldsAcc ParameterList_ImageDetRecordIter r,
-                       HasCallStack) =>
-                      Record r -> TensorApply (IO DataIterHandle)
+                    forall r .
+                      (FieldsAcc ParameterList_ImageDetRecordIter r, HasCallStack) =>
+                      Record r -> IO DataIterHandle
 _ImageDetRecordIter args
   = let fullArgs
-          = ANON{path_imglist = Nothing, path_imgrec = Nothing,
-                 aug_seq = Nothing, label_width = Nothing, data_shape = undefined,
-                 preprocess_threads = Nothing, verbose = Nothing,
-                 num_parts = Nothing, part_index = Nothing,
-                 shuffle_chunk_size = Nothing, shuffle_chunk_seed = Nothing,
-                 label_pad_width = Nothing, label_pad_value = Nothing,
-                 shuffle = Nothing, seed = Nothing, verbose = Nothing,
-                 batch_size = undefined, round_batch = Nothing,
-                 prefetch_buffer = Nothing, ctx = Nothing, dtype = Nothing,
-                 resize = Nothing, rand_crop_prob = Nothing,
-                 min_crop_scales = Nothing, max_crop_scales = Nothing,
-                 min_crop_aspect_ratios = Nothing, max_crop_aspect_ratios = Nothing,
-                 min_crop_overlaps = Nothing, max_crop_overlaps = Nothing,
-                 min_crop_sample_coverages = Nothing,
-                 max_crop_sample_coverages = Nothing,
-                 min_crop_object_coverages = Nothing,
-                 max_crop_object_coverages = Nothing, num_crop_sampler = Nothing,
-                 crop_emit_mode = Nothing, emit_overlap_thresh = Nothing,
-                 max_crop_trials = Nothing, rand_pad_prob = Nothing,
-                 max_pad_scale = Nothing, max_random_hue = Nothing,
-                 random_hue_prob = Nothing, max_random_saturation = Nothing,
-                 random_saturation_prob = Nothing,
-                 max_random_illumination = Nothing,
-                 random_illumination_prob = Nothing, max_random_contrast = Nothing,
-                 random_contrast_prob = Nothing, rand_mirror_prob = Nothing,
-                 fill_value = Nothing, inter_method = Nothing,
-                 data_shape = undefined, resize_mode = Nothing, seed = Nothing,
-                 mean_img = Nothing, mean_r = Nothing, mean_g = Nothing,
-                 mean_b = Nothing, mean_a = Nothing, std_r = Nothing,
-                 std_g = Nothing, std_b = Nothing, std_a = Nothing, scale = Nothing,
-                 verbose = Nothing}
-              :: ParamListFull ParameterList_ImageDetRecordIter
+          = paramListWithDefault (Proxy @(ParameterList_ImageDetRecordIter))
+              args
         scalarArgs
-          = [("path_imglist",) . showValue $ Anon.get #path_imglist fullargs,
-             ("path_imgrec",) . showValue $ Anon.get #path_imgrec fullargs,
-             ("aug_seq",) . showValue $ Anon.get #aug_seq fullargs,
-             ("label_width",) . showValue $ Anon.get #label_width fullargs,
-             ("data_shape",) . showValue $ Anon.get #data_shape fullargs,
+          = [("path_imglist",) . showValue $ Anon.get #path_imglist fullArgs,
+             ("path_imgrec",) . showValue $ Anon.get #path_imgrec fullArgs,
+             ("aug_seq",) . showValue $ Anon.get #aug_seq fullArgs,
+             ("label_width",) . showValue $ Anon.get #label_width fullArgs,
+             ("data_shape",) . showValue $ Anon.get #data_shape fullArgs,
              ("preprocess_threads",) . showValue $
-               Anon.get #preprocess_threads fullargs,
-             ("verbose",) . showValue $ Anon.get #verbose fullargs,
-             ("num_parts",) . showValue $ Anon.get #num_parts fullargs,
-             ("part_index",) . showValue $ Anon.get #part_index fullargs,
+               Anon.get #preprocess_threads fullArgs,
+             ("verbose",) . showValue $ Anon.get #verbose fullArgs,
+             ("num_parts",) . showValue $ Anon.get #num_parts fullArgs,
+             ("part_index",) . showValue $ Anon.get #part_index fullArgs,
              ("shuffle_chunk_size",) . showValue $
-               Anon.get #shuffle_chunk_size fullargs,
+               Anon.get #shuffle_chunk_size fullArgs,
              ("shuffle_chunk_seed",) . showValue $
-               Anon.get #shuffle_chunk_seed fullargs,
+               Anon.get #shuffle_chunk_seed fullArgs,
              ("label_pad_width",) . showValue $
-               Anon.get #label_pad_width fullargs,
+               Anon.get #label_pad_width fullArgs,
              ("label_pad_value",) . showValue $
-               Anon.get #label_pad_value fullargs,
-             ("shuffle",) . showValue $ Anon.get #shuffle fullargs,
-             ("seed",) . showValue $ Anon.get #seed fullargs,
-             ("verbose",) . showValue $ Anon.get #verbose fullargs,
-             ("batch_size",) . showValue $ Anon.get #batch_size fullargs,
-             ("round_batch",) . showValue $ Anon.get #round_batch fullargs,
+               Anon.get #label_pad_value fullArgs,
+             ("shuffle",) . showValue $ Anon.get #shuffle fullArgs,
+             ("seed",) . showValue $ Anon.get #seed fullArgs,
+             ("verbose",) . showValue $ Anon.get #verbose fullArgs,
+             ("batch_size",) . showValue $ Anon.get #batch_size fullArgs,
+             ("round_batch",) . showValue $ Anon.get #round_batch fullArgs,
              ("prefetch_buffer",) . showValue $
-               Anon.get #prefetch_buffer fullargs,
-             ("ctx",) . showValue $ Anon.get #ctx fullargs,
-             ("dtype",) . showValue $ Anon.get #dtype fullargs,
-             ("resize",) . showValue $ Anon.get #resize fullargs,
+               Anon.get #prefetch_buffer fullArgs,
+             ("ctx",) . showValue $ Anon.get #ctx fullArgs,
+             ("dtype",) . showValue $ Anon.get #dtype fullArgs,
+             ("resize",) . showValue $ Anon.get #resize fullArgs,
              ("rand_crop_prob",) . showValue $
-               Anon.get #rand_crop_prob fullargs,
+               Anon.get #rand_crop_prob fullArgs,
              ("min_crop_scales",) . showValue $
-               Anon.get #min_crop_scales fullargs,
+               Anon.get #min_crop_scales fullArgs,
              ("max_crop_scales",) . showValue $
-               Anon.get #max_crop_scales fullargs,
+               Anon.get #max_crop_scales fullArgs,
              ("min_crop_aspect_ratios",) . showValue $
-               Anon.get #min_crop_aspect_ratios fullargs,
+               Anon.get #min_crop_aspect_ratios fullArgs,
              ("max_crop_aspect_ratios",) . showValue $
-               Anon.get #max_crop_aspect_ratios fullargs,
+               Anon.get #max_crop_aspect_ratios fullArgs,
              ("min_crop_overlaps",) . showValue $
-               Anon.get #min_crop_overlaps fullargs,
+               Anon.get #min_crop_overlaps fullArgs,
              ("max_crop_overlaps",) . showValue $
-               Anon.get #max_crop_overlaps fullargs,
+               Anon.get #max_crop_overlaps fullArgs,
              ("min_crop_sample_coverages",) . showValue $
-               Anon.get #min_crop_sample_coverages fullargs,
+               Anon.get #min_crop_sample_coverages fullArgs,
              ("max_crop_sample_coverages",) . showValue $
-               Anon.get #max_crop_sample_coverages fullargs,
+               Anon.get #max_crop_sample_coverages fullArgs,
              ("min_crop_object_coverages",) . showValue $
-               Anon.get #min_crop_object_coverages fullargs,
+               Anon.get #min_crop_object_coverages fullArgs,
              ("max_crop_object_coverages",) . showValue $
-               Anon.get #max_crop_object_coverages fullargs,
+               Anon.get #max_crop_object_coverages fullArgs,
              ("num_crop_sampler",) . showValue $
-               Anon.get #num_crop_sampler fullargs,
+               Anon.get #num_crop_sampler fullArgs,
              ("crop_emit_mode",) . showValue $
-               Anon.get #crop_emit_mode fullargs,
+               Anon.get #crop_emit_mode fullArgs,
              ("emit_overlap_thresh",) . showValue $
-               Anon.get #emit_overlap_thresh fullargs,
+               Anon.get #emit_overlap_thresh fullArgs,
              ("max_crop_trials",) . showValue $
-               Anon.get #max_crop_trials fullargs,
-             ("rand_pad_prob",) . showValue $ Anon.get #rand_pad_prob fullargs,
-             ("max_pad_scale",) . showValue $ Anon.get #max_pad_scale fullargs,
+               Anon.get #max_crop_trials fullArgs,
+             ("rand_pad_prob",) . showValue $ Anon.get #rand_pad_prob fullArgs,
+             ("max_pad_scale",) . showValue $ Anon.get #max_pad_scale fullArgs,
              ("max_random_hue",) . showValue $
-               Anon.get #max_random_hue fullargs,
+               Anon.get #max_random_hue fullArgs,
              ("random_hue_prob",) . showValue $
-               Anon.get #random_hue_prob fullargs,
+               Anon.get #random_hue_prob fullArgs,
              ("max_random_saturation",) . showValue $
-               Anon.get #max_random_saturation fullargs,
+               Anon.get #max_random_saturation fullArgs,
              ("random_saturation_prob",) . showValue $
-               Anon.get #random_saturation_prob fullargs,
+               Anon.get #random_saturation_prob fullArgs,
              ("max_random_illumination",) . showValue $
-               Anon.get #max_random_illumination fullargs,
+               Anon.get #max_random_illumination fullArgs,
              ("random_illumination_prob",) . showValue $
-               Anon.get #random_illumination_prob fullargs,
+               Anon.get #random_illumination_prob fullArgs,
              ("max_random_contrast",) . showValue $
-               Anon.get #max_random_contrast fullargs,
+               Anon.get #max_random_contrast fullArgs,
              ("random_contrast_prob",) . showValue $
-               Anon.get #random_contrast_prob fullargs,
+               Anon.get #random_contrast_prob fullArgs,
              ("rand_mirror_prob",) . showValue $
-               Anon.get #rand_mirror_prob fullargs,
-             ("fill_value",) . showValue $ Anon.get #fill_value fullargs,
-             ("inter_method",) . showValue $ Anon.get #inter_method fullargs,
-             ("data_shape",) . showValue $ Anon.get #data_shape fullargs,
-             ("resize_mode",) . showValue $ Anon.get #resize_mode fullargs,
-             ("seed",) . showValue $ Anon.get #seed fullargs,
-             ("mean_img",) . showValue $ Anon.get #mean_img fullargs,
-             ("mean_r",) . showValue $ Anon.get #mean_r fullargs,
-             ("mean_g",) . showValue $ Anon.get #mean_g fullargs,
-             ("mean_b",) . showValue $ Anon.get #mean_b fullargs,
-             ("mean_a",) . showValue $ Anon.get #mean_a fullargs,
-             ("std_r",) . showValue $ Anon.get #std_r fullargs,
-             ("std_g",) . showValue $ Anon.get #std_g fullargs,
-             ("std_b",) . showValue $ Anon.get #std_b fullargs,
-             ("std_a",) . showValue $ Anon.get #std_a fullargs,
-             ("scale",) . showValue $ Anon.get #scale fullargs,
-             ("verbose",) . showValue $ Anon.get #verbose fullargs]
+               Anon.get #rand_mirror_prob fullArgs,
+             ("fill_value",) . showValue $ Anon.get #fill_value fullArgs,
+             ("inter_method",) . showValue $ Anon.get #inter_method fullArgs,
+             ("data_shape",) . showValue $ Anon.get #data_shape fullArgs,
+             ("resize_mode",) . showValue $ Anon.get #resize_mode fullArgs,
+             ("seed",) . showValue $ Anon.get #seed fullArgs,
+             ("mean_img",) . showValue $ Anon.get #mean_img fullArgs,
+             ("mean_r",) . showValue $ Anon.get #mean_r fullArgs,
+             ("mean_g",) . showValue $ Anon.get #mean_g fullArgs,
+             ("mean_b",) . showValue $ Anon.get #mean_b fullArgs,
+             ("mean_a",) . showValue $ Anon.get #mean_a fullArgs,
+             ("std_r",) . showValue $ Anon.get #std_r fullArgs,
+             ("std_g",) . showValue $ Anon.get #std_g fullArgs,
+             ("std_b",) . showValue $ Anon.get #std_b fullArgs,
+             ("std_a",) . showValue $ Anon.get #std_a fullArgs,
+             ("scale",) . showValue $ Anon.get #scale fullArgs,
+             ("verbose",) . showValue $ Anon.get #verbose fullArgs]
         (keys, vals) = unzip scalarArgs
       in
       do dis <- mxListDataIters
@@ -294,121 +262,94 @@ type ParameterList_ImageRecordIter_v1 =
         '("verbose", AttrOpt Bool)]
 
 _ImageRecordIter_v1 ::
-                    forall t r .
-                      (Tensor t, FieldsAcc ParameterList_ImageRecordIter_v1 r,
-                       HasCallStack) =>
-                      Record r -> TensorApply (IO DataIterHandle)
+                    forall r .
+                      (FieldsAcc ParameterList_ImageRecordIter_v1 r, HasCallStack) =>
+                      Record r -> IO DataIterHandle
 _ImageRecordIter_v1 args
   = let fullArgs
-          = ANON{path_imglist = Nothing, path_imgrec = Nothing,
-                 path_imgidx = Nothing, aug_seq = Nothing, label_width = Nothing,
-                 data_shape = undefined, preprocess_threads = Nothing,
-                 verbose = Nothing, num_parts = Nothing, part_index = Nothing,
-                 device_id = Nothing, shuffle_chunk_size = Nothing,
-                 shuffle_chunk_seed = Nothing, seed_aug = Nothing,
-                 shuffle = Nothing, seed = Nothing, verbose = Nothing,
-                 batch_size = undefined, round_batch = Nothing,
-                 prefetch_buffer = Nothing, ctx = Nothing, dtype = Nothing,
-                 resize = Nothing, rand_crop = Nothing,
-                 random_resized_crop = Nothing, max_rotate_angle = Nothing,
-                 max_aspect_ratio = Nothing, min_aspect_ratio = Nothing,
-                 max_shear_ratio = Nothing, max_crop_size = Nothing,
-                 min_crop_size = Nothing, max_random_scale = Nothing,
-                 min_random_scale = Nothing, max_random_area = Nothing,
-                 min_random_area = Nothing, max_img_size = Nothing,
-                 min_img_size = Nothing, brightness = Nothing, contrast = Nothing,
-                 saturation = Nothing, pca_noise = Nothing, random_h = Nothing,
-                 random_s = Nothing, random_l = Nothing, rotate = Nothing,
-                 fill_value = Nothing, data_shape = undefined,
-                 inter_method = Nothing, pad = Nothing, seed = Nothing,
-                 mirror = Nothing, rand_mirror = Nothing, mean_img = Nothing,
-                 mean_r = Nothing, mean_g = Nothing, mean_b = Nothing,
-                 mean_a = Nothing, std_r = Nothing, std_g = Nothing,
-                 std_b = Nothing, std_a = Nothing, scale = Nothing,
-                 max_random_contrast = Nothing, max_random_illumination = Nothing,
-                 verbose = Nothing}
-              :: ParamListFull ParameterList_ImageRecordIter_v1
+          = paramListWithDefault (Proxy @(ParameterList_ImageRecordIter_v1))
+              args
         scalarArgs
-          = [("path_imglist",) . showValue $ Anon.get #path_imglist fullargs,
-             ("path_imgrec",) . showValue $ Anon.get #path_imgrec fullargs,
-             ("path_imgidx",) . showValue $ Anon.get #path_imgidx fullargs,
-             ("aug_seq",) . showValue $ Anon.get #aug_seq fullargs,
-             ("label_width",) . showValue $ Anon.get #label_width fullargs,
-             ("data_shape",) . showValue $ Anon.get #data_shape fullargs,
+          = [("path_imglist",) . showValue $ Anon.get #path_imglist fullArgs,
+             ("path_imgrec",) . showValue $ Anon.get #path_imgrec fullArgs,
+             ("path_imgidx",) . showValue $ Anon.get #path_imgidx fullArgs,
+             ("aug_seq",) . showValue $ Anon.get #aug_seq fullArgs,
+             ("label_width",) . showValue $ Anon.get #label_width fullArgs,
+             ("data_shape",) . showValue $ Anon.get #data_shape fullArgs,
              ("preprocess_threads",) . showValue $
-               Anon.get #preprocess_threads fullargs,
-             ("verbose",) . showValue $ Anon.get #verbose fullargs,
-             ("num_parts",) . showValue $ Anon.get #num_parts fullargs,
-             ("part_index",) . showValue $ Anon.get #part_index fullargs,
-             ("device_id",) . showValue $ Anon.get #device_id fullargs,
+               Anon.get #preprocess_threads fullArgs,
+             ("verbose",) . showValue $ Anon.get #verbose fullArgs,
+             ("num_parts",) . showValue $ Anon.get #num_parts fullArgs,
+             ("part_index",) . showValue $ Anon.get #part_index fullArgs,
+             ("device_id",) . showValue $ Anon.get #device_id fullArgs,
              ("shuffle_chunk_size",) . showValue $
-               Anon.get #shuffle_chunk_size fullargs,
+               Anon.get #shuffle_chunk_size fullArgs,
              ("shuffle_chunk_seed",) . showValue $
-               Anon.get #shuffle_chunk_seed fullargs,
-             ("seed_aug",) . showValue $ Anon.get #seed_aug fullargs,
-             ("shuffle",) . showValue $ Anon.get #shuffle fullargs,
-             ("seed",) . showValue $ Anon.get #seed fullargs,
-             ("verbose",) . showValue $ Anon.get #verbose fullargs,
-             ("batch_size",) . showValue $ Anon.get #batch_size fullargs,
-             ("round_batch",) . showValue $ Anon.get #round_batch fullargs,
+               Anon.get #shuffle_chunk_seed fullArgs,
+             ("seed_aug",) . showValue $ Anon.get #seed_aug fullArgs,
+             ("shuffle",) . showValue $ Anon.get #shuffle fullArgs,
+             ("seed",) . showValue $ Anon.get #seed fullArgs,
+             ("verbose",) . showValue $ Anon.get #verbose fullArgs,
+             ("batch_size",) . showValue $ Anon.get #batch_size fullArgs,
+             ("round_batch",) . showValue $ Anon.get #round_batch fullArgs,
              ("prefetch_buffer",) . showValue $
-               Anon.get #prefetch_buffer fullargs,
-             ("ctx",) . showValue $ Anon.get #ctx fullargs,
-             ("dtype",) . showValue $ Anon.get #dtype fullargs,
-             ("resize",) . showValue $ Anon.get #resize fullargs,
-             ("rand_crop",) . showValue $ Anon.get #rand_crop fullargs,
+               Anon.get #prefetch_buffer fullArgs,
+             ("ctx",) . showValue $ Anon.get #ctx fullArgs,
+             ("dtype",) . showValue $ Anon.get #dtype fullArgs,
+             ("resize",) . showValue $ Anon.get #resize fullArgs,
+             ("rand_crop",) . showValue $ Anon.get #rand_crop fullArgs,
              ("random_resized_crop",) . showValue $
-               Anon.get #random_resized_crop fullargs,
+               Anon.get #random_resized_crop fullArgs,
              ("max_rotate_angle",) . showValue $
-               Anon.get #max_rotate_angle fullargs,
+               Anon.get #max_rotate_angle fullArgs,
              ("max_aspect_ratio",) . showValue $
-               Anon.get #max_aspect_ratio fullargs,
+               Anon.get #max_aspect_ratio fullArgs,
              ("min_aspect_ratio",) . showValue $
-               Anon.get #min_aspect_ratio fullargs,
+               Anon.get #min_aspect_ratio fullArgs,
              ("max_shear_ratio",) . showValue $
-               Anon.get #max_shear_ratio fullargs,
-             ("max_crop_size",) . showValue $ Anon.get #max_crop_size fullargs,
-             ("min_crop_size",) . showValue $ Anon.get #min_crop_size fullargs,
+               Anon.get #max_shear_ratio fullArgs,
+             ("max_crop_size",) . showValue $ Anon.get #max_crop_size fullArgs,
+             ("min_crop_size",) . showValue $ Anon.get #min_crop_size fullArgs,
              ("max_random_scale",) . showValue $
-               Anon.get #max_random_scale fullargs,
+               Anon.get #max_random_scale fullArgs,
              ("min_random_scale",) . showValue $
-               Anon.get #min_random_scale fullargs,
+               Anon.get #min_random_scale fullArgs,
              ("max_random_area",) . showValue $
-               Anon.get #max_random_area fullargs,
+               Anon.get #max_random_area fullArgs,
              ("min_random_area",) . showValue $
-               Anon.get #min_random_area fullargs,
-             ("max_img_size",) . showValue $ Anon.get #max_img_size fullargs,
-             ("min_img_size",) . showValue $ Anon.get #min_img_size fullargs,
-             ("brightness",) . showValue $ Anon.get #brightness fullargs,
-             ("contrast",) . showValue $ Anon.get #contrast fullargs,
-             ("saturation",) . showValue $ Anon.get #saturation fullargs,
-             ("pca_noise",) . showValue $ Anon.get #pca_noise fullargs,
-             ("random_h",) . showValue $ Anon.get #random_h fullargs,
-             ("random_s",) . showValue $ Anon.get #random_s fullargs,
-             ("random_l",) . showValue $ Anon.get #random_l fullargs,
-             ("rotate",) . showValue $ Anon.get #rotate fullargs,
-             ("fill_value",) . showValue $ Anon.get #fill_value fullargs,
-             ("data_shape",) . showValue $ Anon.get #data_shape fullargs,
-             ("inter_method",) . showValue $ Anon.get #inter_method fullargs,
-             ("pad",) . showValue $ Anon.get #pad fullargs,
-             ("seed",) . showValue $ Anon.get #seed fullargs,
-             ("mirror",) . showValue $ Anon.get #mirror fullargs,
-             ("rand_mirror",) . showValue $ Anon.get #rand_mirror fullargs,
-             ("mean_img",) . showValue $ Anon.get #mean_img fullargs,
-             ("mean_r",) . showValue $ Anon.get #mean_r fullargs,
-             ("mean_g",) . showValue $ Anon.get #mean_g fullargs,
-             ("mean_b",) . showValue $ Anon.get #mean_b fullargs,
-             ("mean_a",) . showValue $ Anon.get #mean_a fullargs,
-             ("std_r",) . showValue $ Anon.get #std_r fullargs,
-             ("std_g",) . showValue $ Anon.get #std_g fullargs,
-             ("std_b",) . showValue $ Anon.get #std_b fullargs,
-             ("std_a",) . showValue $ Anon.get #std_a fullargs,
-             ("scale",) . showValue $ Anon.get #scale fullargs,
+               Anon.get #min_random_area fullArgs,
+             ("max_img_size",) . showValue $ Anon.get #max_img_size fullArgs,
+             ("min_img_size",) . showValue $ Anon.get #min_img_size fullArgs,
+             ("brightness",) . showValue $ Anon.get #brightness fullArgs,
+             ("contrast",) . showValue $ Anon.get #contrast fullArgs,
+             ("saturation",) . showValue $ Anon.get #saturation fullArgs,
+             ("pca_noise",) . showValue $ Anon.get #pca_noise fullArgs,
+             ("random_h",) . showValue $ Anon.get #random_h fullArgs,
+             ("random_s",) . showValue $ Anon.get #random_s fullArgs,
+             ("random_l",) . showValue $ Anon.get #random_l fullArgs,
+             ("rotate",) . showValue $ Anon.get #rotate fullArgs,
+             ("fill_value",) . showValue $ Anon.get #fill_value fullArgs,
+             ("data_shape",) . showValue $ Anon.get #data_shape fullArgs,
+             ("inter_method",) . showValue $ Anon.get #inter_method fullArgs,
+             ("pad",) . showValue $ Anon.get #pad fullArgs,
+             ("seed",) . showValue $ Anon.get #seed fullArgs,
+             ("mirror",) . showValue $ Anon.get #mirror fullArgs,
+             ("rand_mirror",) . showValue $ Anon.get #rand_mirror fullArgs,
+             ("mean_img",) . showValue $ Anon.get #mean_img fullArgs,
+             ("mean_r",) . showValue $ Anon.get #mean_r fullArgs,
+             ("mean_g",) . showValue $ Anon.get #mean_g fullArgs,
+             ("mean_b",) . showValue $ Anon.get #mean_b fullArgs,
+             ("mean_a",) . showValue $ Anon.get #mean_a fullArgs,
+             ("std_r",) . showValue $ Anon.get #std_r fullArgs,
+             ("std_g",) . showValue $ Anon.get #std_g fullArgs,
+             ("std_b",) . showValue $ Anon.get #std_b fullArgs,
+             ("std_a",) . showValue $ Anon.get #std_a fullArgs,
+             ("scale",) . showValue $ Anon.get #scale fullArgs,
              ("max_random_contrast",) . showValue $
-               Anon.get #max_random_contrast fullargs,
+               Anon.get #max_random_contrast fullArgs,
              ("max_random_illumination",) . showValue $
-               Anon.get #max_random_illumination fullargs,
-             ("verbose",) . showValue $ Anon.get #verbose fullargs]
+               Anon.get #max_random_illumination fullArgs,
+             ("verbose",) . showValue $ Anon.get #verbose fullArgs]
         (keys, vals) = unzip scalarArgs
       in
       do dis <- mxListDataIters
@@ -454,97 +395,78 @@ type ParameterList_ImageRecordUInt8Iter_v1 =
         '("inter_method", AttrOpt Int), '("pad", AttrOpt Int)]
 
 _ImageRecordUInt8Iter_v1 ::
-                         forall t r .
-                           (Tensor t, FieldsAcc ParameterList_ImageRecordUInt8Iter_v1 r,
+                         forall r .
+                           (FieldsAcc ParameterList_ImageRecordUInt8Iter_v1 r,
                             HasCallStack) =>
-                           Record r -> TensorApply (IO DataIterHandle)
+                           Record r -> IO DataIterHandle
 _ImageRecordUInt8Iter_v1 args
   = let fullArgs
-          = ANON{path_imglist = Nothing, path_imgrec = Nothing,
-                 path_imgidx = Nothing, aug_seq = Nothing, label_width = Nothing,
-                 data_shape = undefined, preprocess_threads = Nothing,
-                 verbose = Nothing, num_parts = Nothing, part_index = Nothing,
-                 device_id = Nothing, shuffle_chunk_size = Nothing,
-                 shuffle_chunk_seed = Nothing, seed_aug = Nothing,
-                 shuffle = Nothing, seed = Nothing, verbose = Nothing,
-                 batch_size = undefined, round_batch = Nothing,
-                 prefetch_buffer = Nothing, ctx = Nothing, dtype = Nothing,
-                 resize = Nothing, rand_crop = Nothing,
-                 random_resized_crop = Nothing, max_rotate_angle = Nothing,
-                 max_aspect_ratio = Nothing, min_aspect_ratio = Nothing,
-                 max_shear_ratio = Nothing, max_crop_size = Nothing,
-                 min_crop_size = Nothing, max_random_scale = Nothing,
-                 min_random_scale = Nothing, max_random_area = Nothing,
-                 min_random_area = Nothing, max_img_size = Nothing,
-                 min_img_size = Nothing, brightness = Nothing, contrast = Nothing,
-                 saturation = Nothing, pca_noise = Nothing, random_h = Nothing,
-                 random_s = Nothing, random_l = Nothing, rotate = Nothing,
-                 fill_value = Nothing, data_shape = undefined,
-                 inter_method = Nothing, pad = Nothing}
-              :: ParamListFull ParameterList_ImageRecordUInt8Iter_v1
+          = paramListWithDefault
+              (Proxy @(ParameterList_ImageRecordUInt8Iter_v1))
+              args
         scalarArgs
-          = [("path_imglist",) . showValue $ Anon.get #path_imglist fullargs,
-             ("path_imgrec",) . showValue $ Anon.get #path_imgrec fullargs,
-             ("path_imgidx",) . showValue $ Anon.get #path_imgidx fullargs,
-             ("aug_seq",) . showValue $ Anon.get #aug_seq fullargs,
-             ("label_width",) . showValue $ Anon.get #label_width fullargs,
-             ("data_shape",) . showValue $ Anon.get #data_shape fullargs,
+          = [("path_imglist",) . showValue $ Anon.get #path_imglist fullArgs,
+             ("path_imgrec",) . showValue $ Anon.get #path_imgrec fullArgs,
+             ("path_imgidx",) . showValue $ Anon.get #path_imgidx fullArgs,
+             ("aug_seq",) . showValue $ Anon.get #aug_seq fullArgs,
+             ("label_width",) . showValue $ Anon.get #label_width fullArgs,
+             ("data_shape",) . showValue $ Anon.get #data_shape fullArgs,
              ("preprocess_threads",) . showValue $
-               Anon.get #preprocess_threads fullargs,
-             ("verbose",) . showValue $ Anon.get #verbose fullargs,
-             ("num_parts",) . showValue $ Anon.get #num_parts fullargs,
-             ("part_index",) . showValue $ Anon.get #part_index fullargs,
-             ("device_id",) . showValue $ Anon.get #device_id fullargs,
+               Anon.get #preprocess_threads fullArgs,
+             ("verbose",) . showValue $ Anon.get #verbose fullArgs,
+             ("num_parts",) . showValue $ Anon.get #num_parts fullArgs,
+             ("part_index",) . showValue $ Anon.get #part_index fullArgs,
+             ("device_id",) . showValue $ Anon.get #device_id fullArgs,
              ("shuffle_chunk_size",) . showValue $
-               Anon.get #shuffle_chunk_size fullargs,
+               Anon.get #shuffle_chunk_size fullArgs,
              ("shuffle_chunk_seed",) . showValue $
-               Anon.get #shuffle_chunk_seed fullargs,
-             ("seed_aug",) . showValue $ Anon.get #seed_aug fullargs,
-             ("shuffle",) . showValue $ Anon.get #shuffle fullargs,
-             ("seed",) . showValue $ Anon.get #seed fullargs,
-             ("verbose",) . showValue $ Anon.get #verbose fullargs,
-             ("batch_size",) . showValue $ Anon.get #batch_size fullargs,
-             ("round_batch",) . showValue $ Anon.get #round_batch fullargs,
+               Anon.get #shuffle_chunk_seed fullArgs,
+             ("seed_aug",) . showValue $ Anon.get #seed_aug fullArgs,
+             ("shuffle",) . showValue $ Anon.get #shuffle fullArgs,
+             ("seed",) . showValue $ Anon.get #seed fullArgs,
+             ("verbose",) . showValue $ Anon.get #verbose fullArgs,
+             ("batch_size",) . showValue $ Anon.get #batch_size fullArgs,
+             ("round_batch",) . showValue $ Anon.get #round_batch fullArgs,
              ("prefetch_buffer",) . showValue $
-               Anon.get #prefetch_buffer fullargs,
-             ("ctx",) . showValue $ Anon.get #ctx fullargs,
-             ("dtype",) . showValue $ Anon.get #dtype fullargs,
-             ("resize",) . showValue $ Anon.get #resize fullargs,
-             ("rand_crop",) . showValue $ Anon.get #rand_crop fullargs,
+               Anon.get #prefetch_buffer fullArgs,
+             ("ctx",) . showValue $ Anon.get #ctx fullArgs,
+             ("dtype",) . showValue $ Anon.get #dtype fullArgs,
+             ("resize",) . showValue $ Anon.get #resize fullArgs,
+             ("rand_crop",) . showValue $ Anon.get #rand_crop fullArgs,
              ("random_resized_crop",) . showValue $
-               Anon.get #random_resized_crop fullargs,
+               Anon.get #random_resized_crop fullArgs,
              ("max_rotate_angle",) . showValue $
-               Anon.get #max_rotate_angle fullargs,
+               Anon.get #max_rotate_angle fullArgs,
              ("max_aspect_ratio",) . showValue $
-               Anon.get #max_aspect_ratio fullargs,
+               Anon.get #max_aspect_ratio fullArgs,
              ("min_aspect_ratio",) . showValue $
-               Anon.get #min_aspect_ratio fullargs,
+               Anon.get #min_aspect_ratio fullArgs,
              ("max_shear_ratio",) . showValue $
-               Anon.get #max_shear_ratio fullargs,
-             ("max_crop_size",) . showValue $ Anon.get #max_crop_size fullargs,
-             ("min_crop_size",) . showValue $ Anon.get #min_crop_size fullargs,
+               Anon.get #max_shear_ratio fullArgs,
+             ("max_crop_size",) . showValue $ Anon.get #max_crop_size fullArgs,
+             ("min_crop_size",) . showValue $ Anon.get #min_crop_size fullArgs,
              ("max_random_scale",) . showValue $
-               Anon.get #max_random_scale fullargs,
+               Anon.get #max_random_scale fullArgs,
              ("min_random_scale",) . showValue $
-               Anon.get #min_random_scale fullargs,
+               Anon.get #min_random_scale fullArgs,
              ("max_random_area",) . showValue $
-               Anon.get #max_random_area fullargs,
+               Anon.get #max_random_area fullArgs,
              ("min_random_area",) . showValue $
-               Anon.get #min_random_area fullargs,
-             ("max_img_size",) . showValue $ Anon.get #max_img_size fullargs,
-             ("min_img_size",) . showValue $ Anon.get #min_img_size fullargs,
-             ("brightness",) . showValue $ Anon.get #brightness fullargs,
-             ("contrast",) . showValue $ Anon.get #contrast fullargs,
-             ("saturation",) . showValue $ Anon.get #saturation fullargs,
-             ("pca_noise",) . showValue $ Anon.get #pca_noise fullargs,
-             ("random_h",) . showValue $ Anon.get #random_h fullargs,
-             ("random_s",) . showValue $ Anon.get #random_s fullargs,
-             ("random_l",) . showValue $ Anon.get #random_l fullargs,
-             ("rotate",) . showValue $ Anon.get #rotate fullargs,
-             ("fill_value",) . showValue $ Anon.get #fill_value fullargs,
-             ("data_shape",) . showValue $ Anon.get #data_shape fullargs,
-             ("inter_method",) . showValue $ Anon.get #inter_method fullargs,
-             ("pad",) . showValue $ Anon.get #pad fullargs]
+               Anon.get #min_random_area fullArgs,
+             ("max_img_size",) . showValue $ Anon.get #max_img_size fullArgs,
+             ("min_img_size",) . showValue $ Anon.get #min_img_size fullArgs,
+             ("brightness",) . showValue $ Anon.get #brightness fullArgs,
+             ("contrast",) . showValue $ Anon.get #contrast fullArgs,
+             ("saturation",) . showValue $ Anon.get #saturation fullArgs,
+             ("pca_noise",) . showValue $ Anon.get #pca_noise fullArgs,
+             ("random_h",) . showValue $ Anon.get #random_h fullArgs,
+             ("random_s",) . showValue $ Anon.get #random_s fullArgs,
+             ("random_l",) . showValue $ Anon.get #random_l fullArgs,
+             ("rotate",) . showValue $ Anon.get #rotate fullArgs,
+             ("fill_value",) . showValue $ Anon.get #fill_value fullArgs,
+             ("data_shape",) . showValue $ Anon.get #data_shape fullArgs,
+             ("inter_method",) . showValue $ Anon.get #inter_method fullArgs,
+             ("pad",) . showValue $ Anon.get #pad fullArgs]
         (keys, vals) = unzip scalarArgs
       in
       do dis <- mxListDataIters
@@ -599,121 +521,94 @@ type ParameterList_ImageRecordIter =
         '("verbose", AttrOpt Bool)]
 
 _ImageRecordIter ::
-                 forall t r .
-                   (Tensor t, FieldsAcc ParameterList_ImageRecordIter r,
-                    HasCallStack) =>
-                   Record r -> TensorApply (IO DataIterHandle)
+                 forall r .
+                   (FieldsAcc ParameterList_ImageRecordIter r, HasCallStack) =>
+                   Record r -> IO DataIterHandle
 _ImageRecordIter args
   = let fullArgs
-          = ANON{path_imglist = Nothing, path_imgrec = Nothing,
-                 path_imgidx = Nothing, aug_seq = Nothing, label_width = Nothing,
-                 data_shape = undefined, preprocess_threads = Nothing,
-                 verbose = Nothing, num_parts = Nothing, part_index = Nothing,
-                 device_id = Nothing, shuffle_chunk_size = Nothing,
-                 shuffle_chunk_seed = Nothing, seed_aug = Nothing,
-                 shuffle = Nothing, seed = Nothing, verbose = Nothing,
-                 batch_size = undefined, round_batch = Nothing,
-                 prefetch_buffer = Nothing, ctx = Nothing, dtype = Nothing,
-                 resize = Nothing, rand_crop = Nothing,
-                 random_resized_crop = Nothing, max_rotate_angle = Nothing,
-                 max_aspect_ratio = Nothing, min_aspect_ratio = Nothing,
-                 max_shear_ratio = Nothing, max_crop_size = Nothing,
-                 min_crop_size = Nothing, max_random_scale = Nothing,
-                 min_random_scale = Nothing, max_random_area = Nothing,
-                 min_random_area = Nothing, max_img_size = Nothing,
-                 min_img_size = Nothing, brightness = Nothing, contrast = Nothing,
-                 saturation = Nothing, pca_noise = Nothing, random_h = Nothing,
-                 random_s = Nothing, random_l = Nothing, rotate = Nothing,
-                 fill_value = Nothing, data_shape = undefined,
-                 inter_method = Nothing, pad = Nothing, seed = Nothing,
-                 mirror = Nothing, rand_mirror = Nothing, mean_img = Nothing,
-                 mean_r = Nothing, mean_g = Nothing, mean_b = Nothing,
-                 mean_a = Nothing, std_r = Nothing, std_g = Nothing,
-                 std_b = Nothing, std_a = Nothing, scale = Nothing,
-                 max_random_contrast = Nothing, max_random_illumination = Nothing,
-                 verbose = Nothing}
-              :: ParamListFull ParameterList_ImageRecordIter
+          = paramListWithDefault (Proxy @(ParameterList_ImageRecordIter))
+              args
         scalarArgs
-          = [("path_imglist",) . showValue $ Anon.get #path_imglist fullargs,
-             ("path_imgrec",) . showValue $ Anon.get #path_imgrec fullargs,
-             ("path_imgidx",) . showValue $ Anon.get #path_imgidx fullargs,
-             ("aug_seq",) . showValue $ Anon.get #aug_seq fullargs,
-             ("label_width",) . showValue $ Anon.get #label_width fullargs,
-             ("data_shape",) . showValue $ Anon.get #data_shape fullargs,
+          = [("path_imglist",) . showValue $ Anon.get #path_imglist fullArgs,
+             ("path_imgrec",) . showValue $ Anon.get #path_imgrec fullArgs,
+             ("path_imgidx",) . showValue $ Anon.get #path_imgidx fullArgs,
+             ("aug_seq",) . showValue $ Anon.get #aug_seq fullArgs,
+             ("label_width",) . showValue $ Anon.get #label_width fullArgs,
+             ("data_shape",) . showValue $ Anon.get #data_shape fullArgs,
              ("preprocess_threads",) . showValue $
-               Anon.get #preprocess_threads fullargs,
-             ("verbose",) . showValue $ Anon.get #verbose fullargs,
-             ("num_parts",) . showValue $ Anon.get #num_parts fullargs,
-             ("part_index",) . showValue $ Anon.get #part_index fullargs,
-             ("device_id",) . showValue $ Anon.get #device_id fullargs,
+               Anon.get #preprocess_threads fullArgs,
+             ("verbose",) . showValue $ Anon.get #verbose fullArgs,
+             ("num_parts",) . showValue $ Anon.get #num_parts fullArgs,
+             ("part_index",) . showValue $ Anon.get #part_index fullArgs,
+             ("device_id",) . showValue $ Anon.get #device_id fullArgs,
              ("shuffle_chunk_size",) . showValue $
-               Anon.get #shuffle_chunk_size fullargs,
+               Anon.get #shuffle_chunk_size fullArgs,
              ("shuffle_chunk_seed",) . showValue $
-               Anon.get #shuffle_chunk_seed fullargs,
-             ("seed_aug",) . showValue $ Anon.get #seed_aug fullargs,
-             ("shuffle",) . showValue $ Anon.get #shuffle fullargs,
-             ("seed",) . showValue $ Anon.get #seed fullargs,
-             ("verbose",) . showValue $ Anon.get #verbose fullargs,
-             ("batch_size",) . showValue $ Anon.get #batch_size fullargs,
-             ("round_batch",) . showValue $ Anon.get #round_batch fullargs,
+               Anon.get #shuffle_chunk_seed fullArgs,
+             ("seed_aug",) . showValue $ Anon.get #seed_aug fullArgs,
+             ("shuffle",) . showValue $ Anon.get #shuffle fullArgs,
+             ("seed",) . showValue $ Anon.get #seed fullArgs,
+             ("verbose",) . showValue $ Anon.get #verbose fullArgs,
+             ("batch_size",) . showValue $ Anon.get #batch_size fullArgs,
+             ("round_batch",) . showValue $ Anon.get #round_batch fullArgs,
              ("prefetch_buffer",) . showValue $
-               Anon.get #prefetch_buffer fullargs,
-             ("ctx",) . showValue $ Anon.get #ctx fullargs,
-             ("dtype",) . showValue $ Anon.get #dtype fullargs,
-             ("resize",) . showValue $ Anon.get #resize fullargs,
-             ("rand_crop",) . showValue $ Anon.get #rand_crop fullargs,
+               Anon.get #prefetch_buffer fullArgs,
+             ("ctx",) . showValue $ Anon.get #ctx fullArgs,
+             ("dtype",) . showValue $ Anon.get #dtype fullArgs,
+             ("resize",) . showValue $ Anon.get #resize fullArgs,
+             ("rand_crop",) . showValue $ Anon.get #rand_crop fullArgs,
              ("random_resized_crop",) . showValue $
-               Anon.get #random_resized_crop fullargs,
+               Anon.get #random_resized_crop fullArgs,
              ("max_rotate_angle",) . showValue $
-               Anon.get #max_rotate_angle fullargs,
+               Anon.get #max_rotate_angle fullArgs,
              ("max_aspect_ratio",) . showValue $
-               Anon.get #max_aspect_ratio fullargs,
+               Anon.get #max_aspect_ratio fullArgs,
              ("min_aspect_ratio",) . showValue $
-               Anon.get #min_aspect_ratio fullargs,
+               Anon.get #min_aspect_ratio fullArgs,
              ("max_shear_ratio",) . showValue $
-               Anon.get #max_shear_ratio fullargs,
-             ("max_crop_size",) . showValue $ Anon.get #max_crop_size fullargs,
-             ("min_crop_size",) . showValue $ Anon.get #min_crop_size fullargs,
+               Anon.get #max_shear_ratio fullArgs,
+             ("max_crop_size",) . showValue $ Anon.get #max_crop_size fullArgs,
+             ("min_crop_size",) . showValue $ Anon.get #min_crop_size fullArgs,
              ("max_random_scale",) . showValue $
-               Anon.get #max_random_scale fullargs,
+               Anon.get #max_random_scale fullArgs,
              ("min_random_scale",) . showValue $
-               Anon.get #min_random_scale fullargs,
+               Anon.get #min_random_scale fullArgs,
              ("max_random_area",) . showValue $
-               Anon.get #max_random_area fullargs,
+               Anon.get #max_random_area fullArgs,
              ("min_random_area",) . showValue $
-               Anon.get #min_random_area fullargs,
-             ("max_img_size",) . showValue $ Anon.get #max_img_size fullargs,
-             ("min_img_size",) . showValue $ Anon.get #min_img_size fullargs,
-             ("brightness",) . showValue $ Anon.get #brightness fullargs,
-             ("contrast",) . showValue $ Anon.get #contrast fullargs,
-             ("saturation",) . showValue $ Anon.get #saturation fullargs,
-             ("pca_noise",) . showValue $ Anon.get #pca_noise fullargs,
-             ("random_h",) . showValue $ Anon.get #random_h fullargs,
-             ("random_s",) . showValue $ Anon.get #random_s fullargs,
-             ("random_l",) . showValue $ Anon.get #random_l fullargs,
-             ("rotate",) . showValue $ Anon.get #rotate fullargs,
-             ("fill_value",) . showValue $ Anon.get #fill_value fullargs,
-             ("data_shape",) . showValue $ Anon.get #data_shape fullargs,
-             ("inter_method",) . showValue $ Anon.get #inter_method fullargs,
-             ("pad",) . showValue $ Anon.get #pad fullargs,
-             ("seed",) . showValue $ Anon.get #seed fullargs,
-             ("mirror",) . showValue $ Anon.get #mirror fullargs,
-             ("rand_mirror",) . showValue $ Anon.get #rand_mirror fullargs,
-             ("mean_img",) . showValue $ Anon.get #mean_img fullargs,
-             ("mean_r",) . showValue $ Anon.get #mean_r fullargs,
-             ("mean_g",) . showValue $ Anon.get #mean_g fullargs,
-             ("mean_b",) . showValue $ Anon.get #mean_b fullargs,
-             ("mean_a",) . showValue $ Anon.get #mean_a fullargs,
-             ("std_r",) . showValue $ Anon.get #std_r fullargs,
-             ("std_g",) . showValue $ Anon.get #std_g fullargs,
-             ("std_b",) . showValue $ Anon.get #std_b fullargs,
-             ("std_a",) . showValue $ Anon.get #std_a fullargs,
-             ("scale",) . showValue $ Anon.get #scale fullargs,
+               Anon.get #min_random_area fullArgs,
+             ("max_img_size",) . showValue $ Anon.get #max_img_size fullArgs,
+             ("min_img_size",) . showValue $ Anon.get #min_img_size fullArgs,
+             ("brightness",) . showValue $ Anon.get #brightness fullArgs,
+             ("contrast",) . showValue $ Anon.get #contrast fullArgs,
+             ("saturation",) . showValue $ Anon.get #saturation fullArgs,
+             ("pca_noise",) . showValue $ Anon.get #pca_noise fullArgs,
+             ("random_h",) . showValue $ Anon.get #random_h fullArgs,
+             ("random_s",) . showValue $ Anon.get #random_s fullArgs,
+             ("random_l",) . showValue $ Anon.get #random_l fullArgs,
+             ("rotate",) . showValue $ Anon.get #rotate fullArgs,
+             ("fill_value",) . showValue $ Anon.get #fill_value fullArgs,
+             ("data_shape",) . showValue $ Anon.get #data_shape fullArgs,
+             ("inter_method",) . showValue $ Anon.get #inter_method fullArgs,
+             ("pad",) . showValue $ Anon.get #pad fullArgs,
+             ("seed",) . showValue $ Anon.get #seed fullArgs,
+             ("mirror",) . showValue $ Anon.get #mirror fullArgs,
+             ("rand_mirror",) . showValue $ Anon.get #rand_mirror fullArgs,
+             ("mean_img",) . showValue $ Anon.get #mean_img fullArgs,
+             ("mean_r",) . showValue $ Anon.get #mean_r fullArgs,
+             ("mean_g",) . showValue $ Anon.get #mean_g fullArgs,
+             ("mean_b",) . showValue $ Anon.get #mean_b fullArgs,
+             ("mean_a",) . showValue $ Anon.get #mean_a fullArgs,
+             ("std_r",) . showValue $ Anon.get #std_r fullArgs,
+             ("std_g",) . showValue $ Anon.get #std_g fullArgs,
+             ("std_b",) . showValue $ Anon.get #std_b fullArgs,
+             ("std_a",) . showValue $ Anon.get #std_a fullArgs,
+             ("scale",) . showValue $ Anon.get #scale fullArgs,
              ("max_random_contrast",) . showValue $
-               Anon.get #max_random_contrast fullargs,
+               Anon.get #max_random_contrast fullArgs,
              ("max_random_illumination",) . showValue $
-               Anon.get #max_random_illumination fullargs,
-             ("verbose",) . showValue $ Anon.get #verbose fullargs]
+               Anon.get #max_random_illumination fullArgs,
+             ("verbose",) . showValue $ Anon.get #verbose fullArgs]
         (keys, vals) = unzip scalarArgs
       in
       do dis <- mxListDataIters
@@ -759,97 +654,77 @@ type ParameterList_ImageRecordUInt8Iter =
         '("inter_method", AttrOpt Int), '("pad", AttrOpt Int)]
 
 _ImageRecordUInt8Iter ::
-                      forall t r .
-                        (Tensor t, FieldsAcc ParameterList_ImageRecordUInt8Iter r,
-                         HasCallStack) =>
-                        Record r -> TensorApply (IO DataIterHandle)
+                      forall r .
+                        (FieldsAcc ParameterList_ImageRecordUInt8Iter r, HasCallStack) =>
+                        Record r -> IO DataIterHandle
 _ImageRecordUInt8Iter args
   = let fullArgs
-          = ANON{path_imglist = Nothing, path_imgrec = Nothing,
-                 path_imgidx = Nothing, aug_seq = Nothing, label_width = Nothing,
-                 data_shape = undefined, preprocess_threads = Nothing,
-                 verbose = Nothing, num_parts = Nothing, part_index = Nothing,
-                 device_id = Nothing, shuffle_chunk_size = Nothing,
-                 shuffle_chunk_seed = Nothing, seed_aug = Nothing,
-                 shuffle = Nothing, seed = Nothing, verbose = Nothing,
-                 batch_size = undefined, round_batch = Nothing,
-                 prefetch_buffer = Nothing, ctx = Nothing, dtype = Nothing,
-                 resize = Nothing, rand_crop = Nothing,
-                 random_resized_crop = Nothing, max_rotate_angle = Nothing,
-                 max_aspect_ratio = Nothing, min_aspect_ratio = Nothing,
-                 max_shear_ratio = Nothing, max_crop_size = Nothing,
-                 min_crop_size = Nothing, max_random_scale = Nothing,
-                 min_random_scale = Nothing, max_random_area = Nothing,
-                 min_random_area = Nothing, max_img_size = Nothing,
-                 min_img_size = Nothing, brightness = Nothing, contrast = Nothing,
-                 saturation = Nothing, pca_noise = Nothing, random_h = Nothing,
-                 random_s = Nothing, random_l = Nothing, rotate = Nothing,
-                 fill_value = Nothing, data_shape = undefined,
-                 inter_method = Nothing, pad = Nothing}
-              :: ParamListFull ParameterList_ImageRecordUInt8Iter
+          = paramListWithDefault
+              (Proxy @(ParameterList_ImageRecordUInt8Iter))
+              args
         scalarArgs
-          = [("path_imglist",) . showValue $ Anon.get #path_imglist fullargs,
-             ("path_imgrec",) . showValue $ Anon.get #path_imgrec fullargs,
-             ("path_imgidx",) . showValue $ Anon.get #path_imgidx fullargs,
-             ("aug_seq",) . showValue $ Anon.get #aug_seq fullargs,
-             ("label_width",) . showValue $ Anon.get #label_width fullargs,
-             ("data_shape",) . showValue $ Anon.get #data_shape fullargs,
+          = [("path_imglist",) . showValue $ Anon.get #path_imglist fullArgs,
+             ("path_imgrec",) . showValue $ Anon.get #path_imgrec fullArgs,
+             ("path_imgidx",) . showValue $ Anon.get #path_imgidx fullArgs,
+             ("aug_seq",) . showValue $ Anon.get #aug_seq fullArgs,
+             ("label_width",) . showValue $ Anon.get #label_width fullArgs,
+             ("data_shape",) . showValue $ Anon.get #data_shape fullArgs,
              ("preprocess_threads",) . showValue $
-               Anon.get #preprocess_threads fullargs,
-             ("verbose",) . showValue $ Anon.get #verbose fullargs,
-             ("num_parts",) . showValue $ Anon.get #num_parts fullargs,
-             ("part_index",) . showValue $ Anon.get #part_index fullargs,
-             ("device_id",) . showValue $ Anon.get #device_id fullargs,
+               Anon.get #preprocess_threads fullArgs,
+             ("verbose",) . showValue $ Anon.get #verbose fullArgs,
+             ("num_parts",) . showValue $ Anon.get #num_parts fullArgs,
+             ("part_index",) . showValue $ Anon.get #part_index fullArgs,
+             ("device_id",) . showValue $ Anon.get #device_id fullArgs,
              ("shuffle_chunk_size",) . showValue $
-               Anon.get #shuffle_chunk_size fullargs,
+               Anon.get #shuffle_chunk_size fullArgs,
              ("shuffle_chunk_seed",) . showValue $
-               Anon.get #shuffle_chunk_seed fullargs,
-             ("seed_aug",) . showValue $ Anon.get #seed_aug fullargs,
-             ("shuffle",) . showValue $ Anon.get #shuffle fullargs,
-             ("seed",) . showValue $ Anon.get #seed fullargs,
-             ("verbose",) . showValue $ Anon.get #verbose fullargs,
-             ("batch_size",) . showValue $ Anon.get #batch_size fullargs,
-             ("round_batch",) . showValue $ Anon.get #round_batch fullargs,
+               Anon.get #shuffle_chunk_seed fullArgs,
+             ("seed_aug",) . showValue $ Anon.get #seed_aug fullArgs,
+             ("shuffle",) . showValue $ Anon.get #shuffle fullArgs,
+             ("seed",) . showValue $ Anon.get #seed fullArgs,
+             ("verbose",) . showValue $ Anon.get #verbose fullArgs,
+             ("batch_size",) . showValue $ Anon.get #batch_size fullArgs,
+             ("round_batch",) . showValue $ Anon.get #round_batch fullArgs,
              ("prefetch_buffer",) . showValue $
-               Anon.get #prefetch_buffer fullargs,
-             ("ctx",) . showValue $ Anon.get #ctx fullargs,
-             ("dtype",) . showValue $ Anon.get #dtype fullargs,
-             ("resize",) . showValue $ Anon.get #resize fullargs,
-             ("rand_crop",) . showValue $ Anon.get #rand_crop fullargs,
+               Anon.get #prefetch_buffer fullArgs,
+             ("ctx",) . showValue $ Anon.get #ctx fullArgs,
+             ("dtype",) . showValue $ Anon.get #dtype fullArgs,
+             ("resize",) . showValue $ Anon.get #resize fullArgs,
+             ("rand_crop",) . showValue $ Anon.get #rand_crop fullArgs,
              ("random_resized_crop",) . showValue $
-               Anon.get #random_resized_crop fullargs,
+               Anon.get #random_resized_crop fullArgs,
              ("max_rotate_angle",) . showValue $
-               Anon.get #max_rotate_angle fullargs,
+               Anon.get #max_rotate_angle fullArgs,
              ("max_aspect_ratio",) . showValue $
-               Anon.get #max_aspect_ratio fullargs,
+               Anon.get #max_aspect_ratio fullArgs,
              ("min_aspect_ratio",) . showValue $
-               Anon.get #min_aspect_ratio fullargs,
+               Anon.get #min_aspect_ratio fullArgs,
              ("max_shear_ratio",) . showValue $
-               Anon.get #max_shear_ratio fullargs,
-             ("max_crop_size",) . showValue $ Anon.get #max_crop_size fullargs,
-             ("min_crop_size",) . showValue $ Anon.get #min_crop_size fullargs,
+               Anon.get #max_shear_ratio fullArgs,
+             ("max_crop_size",) . showValue $ Anon.get #max_crop_size fullArgs,
+             ("min_crop_size",) . showValue $ Anon.get #min_crop_size fullArgs,
              ("max_random_scale",) . showValue $
-               Anon.get #max_random_scale fullargs,
+               Anon.get #max_random_scale fullArgs,
              ("min_random_scale",) . showValue $
-               Anon.get #min_random_scale fullargs,
+               Anon.get #min_random_scale fullArgs,
              ("max_random_area",) . showValue $
-               Anon.get #max_random_area fullargs,
+               Anon.get #max_random_area fullArgs,
              ("min_random_area",) . showValue $
-               Anon.get #min_random_area fullargs,
-             ("max_img_size",) . showValue $ Anon.get #max_img_size fullargs,
-             ("min_img_size",) . showValue $ Anon.get #min_img_size fullargs,
-             ("brightness",) . showValue $ Anon.get #brightness fullargs,
-             ("contrast",) . showValue $ Anon.get #contrast fullargs,
-             ("saturation",) . showValue $ Anon.get #saturation fullargs,
-             ("pca_noise",) . showValue $ Anon.get #pca_noise fullargs,
-             ("random_h",) . showValue $ Anon.get #random_h fullargs,
-             ("random_s",) . showValue $ Anon.get #random_s fullargs,
-             ("random_l",) . showValue $ Anon.get #random_l fullargs,
-             ("rotate",) . showValue $ Anon.get #rotate fullargs,
-             ("fill_value",) . showValue $ Anon.get #fill_value fullargs,
-             ("data_shape",) . showValue $ Anon.get #data_shape fullargs,
-             ("inter_method",) . showValue $ Anon.get #inter_method fullargs,
-             ("pad",) . showValue $ Anon.get #pad fullargs]
+               Anon.get #min_random_area fullArgs,
+             ("max_img_size",) . showValue $ Anon.get #max_img_size fullArgs,
+             ("min_img_size",) . showValue $ Anon.get #min_img_size fullArgs,
+             ("brightness",) . showValue $ Anon.get #brightness fullArgs,
+             ("contrast",) . showValue $ Anon.get #contrast fullArgs,
+             ("saturation",) . showValue $ Anon.get #saturation fullArgs,
+             ("pca_noise",) . showValue $ Anon.get #pca_noise fullArgs,
+             ("random_h",) . showValue $ Anon.get #random_h fullArgs,
+             ("random_s",) . showValue $ Anon.get #random_s fullArgs,
+             ("random_l",) . showValue $ Anon.get #random_l fullArgs,
+             ("rotate",) . showValue $ Anon.get #rotate fullArgs,
+             ("fill_value",) . showValue $ Anon.get #fill_value fullArgs,
+             ("data_shape",) . showValue $ Anon.get #data_shape fullArgs,
+             ("inter_method",) . showValue $ Anon.get #inter_method fullArgs,
+             ("pad",) . showValue $ Anon.get #pad fullArgs]
         (keys, vals) = unzip scalarArgs
       in
       do dis <- mxListDataIters
@@ -895,97 +770,76 @@ type ParameterList_ImageRecordInt8Iter =
         '("inter_method", AttrOpt Int), '("pad", AttrOpt Int)]
 
 _ImageRecordInt8Iter ::
-                     forall t r .
-                       (Tensor t, FieldsAcc ParameterList_ImageRecordInt8Iter r,
-                        HasCallStack) =>
-                       Record r -> TensorApply (IO DataIterHandle)
+                     forall r .
+                       (FieldsAcc ParameterList_ImageRecordInt8Iter r, HasCallStack) =>
+                       Record r -> IO DataIterHandle
 _ImageRecordInt8Iter args
   = let fullArgs
-          = ANON{path_imglist = Nothing, path_imgrec = Nothing,
-                 path_imgidx = Nothing, aug_seq = Nothing, label_width = Nothing,
-                 data_shape = undefined, preprocess_threads = Nothing,
-                 verbose = Nothing, num_parts = Nothing, part_index = Nothing,
-                 device_id = Nothing, shuffle_chunk_size = Nothing,
-                 shuffle_chunk_seed = Nothing, seed_aug = Nothing,
-                 shuffle = Nothing, seed = Nothing, verbose = Nothing,
-                 batch_size = undefined, round_batch = Nothing,
-                 prefetch_buffer = Nothing, ctx = Nothing, dtype = Nothing,
-                 resize = Nothing, rand_crop = Nothing,
-                 random_resized_crop = Nothing, max_rotate_angle = Nothing,
-                 max_aspect_ratio = Nothing, min_aspect_ratio = Nothing,
-                 max_shear_ratio = Nothing, max_crop_size = Nothing,
-                 min_crop_size = Nothing, max_random_scale = Nothing,
-                 min_random_scale = Nothing, max_random_area = Nothing,
-                 min_random_area = Nothing, max_img_size = Nothing,
-                 min_img_size = Nothing, brightness = Nothing, contrast = Nothing,
-                 saturation = Nothing, pca_noise = Nothing, random_h = Nothing,
-                 random_s = Nothing, random_l = Nothing, rotate = Nothing,
-                 fill_value = Nothing, data_shape = undefined,
-                 inter_method = Nothing, pad = Nothing}
-              :: ParamListFull ParameterList_ImageRecordInt8Iter
+          = paramListWithDefault (Proxy @(ParameterList_ImageRecordInt8Iter))
+              args
         scalarArgs
-          = [("path_imglist",) . showValue $ Anon.get #path_imglist fullargs,
-             ("path_imgrec",) . showValue $ Anon.get #path_imgrec fullargs,
-             ("path_imgidx",) . showValue $ Anon.get #path_imgidx fullargs,
-             ("aug_seq",) . showValue $ Anon.get #aug_seq fullargs,
-             ("label_width",) . showValue $ Anon.get #label_width fullargs,
-             ("data_shape",) . showValue $ Anon.get #data_shape fullargs,
+          = [("path_imglist",) . showValue $ Anon.get #path_imglist fullArgs,
+             ("path_imgrec",) . showValue $ Anon.get #path_imgrec fullArgs,
+             ("path_imgidx",) . showValue $ Anon.get #path_imgidx fullArgs,
+             ("aug_seq",) . showValue $ Anon.get #aug_seq fullArgs,
+             ("label_width",) . showValue $ Anon.get #label_width fullArgs,
+             ("data_shape",) . showValue $ Anon.get #data_shape fullArgs,
              ("preprocess_threads",) . showValue $
-               Anon.get #preprocess_threads fullargs,
-             ("verbose",) . showValue $ Anon.get #verbose fullargs,
-             ("num_parts",) . showValue $ Anon.get #num_parts fullargs,
-             ("part_index",) . showValue $ Anon.get #part_index fullargs,
-             ("device_id",) . showValue $ Anon.get #device_id fullargs,
+               Anon.get #preprocess_threads fullArgs,
+             ("verbose",) . showValue $ Anon.get #verbose fullArgs,
+             ("num_parts",) . showValue $ Anon.get #num_parts fullArgs,
+             ("part_index",) . showValue $ Anon.get #part_index fullArgs,
+             ("device_id",) . showValue $ Anon.get #device_id fullArgs,
              ("shuffle_chunk_size",) . showValue $
-               Anon.get #shuffle_chunk_size fullargs,
+               Anon.get #shuffle_chunk_size fullArgs,
              ("shuffle_chunk_seed",) . showValue $
-               Anon.get #shuffle_chunk_seed fullargs,
-             ("seed_aug",) . showValue $ Anon.get #seed_aug fullargs,
-             ("shuffle",) . showValue $ Anon.get #shuffle fullargs,
-             ("seed",) . showValue $ Anon.get #seed fullargs,
-             ("verbose",) . showValue $ Anon.get #verbose fullargs,
-             ("batch_size",) . showValue $ Anon.get #batch_size fullargs,
-             ("round_batch",) . showValue $ Anon.get #round_batch fullargs,
+               Anon.get #shuffle_chunk_seed fullArgs,
+             ("seed_aug",) . showValue $ Anon.get #seed_aug fullArgs,
+             ("shuffle",) . showValue $ Anon.get #shuffle fullArgs,
+             ("seed",) . showValue $ Anon.get #seed fullArgs,
+             ("verbose",) . showValue $ Anon.get #verbose fullArgs,
+             ("batch_size",) . showValue $ Anon.get #batch_size fullArgs,
+             ("round_batch",) . showValue $ Anon.get #round_batch fullArgs,
              ("prefetch_buffer",) . showValue $
-               Anon.get #prefetch_buffer fullargs,
-             ("ctx",) . showValue $ Anon.get #ctx fullargs,
-             ("dtype",) . showValue $ Anon.get #dtype fullargs,
-             ("resize",) . showValue $ Anon.get #resize fullargs,
-             ("rand_crop",) . showValue $ Anon.get #rand_crop fullargs,
+               Anon.get #prefetch_buffer fullArgs,
+             ("ctx",) . showValue $ Anon.get #ctx fullArgs,
+             ("dtype",) . showValue $ Anon.get #dtype fullArgs,
+             ("resize",) . showValue $ Anon.get #resize fullArgs,
+             ("rand_crop",) . showValue $ Anon.get #rand_crop fullArgs,
              ("random_resized_crop",) . showValue $
-               Anon.get #random_resized_crop fullargs,
+               Anon.get #random_resized_crop fullArgs,
              ("max_rotate_angle",) . showValue $
-               Anon.get #max_rotate_angle fullargs,
+               Anon.get #max_rotate_angle fullArgs,
              ("max_aspect_ratio",) . showValue $
-               Anon.get #max_aspect_ratio fullargs,
+               Anon.get #max_aspect_ratio fullArgs,
              ("min_aspect_ratio",) . showValue $
-               Anon.get #min_aspect_ratio fullargs,
+               Anon.get #min_aspect_ratio fullArgs,
              ("max_shear_ratio",) . showValue $
-               Anon.get #max_shear_ratio fullargs,
-             ("max_crop_size",) . showValue $ Anon.get #max_crop_size fullargs,
-             ("min_crop_size",) . showValue $ Anon.get #min_crop_size fullargs,
+               Anon.get #max_shear_ratio fullArgs,
+             ("max_crop_size",) . showValue $ Anon.get #max_crop_size fullArgs,
+             ("min_crop_size",) . showValue $ Anon.get #min_crop_size fullArgs,
              ("max_random_scale",) . showValue $
-               Anon.get #max_random_scale fullargs,
+               Anon.get #max_random_scale fullArgs,
              ("min_random_scale",) . showValue $
-               Anon.get #min_random_scale fullargs,
+               Anon.get #min_random_scale fullArgs,
              ("max_random_area",) . showValue $
-               Anon.get #max_random_area fullargs,
+               Anon.get #max_random_area fullArgs,
              ("min_random_area",) . showValue $
-               Anon.get #min_random_area fullargs,
-             ("max_img_size",) . showValue $ Anon.get #max_img_size fullargs,
-             ("min_img_size",) . showValue $ Anon.get #min_img_size fullargs,
-             ("brightness",) . showValue $ Anon.get #brightness fullargs,
-             ("contrast",) . showValue $ Anon.get #contrast fullargs,
-             ("saturation",) . showValue $ Anon.get #saturation fullargs,
-             ("pca_noise",) . showValue $ Anon.get #pca_noise fullargs,
-             ("random_h",) . showValue $ Anon.get #random_h fullargs,
-             ("random_s",) . showValue $ Anon.get #random_s fullargs,
-             ("random_l",) . showValue $ Anon.get #random_l fullargs,
-             ("rotate",) . showValue $ Anon.get #rotate fullargs,
-             ("fill_value",) . showValue $ Anon.get #fill_value fullargs,
-             ("data_shape",) . showValue $ Anon.get #data_shape fullargs,
-             ("inter_method",) . showValue $ Anon.get #inter_method fullargs,
-             ("pad",) . showValue $ Anon.get #pad fullargs]
+               Anon.get #min_random_area fullArgs,
+             ("max_img_size",) . showValue $ Anon.get #max_img_size fullArgs,
+             ("min_img_size",) . showValue $ Anon.get #min_img_size fullArgs,
+             ("brightness",) . showValue $ Anon.get #brightness fullArgs,
+             ("contrast",) . showValue $ Anon.get #contrast fullArgs,
+             ("saturation",) . showValue $ Anon.get #saturation fullArgs,
+             ("pca_noise",) . showValue $ Anon.get #pca_noise fullArgs,
+             ("random_h",) . showValue $ Anon.get #random_h fullArgs,
+             ("random_s",) . showValue $ Anon.get #random_s fullArgs,
+             ("random_l",) . showValue $ Anon.get #random_l fullArgs,
+             ("rotate",) . showValue $ Anon.get #rotate fullArgs,
+             ("fill_value",) . showValue $ Anon.get #fill_value fullArgs,
+             ("data_shape",) . showValue $ Anon.get #data_shape fullArgs,
+             ("inter_method",) . showValue $ Anon.get #inter_method fullArgs,
+             ("pad",) . showValue $ Anon.get #pad fullArgs]
         (keys, vals) = unzip scalarArgs
       in
       do dis <- mxListDataIters
@@ -1007,30 +861,24 @@ type ParameterList_LibSVMIter =
                     "int8", "uint8"])))]
 
 _LibSVMIter ::
-            forall t r .
-              (Tensor t, FieldsAcc ParameterList_LibSVMIter r, HasCallStack) =>
-              Record r -> TensorApply (IO DataIterHandle)
+            forall r . (FieldsAcc ParameterList_LibSVMIter r, HasCallStack) =>
+              Record r -> IO DataIterHandle
 _LibSVMIter args
   = let fullArgs
-          = ANON{data_libsvm = undefined, data_shape = undefined,
-                 label_libsvm = Nothing, label_shape = Nothing, num_parts = Nothing,
-                 part_index = Nothing, batch_size = undefined,
-                 round_batch = Nothing, prefetch_buffer = Nothing, ctx = Nothing,
-                 dtype = Nothing}
-              :: ParamListFull ParameterList_LibSVMIter
+          = paramListWithDefault (Proxy @(ParameterList_LibSVMIter)) args
         scalarArgs
-          = [("data_libsvm",) . showValue $ Anon.get #data_libsvm fullargs,
-             ("data_shape",) . showValue $ Anon.get #data_shape fullargs,
-             ("label_libsvm",) . showValue $ Anon.get #label_libsvm fullargs,
-             ("label_shape",) . showValue $ Anon.get #label_shape fullargs,
-             ("num_parts",) . showValue $ Anon.get #num_parts fullargs,
-             ("part_index",) . showValue $ Anon.get #part_index fullargs,
-             ("batch_size",) . showValue $ Anon.get #batch_size fullargs,
-             ("round_batch",) . showValue $ Anon.get #round_batch fullargs,
+          = [("data_libsvm",) . showValue $ Anon.get #data_libsvm fullArgs,
+             ("data_shape",) . showValue $ Anon.get #data_shape fullArgs,
+             ("label_libsvm",) . showValue $ Anon.get #label_libsvm fullArgs,
+             ("label_shape",) . showValue $ Anon.get #label_shape fullArgs,
+             ("num_parts",) . showValue $ Anon.get #num_parts fullArgs,
+             ("part_index",) . showValue $ Anon.get #part_index fullArgs,
+             ("batch_size",) . showValue $ Anon.get #batch_size fullArgs,
+             ("round_batch",) . showValue $ Anon.get #round_batch fullArgs,
              ("prefetch_buffer",) . showValue $
-               Anon.get #prefetch_buffer fullargs,
-             ("ctx",) . showValue $ Anon.get #ctx fullargs,
-             ("dtype",) . showValue $ Anon.get #dtype fullargs]
+               Anon.get #prefetch_buffer fullArgs,
+             ("ctx",) . showValue $ Anon.get #ctx fullArgs,
+             ("dtype",) . showValue $ Anon.get #dtype fullArgs]
         (keys, vals) = unzip scalarArgs
       in
       do dis <- mxListDataIters
@@ -1052,30 +900,25 @@ type ParameterList_MNISTIter =
                     "int8", "uint8"])))]
 
 _MNISTIter ::
-           forall t r .
-             (Tensor t, FieldsAcc ParameterList_MNISTIter r, HasCallStack) =>
-             Record r -> TensorApply (IO DataIterHandle)
+           forall r . (FieldsAcc ParameterList_MNISTIter r, HasCallStack) =>
+             Record r -> IO DataIterHandle
 _MNISTIter args
   = let fullArgs
-          = ANON{image = Nothing, label = Nothing, batch_size = Nothing,
-                 shuffle = Nothing, flat = Nothing, seed = Nothing,
-                 silent = Nothing, num_parts = Nothing, part_index = Nothing,
-                 prefetch_buffer = Nothing, ctx = Nothing, dtype = Nothing}
-              :: ParamListFull ParameterList_MNISTIter
+          = paramListWithDefault (Proxy @(ParameterList_MNISTIter)) args
         scalarArgs
-          = [("image",) . showValue $ Anon.get #image fullargs,
-             ("label",) . showValue $ Anon.get #label fullargs,
-             ("batch_size",) . showValue $ Anon.get #batch_size fullargs,
-             ("shuffle",) . showValue $ Anon.get #shuffle fullargs,
-             ("flat",) . showValue $ Anon.get #flat fullargs,
-             ("seed",) . showValue $ Anon.get #seed fullargs,
-             ("silent",) . showValue $ Anon.get #silent fullargs,
-             ("num_parts",) . showValue $ Anon.get #num_parts fullargs,
-             ("part_index",) . showValue $ Anon.get #part_index fullargs,
+          = [("image",) . showValue $ Anon.get #image fullArgs,
+             ("label",) . showValue $ Anon.get #label fullArgs,
+             ("batch_size",) . showValue $ Anon.get #batch_size fullArgs,
+             ("shuffle",) . showValue $ Anon.get #shuffle fullArgs,
+             ("flat",) . showValue $ Anon.get #flat fullArgs,
+             ("seed",) . showValue $ Anon.get #seed fullArgs,
+             ("silent",) . showValue $ Anon.get #silent fullArgs,
+             ("num_parts",) . showValue $ Anon.get #num_parts fullArgs,
+             ("part_index",) . showValue $ Anon.get #part_index fullArgs,
              ("prefetch_buffer",) . showValue $
-               Anon.get #prefetch_buffer fullargs,
-             ("ctx",) . showValue $ Anon.get #ctx fullargs,
-             ("dtype",) . showValue $ Anon.get #dtype fullargs]
+               Anon.get #prefetch_buffer fullArgs,
+             ("ctx",) . showValue $ Anon.get #ctx fullArgs,
+             ("dtype",) . showValue $ Anon.get #dtype fullArgs]
         (keys, vals) = unzip scalarArgs
       in
       do dis <- mxListDataIters

@@ -2,6 +2,7 @@
 {-# LANGUAGE ImplicitParams       #-}
 {-# LANGUAGE RecordWildCards      #-}
 {-# LANGUAGE UndecidableInstances #-}
+{-# OPTIONS_GHC -fplugin=Data.Record.Anon.Plugin#-}
 module MXNet.NN.Module.Basic where
 
 import           Control.Lens                (ix, (^?!))
@@ -54,13 +55,13 @@ instance DType t => Module (Linear t) where
             attachGradient bias ReqWrite
             attachGradient weights ReqWrite
             return (bias, weights)
-        prim O._FullyConnected
-              (#data := inp
-            .& #bias := bias
-            .& #weight := weights
-            .& #num_hidden := _linear_out_features
-            .& #no_bias := not _linear_bias
-            .& Nil)
+        prim O._FullyConnected ANON{
+            _data = inp,
+            bias = Just bias,
+            weight = Just weights,
+            num_hidden = _linear_out_features,
+            no_bias = Just (not _linear_bias)
+        }
 
     parameters (Linear args generic@(GenericModule name _ _)) = do
         (bias, weights) <- getParams generic
@@ -111,17 +112,19 @@ instance DType t => Module (BatchNorm t) where
             attachGradient gamma ReqWrite
             attachGradient beta  ReqWrite
             return (gamma, beta, mean, var)
-        prim O._BatchNorm (#data := inp
-                        .& #gamma := gamma
-                        .& #beta := beta
-                        .& #moving_mean := mean
-                        .& #moving_var := var
-                        .& #eps := _bn_eps
-                        .& #momentum := _bn_momentum
-                        .& #axis := _bn_axis
-                        .& #use_global_stats := _bn_use_global_stats
-                        .& #fix_gamma := not _bn_scale
-                        .& Nil)
+        prim O._BatchNorm ANON{
+            _data = inp,
+            gamma = Just gamma,
+            beta = Just beta,
+            moving_mean = Just mean,
+            moving_var = Just var,
+            eps = Just _bn_eps,
+            momentum = Just _bn_momentum,
+            axis = Just _bn_axis,
+            use_global_stats = Just _bn_use_global_stats,
+            fix_gamma = Just (not _bn_scale)
+        }
+
 
     parameters (BatchNorm args generic@(GenericModule name _ _)) = do
         (gamma, beta, _, _) <- getParams generic
