@@ -59,8 +59,6 @@ instance DType u => Module (ConvBase u) where
         return [ Parameter (scopedName $ NE.fromList ["bias", name]) bias
                , Parameter (scopedName $ NE.fromList ["weights", name]) weights ]
 
--- type FullConvArgsHMap t = BuildArgsHMap "_Convolution" t '[ '("kernel", [Int]), '("num_filter", Int), '("stride", [Int]), '("pad", [Int]), '("dilate", [Int]), '("layout", Maybe (EnumType '["NCDHW", "NCHW", "NCW", "NDHWC", "NHWC"])), '("num_group", Int), '("no_bias", Bool)]
-
 
 data ConvArgs = ConvArgs {
     _conv_out_channels :: Int,
