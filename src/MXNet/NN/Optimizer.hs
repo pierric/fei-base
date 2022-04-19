@@ -61,5 +61,4 @@ instance DType dtype => Optimizer SGD dtype where
         stat_last_lr .= lr
         let defaults = paramListDefaults (Proxy @ (T.ParameterList_sgd_update NDArray dtype))
             args' = Anon.inject (ANON{weight = Just weight, grad = Just gradient, lr = lr}) $ Anon.inject args defaults
-            update = T._sgd_update args' :: TensorApply (NDArray dtype)
-        liftIO $ void $ update $ Just [weight]
+        liftIO $ void $ T._sgd_update @NDArray @dtype args' $ Just [weight]
