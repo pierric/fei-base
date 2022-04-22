@@ -34,16 +34,19 @@ _CSVIter args
   = let fullArgs
           = paramListWithDefault (Proxy @(ParameterList_CSVIter)) args
         scalarArgs
-          = [("data_csv",) . showValue $ Anon.get #data_csv fullArgs,
-             ("data_shape",) . showValue $ Anon.get #data_shape fullArgs,
-             ("label_csv",) . showValue $ Anon.get #label_csv fullArgs,
-             ("label_shape",) . showValue $ Anon.get #label_shape fullArgs,
-             ("batch_size",) . showValue $ Anon.get #batch_size fullArgs,
-             ("round_batch",) . showValue $ Anon.get #round_batch fullArgs,
-             ("prefetch_buffer",) . showValue $
-               Anon.get #prefetch_buffer fullArgs,
-             ("ctx",) . showValue $ Anon.get #ctx fullArgs,
-             ("dtype",) . showValue $ Anon.get #dtype fullArgs]
+          = catMaybes
+              [("data_csv",) . showValue <$> Just (Anon.get #data_csv fullArgs),
+               ("data_shape",) . showValue <$>
+                 Just (Anon.get #data_shape fullArgs),
+               ("label_csv",) . showValue <$> Anon.get #label_csv fullArgs,
+               ("label_shape",) . showValue <$> Anon.get #label_shape fullArgs,
+               ("batch_size",) . showValue <$>
+                 Just (Anon.get #batch_size fullArgs),
+               ("round_batch",) . showValue <$> Anon.get #round_batch fullArgs,
+               ("prefetch_buffer",) . showValue <$>
+                 Anon.get #prefetch_buffer fullArgs,
+               ("ctx",) . showValue <$> Anon.get #ctx fullArgs,
+               ("dtype",) . showValue <$> Anon.get #dtype fullArgs]
         (keys, vals) = unzip scalarArgs
       in
       do dis <- mxListDataIters
@@ -114,100 +117,106 @@ _ImageDetRecordIter args
           = paramListWithDefault (Proxy @(ParameterList_ImageDetRecordIter))
               args
         scalarArgs
-          = [("path_imglist",) . showValue $ Anon.get #path_imglist fullArgs,
-             ("path_imgrec",) . showValue $ Anon.get #path_imgrec fullArgs,
-             ("aug_seq",) . showValue $ Anon.get #aug_seq fullArgs,
-             ("label_width",) . showValue $ Anon.get #label_width fullArgs,
-             ("data_shape",) . showValue $ Anon.get #data_shape fullArgs,
-             ("preprocess_threads",) . showValue $
-               Anon.get #preprocess_threads fullArgs,
-             ("verbose",) . showValue $ Anon.get #verbose fullArgs,
-             ("num_parts",) . showValue $ Anon.get #num_parts fullArgs,
-             ("part_index",) . showValue $ Anon.get #part_index fullArgs,
-             ("shuffle_chunk_size",) . showValue $
-               Anon.get #shuffle_chunk_size fullArgs,
-             ("shuffle_chunk_seed",) . showValue $
-               Anon.get #shuffle_chunk_seed fullArgs,
-             ("label_pad_width",) . showValue $
-               Anon.get #label_pad_width fullArgs,
-             ("label_pad_value",) . showValue $
-               Anon.get #label_pad_value fullArgs,
-             ("shuffle",) . showValue $ Anon.get #shuffle fullArgs,
-             ("seed",) . showValue $ Anon.get #seed fullArgs,
-             ("verbose",) . showValue $ Anon.get #verbose fullArgs,
-             ("batch_size",) . showValue $ Anon.get #batch_size fullArgs,
-             ("round_batch",) . showValue $ Anon.get #round_batch fullArgs,
-             ("prefetch_buffer",) . showValue $
-               Anon.get #prefetch_buffer fullArgs,
-             ("ctx",) . showValue $ Anon.get #ctx fullArgs,
-             ("dtype",) . showValue $ Anon.get #dtype fullArgs,
-             ("resize",) . showValue $ Anon.get #resize fullArgs,
-             ("rand_crop_prob",) . showValue $
-               Anon.get #rand_crop_prob fullArgs,
-             ("min_crop_scales",) . showValue $
-               Anon.get #min_crop_scales fullArgs,
-             ("max_crop_scales",) . showValue $
-               Anon.get #max_crop_scales fullArgs,
-             ("min_crop_aspect_ratios",) . showValue $
-               Anon.get #min_crop_aspect_ratios fullArgs,
-             ("max_crop_aspect_ratios",) . showValue $
-               Anon.get #max_crop_aspect_ratios fullArgs,
-             ("min_crop_overlaps",) . showValue $
-               Anon.get #min_crop_overlaps fullArgs,
-             ("max_crop_overlaps",) . showValue $
-               Anon.get #max_crop_overlaps fullArgs,
-             ("min_crop_sample_coverages",) . showValue $
-               Anon.get #min_crop_sample_coverages fullArgs,
-             ("max_crop_sample_coverages",) . showValue $
-               Anon.get #max_crop_sample_coverages fullArgs,
-             ("min_crop_object_coverages",) . showValue $
-               Anon.get #min_crop_object_coverages fullArgs,
-             ("max_crop_object_coverages",) . showValue $
-               Anon.get #max_crop_object_coverages fullArgs,
-             ("num_crop_sampler",) . showValue $
-               Anon.get #num_crop_sampler fullArgs,
-             ("crop_emit_mode",) . showValue $
-               Anon.get #crop_emit_mode fullArgs,
-             ("emit_overlap_thresh",) . showValue $
-               Anon.get #emit_overlap_thresh fullArgs,
-             ("max_crop_trials",) . showValue $
-               Anon.get #max_crop_trials fullArgs,
-             ("rand_pad_prob",) . showValue $ Anon.get #rand_pad_prob fullArgs,
-             ("max_pad_scale",) . showValue $ Anon.get #max_pad_scale fullArgs,
-             ("max_random_hue",) . showValue $
-               Anon.get #max_random_hue fullArgs,
-             ("random_hue_prob",) . showValue $
-               Anon.get #random_hue_prob fullArgs,
-             ("max_random_saturation",) . showValue $
-               Anon.get #max_random_saturation fullArgs,
-             ("random_saturation_prob",) . showValue $
-               Anon.get #random_saturation_prob fullArgs,
-             ("max_random_illumination",) . showValue $
-               Anon.get #max_random_illumination fullArgs,
-             ("random_illumination_prob",) . showValue $
-               Anon.get #random_illumination_prob fullArgs,
-             ("max_random_contrast",) . showValue $
-               Anon.get #max_random_contrast fullArgs,
-             ("random_contrast_prob",) . showValue $
-               Anon.get #random_contrast_prob fullArgs,
-             ("rand_mirror_prob",) . showValue $
-               Anon.get #rand_mirror_prob fullArgs,
-             ("fill_value",) . showValue $ Anon.get #fill_value fullArgs,
-             ("inter_method",) . showValue $ Anon.get #inter_method fullArgs,
-             ("data_shape",) . showValue $ Anon.get #data_shape fullArgs,
-             ("resize_mode",) . showValue $ Anon.get #resize_mode fullArgs,
-             ("seed",) . showValue $ Anon.get #seed fullArgs,
-             ("mean_img",) . showValue $ Anon.get #mean_img fullArgs,
-             ("mean_r",) . showValue $ Anon.get #mean_r fullArgs,
-             ("mean_g",) . showValue $ Anon.get #mean_g fullArgs,
-             ("mean_b",) . showValue $ Anon.get #mean_b fullArgs,
-             ("mean_a",) . showValue $ Anon.get #mean_a fullArgs,
-             ("std_r",) . showValue $ Anon.get #std_r fullArgs,
-             ("std_g",) . showValue $ Anon.get #std_g fullArgs,
-             ("std_b",) . showValue $ Anon.get #std_b fullArgs,
-             ("std_a",) . showValue $ Anon.get #std_a fullArgs,
-             ("scale",) . showValue $ Anon.get #scale fullArgs,
-             ("verbose",) . showValue $ Anon.get #verbose fullArgs]
+          = catMaybes
+              [("path_imglist",) . showValue <$> Anon.get #path_imglist fullArgs,
+               ("path_imgrec",) . showValue <$> Anon.get #path_imgrec fullArgs,
+               ("aug_seq",) . showValue <$> Anon.get #aug_seq fullArgs,
+               ("label_width",) . showValue <$> Anon.get #label_width fullArgs,
+               ("data_shape",) . showValue <$>
+                 Just (Anon.get #data_shape fullArgs),
+               ("preprocess_threads",) . showValue <$>
+                 Anon.get #preprocess_threads fullArgs,
+               ("verbose",) . showValue <$> Anon.get #verbose fullArgs,
+               ("num_parts",) . showValue <$> Anon.get #num_parts fullArgs,
+               ("part_index",) . showValue <$> Anon.get #part_index fullArgs,
+               ("shuffle_chunk_size",) . showValue <$>
+                 Anon.get #shuffle_chunk_size fullArgs,
+               ("shuffle_chunk_seed",) . showValue <$>
+                 Anon.get #shuffle_chunk_seed fullArgs,
+               ("label_pad_width",) . showValue <$>
+                 Anon.get #label_pad_width fullArgs,
+               ("label_pad_value",) . showValue <$>
+                 Anon.get #label_pad_value fullArgs,
+               ("shuffle",) . showValue <$> Anon.get #shuffle fullArgs,
+               ("seed",) . showValue <$> Anon.get #seed fullArgs,
+               ("verbose",) . showValue <$> Anon.get #verbose fullArgs,
+               ("batch_size",) . showValue <$>
+                 Just (Anon.get #batch_size fullArgs),
+               ("round_batch",) . showValue <$> Anon.get #round_batch fullArgs,
+               ("prefetch_buffer",) . showValue <$>
+                 Anon.get #prefetch_buffer fullArgs,
+               ("ctx",) . showValue <$> Anon.get #ctx fullArgs,
+               ("dtype",) . showValue <$> Anon.get #dtype fullArgs,
+               ("resize",) . showValue <$> Anon.get #resize fullArgs,
+               ("rand_crop_prob",) . showValue <$>
+                 Anon.get #rand_crop_prob fullArgs,
+               ("min_crop_scales",) . showValue <$>
+                 Anon.get #min_crop_scales fullArgs,
+               ("max_crop_scales",) . showValue <$>
+                 Anon.get #max_crop_scales fullArgs,
+               ("min_crop_aspect_ratios",) . showValue <$>
+                 Anon.get #min_crop_aspect_ratios fullArgs,
+               ("max_crop_aspect_ratios",) . showValue <$>
+                 Anon.get #max_crop_aspect_ratios fullArgs,
+               ("min_crop_overlaps",) . showValue <$>
+                 Anon.get #min_crop_overlaps fullArgs,
+               ("max_crop_overlaps",) . showValue <$>
+                 Anon.get #max_crop_overlaps fullArgs,
+               ("min_crop_sample_coverages",) . showValue <$>
+                 Anon.get #min_crop_sample_coverages fullArgs,
+               ("max_crop_sample_coverages",) . showValue <$>
+                 Anon.get #max_crop_sample_coverages fullArgs,
+               ("min_crop_object_coverages",) . showValue <$>
+                 Anon.get #min_crop_object_coverages fullArgs,
+               ("max_crop_object_coverages",) . showValue <$>
+                 Anon.get #max_crop_object_coverages fullArgs,
+               ("num_crop_sampler",) . showValue <$>
+                 Anon.get #num_crop_sampler fullArgs,
+               ("crop_emit_mode",) . showValue <$>
+                 Anon.get #crop_emit_mode fullArgs,
+               ("emit_overlap_thresh",) . showValue <$>
+                 Anon.get #emit_overlap_thresh fullArgs,
+               ("max_crop_trials",) . showValue <$>
+                 Anon.get #max_crop_trials fullArgs,
+               ("rand_pad_prob",) . showValue <$>
+                 Anon.get #rand_pad_prob fullArgs,
+               ("max_pad_scale",) . showValue <$>
+                 Anon.get #max_pad_scale fullArgs,
+               ("max_random_hue",) . showValue <$>
+                 Anon.get #max_random_hue fullArgs,
+               ("random_hue_prob",) . showValue <$>
+                 Anon.get #random_hue_prob fullArgs,
+               ("max_random_saturation",) . showValue <$>
+                 Anon.get #max_random_saturation fullArgs,
+               ("random_saturation_prob",) . showValue <$>
+                 Anon.get #random_saturation_prob fullArgs,
+               ("max_random_illumination",) . showValue <$>
+                 Anon.get #max_random_illumination fullArgs,
+               ("random_illumination_prob",) . showValue <$>
+                 Anon.get #random_illumination_prob fullArgs,
+               ("max_random_contrast",) . showValue <$>
+                 Anon.get #max_random_contrast fullArgs,
+               ("random_contrast_prob",) . showValue <$>
+                 Anon.get #random_contrast_prob fullArgs,
+               ("rand_mirror_prob",) . showValue <$>
+                 Anon.get #rand_mirror_prob fullArgs,
+               ("fill_value",) . showValue <$> Anon.get #fill_value fullArgs,
+               ("inter_method",) . showValue <$> Anon.get #inter_method fullArgs,
+               ("data_shape",) . showValue <$>
+                 Just (Anon.get #data_shape fullArgs),
+               ("resize_mode",) . showValue <$> Anon.get #resize_mode fullArgs,
+               ("seed",) . showValue <$> Anon.get #seed fullArgs,
+               ("mean_img",) . showValue <$> Anon.get #mean_img fullArgs,
+               ("mean_r",) . showValue <$> Anon.get #mean_r fullArgs,
+               ("mean_g",) . showValue <$> Anon.get #mean_g fullArgs,
+               ("mean_b",) . showValue <$> Anon.get #mean_b fullArgs,
+               ("mean_a",) . showValue <$> Anon.get #mean_a fullArgs,
+               ("std_r",) . showValue <$> Anon.get #std_r fullArgs,
+               ("std_g",) . showValue <$> Anon.get #std_g fullArgs,
+               ("std_b",) . showValue <$> Anon.get #std_b fullArgs,
+               ("std_a",) . showValue <$> Anon.get #std_a fullArgs,
+               ("scale",) . showValue <$> Anon.get #scale fullArgs,
+               ("verbose",) . showValue <$> Anon.get #verbose fullArgs]
         (keys, vals) = unzip scalarArgs
       in
       do dis <- mxListDataIters
@@ -270,86 +279,92 @@ _ImageRecordIter_v1 args
           = paramListWithDefault (Proxy @(ParameterList_ImageRecordIter_v1))
               args
         scalarArgs
-          = [("path_imglist",) . showValue $ Anon.get #path_imglist fullArgs,
-             ("path_imgrec",) . showValue $ Anon.get #path_imgrec fullArgs,
-             ("path_imgidx",) . showValue $ Anon.get #path_imgidx fullArgs,
-             ("aug_seq",) . showValue $ Anon.get #aug_seq fullArgs,
-             ("label_width",) . showValue $ Anon.get #label_width fullArgs,
-             ("data_shape",) . showValue $ Anon.get #data_shape fullArgs,
-             ("preprocess_threads",) . showValue $
-               Anon.get #preprocess_threads fullArgs,
-             ("verbose",) . showValue $ Anon.get #verbose fullArgs,
-             ("num_parts",) . showValue $ Anon.get #num_parts fullArgs,
-             ("part_index",) . showValue $ Anon.get #part_index fullArgs,
-             ("device_id",) . showValue $ Anon.get #device_id fullArgs,
-             ("shuffle_chunk_size",) . showValue $
-               Anon.get #shuffle_chunk_size fullArgs,
-             ("shuffle_chunk_seed",) . showValue $
-               Anon.get #shuffle_chunk_seed fullArgs,
-             ("seed_aug",) . showValue $ Anon.get #seed_aug fullArgs,
-             ("shuffle",) . showValue $ Anon.get #shuffle fullArgs,
-             ("seed",) . showValue $ Anon.get #seed fullArgs,
-             ("verbose",) . showValue $ Anon.get #verbose fullArgs,
-             ("batch_size",) . showValue $ Anon.get #batch_size fullArgs,
-             ("round_batch",) . showValue $ Anon.get #round_batch fullArgs,
-             ("prefetch_buffer",) . showValue $
-               Anon.get #prefetch_buffer fullArgs,
-             ("ctx",) . showValue $ Anon.get #ctx fullArgs,
-             ("dtype",) . showValue $ Anon.get #dtype fullArgs,
-             ("resize",) . showValue $ Anon.get #resize fullArgs,
-             ("rand_crop",) . showValue $ Anon.get #rand_crop fullArgs,
-             ("random_resized_crop",) . showValue $
-               Anon.get #random_resized_crop fullArgs,
-             ("max_rotate_angle",) . showValue $
-               Anon.get #max_rotate_angle fullArgs,
-             ("max_aspect_ratio",) . showValue $
-               Anon.get #max_aspect_ratio fullArgs,
-             ("min_aspect_ratio",) . showValue $
-               Anon.get #min_aspect_ratio fullArgs,
-             ("max_shear_ratio",) . showValue $
-               Anon.get #max_shear_ratio fullArgs,
-             ("max_crop_size",) . showValue $ Anon.get #max_crop_size fullArgs,
-             ("min_crop_size",) . showValue $ Anon.get #min_crop_size fullArgs,
-             ("max_random_scale",) . showValue $
-               Anon.get #max_random_scale fullArgs,
-             ("min_random_scale",) . showValue $
-               Anon.get #min_random_scale fullArgs,
-             ("max_random_area",) . showValue $
-               Anon.get #max_random_area fullArgs,
-             ("min_random_area",) . showValue $
-               Anon.get #min_random_area fullArgs,
-             ("max_img_size",) . showValue $ Anon.get #max_img_size fullArgs,
-             ("min_img_size",) . showValue $ Anon.get #min_img_size fullArgs,
-             ("brightness",) . showValue $ Anon.get #brightness fullArgs,
-             ("contrast",) . showValue $ Anon.get #contrast fullArgs,
-             ("saturation",) . showValue $ Anon.get #saturation fullArgs,
-             ("pca_noise",) . showValue $ Anon.get #pca_noise fullArgs,
-             ("random_h",) . showValue $ Anon.get #random_h fullArgs,
-             ("random_s",) . showValue $ Anon.get #random_s fullArgs,
-             ("random_l",) . showValue $ Anon.get #random_l fullArgs,
-             ("rotate",) . showValue $ Anon.get #rotate fullArgs,
-             ("fill_value",) . showValue $ Anon.get #fill_value fullArgs,
-             ("data_shape",) . showValue $ Anon.get #data_shape fullArgs,
-             ("inter_method",) . showValue $ Anon.get #inter_method fullArgs,
-             ("pad",) . showValue $ Anon.get #pad fullArgs,
-             ("seed",) . showValue $ Anon.get #seed fullArgs,
-             ("mirror",) . showValue $ Anon.get #mirror fullArgs,
-             ("rand_mirror",) . showValue $ Anon.get #rand_mirror fullArgs,
-             ("mean_img",) . showValue $ Anon.get #mean_img fullArgs,
-             ("mean_r",) . showValue $ Anon.get #mean_r fullArgs,
-             ("mean_g",) . showValue $ Anon.get #mean_g fullArgs,
-             ("mean_b",) . showValue $ Anon.get #mean_b fullArgs,
-             ("mean_a",) . showValue $ Anon.get #mean_a fullArgs,
-             ("std_r",) . showValue $ Anon.get #std_r fullArgs,
-             ("std_g",) . showValue $ Anon.get #std_g fullArgs,
-             ("std_b",) . showValue $ Anon.get #std_b fullArgs,
-             ("std_a",) . showValue $ Anon.get #std_a fullArgs,
-             ("scale",) . showValue $ Anon.get #scale fullArgs,
-             ("max_random_contrast",) . showValue $
-               Anon.get #max_random_contrast fullArgs,
-             ("max_random_illumination",) . showValue $
-               Anon.get #max_random_illumination fullArgs,
-             ("verbose",) . showValue $ Anon.get #verbose fullArgs]
+          = catMaybes
+              [("path_imglist",) . showValue <$> Anon.get #path_imglist fullArgs,
+               ("path_imgrec",) . showValue <$> Anon.get #path_imgrec fullArgs,
+               ("path_imgidx",) . showValue <$> Anon.get #path_imgidx fullArgs,
+               ("aug_seq",) . showValue <$> Anon.get #aug_seq fullArgs,
+               ("label_width",) . showValue <$> Anon.get #label_width fullArgs,
+               ("data_shape",) . showValue <$>
+                 Just (Anon.get #data_shape fullArgs),
+               ("preprocess_threads",) . showValue <$>
+                 Anon.get #preprocess_threads fullArgs,
+               ("verbose",) . showValue <$> Anon.get #verbose fullArgs,
+               ("num_parts",) . showValue <$> Anon.get #num_parts fullArgs,
+               ("part_index",) . showValue <$> Anon.get #part_index fullArgs,
+               ("device_id",) . showValue <$> Anon.get #device_id fullArgs,
+               ("shuffle_chunk_size",) . showValue <$>
+                 Anon.get #shuffle_chunk_size fullArgs,
+               ("shuffle_chunk_seed",) . showValue <$>
+                 Anon.get #shuffle_chunk_seed fullArgs,
+               ("seed_aug",) . showValue <$> Anon.get #seed_aug fullArgs,
+               ("shuffle",) . showValue <$> Anon.get #shuffle fullArgs,
+               ("seed",) . showValue <$> Anon.get #seed fullArgs,
+               ("verbose",) . showValue <$> Anon.get #verbose fullArgs,
+               ("batch_size",) . showValue <$>
+                 Just (Anon.get #batch_size fullArgs),
+               ("round_batch",) . showValue <$> Anon.get #round_batch fullArgs,
+               ("prefetch_buffer",) . showValue <$>
+                 Anon.get #prefetch_buffer fullArgs,
+               ("ctx",) . showValue <$> Anon.get #ctx fullArgs,
+               ("dtype",) . showValue <$> Anon.get #dtype fullArgs,
+               ("resize",) . showValue <$> Anon.get #resize fullArgs,
+               ("rand_crop",) . showValue <$> Anon.get #rand_crop fullArgs,
+               ("random_resized_crop",) . showValue <$>
+                 Anon.get #random_resized_crop fullArgs,
+               ("max_rotate_angle",) . showValue <$>
+                 Anon.get #max_rotate_angle fullArgs,
+               ("max_aspect_ratio",) . showValue <$>
+                 Anon.get #max_aspect_ratio fullArgs,
+               ("min_aspect_ratio",) . showValue <$>
+                 Anon.get #min_aspect_ratio fullArgs,
+               ("max_shear_ratio",) . showValue <$>
+                 Anon.get #max_shear_ratio fullArgs,
+               ("max_crop_size",) . showValue <$>
+                 Anon.get #max_crop_size fullArgs,
+               ("min_crop_size",) . showValue <$>
+                 Anon.get #min_crop_size fullArgs,
+               ("max_random_scale",) . showValue <$>
+                 Anon.get #max_random_scale fullArgs,
+               ("min_random_scale",) . showValue <$>
+                 Anon.get #min_random_scale fullArgs,
+               ("max_random_area",) . showValue <$>
+                 Anon.get #max_random_area fullArgs,
+               ("min_random_area",) . showValue <$>
+                 Anon.get #min_random_area fullArgs,
+               ("max_img_size",) . showValue <$> Anon.get #max_img_size fullArgs,
+               ("min_img_size",) . showValue <$> Anon.get #min_img_size fullArgs,
+               ("brightness",) . showValue <$> Anon.get #brightness fullArgs,
+               ("contrast",) . showValue <$> Anon.get #contrast fullArgs,
+               ("saturation",) . showValue <$> Anon.get #saturation fullArgs,
+               ("pca_noise",) . showValue <$> Anon.get #pca_noise fullArgs,
+               ("random_h",) . showValue <$> Anon.get #random_h fullArgs,
+               ("random_s",) . showValue <$> Anon.get #random_s fullArgs,
+               ("random_l",) . showValue <$> Anon.get #random_l fullArgs,
+               ("rotate",) . showValue <$> Anon.get #rotate fullArgs,
+               ("fill_value",) . showValue <$> Anon.get #fill_value fullArgs,
+               ("data_shape",) . showValue <$>
+                 Just (Anon.get #data_shape fullArgs),
+               ("inter_method",) . showValue <$> Anon.get #inter_method fullArgs,
+               ("pad",) . showValue <$> Anon.get #pad fullArgs,
+               ("seed",) . showValue <$> Anon.get #seed fullArgs,
+               ("mirror",) . showValue <$> Anon.get #mirror fullArgs,
+               ("rand_mirror",) . showValue <$> Anon.get #rand_mirror fullArgs,
+               ("mean_img",) . showValue <$> Anon.get #mean_img fullArgs,
+               ("mean_r",) . showValue <$> Anon.get #mean_r fullArgs,
+               ("mean_g",) . showValue <$> Anon.get #mean_g fullArgs,
+               ("mean_b",) . showValue <$> Anon.get #mean_b fullArgs,
+               ("mean_a",) . showValue <$> Anon.get #mean_a fullArgs,
+               ("std_r",) . showValue <$> Anon.get #std_r fullArgs,
+               ("std_g",) . showValue <$> Anon.get #std_g fullArgs,
+               ("std_b",) . showValue <$> Anon.get #std_b fullArgs,
+               ("std_a",) . showValue <$> Anon.get #std_a fullArgs,
+               ("scale",) . showValue <$> Anon.get #scale fullArgs,
+               ("max_random_contrast",) . showValue <$>
+                 Anon.get #max_random_contrast fullArgs,
+               ("max_random_illumination",) . showValue <$>
+                 Anon.get #max_random_illumination fullArgs,
+               ("verbose",) . showValue <$> Anon.get #verbose fullArgs]
         (keys, vals) = unzip scalarArgs
       in
       do dis <- mxListDataIters
@@ -405,68 +420,74 @@ _ImageRecordUInt8Iter_v1 args
               (Proxy @(ParameterList_ImageRecordUInt8Iter_v1))
               args
         scalarArgs
-          = [("path_imglist",) . showValue $ Anon.get #path_imglist fullArgs,
-             ("path_imgrec",) . showValue $ Anon.get #path_imgrec fullArgs,
-             ("path_imgidx",) . showValue $ Anon.get #path_imgidx fullArgs,
-             ("aug_seq",) . showValue $ Anon.get #aug_seq fullArgs,
-             ("label_width",) . showValue $ Anon.get #label_width fullArgs,
-             ("data_shape",) . showValue $ Anon.get #data_shape fullArgs,
-             ("preprocess_threads",) . showValue $
-               Anon.get #preprocess_threads fullArgs,
-             ("verbose",) . showValue $ Anon.get #verbose fullArgs,
-             ("num_parts",) . showValue $ Anon.get #num_parts fullArgs,
-             ("part_index",) . showValue $ Anon.get #part_index fullArgs,
-             ("device_id",) . showValue $ Anon.get #device_id fullArgs,
-             ("shuffle_chunk_size",) . showValue $
-               Anon.get #shuffle_chunk_size fullArgs,
-             ("shuffle_chunk_seed",) . showValue $
-               Anon.get #shuffle_chunk_seed fullArgs,
-             ("seed_aug",) . showValue $ Anon.get #seed_aug fullArgs,
-             ("shuffle",) . showValue $ Anon.get #shuffle fullArgs,
-             ("seed",) . showValue $ Anon.get #seed fullArgs,
-             ("verbose",) . showValue $ Anon.get #verbose fullArgs,
-             ("batch_size",) . showValue $ Anon.get #batch_size fullArgs,
-             ("round_batch",) . showValue $ Anon.get #round_batch fullArgs,
-             ("prefetch_buffer",) . showValue $
-               Anon.get #prefetch_buffer fullArgs,
-             ("ctx",) . showValue $ Anon.get #ctx fullArgs,
-             ("dtype",) . showValue $ Anon.get #dtype fullArgs,
-             ("resize",) . showValue $ Anon.get #resize fullArgs,
-             ("rand_crop",) . showValue $ Anon.get #rand_crop fullArgs,
-             ("random_resized_crop",) . showValue $
-               Anon.get #random_resized_crop fullArgs,
-             ("max_rotate_angle",) . showValue $
-               Anon.get #max_rotate_angle fullArgs,
-             ("max_aspect_ratio",) . showValue $
-               Anon.get #max_aspect_ratio fullArgs,
-             ("min_aspect_ratio",) . showValue $
-               Anon.get #min_aspect_ratio fullArgs,
-             ("max_shear_ratio",) . showValue $
-               Anon.get #max_shear_ratio fullArgs,
-             ("max_crop_size",) . showValue $ Anon.get #max_crop_size fullArgs,
-             ("min_crop_size",) . showValue $ Anon.get #min_crop_size fullArgs,
-             ("max_random_scale",) . showValue $
-               Anon.get #max_random_scale fullArgs,
-             ("min_random_scale",) . showValue $
-               Anon.get #min_random_scale fullArgs,
-             ("max_random_area",) . showValue $
-               Anon.get #max_random_area fullArgs,
-             ("min_random_area",) . showValue $
-               Anon.get #min_random_area fullArgs,
-             ("max_img_size",) . showValue $ Anon.get #max_img_size fullArgs,
-             ("min_img_size",) . showValue $ Anon.get #min_img_size fullArgs,
-             ("brightness",) . showValue $ Anon.get #brightness fullArgs,
-             ("contrast",) . showValue $ Anon.get #contrast fullArgs,
-             ("saturation",) . showValue $ Anon.get #saturation fullArgs,
-             ("pca_noise",) . showValue $ Anon.get #pca_noise fullArgs,
-             ("random_h",) . showValue $ Anon.get #random_h fullArgs,
-             ("random_s",) . showValue $ Anon.get #random_s fullArgs,
-             ("random_l",) . showValue $ Anon.get #random_l fullArgs,
-             ("rotate",) . showValue $ Anon.get #rotate fullArgs,
-             ("fill_value",) . showValue $ Anon.get #fill_value fullArgs,
-             ("data_shape",) . showValue $ Anon.get #data_shape fullArgs,
-             ("inter_method",) . showValue $ Anon.get #inter_method fullArgs,
-             ("pad",) . showValue $ Anon.get #pad fullArgs]
+          = catMaybes
+              [("path_imglist",) . showValue <$> Anon.get #path_imglist fullArgs,
+               ("path_imgrec",) . showValue <$> Anon.get #path_imgrec fullArgs,
+               ("path_imgidx",) . showValue <$> Anon.get #path_imgidx fullArgs,
+               ("aug_seq",) . showValue <$> Anon.get #aug_seq fullArgs,
+               ("label_width",) . showValue <$> Anon.get #label_width fullArgs,
+               ("data_shape",) . showValue <$>
+                 Just (Anon.get #data_shape fullArgs),
+               ("preprocess_threads",) . showValue <$>
+                 Anon.get #preprocess_threads fullArgs,
+               ("verbose",) . showValue <$> Anon.get #verbose fullArgs,
+               ("num_parts",) . showValue <$> Anon.get #num_parts fullArgs,
+               ("part_index",) . showValue <$> Anon.get #part_index fullArgs,
+               ("device_id",) . showValue <$> Anon.get #device_id fullArgs,
+               ("shuffle_chunk_size",) . showValue <$>
+                 Anon.get #shuffle_chunk_size fullArgs,
+               ("shuffle_chunk_seed",) . showValue <$>
+                 Anon.get #shuffle_chunk_seed fullArgs,
+               ("seed_aug",) . showValue <$> Anon.get #seed_aug fullArgs,
+               ("shuffle",) . showValue <$> Anon.get #shuffle fullArgs,
+               ("seed",) . showValue <$> Anon.get #seed fullArgs,
+               ("verbose",) . showValue <$> Anon.get #verbose fullArgs,
+               ("batch_size",) . showValue <$>
+                 Just (Anon.get #batch_size fullArgs),
+               ("round_batch",) . showValue <$> Anon.get #round_batch fullArgs,
+               ("prefetch_buffer",) . showValue <$>
+                 Anon.get #prefetch_buffer fullArgs,
+               ("ctx",) . showValue <$> Anon.get #ctx fullArgs,
+               ("dtype",) . showValue <$> Anon.get #dtype fullArgs,
+               ("resize",) . showValue <$> Anon.get #resize fullArgs,
+               ("rand_crop",) . showValue <$> Anon.get #rand_crop fullArgs,
+               ("random_resized_crop",) . showValue <$>
+                 Anon.get #random_resized_crop fullArgs,
+               ("max_rotate_angle",) . showValue <$>
+                 Anon.get #max_rotate_angle fullArgs,
+               ("max_aspect_ratio",) . showValue <$>
+                 Anon.get #max_aspect_ratio fullArgs,
+               ("min_aspect_ratio",) . showValue <$>
+                 Anon.get #min_aspect_ratio fullArgs,
+               ("max_shear_ratio",) . showValue <$>
+                 Anon.get #max_shear_ratio fullArgs,
+               ("max_crop_size",) . showValue <$>
+                 Anon.get #max_crop_size fullArgs,
+               ("min_crop_size",) . showValue <$>
+                 Anon.get #min_crop_size fullArgs,
+               ("max_random_scale",) . showValue <$>
+                 Anon.get #max_random_scale fullArgs,
+               ("min_random_scale",) . showValue <$>
+                 Anon.get #min_random_scale fullArgs,
+               ("max_random_area",) . showValue <$>
+                 Anon.get #max_random_area fullArgs,
+               ("min_random_area",) . showValue <$>
+                 Anon.get #min_random_area fullArgs,
+               ("max_img_size",) . showValue <$> Anon.get #max_img_size fullArgs,
+               ("min_img_size",) . showValue <$> Anon.get #min_img_size fullArgs,
+               ("brightness",) . showValue <$> Anon.get #brightness fullArgs,
+               ("contrast",) . showValue <$> Anon.get #contrast fullArgs,
+               ("saturation",) . showValue <$> Anon.get #saturation fullArgs,
+               ("pca_noise",) . showValue <$> Anon.get #pca_noise fullArgs,
+               ("random_h",) . showValue <$> Anon.get #random_h fullArgs,
+               ("random_s",) . showValue <$> Anon.get #random_s fullArgs,
+               ("random_l",) . showValue <$> Anon.get #random_l fullArgs,
+               ("rotate",) . showValue <$> Anon.get #rotate fullArgs,
+               ("fill_value",) . showValue <$> Anon.get #fill_value fullArgs,
+               ("data_shape",) . showValue <$>
+                 Just (Anon.get #data_shape fullArgs),
+               ("inter_method",) . showValue <$> Anon.get #inter_method fullArgs,
+               ("pad",) . showValue <$> Anon.get #pad fullArgs]
         (keys, vals) = unzip scalarArgs
       in
       do dis <- mxListDataIters
@@ -529,86 +550,92 @@ _ImageRecordIter args
           = paramListWithDefault (Proxy @(ParameterList_ImageRecordIter))
               args
         scalarArgs
-          = [("path_imglist",) . showValue $ Anon.get #path_imglist fullArgs,
-             ("path_imgrec",) . showValue $ Anon.get #path_imgrec fullArgs,
-             ("path_imgidx",) . showValue $ Anon.get #path_imgidx fullArgs,
-             ("aug_seq",) . showValue $ Anon.get #aug_seq fullArgs,
-             ("label_width",) . showValue $ Anon.get #label_width fullArgs,
-             ("data_shape",) . showValue $ Anon.get #data_shape fullArgs,
-             ("preprocess_threads",) . showValue $
-               Anon.get #preprocess_threads fullArgs,
-             ("verbose",) . showValue $ Anon.get #verbose fullArgs,
-             ("num_parts",) . showValue $ Anon.get #num_parts fullArgs,
-             ("part_index",) . showValue $ Anon.get #part_index fullArgs,
-             ("device_id",) . showValue $ Anon.get #device_id fullArgs,
-             ("shuffle_chunk_size",) . showValue $
-               Anon.get #shuffle_chunk_size fullArgs,
-             ("shuffle_chunk_seed",) . showValue $
-               Anon.get #shuffle_chunk_seed fullArgs,
-             ("seed_aug",) . showValue $ Anon.get #seed_aug fullArgs,
-             ("shuffle",) . showValue $ Anon.get #shuffle fullArgs,
-             ("seed",) . showValue $ Anon.get #seed fullArgs,
-             ("verbose",) . showValue $ Anon.get #verbose fullArgs,
-             ("batch_size",) . showValue $ Anon.get #batch_size fullArgs,
-             ("round_batch",) . showValue $ Anon.get #round_batch fullArgs,
-             ("prefetch_buffer",) . showValue $
-               Anon.get #prefetch_buffer fullArgs,
-             ("ctx",) . showValue $ Anon.get #ctx fullArgs,
-             ("dtype",) . showValue $ Anon.get #dtype fullArgs,
-             ("resize",) . showValue $ Anon.get #resize fullArgs,
-             ("rand_crop",) . showValue $ Anon.get #rand_crop fullArgs,
-             ("random_resized_crop",) . showValue $
-               Anon.get #random_resized_crop fullArgs,
-             ("max_rotate_angle",) . showValue $
-               Anon.get #max_rotate_angle fullArgs,
-             ("max_aspect_ratio",) . showValue $
-               Anon.get #max_aspect_ratio fullArgs,
-             ("min_aspect_ratio",) . showValue $
-               Anon.get #min_aspect_ratio fullArgs,
-             ("max_shear_ratio",) . showValue $
-               Anon.get #max_shear_ratio fullArgs,
-             ("max_crop_size",) . showValue $ Anon.get #max_crop_size fullArgs,
-             ("min_crop_size",) . showValue $ Anon.get #min_crop_size fullArgs,
-             ("max_random_scale",) . showValue $
-               Anon.get #max_random_scale fullArgs,
-             ("min_random_scale",) . showValue $
-               Anon.get #min_random_scale fullArgs,
-             ("max_random_area",) . showValue $
-               Anon.get #max_random_area fullArgs,
-             ("min_random_area",) . showValue $
-               Anon.get #min_random_area fullArgs,
-             ("max_img_size",) . showValue $ Anon.get #max_img_size fullArgs,
-             ("min_img_size",) . showValue $ Anon.get #min_img_size fullArgs,
-             ("brightness",) . showValue $ Anon.get #brightness fullArgs,
-             ("contrast",) . showValue $ Anon.get #contrast fullArgs,
-             ("saturation",) . showValue $ Anon.get #saturation fullArgs,
-             ("pca_noise",) . showValue $ Anon.get #pca_noise fullArgs,
-             ("random_h",) . showValue $ Anon.get #random_h fullArgs,
-             ("random_s",) . showValue $ Anon.get #random_s fullArgs,
-             ("random_l",) . showValue $ Anon.get #random_l fullArgs,
-             ("rotate",) . showValue $ Anon.get #rotate fullArgs,
-             ("fill_value",) . showValue $ Anon.get #fill_value fullArgs,
-             ("data_shape",) . showValue $ Anon.get #data_shape fullArgs,
-             ("inter_method",) . showValue $ Anon.get #inter_method fullArgs,
-             ("pad",) . showValue $ Anon.get #pad fullArgs,
-             ("seed",) . showValue $ Anon.get #seed fullArgs,
-             ("mirror",) . showValue $ Anon.get #mirror fullArgs,
-             ("rand_mirror",) . showValue $ Anon.get #rand_mirror fullArgs,
-             ("mean_img",) . showValue $ Anon.get #mean_img fullArgs,
-             ("mean_r",) . showValue $ Anon.get #mean_r fullArgs,
-             ("mean_g",) . showValue $ Anon.get #mean_g fullArgs,
-             ("mean_b",) . showValue $ Anon.get #mean_b fullArgs,
-             ("mean_a",) . showValue $ Anon.get #mean_a fullArgs,
-             ("std_r",) . showValue $ Anon.get #std_r fullArgs,
-             ("std_g",) . showValue $ Anon.get #std_g fullArgs,
-             ("std_b",) . showValue $ Anon.get #std_b fullArgs,
-             ("std_a",) . showValue $ Anon.get #std_a fullArgs,
-             ("scale",) . showValue $ Anon.get #scale fullArgs,
-             ("max_random_contrast",) . showValue $
-               Anon.get #max_random_contrast fullArgs,
-             ("max_random_illumination",) . showValue $
-               Anon.get #max_random_illumination fullArgs,
-             ("verbose",) . showValue $ Anon.get #verbose fullArgs]
+          = catMaybes
+              [("path_imglist",) . showValue <$> Anon.get #path_imglist fullArgs,
+               ("path_imgrec",) . showValue <$> Anon.get #path_imgrec fullArgs,
+               ("path_imgidx",) . showValue <$> Anon.get #path_imgidx fullArgs,
+               ("aug_seq",) . showValue <$> Anon.get #aug_seq fullArgs,
+               ("label_width",) . showValue <$> Anon.get #label_width fullArgs,
+               ("data_shape",) . showValue <$>
+                 Just (Anon.get #data_shape fullArgs),
+               ("preprocess_threads",) . showValue <$>
+                 Anon.get #preprocess_threads fullArgs,
+               ("verbose",) . showValue <$> Anon.get #verbose fullArgs,
+               ("num_parts",) . showValue <$> Anon.get #num_parts fullArgs,
+               ("part_index",) . showValue <$> Anon.get #part_index fullArgs,
+               ("device_id",) . showValue <$> Anon.get #device_id fullArgs,
+               ("shuffle_chunk_size",) . showValue <$>
+                 Anon.get #shuffle_chunk_size fullArgs,
+               ("shuffle_chunk_seed",) . showValue <$>
+                 Anon.get #shuffle_chunk_seed fullArgs,
+               ("seed_aug",) . showValue <$> Anon.get #seed_aug fullArgs,
+               ("shuffle",) . showValue <$> Anon.get #shuffle fullArgs,
+               ("seed",) . showValue <$> Anon.get #seed fullArgs,
+               ("verbose",) . showValue <$> Anon.get #verbose fullArgs,
+               ("batch_size",) . showValue <$>
+                 Just (Anon.get #batch_size fullArgs),
+               ("round_batch",) . showValue <$> Anon.get #round_batch fullArgs,
+               ("prefetch_buffer",) . showValue <$>
+                 Anon.get #prefetch_buffer fullArgs,
+               ("ctx",) . showValue <$> Anon.get #ctx fullArgs,
+               ("dtype",) . showValue <$> Anon.get #dtype fullArgs,
+               ("resize",) . showValue <$> Anon.get #resize fullArgs,
+               ("rand_crop",) . showValue <$> Anon.get #rand_crop fullArgs,
+               ("random_resized_crop",) . showValue <$>
+                 Anon.get #random_resized_crop fullArgs,
+               ("max_rotate_angle",) . showValue <$>
+                 Anon.get #max_rotate_angle fullArgs,
+               ("max_aspect_ratio",) . showValue <$>
+                 Anon.get #max_aspect_ratio fullArgs,
+               ("min_aspect_ratio",) . showValue <$>
+                 Anon.get #min_aspect_ratio fullArgs,
+               ("max_shear_ratio",) . showValue <$>
+                 Anon.get #max_shear_ratio fullArgs,
+               ("max_crop_size",) . showValue <$>
+                 Anon.get #max_crop_size fullArgs,
+               ("min_crop_size",) . showValue <$>
+                 Anon.get #min_crop_size fullArgs,
+               ("max_random_scale",) . showValue <$>
+                 Anon.get #max_random_scale fullArgs,
+               ("min_random_scale",) . showValue <$>
+                 Anon.get #min_random_scale fullArgs,
+               ("max_random_area",) . showValue <$>
+                 Anon.get #max_random_area fullArgs,
+               ("min_random_area",) . showValue <$>
+                 Anon.get #min_random_area fullArgs,
+               ("max_img_size",) . showValue <$> Anon.get #max_img_size fullArgs,
+               ("min_img_size",) . showValue <$> Anon.get #min_img_size fullArgs,
+               ("brightness",) . showValue <$> Anon.get #brightness fullArgs,
+               ("contrast",) . showValue <$> Anon.get #contrast fullArgs,
+               ("saturation",) . showValue <$> Anon.get #saturation fullArgs,
+               ("pca_noise",) . showValue <$> Anon.get #pca_noise fullArgs,
+               ("random_h",) . showValue <$> Anon.get #random_h fullArgs,
+               ("random_s",) . showValue <$> Anon.get #random_s fullArgs,
+               ("random_l",) . showValue <$> Anon.get #random_l fullArgs,
+               ("rotate",) . showValue <$> Anon.get #rotate fullArgs,
+               ("fill_value",) . showValue <$> Anon.get #fill_value fullArgs,
+               ("data_shape",) . showValue <$>
+                 Just (Anon.get #data_shape fullArgs),
+               ("inter_method",) . showValue <$> Anon.get #inter_method fullArgs,
+               ("pad",) . showValue <$> Anon.get #pad fullArgs,
+               ("seed",) . showValue <$> Anon.get #seed fullArgs,
+               ("mirror",) . showValue <$> Anon.get #mirror fullArgs,
+               ("rand_mirror",) . showValue <$> Anon.get #rand_mirror fullArgs,
+               ("mean_img",) . showValue <$> Anon.get #mean_img fullArgs,
+               ("mean_r",) . showValue <$> Anon.get #mean_r fullArgs,
+               ("mean_g",) . showValue <$> Anon.get #mean_g fullArgs,
+               ("mean_b",) . showValue <$> Anon.get #mean_b fullArgs,
+               ("mean_a",) . showValue <$> Anon.get #mean_a fullArgs,
+               ("std_r",) . showValue <$> Anon.get #std_r fullArgs,
+               ("std_g",) . showValue <$> Anon.get #std_g fullArgs,
+               ("std_b",) . showValue <$> Anon.get #std_b fullArgs,
+               ("std_a",) . showValue <$> Anon.get #std_a fullArgs,
+               ("scale",) . showValue <$> Anon.get #scale fullArgs,
+               ("max_random_contrast",) . showValue <$>
+                 Anon.get #max_random_contrast fullArgs,
+               ("max_random_illumination",) . showValue <$>
+                 Anon.get #max_random_illumination fullArgs,
+               ("verbose",) . showValue <$> Anon.get #verbose fullArgs]
         (keys, vals) = unzip scalarArgs
       in
       do dis <- mxListDataIters
@@ -663,68 +690,74 @@ _ImageRecordUInt8Iter args
               (Proxy @(ParameterList_ImageRecordUInt8Iter))
               args
         scalarArgs
-          = [("path_imglist",) . showValue $ Anon.get #path_imglist fullArgs,
-             ("path_imgrec",) . showValue $ Anon.get #path_imgrec fullArgs,
-             ("path_imgidx",) . showValue $ Anon.get #path_imgidx fullArgs,
-             ("aug_seq",) . showValue $ Anon.get #aug_seq fullArgs,
-             ("label_width",) . showValue $ Anon.get #label_width fullArgs,
-             ("data_shape",) . showValue $ Anon.get #data_shape fullArgs,
-             ("preprocess_threads",) . showValue $
-               Anon.get #preprocess_threads fullArgs,
-             ("verbose",) . showValue $ Anon.get #verbose fullArgs,
-             ("num_parts",) . showValue $ Anon.get #num_parts fullArgs,
-             ("part_index",) . showValue $ Anon.get #part_index fullArgs,
-             ("device_id",) . showValue $ Anon.get #device_id fullArgs,
-             ("shuffle_chunk_size",) . showValue $
-               Anon.get #shuffle_chunk_size fullArgs,
-             ("shuffle_chunk_seed",) . showValue $
-               Anon.get #shuffle_chunk_seed fullArgs,
-             ("seed_aug",) . showValue $ Anon.get #seed_aug fullArgs,
-             ("shuffle",) . showValue $ Anon.get #shuffle fullArgs,
-             ("seed",) . showValue $ Anon.get #seed fullArgs,
-             ("verbose",) . showValue $ Anon.get #verbose fullArgs,
-             ("batch_size",) . showValue $ Anon.get #batch_size fullArgs,
-             ("round_batch",) . showValue $ Anon.get #round_batch fullArgs,
-             ("prefetch_buffer",) . showValue $
-               Anon.get #prefetch_buffer fullArgs,
-             ("ctx",) . showValue $ Anon.get #ctx fullArgs,
-             ("dtype",) . showValue $ Anon.get #dtype fullArgs,
-             ("resize",) . showValue $ Anon.get #resize fullArgs,
-             ("rand_crop",) . showValue $ Anon.get #rand_crop fullArgs,
-             ("random_resized_crop",) . showValue $
-               Anon.get #random_resized_crop fullArgs,
-             ("max_rotate_angle",) . showValue $
-               Anon.get #max_rotate_angle fullArgs,
-             ("max_aspect_ratio",) . showValue $
-               Anon.get #max_aspect_ratio fullArgs,
-             ("min_aspect_ratio",) . showValue $
-               Anon.get #min_aspect_ratio fullArgs,
-             ("max_shear_ratio",) . showValue $
-               Anon.get #max_shear_ratio fullArgs,
-             ("max_crop_size",) . showValue $ Anon.get #max_crop_size fullArgs,
-             ("min_crop_size",) . showValue $ Anon.get #min_crop_size fullArgs,
-             ("max_random_scale",) . showValue $
-               Anon.get #max_random_scale fullArgs,
-             ("min_random_scale",) . showValue $
-               Anon.get #min_random_scale fullArgs,
-             ("max_random_area",) . showValue $
-               Anon.get #max_random_area fullArgs,
-             ("min_random_area",) . showValue $
-               Anon.get #min_random_area fullArgs,
-             ("max_img_size",) . showValue $ Anon.get #max_img_size fullArgs,
-             ("min_img_size",) . showValue $ Anon.get #min_img_size fullArgs,
-             ("brightness",) . showValue $ Anon.get #brightness fullArgs,
-             ("contrast",) . showValue $ Anon.get #contrast fullArgs,
-             ("saturation",) . showValue $ Anon.get #saturation fullArgs,
-             ("pca_noise",) . showValue $ Anon.get #pca_noise fullArgs,
-             ("random_h",) . showValue $ Anon.get #random_h fullArgs,
-             ("random_s",) . showValue $ Anon.get #random_s fullArgs,
-             ("random_l",) . showValue $ Anon.get #random_l fullArgs,
-             ("rotate",) . showValue $ Anon.get #rotate fullArgs,
-             ("fill_value",) . showValue $ Anon.get #fill_value fullArgs,
-             ("data_shape",) . showValue $ Anon.get #data_shape fullArgs,
-             ("inter_method",) . showValue $ Anon.get #inter_method fullArgs,
-             ("pad",) . showValue $ Anon.get #pad fullArgs]
+          = catMaybes
+              [("path_imglist",) . showValue <$> Anon.get #path_imglist fullArgs,
+               ("path_imgrec",) . showValue <$> Anon.get #path_imgrec fullArgs,
+               ("path_imgidx",) . showValue <$> Anon.get #path_imgidx fullArgs,
+               ("aug_seq",) . showValue <$> Anon.get #aug_seq fullArgs,
+               ("label_width",) . showValue <$> Anon.get #label_width fullArgs,
+               ("data_shape",) . showValue <$>
+                 Just (Anon.get #data_shape fullArgs),
+               ("preprocess_threads",) . showValue <$>
+                 Anon.get #preprocess_threads fullArgs,
+               ("verbose",) . showValue <$> Anon.get #verbose fullArgs,
+               ("num_parts",) . showValue <$> Anon.get #num_parts fullArgs,
+               ("part_index",) . showValue <$> Anon.get #part_index fullArgs,
+               ("device_id",) . showValue <$> Anon.get #device_id fullArgs,
+               ("shuffle_chunk_size",) . showValue <$>
+                 Anon.get #shuffle_chunk_size fullArgs,
+               ("shuffle_chunk_seed",) . showValue <$>
+                 Anon.get #shuffle_chunk_seed fullArgs,
+               ("seed_aug",) . showValue <$> Anon.get #seed_aug fullArgs,
+               ("shuffle",) . showValue <$> Anon.get #shuffle fullArgs,
+               ("seed",) . showValue <$> Anon.get #seed fullArgs,
+               ("verbose",) . showValue <$> Anon.get #verbose fullArgs,
+               ("batch_size",) . showValue <$>
+                 Just (Anon.get #batch_size fullArgs),
+               ("round_batch",) . showValue <$> Anon.get #round_batch fullArgs,
+               ("prefetch_buffer",) . showValue <$>
+                 Anon.get #prefetch_buffer fullArgs,
+               ("ctx",) . showValue <$> Anon.get #ctx fullArgs,
+               ("dtype",) . showValue <$> Anon.get #dtype fullArgs,
+               ("resize",) . showValue <$> Anon.get #resize fullArgs,
+               ("rand_crop",) . showValue <$> Anon.get #rand_crop fullArgs,
+               ("random_resized_crop",) . showValue <$>
+                 Anon.get #random_resized_crop fullArgs,
+               ("max_rotate_angle",) . showValue <$>
+                 Anon.get #max_rotate_angle fullArgs,
+               ("max_aspect_ratio",) . showValue <$>
+                 Anon.get #max_aspect_ratio fullArgs,
+               ("min_aspect_ratio",) . showValue <$>
+                 Anon.get #min_aspect_ratio fullArgs,
+               ("max_shear_ratio",) . showValue <$>
+                 Anon.get #max_shear_ratio fullArgs,
+               ("max_crop_size",) . showValue <$>
+                 Anon.get #max_crop_size fullArgs,
+               ("min_crop_size",) . showValue <$>
+                 Anon.get #min_crop_size fullArgs,
+               ("max_random_scale",) . showValue <$>
+                 Anon.get #max_random_scale fullArgs,
+               ("min_random_scale",) . showValue <$>
+                 Anon.get #min_random_scale fullArgs,
+               ("max_random_area",) . showValue <$>
+                 Anon.get #max_random_area fullArgs,
+               ("min_random_area",) . showValue <$>
+                 Anon.get #min_random_area fullArgs,
+               ("max_img_size",) . showValue <$> Anon.get #max_img_size fullArgs,
+               ("min_img_size",) . showValue <$> Anon.get #min_img_size fullArgs,
+               ("brightness",) . showValue <$> Anon.get #brightness fullArgs,
+               ("contrast",) . showValue <$> Anon.get #contrast fullArgs,
+               ("saturation",) . showValue <$> Anon.get #saturation fullArgs,
+               ("pca_noise",) . showValue <$> Anon.get #pca_noise fullArgs,
+               ("random_h",) . showValue <$> Anon.get #random_h fullArgs,
+               ("random_s",) . showValue <$> Anon.get #random_s fullArgs,
+               ("random_l",) . showValue <$> Anon.get #random_l fullArgs,
+               ("rotate",) . showValue <$> Anon.get #rotate fullArgs,
+               ("fill_value",) . showValue <$> Anon.get #fill_value fullArgs,
+               ("data_shape",) . showValue <$>
+                 Just (Anon.get #data_shape fullArgs),
+               ("inter_method",) . showValue <$> Anon.get #inter_method fullArgs,
+               ("pad",) . showValue <$> Anon.get #pad fullArgs]
         (keys, vals) = unzip scalarArgs
       in
       do dis <- mxListDataIters
@@ -778,68 +811,74 @@ _ImageRecordInt8Iter args
           = paramListWithDefault (Proxy @(ParameterList_ImageRecordInt8Iter))
               args
         scalarArgs
-          = [("path_imglist",) . showValue $ Anon.get #path_imglist fullArgs,
-             ("path_imgrec",) . showValue $ Anon.get #path_imgrec fullArgs,
-             ("path_imgidx",) . showValue $ Anon.get #path_imgidx fullArgs,
-             ("aug_seq",) . showValue $ Anon.get #aug_seq fullArgs,
-             ("label_width",) . showValue $ Anon.get #label_width fullArgs,
-             ("data_shape",) . showValue $ Anon.get #data_shape fullArgs,
-             ("preprocess_threads",) . showValue $
-               Anon.get #preprocess_threads fullArgs,
-             ("verbose",) . showValue $ Anon.get #verbose fullArgs,
-             ("num_parts",) . showValue $ Anon.get #num_parts fullArgs,
-             ("part_index",) . showValue $ Anon.get #part_index fullArgs,
-             ("device_id",) . showValue $ Anon.get #device_id fullArgs,
-             ("shuffle_chunk_size",) . showValue $
-               Anon.get #shuffle_chunk_size fullArgs,
-             ("shuffle_chunk_seed",) . showValue $
-               Anon.get #shuffle_chunk_seed fullArgs,
-             ("seed_aug",) . showValue $ Anon.get #seed_aug fullArgs,
-             ("shuffle",) . showValue $ Anon.get #shuffle fullArgs,
-             ("seed",) . showValue $ Anon.get #seed fullArgs,
-             ("verbose",) . showValue $ Anon.get #verbose fullArgs,
-             ("batch_size",) . showValue $ Anon.get #batch_size fullArgs,
-             ("round_batch",) . showValue $ Anon.get #round_batch fullArgs,
-             ("prefetch_buffer",) . showValue $
-               Anon.get #prefetch_buffer fullArgs,
-             ("ctx",) . showValue $ Anon.get #ctx fullArgs,
-             ("dtype",) . showValue $ Anon.get #dtype fullArgs,
-             ("resize",) . showValue $ Anon.get #resize fullArgs,
-             ("rand_crop",) . showValue $ Anon.get #rand_crop fullArgs,
-             ("random_resized_crop",) . showValue $
-               Anon.get #random_resized_crop fullArgs,
-             ("max_rotate_angle",) . showValue $
-               Anon.get #max_rotate_angle fullArgs,
-             ("max_aspect_ratio",) . showValue $
-               Anon.get #max_aspect_ratio fullArgs,
-             ("min_aspect_ratio",) . showValue $
-               Anon.get #min_aspect_ratio fullArgs,
-             ("max_shear_ratio",) . showValue $
-               Anon.get #max_shear_ratio fullArgs,
-             ("max_crop_size",) . showValue $ Anon.get #max_crop_size fullArgs,
-             ("min_crop_size",) . showValue $ Anon.get #min_crop_size fullArgs,
-             ("max_random_scale",) . showValue $
-               Anon.get #max_random_scale fullArgs,
-             ("min_random_scale",) . showValue $
-               Anon.get #min_random_scale fullArgs,
-             ("max_random_area",) . showValue $
-               Anon.get #max_random_area fullArgs,
-             ("min_random_area",) . showValue $
-               Anon.get #min_random_area fullArgs,
-             ("max_img_size",) . showValue $ Anon.get #max_img_size fullArgs,
-             ("min_img_size",) . showValue $ Anon.get #min_img_size fullArgs,
-             ("brightness",) . showValue $ Anon.get #brightness fullArgs,
-             ("contrast",) . showValue $ Anon.get #contrast fullArgs,
-             ("saturation",) . showValue $ Anon.get #saturation fullArgs,
-             ("pca_noise",) . showValue $ Anon.get #pca_noise fullArgs,
-             ("random_h",) . showValue $ Anon.get #random_h fullArgs,
-             ("random_s",) . showValue $ Anon.get #random_s fullArgs,
-             ("random_l",) . showValue $ Anon.get #random_l fullArgs,
-             ("rotate",) . showValue $ Anon.get #rotate fullArgs,
-             ("fill_value",) . showValue $ Anon.get #fill_value fullArgs,
-             ("data_shape",) . showValue $ Anon.get #data_shape fullArgs,
-             ("inter_method",) . showValue $ Anon.get #inter_method fullArgs,
-             ("pad",) . showValue $ Anon.get #pad fullArgs]
+          = catMaybes
+              [("path_imglist",) . showValue <$> Anon.get #path_imglist fullArgs,
+               ("path_imgrec",) . showValue <$> Anon.get #path_imgrec fullArgs,
+               ("path_imgidx",) . showValue <$> Anon.get #path_imgidx fullArgs,
+               ("aug_seq",) . showValue <$> Anon.get #aug_seq fullArgs,
+               ("label_width",) . showValue <$> Anon.get #label_width fullArgs,
+               ("data_shape",) . showValue <$>
+                 Just (Anon.get #data_shape fullArgs),
+               ("preprocess_threads",) . showValue <$>
+                 Anon.get #preprocess_threads fullArgs,
+               ("verbose",) . showValue <$> Anon.get #verbose fullArgs,
+               ("num_parts",) . showValue <$> Anon.get #num_parts fullArgs,
+               ("part_index",) . showValue <$> Anon.get #part_index fullArgs,
+               ("device_id",) . showValue <$> Anon.get #device_id fullArgs,
+               ("shuffle_chunk_size",) . showValue <$>
+                 Anon.get #shuffle_chunk_size fullArgs,
+               ("shuffle_chunk_seed",) . showValue <$>
+                 Anon.get #shuffle_chunk_seed fullArgs,
+               ("seed_aug",) . showValue <$> Anon.get #seed_aug fullArgs,
+               ("shuffle",) . showValue <$> Anon.get #shuffle fullArgs,
+               ("seed",) . showValue <$> Anon.get #seed fullArgs,
+               ("verbose",) . showValue <$> Anon.get #verbose fullArgs,
+               ("batch_size",) . showValue <$>
+                 Just (Anon.get #batch_size fullArgs),
+               ("round_batch",) . showValue <$> Anon.get #round_batch fullArgs,
+               ("prefetch_buffer",) . showValue <$>
+                 Anon.get #prefetch_buffer fullArgs,
+               ("ctx",) . showValue <$> Anon.get #ctx fullArgs,
+               ("dtype",) . showValue <$> Anon.get #dtype fullArgs,
+               ("resize",) . showValue <$> Anon.get #resize fullArgs,
+               ("rand_crop",) . showValue <$> Anon.get #rand_crop fullArgs,
+               ("random_resized_crop",) . showValue <$>
+                 Anon.get #random_resized_crop fullArgs,
+               ("max_rotate_angle",) . showValue <$>
+                 Anon.get #max_rotate_angle fullArgs,
+               ("max_aspect_ratio",) . showValue <$>
+                 Anon.get #max_aspect_ratio fullArgs,
+               ("min_aspect_ratio",) . showValue <$>
+                 Anon.get #min_aspect_ratio fullArgs,
+               ("max_shear_ratio",) . showValue <$>
+                 Anon.get #max_shear_ratio fullArgs,
+               ("max_crop_size",) . showValue <$>
+                 Anon.get #max_crop_size fullArgs,
+               ("min_crop_size",) . showValue <$>
+                 Anon.get #min_crop_size fullArgs,
+               ("max_random_scale",) . showValue <$>
+                 Anon.get #max_random_scale fullArgs,
+               ("min_random_scale",) . showValue <$>
+                 Anon.get #min_random_scale fullArgs,
+               ("max_random_area",) . showValue <$>
+                 Anon.get #max_random_area fullArgs,
+               ("min_random_area",) . showValue <$>
+                 Anon.get #min_random_area fullArgs,
+               ("max_img_size",) . showValue <$> Anon.get #max_img_size fullArgs,
+               ("min_img_size",) . showValue <$> Anon.get #min_img_size fullArgs,
+               ("brightness",) . showValue <$> Anon.get #brightness fullArgs,
+               ("contrast",) . showValue <$> Anon.get #contrast fullArgs,
+               ("saturation",) . showValue <$> Anon.get #saturation fullArgs,
+               ("pca_noise",) . showValue <$> Anon.get #pca_noise fullArgs,
+               ("random_h",) . showValue <$> Anon.get #random_h fullArgs,
+               ("random_s",) . showValue <$> Anon.get #random_s fullArgs,
+               ("random_l",) . showValue <$> Anon.get #random_l fullArgs,
+               ("rotate",) . showValue <$> Anon.get #rotate fullArgs,
+               ("fill_value",) . showValue <$> Anon.get #fill_value fullArgs,
+               ("data_shape",) . showValue <$>
+                 Just (Anon.get #data_shape fullArgs),
+               ("inter_method",) . showValue <$> Anon.get #inter_method fullArgs,
+               ("pad",) . showValue <$> Anon.get #pad fullArgs]
         (keys, vals) = unzip scalarArgs
       in
       do dis <- mxListDataIters
@@ -867,18 +906,22 @@ _LibSVMIter args
   = let fullArgs
           = paramListWithDefault (Proxy @(ParameterList_LibSVMIter)) args
         scalarArgs
-          = [("data_libsvm",) . showValue $ Anon.get #data_libsvm fullArgs,
-             ("data_shape",) . showValue $ Anon.get #data_shape fullArgs,
-             ("label_libsvm",) . showValue $ Anon.get #label_libsvm fullArgs,
-             ("label_shape",) . showValue $ Anon.get #label_shape fullArgs,
-             ("num_parts",) . showValue $ Anon.get #num_parts fullArgs,
-             ("part_index",) . showValue $ Anon.get #part_index fullArgs,
-             ("batch_size",) . showValue $ Anon.get #batch_size fullArgs,
-             ("round_batch",) . showValue $ Anon.get #round_batch fullArgs,
-             ("prefetch_buffer",) . showValue $
-               Anon.get #prefetch_buffer fullArgs,
-             ("ctx",) . showValue $ Anon.get #ctx fullArgs,
-             ("dtype",) . showValue $ Anon.get #dtype fullArgs]
+          = catMaybes
+              [("data_libsvm",) . showValue <$>
+                 Just (Anon.get #data_libsvm fullArgs),
+               ("data_shape",) . showValue <$>
+                 Just (Anon.get #data_shape fullArgs),
+               ("label_libsvm",) . showValue <$> Anon.get #label_libsvm fullArgs,
+               ("label_shape",) . showValue <$> Anon.get #label_shape fullArgs,
+               ("num_parts",) . showValue <$> Anon.get #num_parts fullArgs,
+               ("part_index",) . showValue <$> Anon.get #part_index fullArgs,
+               ("batch_size",) . showValue <$>
+                 Just (Anon.get #batch_size fullArgs),
+               ("round_batch",) . showValue <$> Anon.get #round_batch fullArgs,
+               ("prefetch_buffer",) . showValue <$>
+                 Anon.get #prefetch_buffer fullArgs,
+               ("ctx",) . showValue <$> Anon.get #ctx fullArgs,
+               ("dtype",) . showValue <$> Anon.get #dtype fullArgs]
         (keys, vals) = unzip scalarArgs
       in
       do dis <- mxListDataIters
@@ -906,19 +949,20 @@ _MNISTIter args
   = let fullArgs
           = paramListWithDefault (Proxy @(ParameterList_MNISTIter)) args
         scalarArgs
-          = [("image",) . showValue $ Anon.get #image fullArgs,
-             ("label",) . showValue $ Anon.get #label fullArgs,
-             ("batch_size",) . showValue $ Anon.get #batch_size fullArgs,
-             ("shuffle",) . showValue $ Anon.get #shuffle fullArgs,
-             ("flat",) . showValue $ Anon.get #flat fullArgs,
-             ("seed",) . showValue $ Anon.get #seed fullArgs,
-             ("silent",) . showValue $ Anon.get #silent fullArgs,
-             ("num_parts",) . showValue $ Anon.get #num_parts fullArgs,
-             ("part_index",) . showValue $ Anon.get #part_index fullArgs,
-             ("prefetch_buffer",) . showValue $
-               Anon.get #prefetch_buffer fullArgs,
-             ("ctx",) . showValue $ Anon.get #ctx fullArgs,
-             ("dtype",) . showValue $ Anon.get #dtype fullArgs]
+          = catMaybes
+              [("image",) . showValue <$> Anon.get #image fullArgs,
+               ("label",) . showValue <$> Anon.get #label fullArgs,
+               ("batch_size",) . showValue <$> Anon.get #batch_size fullArgs,
+               ("shuffle",) . showValue <$> Anon.get #shuffle fullArgs,
+               ("flat",) . showValue <$> Anon.get #flat fullArgs,
+               ("seed",) . showValue <$> Anon.get #seed fullArgs,
+               ("silent",) . showValue <$> Anon.get #silent fullArgs,
+               ("num_parts",) . showValue <$> Anon.get #num_parts fullArgs,
+               ("part_index",) . showValue <$> Anon.get #part_index fullArgs,
+               ("prefetch_buffer",) . showValue <$>
+                 Anon.get #prefetch_buffer fullArgs,
+               ("ctx",) . showValue <$> Anon.get #ctx fullArgs,
+               ("dtype",) . showValue <$> Anon.get #dtype fullArgs]
         (keys, vals) = unzip scalarArgs
       in
       do dis <- mxListDataIters

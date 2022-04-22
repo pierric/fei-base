@@ -332,15 +332,16 @@ genDataIter (dataitercreator, index) = do
         fullargs = buildFullParamsStruct diname [] (var $ name "args")
 
         --  [("KEY",) . showValue $ (Anon.get args #KEY), ... ]
-        scalarArgs = listE ([infixApp (infixApp (tupleSection [Just $ strE argkey, Nothing])
+        scalarArgs = function "catMaybes" `app`
+                     listE ([infixApp (infixApp (tupleSection [Just $ strE argkey, Nothing])
                                                 (op $ sym ".")
                                                 (function "showValue"))
-                                      (op $ sym "$")
-                                      (appE (qvar (moduleName "Anon") (name "get")) [
+                                      (op $ sym "<$>")
+                                      (attrToMaybe attr $ appE (qvar (moduleName "Anon") (name "get")) [
                                          (OverloadedLabel () argkey),
                                          var (name "fullArgs")
                                       ])
-                            | (argkey, _, typ) <- scalarTypes])
+                            | (argkey, attr, typ) <- scalarTypes])
 
         body = letE ([
                 patBind (pvar $ name "fullArgs") fullargs
