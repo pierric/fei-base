@@ -1,3 +1,4 @@
+{-# LANGUAGE AllowAmbiguousTypes   #-}
 {-# LANGUAGE ConstraintKinds       #-}
 {-# LANGUAGE FlexibleInstances     #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
@@ -9,25 +10,29 @@
 {-# OPTIONS_GHC -fplugin=Data.Record.Anon.Plugin #-}
 module MXNet.Base.Core.Spec where
 
-import           Data.Primitive.SmallArray (smallArrayFromList)
+import           Data.Primitive.SmallArray        (smallArrayFromList)
 import           Data.Record.Anon
-import qualified Data.Record.Anon.Advanced as AAnon
-import           Data.Record.Anon.Simple   (Record)
-import qualified Data.Record.Anon.Simple   as Anon
-import qualified Data.Record.Generic       as G (Generic (..), Rep (..))
+import qualified Data.Record.Anon.Advanced        as AAnon
+import           Data.Record.Anon.Simple          (Record)
+import qualified Data.Record.Anon.Simple          as Anon
+import qualified Data.Record.Generic              as G (Generic (..), Rep (..))
+import qualified Data.Record.Generic.Rep.Internal as G (noInlineUnsafeCo)
 import           Data.Type.Bool
 import           Data.Type.Equality
-import           GHC.Exts                  (Any, Constraint)
-import           GHC.TypeLits              (CmpSymbol, ErrorMessage ((:<>:)),
-                                            Symbol, TypeError, symbolVal)
-import qualified GHC.TypeLits              as Lit (ErrorMessage (..))
+import           GHC.Exts                         (Any, Constraint)
+import           GHC.OverloadedLabels
+import           GHC.TypeLits                     (CmpSymbol,
+                                                   ErrorMessage ((:<>:)),
+                                                   KnownNat, Nat, Symbol,
+                                                   TypeError, natVal, symbolVal)
+import qualified GHC.TypeLits                     as Lit
 import           RIO
-import           RIO.List                  (intersperse)
-import qualified RIO.Text                  as RT
-import           Unsafe.Coerce             (unsafeCoerce)
+import           RIO.List                         (intersperse)
+import qualified RIO.Text                         as RT
+import           Unsafe.Coerce                    (unsafeCoerce)
 
 import           MXNet.Base.Core.Enum
-import           MXNet.Base.Types          (DType)
+import           MXNet.Base.Types                 (DType)
 
 
 data Attr where
@@ -45,35 +50,19 @@ type family FindOrFail (pl :: [(Symbol, Attr)]) (key :: Symbol) (e :: ErrorMessa
   FindOrFail '[] _ e = TypeError e
   FindOrFail ('(s, a) ': pl) key e = If (CmpSymbol s key == EQ) a (FindOrFail pl key e)
 
--- type family FullfilledWalk pl rec (cc :: Constraint) :: Constraint where
---     FullfilledWalk '[] rec cc = cc
---     FullfilledWalk ('(name, AttrReq pt) ': pl) rec cc = FullfilledWalk pl rec (RowHasField name rec pt, cc)
---     FullfilledWalk ('(name, AttrOpt pt) ': pl) rec cc = FullfilledWalk pl rec (RowHasField name rec (Maybe pt), cc)
---
--- type Fullfilled pl rec = FullfilledWalk pl rec ()
+type family ParamListReq (pl :: [(Symbol, Attr)]) :: [(Symbol, Attr)] where
+    ParamListReq '[] = '[]
+    ParamListReq ('(s, AttrReq t) ': pl) = '(s, AttrReq t) ': ParamListReq pl
+    ParamListReq ('(s, AttrOpt t) ': pl) = ParamListReq pl
 
--- type family HasKeysWalk pl rec (keys :: [Symbol]) (cc :: Constraint) :: Constraint where
---     HasKeysWalk pl rec '[] cc = cc
---     HasKeysWalk pl rec (k ': keys) cc = HasKeysWalk pl rec keys (RowHasField k rec (ParameterType (ResolveParameter pl k)), cc)
---
--- type HasKeys pl rec keys = HasKeysWalk pl rec keys ()
---
--- type family NotInRow (rec :: Row k) (key :: Symbol) :: Constraint where
---     NotInRow '[] key = ()
---     NotInRow ((name := _) ': rec) key = If (CmpSymbol name key == EQ) (TypeError (Text "Parameter '" :<>: Text key :<>: Text " should not be specified")) (NotInRow rec key)
---
--- type family NoKeysWalk (rec :: Row *) (keys :: [Symbol]) (cc :: Constraint) :: Constraint where
---     NoKeysWalk rec '[] cc = cc
---     NoKeysWalk rec (k ': keys) cc = NoKeysWalk rec keys (NotInRow rec k, cc)
---
--- type NoKeys rec keys = NoKeysWalk rec keys ()
---
-type family FieldsFull (pl :: [(Symbol, Attr)]) :: Row * where
-    FieldsFull '[] = '[]
-    FieldsFull ('(s, AttrReq t) ': pl) = s := t ': FieldsFull pl
-    FieldsFull ('(s, AttrOpt t) ': pl) = s := Maybe t ': FieldsFull pl
+type family ParamListOpt (pl :: [(Symbol, Attr)]) :: [(Symbol, Attr)] where
+    ParamListOpt '[] = '[]
+    ParamListOpt ('(s, AttrReq t) ': pl) = ParamListOpt pl
+    ParamListOpt ('(s, AttrOpt t) ': pl) = '(s, AttrOpt t) ': ParamListOpt pl
 
-type ParamListFull pl = Record (FieldsFull pl)
+type FieldsFull pl = ParamListToFields pl
+type FieldsReq  pl = ParamListToFields (ParamListReq pl)
+type FieldsOpt  pl = ParamListToFields (ParamListOpt pl)
 
 type family FieldsInc (pl :: [(Symbol, Attr)]) (keys :: [Symbol]) :: Row * where
     FieldsInc pl '[] = '[]
@@ -83,33 +72,71 @@ type family FieldsExc (pl :: [(Symbol, Attr)]) (keys :: [Symbol]) :: Row * where
     FieldsExc '[] keys = '[]
     FieldsExc ('(s, p) ': pl) keys = If (Member s keys) (FieldsExc pl keys) (s := ParameterType p ': FieldsExc pl keys)
 
-type ParamListInc pl keys = Record (FieldsInc pl keys)
-type ParamListExc pl keys = Record (FieldsExc pl keys)
-
 type family FieldsMin (pl :: [(Symbol, Attr)]) :: Row * where
     FieldsMin '[] = '[]
     FieldsMin ('(s, AttrReq t) ': pl) = s := t ': FieldsMin pl
     FieldsMin ('(s, AttrOpt t) ': pl) = FieldsMin pl
 
-class ParamHasDefault (pl :: [(Symbol, Attr)]) where
-    defaultValues :: Proxy pl -> [I Any]
+type FieldsAcc pl rec = (SubRow rec (FieldsMin pl), SubRow (FieldsFull pl) rec, KnownFields rec)
 
-instance ParamHasDefault '[] where
-    defaultValues _ = []
+class KnownSize (es :: [k]) where
+    reifyLen :: Proxy es -> Int
 
-instance (ParamHasDefault pl, KnownSymbol k) => ParamHasDefault ('(k, AttrReq (t :: *)) ': pl) where
-    defaultValues _ = I (unsafeCoerce undefined): defaultValues (Proxy @ pl)
+instance KnownSize '[] where
+    reifyLen _ = 0
 
-instance (ParamHasDefault pl, KnownSymbol k) => ParamHasDefault ('(k, AttrOpt (t :: *)) ': pl) where
-    defaultValues _ = I (unsafeCoerce Nothing): defaultValues (Proxy @ pl)
+instance KnownSize es => KnownSize (e ': es) where
+    reifyLen _ = 1 + (reifyLen $ Proxy @es)
 
-type FieldsAcc pl rec = (SubRow rec (FieldsMin pl), SubRow (FieldsFull pl) rec)
+class KnownParamList (pl :: [(Symbol, Attr)]) where
+    type ParamListToFields  pl :: Row *
+    reifyFields :: Proxy pl -> AAnon.Record (K String) (ParamListToFields pl)
 
-paramListWithDefault :: forall pl r. (KnownFields (FieldsFull pl), ParamHasDefault pl, FieldsAcc pl r) => Proxy pl -> Record r -> Record (FieldsFull pl)
-paramListWithDefault dummy r = Anon.inject r (paramListDefaults dummy)
+instance KnownParamList '[] where
+    type ParamListToFields '[] = '[]
+    reifyFields _ = AAnon.empty
 
-paramListDefaults :: forall pl. (KnownFields (FieldsFull pl), ParamHasDefault pl) => Proxy pl -> Record (FieldsFull pl)
-paramListDefaults dummy = G.to $ G.Rep $ smallArrayFromList $ defaultValues dummy
+instance (KnownSymbol k, KnownHash k, KnownParamList pl) => KnownParamList ('(k, AttrOpt (v :: *)) ': pl) where
+    type ParamListToFields ('(k, AttrOpt v) ': pl) = k := Maybe v ': ParamListToFields pl
+    reifyFields _ = let key = K $ symbolVal $ Proxy @k :: K String (Maybe v)
+                        rem = reifyFields (Proxy @pl) :: AAnon.Record (K String) (ParamListToFields pl)
+                     in AAnon.insert (fromLabel @k) key rem
+
+instance (KnownSymbol k, KnownHash k, KnownParamList pl) => KnownParamList ('(k, AttrReq (v :: *)) ': pl) where
+    type ParamListToFields ('(k, AttrReq v) ': pl) = k := v ': ParamListToFields pl
+    reifyFields _ = let key = K $ symbolVal $ Proxy @k :: K String v
+                        rem = reifyFields (Proxy @pl) :: AAnon.Record (K String) (ParamListToFields pl)
+                     in AAnon.insert (fromLabel @k) key rem
+
+paramListDefaults :: forall pl. (HasCallStack, KnownSize pl, KnownParamList (ParamListOpt pl))
+                  => Proxy pl -> Record (FieldsOpt pl)
+paramListDefaults dummy =
+    let omitted = I (unsafeCoerce Nothing)
+        cnt = reifyLen $ Proxy @pl
+     in case AAnon.reflectKnownFields $ reifyFields $ Proxy @(ParamListOpt pl) of
+            Reflected -> G.to $ G.Rep $ smallArrayFromList $ replicate cnt omitted
+
+--
+-- TODO: Any better implementation?
+--
+-- This function fills in the optional argument with the default value Nothing. It relies on
+-- the internal implementation of the Record. It seems not ideal, because it converts to the
+-- internal rep, looking up in the provided args, and converts back to Record.
+--
+-- Alternative method can be simply merge with the result of paramListDefaults, but it is
+-- very hard to prove that:
+--
+-- |- SubRow r (FieldsMin pl) => SubRow (Merge r (FieldsOpt pl)) (FieldsFull pl)
+--
+paramListWithDefault :: forall pl r. (HasCallStack, KnownParamList pl, FieldsAcc pl r)
+                     => Proxy pl -> Record r -> Record (FieldsFull pl)
+paramListWithDefault dummy args =
+    let args_kv   = AAnon.toList $ AAnon.map (\(I x) -> K $ I $ (G.noInlineUnsafeCo x :: Any)) $ Anon.toAdvanced args
+        opt_def   = I $ G.noInlineUnsafeCo Nothing :: I Any
+        full_keys = reifyFields $ Proxy @pl
+        full_vals = [fromMaybe opt_def $ lookup k args_kv | k <- AAnon.collapse full_keys]
+     in case AAnon.reflectKnownFields full_keys of
+            Reflected -> G.to $ G.Rep $ smallArrayFromList full_vals
 
 class Value a where
     showValue :: a -> Text
@@ -176,21 +203,21 @@ args3 = ANON {a = 3, b = Just "Hello"}
 args4 :: Record '[ "a" := Int, "c" := EnumType '["c1","c2"] ]
 args4 = ANON {a = 3, c = #c1}
 
-fn1 :: ParamListFull (ParamList'fn t u) -> _
+fn1 :: Record (FieldsFull (ParamList'fn t u)) -> _
 fn1 = Anon.get #b
 
-fn2 :: ParamListInc (ParamList'fn t u) '["b"] -> Maybe String
+fn2 :: Record (FieldsInc (ParamList'fn t u) '["b"]) -> Maybe String
 fn2 args = fn1 $ Anon.project $ Anon.insert #a 3 $ Anon.insert #c #c1 args
 
-fn3 :: ParamListInc (ParamList'fn t u) '["b", "c"] -> _
+fn3 :: Record (FieldsInc (ParamList'fn t u) '["b", "c"]) -> _
 fn3 args = fn1 $ Anon.project $ Anon.merge (ANON {a =3, b = Nothing}) args
 
-fn4 :: ParamListExc (ParamList'fn t u) '["a"] -> _
+fn4 :: Record (FieldsExc (ParamList'fn t u) '["a"]) -> _
 fn4 args = fn1 $ Anon.project $ Anon.merge (ANON {a =3}) args
 
-fn5 :: FieldsAcc (ParamList'fn t u) r => Record r -> _
-fn5 args = fn1 $ Anon.inject args (ANON {a = undefined, b = Nothing, c = undefined})
+fn5 :: forall t u r. FieldsAcc (ParamList'fn t u) r => Record r -> _
+fn5 args = fn1 $ paramListWithDefault (Proxy @(ParamList'fn t u)) args
 
-fn6 :: FieldsAcc (ParamList'fn t u) r => Record r -> _
-fn6 args = let args' = Anon.inject args (ANON {a = undefined, b = Nothing, c = undefined}) :: ParamListFull (ParamList'fn t u)
+fn6 :: forall t u r. FieldsAcc (ParamList'fn t u) r => Record r -> _
+fn6 args = let args' = paramListWithDefault (Proxy @(ParamList'fn t u)) args
             in Anon.get #b args'

@@ -28,6 +28,10 @@ import           MXNet.Base.Types             (Context (..), DType (..),
                                                ForeignData (..), NumericDType,
                                                contextCPU)
 
+
+import           MXNet.Base.Core.Spec
+import           MXNet.Base.Operators.Tensor  (ParameterList__copyto)
+
 newtype NDArray a = NDArray { unNDArray :: I.NDArrayHandle}
     deriving (Generic, Generic1, Show)
 instance ForeignData (NDArray a) where
@@ -153,6 +157,7 @@ toContext arr cxt = do
     then return arr
     else do
         narr <- makeNDArrayLike arr cxt
+        let d = paramListWithDefault (Proxy @(ParameterList__copyto NDArray a)) (ANON{_data = arr})
         void $ __copyto @NDArray @a ANON{_data = arr} (Just [narr])
         return narr
 

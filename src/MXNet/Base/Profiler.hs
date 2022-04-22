@@ -9,6 +9,7 @@ module MXNet.Base.Profiler (
     stats,
 ) where
 
+import           Data.Record.Anon.Simple (Record)
 import           RIO
 
 import           MXNet.Base.Core.Spec
@@ -30,7 +31,7 @@ type ParamListProfilerConfig = [
   ]
 
 setConfig :: (HasCallStack, Dump (FieldsFull ParamListProfilerConfig))
-          => ParamListFull ParamListProfilerConfig -> IO ()
+          => Record (FieldsFull ParamListProfilerConfig) -> IO ()
 setConfig args = do
     let kwargs = dump args
     mxSetProfilerConfig kwargs

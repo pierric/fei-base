@@ -34,7 +34,7 @@ class DType dtype => Optimizer (opt :: * -> *) dtype where
                   -> Record args
                   -> m (opt dtype)
     -- | run the optimizer with the input & expected tensor
-    optimize :: (MonadState Statistics m, MonadIO m)
+    optimize :: (HasCallStack, MonadState Statistics m, MonadIO m)
              => opt dtype                            -- optimizer
              -> Text                                 -- symbol name to optimize
              -> NDArray dtype                        -- parameter
@@ -53,12 +53,11 @@ type instance OptimizerCst SGD dtype rec =
      SubRow (FieldsFull (T.ParameterList_sgd_update NDArray dtype)) rec)
 
 instance DType dtype => Optimizer SGD dtype where
-    type OptimizerTag SGD = "SGD"
+    type OptimizerTag SGD = "sgd"
     makeOptimizer _ sch args = return $ SGD sch args
     optimize (SGD sch args) _ weight gradient = do
         nup <- use stat_num_upd
         let lr = getLR sch nup
         stat_last_lr .= lr
-        let defaults = paramListDefaults (Proxy @ (T.ParameterList_sgd_update NDArray dtype))
-            args' = Anon.inject (ANON{weight = Just weight, grad = Just gradient, lr = lr}) $ Anon.inject args defaults
-        liftIO $ void $ T._sgd_update @NDArray @dtype args' $ Just [weight]
+        let args_def = paramListWithDefault (Proxy @ (T.ParameterList_sgd_update NDArray dtype)) (ANON{weight = Just weight, grad = Just gradient, lr = lr})
+        liftIO $ void $ T._sgd_update @NDArray @dtype (Anon.inject args args_def) $ Just [weight]

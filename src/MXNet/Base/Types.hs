@@ -1,6 +1,8 @@
 {-# LANGUAGE CPP                    #-}
 {-# LANGUAGE ConstraintKinds        #-}
 {-# LANGUAGE DataKinds              #-}
+{-# LANGUAGE FlexibleInstances      #-}
+{-# LANGUAGE MultiParamTypeClasses  #-}
 {-# LANGUAGE PolyKinds              #-}
 {-# LANGUAGE TypeFamilyDependencies #-}
 {-# LANGUAGE TypeOperators          #-}
@@ -8,6 +10,7 @@
 module MXNet.Base.Types where
 
 import           Data.Proxy           (Proxy (..))
+import           GHC.OverloadedLabels
 import           GHC.TypeLits         (KnownSymbol, Symbol)
 import           RIO
 import           RIO.Vector.Unboxed   (Unbox)
@@ -31,6 +34,9 @@ class (Storable a,
     typename a = Proxy
 
     flag :: a -> Int
+
+instance a ~ b => IsLabel a (Proxy b) where
+  fromLabel = Proxy
 
 instance DType Float where
     type DTypeName Float = "float32"

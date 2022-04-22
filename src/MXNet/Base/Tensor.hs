@@ -1,6 +1,7 @@
 module MXNet.Base.Tensor(
     module MXNet.Base.Tensor.Class,
     module MXNet.Base.NDArray,
+    module MXNet.Base.Tensor.Functional,
     Symbol,
     SymbolClass(..),
 ) where
