@@ -69,7 +69,9 @@ library
                        rio,
                        store,
                        data-default-class,
-                       type-sets,
+                       large-anon,
+                       large-generics,
+                       primitive,
                        resourcet,
                        conduit >= 1.2 && < 1.4,
                        conduit-combinators >= 1.1.2 && < 1.4,
@@ -96,19 +98,18 @@ library
                        MXNet.Base.Raw,
                        MXNet.Base.Types,
                        MXNet.Base.ParserUtils,
+                       MXNet.Base.Core.Spec,
                        MXNet.Base.Symbol,
                        MXNet.Base.NDArray,
-                       MXNet.Base.AutoGrad,
-                       MXNet.Base.Tensor,
-                       MXNet.Base.Tensor.Functional,
                        MXNet.Base.Executor,
-                       MXNet.Base.Spec.Operator,
-                       MXNet.Base.Spec.HMap
                        MXNet.Base.Operators.Tensor,
                        MXNet.Base.DataIter,
                        MXNet.Base.Profiler
   if flag(mxnet_geq_10600) || flag(mxnet_geq_10700) || flag(mxnet_geq_10800) {
-    exposed-modules:   MXNet.NN.Types,
+    exposed-modules:   MXNet.Base.Tensor,
+                       MXNet.Base.Tensor.Functional,
+                       MXNet.Base.AutoGrad,
+                       MXNet.NN.Types,
                        MXNet.NN.LrScheduler,
                        MXNet.NN.Optimizer,
                        MXNet.NN.Initializer,
@@ -126,7 +127,8 @@ library
                        MXNet.Base.Raw.Executor,
                        MXNet.Base.Raw.DataIter,
                        MXNet.Base.Raw.Profiler,
-                       MXNet.Base.Tensor.Class
+                       MXNet.Base.Tensor.Class,
+                       MXNet.Base.Core.Enum
   extra-libraries:     mxnet
 
 executable mxnet-op-gen
@@ -140,7 +142,7 @@ executable mxnet-op-gen
                        MXNet.Base.Raw.AutoGrad,
                        MXNet.Base.Raw.DataIter
   build-depends:       base >= 4.7 && < 5,
-                       optparse-applicative >= 0.14 && < 0.16,
+                       optparse-applicative >= 0.14 && < 0.17,
                        haskell-src-exts >= 1.22,
                        hslogger >= 1.2,
                        tuple-ops == 0.0.0.4,

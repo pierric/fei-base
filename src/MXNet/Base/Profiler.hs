@@ -9,14 +9,15 @@ module MXNet.Base.Profiler (
     stats,
 ) where
 
+import           Data.Record.Anon.Simple (Record)
 import           RIO
 
-import           MXNet.Base.Raw.Common    (flagSafeToFree)
+import           MXNet.Base.Core.Spec
+import           MXNet.Base.Raw.Common   (flagSafeToFree)
 import           MXNet.Base.Raw.Profiler
-import           MXNet.Base.Spec.Operator
 
 
-type instance ParameterList "profiler_config" t = [
+type ParamListProfilerConfig = [
   '("filename", AttrReq String),
   '("gpu_memory_profile_filename_prefix", AttrOpt String),
   '("profile_all", AttrReq Bool),
@@ -29,8 +30,8 @@ type instance ParameterList "profiler_config" t = [
   '("aggregate_stats", AttrOpt Bool)
   ]
 
-setConfig :: (HasCallStack, Fullfilled "profiler_config" t args, Dump (ArgsHMap "profiler_config" t args))
-          => ArgsHMap "profiler_config" t args -> IO ()
+setConfig :: (HasCallStack, Dump (FieldsFull ParamListProfilerConfig))
+          => Record (FieldsFull ParamListProfilerConfig) -> IO ()
 setConfig args = do
     let kwargs = dump args
     mxSetProfilerConfig kwargs

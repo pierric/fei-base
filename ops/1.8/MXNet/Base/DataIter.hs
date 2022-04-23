@@ -1,14 +1,20 @@
+{-# LANGUAGE AllowAmbiguousTypes, PolyKinds, TypeOperators,
+  TypeApplications #-}
+{-# OPTIONS_GHC -fplugin=Data.Record.Anon.Plugin#-}
 module MXNet.Base.DataIter where
 import RIO
 import RIO.List
 import RIO.List.Partial ((!!))
-import MXNet.Base.Types (DType)
 import MXNet.Base.Raw
-import MXNet.Base.Spec.Operator
-import MXNet.Base.Spec.HMap
+import MXNet.Base.Core.Spec
+import MXNet.Base.Core.Enum
+import MXNet.Base.Tensor.Class
+import MXNet.Base.Types (DType)
 import Data.Maybe (catMaybes, fromMaybe)
+import Data.Record.Anon.Simple (Record)
+import qualified Data.Record.Anon.Simple as Anon
 
-type instance ParameterList "_CSVIter" dummy =
+type ParameterList_CSVIter =
      '[ '("data_csv", AttrReq Text), '("data_shape", AttrReq [Int]),
         '("label_csv", AttrOpt Text), '("label_shape", AttrOpt [Int]),
         '("batch_size", AttrReq Int), '("round_batch", AttrOpt Bool),
@@ -22,38 +28,32 @@ type instance ParameterList "_CSVIter" dummy =
                     "int8", "uint8"])))]
 
 _CSVIter ::
-         forall a . Fullfilled "_CSVIter" () a =>
-           ArgsHMap "_CSVIter" () a -> IO DataIterHandle
+         forall r . (FieldsAcc ParameterList_CSVIter r, HasCallStack) =>
+           Record r -> IO DataIterHandle
 _CSVIter args
-  = let allargs
+  = let fullArgs
+          = paramListWithDefault (Proxy @(ParameterList_CSVIter)) args
+        scalarArgs
           = catMaybes
-              [("data_csv",) . showValue <$> (args !? #data_csv :: Maybe Text),
+              [("data_csv",) . showValue <$> Just (Anon.get #data_csv fullArgs),
                ("data_shape",) . showValue <$>
-                 (args !? #data_shape :: Maybe [Int]),
-               ("label_csv",) . showValue <$> (args !? #label_csv :: Maybe Text),
-               ("label_shape",) . showValue <$>
-                 (args !? #label_shape :: Maybe [Int]),
-               ("batch_size",) . showValue <$> (args !? #batch_size :: Maybe Int),
-               ("round_batch",) . showValue <$>
-                 (args !? #round_batch :: Maybe Bool),
+                 Just (Anon.get #data_shape fullArgs),
+               ("label_csv",) . showValue <$> Anon.get #label_csv fullArgs,
+               ("label_shape",) . showValue <$> Anon.get #label_shape fullArgs,
+               ("batch_size",) . showValue <$>
+                 Just (Anon.get #batch_size fullArgs),
+               ("round_batch",) . showValue <$> Anon.get #round_batch fullArgs,
                ("prefetch_buffer",) . showValue <$>
-                 (args !? #prefetch_buffer :: Maybe Int),
-               ("ctx",) . showValue <$>
-                 (args !? #ctx :: Maybe (EnumType '["cpu", "gpu"])),
-               ("dtype",) . showValue <$>
-                 (args !? #dtype ::
-                    Maybe
-                      (Maybe
-                         (EnumType
-                            '["bfloat16", "float16", "float32", "float64", "int32", "int64",
-                              "int8", "uint8"])))]
-        (keys, vals) = unzip allargs
+                 Anon.get #prefetch_buffer fullArgs,
+               ("ctx",) . showValue <$> Anon.get #ctx fullArgs,
+               ("dtype",) . showValue <$> Anon.get #dtype fullArgs]
+        (keys, vals) = unzip scalarArgs
       in
       do dis <- mxListDataIters
          di <- return (dis !! 0)
          mxDataIterCreateIter di keys vals
 
-type instance ParameterList "_ImageDetRecordIter" dummy =
+type ParameterList_ImageDetRecordIter =
      '[ '("path_imglist", AttrOpt Text), '("path_imgrec", AttrOpt Text),
         '("aug_seq", AttrOpt Text), '("label_width", AttrOpt Int),
         '("data_shape", AttrReq [Int]),
@@ -109,131 +109,121 @@ type instance ParameterList "_ImageDetRecordIter" dummy =
         '("scale", AttrOpt Float), '("verbose", AttrOpt Bool)]
 
 _ImageDetRecordIter ::
-                    forall a . Fullfilled "_ImageDetRecordIter" () a =>
-                      ArgsHMap "_ImageDetRecordIter" () a -> IO DataIterHandle
+                    forall r .
+                      (FieldsAcc ParameterList_ImageDetRecordIter r, HasCallStack) =>
+                      Record r -> IO DataIterHandle
 _ImageDetRecordIter args
-  = let allargs
+  = let fullArgs
+          = paramListWithDefault (Proxy @(ParameterList_ImageDetRecordIter))
+              args
+        scalarArgs
           = catMaybes
-              [("path_imglist",) . showValue <$>
-                 (args !? #path_imglist :: Maybe Text),
-               ("path_imgrec",) . showValue <$>
-                 (args !? #path_imgrec :: Maybe Text),
-               ("aug_seq",) . showValue <$> (args !? #aug_seq :: Maybe Text),
-               ("label_width",) . showValue <$>
-                 (args !? #label_width :: Maybe Int),
+              [("path_imglist",) . showValue <$> Anon.get #path_imglist fullArgs,
+               ("path_imgrec",) . showValue <$> Anon.get #path_imgrec fullArgs,
+               ("aug_seq",) . showValue <$> Anon.get #aug_seq fullArgs,
+               ("label_width",) . showValue <$> Anon.get #label_width fullArgs,
                ("data_shape",) . showValue <$>
-                 (args !? #data_shape :: Maybe [Int]),
+                 Just (Anon.get #data_shape fullArgs),
                ("preprocess_threads",) . showValue <$>
-                 (args !? #preprocess_threads :: Maybe Int),
-               ("verbose",) . showValue <$> (args !? #verbose :: Maybe Bool),
-               ("num_parts",) . showValue <$> (args !? #num_parts :: Maybe Int),
-               ("part_index",) . showValue <$> (args !? #part_index :: Maybe Int),
+                 Anon.get #preprocess_threads fullArgs,
+               ("verbose",) . showValue <$> Anon.get #verbose fullArgs,
+               ("num_parts",) . showValue <$> Anon.get #num_parts fullArgs,
+               ("part_index",) . showValue <$> Anon.get #part_index fullArgs,
                ("shuffle_chunk_size",) . showValue <$>
-                 (args !? #shuffle_chunk_size :: Maybe Int),
+                 Anon.get #shuffle_chunk_size fullArgs,
                ("shuffle_chunk_seed",) . showValue <$>
-                 (args !? #shuffle_chunk_seed :: Maybe Int),
+                 Anon.get #shuffle_chunk_seed fullArgs,
                ("label_pad_width",) . showValue <$>
-                 (args !? #label_pad_width :: Maybe Int),
+                 Anon.get #label_pad_width fullArgs,
                ("label_pad_value",) . showValue <$>
-                 (args !? #label_pad_value :: Maybe Float),
-               ("shuffle",) . showValue <$> (args !? #shuffle :: Maybe Bool),
-               ("seed",) . showValue <$> (args !? #seed :: Maybe Int),
-               ("verbose",) . showValue <$> (args !? #verbose :: Maybe Bool),
-               ("batch_size",) . showValue <$> (args !? #batch_size :: Maybe Int),
-               ("round_batch",) . showValue <$>
-                 (args !? #round_batch :: Maybe Bool),
+                 Anon.get #label_pad_value fullArgs,
+               ("shuffle",) . showValue <$> Anon.get #shuffle fullArgs,
+               ("seed",) . showValue <$> Anon.get #seed fullArgs,
+               ("verbose",) . showValue <$> Anon.get #verbose fullArgs,
+               ("batch_size",) . showValue <$>
+                 Just (Anon.get #batch_size fullArgs),
+               ("round_batch",) . showValue <$> Anon.get #round_batch fullArgs,
                ("prefetch_buffer",) . showValue <$>
-                 (args !? #prefetch_buffer :: Maybe Int),
-               ("ctx",) . showValue <$>
-                 (args !? #ctx :: Maybe (EnumType '["cpu", "gpu"])),
-               ("dtype",) . showValue <$>
-                 (args !? #dtype ::
-                    Maybe
-                      (Maybe
-                         (EnumType
-                            '["bfloat16", "float16", "float32", "float64", "int32", "int64",
-                              "int8", "uint8"]))),
-               ("resize",) . showValue <$> (args !? #resize :: Maybe Int),
+                 Anon.get #prefetch_buffer fullArgs,
+               ("ctx",) . showValue <$> Anon.get #ctx fullArgs,
+               ("dtype",) . showValue <$> Anon.get #dtype fullArgs,
+               ("resize",) . showValue <$> Anon.get #resize fullArgs,
                ("rand_crop_prob",) . showValue <$>
-                 (args !? #rand_crop_prob :: Maybe Float),
+                 Anon.get #rand_crop_prob fullArgs,
                ("min_crop_scales",) . showValue <$>
-                 (args !? #min_crop_scales :: Maybe [Float]),
+                 Anon.get #min_crop_scales fullArgs,
                ("max_crop_scales",) . showValue <$>
-                 (args !? #max_crop_scales :: Maybe [Float]),
+                 Anon.get #max_crop_scales fullArgs,
                ("min_crop_aspect_ratios",) . showValue <$>
-                 (args !? #min_crop_aspect_ratios :: Maybe [Float]),
+                 Anon.get #min_crop_aspect_ratios fullArgs,
                ("max_crop_aspect_ratios",) . showValue <$>
-                 (args !? #max_crop_aspect_ratios :: Maybe [Float]),
+                 Anon.get #max_crop_aspect_ratios fullArgs,
                ("min_crop_overlaps",) . showValue <$>
-                 (args !? #min_crop_overlaps :: Maybe [Float]),
+                 Anon.get #min_crop_overlaps fullArgs,
                ("max_crop_overlaps",) . showValue <$>
-                 (args !? #max_crop_overlaps :: Maybe [Float]),
+                 Anon.get #max_crop_overlaps fullArgs,
                ("min_crop_sample_coverages",) . showValue <$>
-                 (args !? #min_crop_sample_coverages :: Maybe [Float]),
+                 Anon.get #min_crop_sample_coverages fullArgs,
                ("max_crop_sample_coverages",) . showValue <$>
-                 (args !? #max_crop_sample_coverages :: Maybe [Float]),
+                 Anon.get #max_crop_sample_coverages fullArgs,
                ("min_crop_object_coverages",) . showValue <$>
-                 (args !? #min_crop_object_coverages :: Maybe [Float]),
+                 Anon.get #min_crop_object_coverages fullArgs,
                ("max_crop_object_coverages",) . showValue <$>
-                 (args !? #max_crop_object_coverages :: Maybe [Float]),
+                 Anon.get #max_crop_object_coverages fullArgs,
                ("num_crop_sampler",) . showValue <$>
-                 (args !? #num_crop_sampler :: Maybe Int),
+                 Anon.get #num_crop_sampler fullArgs,
                ("crop_emit_mode",) . showValue <$>
-                 (args !? #crop_emit_mode ::
-                    Maybe (EnumType '["center", "overlap"])),
+                 Anon.get #crop_emit_mode fullArgs,
                ("emit_overlap_thresh",) . showValue <$>
-                 (args !? #emit_overlap_thresh :: Maybe Float),
+                 Anon.get #emit_overlap_thresh fullArgs,
                ("max_crop_trials",) . showValue <$>
-                 (args !? #max_crop_trials :: Maybe [Int]),
+                 Anon.get #max_crop_trials fullArgs,
                ("rand_pad_prob",) . showValue <$>
-                 (args !? #rand_pad_prob :: Maybe Float),
+                 Anon.get #rand_pad_prob fullArgs,
                ("max_pad_scale",) . showValue <$>
-                 (args !? #max_pad_scale :: Maybe Float),
+                 Anon.get #max_pad_scale fullArgs,
                ("max_random_hue",) . showValue <$>
-                 (args !? #max_random_hue :: Maybe Int),
+                 Anon.get #max_random_hue fullArgs,
                ("random_hue_prob",) . showValue <$>
-                 (args !? #random_hue_prob :: Maybe Float),
+                 Anon.get #random_hue_prob fullArgs,
                ("max_random_saturation",) . showValue <$>
-                 (args !? #max_random_saturation :: Maybe Int),
+                 Anon.get #max_random_saturation fullArgs,
                ("random_saturation_prob",) . showValue <$>
-                 (args !? #random_saturation_prob :: Maybe Float),
+                 Anon.get #random_saturation_prob fullArgs,
                ("max_random_illumination",) . showValue <$>
-                 (args !? #max_random_illumination :: Maybe Int),
+                 Anon.get #max_random_illumination fullArgs,
                ("random_illumination_prob",) . showValue <$>
-                 (args !? #random_illumination_prob :: Maybe Float),
+                 Anon.get #random_illumination_prob fullArgs,
                ("max_random_contrast",) . showValue <$>
-                 (args !? #max_random_contrast :: Maybe Float),
+                 Anon.get #max_random_contrast fullArgs,
                ("random_contrast_prob",) . showValue <$>
-                 (args !? #random_contrast_prob :: Maybe Float),
+                 Anon.get #random_contrast_prob fullArgs,
                ("rand_mirror_prob",) . showValue <$>
-                 (args !? #rand_mirror_prob :: Maybe Float),
-               ("fill_value",) . showValue <$> (args !? #fill_value :: Maybe Int),
-               ("inter_method",) . showValue <$>
-                 (args !? #inter_method :: Maybe Int),
+                 Anon.get #rand_mirror_prob fullArgs,
+               ("fill_value",) . showValue <$> Anon.get #fill_value fullArgs,
+               ("inter_method",) . showValue <$> Anon.get #inter_method fullArgs,
                ("data_shape",) . showValue <$>
-                 (args !? #data_shape :: Maybe [Int]),
-               ("resize_mode",) . showValue <$>
-                 (args !? #resize_mode ::
-                    Maybe (EnumType '["fit", "force", "shrink"])),
-               ("seed",) . showValue <$> (args !? #seed :: Maybe Int),
-               ("mean_img",) . showValue <$> (args !? #mean_img :: Maybe Text),
-               ("mean_r",) . showValue <$> (args !? #mean_r :: Maybe Float),
-               ("mean_g",) . showValue <$> (args !? #mean_g :: Maybe Float),
-               ("mean_b",) . showValue <$> (args !? #mean_b :: Maybe Float),
-               ("mean_a",) . showValue <$> (args !? #mean_a :: Maybe Float),
-               ("std_r",) . showValue <$> (args !? #std_r :: Maybe Float),
-               ("std_g",) . showValue <$> (args !? #std_g :: Maybe Float),
-               ("std_b",) . showValue <$> (args !? #std_b :: Maybe Float),
-               ("std_a",) . showValue <$> (args !? #std_a :: Maybe Float),
-               ("scale",) . showValue <$> (args !? #scale :: Maybe Float),
-               ("verbose",) . showValue <$> (args !? #verbose :: Maybe Bool)]
-        (keys, vals) = unzip allargs
+                 Just (Anon.get #data_shape fullArgs),
+               ("resize_mode",) . showValue <$> Anon.get #resize_mode fullArgs,
+               ("seed",) . showValue <$> Anon.get #seed fullArgs,
+               ("mean_img",) . showValue <$> Anon.get #mean_img fullArgs,
+               ("mean_r",) . showValue <$> Anon.get #mean_r fullArgs,
+               ("mean_g",) . showValue <$> Anon.get #mean_g fullArgs,
+               ("mean_b",) . showValue <$> Anon.get #mean_b fullArgs,
+               ("mean_a",) . showValue <$> Anon.get #mean_a fullArgs,
+               ("std_r",) . showValue <$> Anon.get #std_r fullArgs,
+               ("std_g",) . showValue <$> Anon.get #std_g fullArgs,
+               ("std_b",) . showValue <$> Anon.get #std_b fullArgs,
+               ("std_a",) . showValue <$> Anon.get #std_a fullArgs,
+               ("scale",) . showValue <$> Anon.get #scale fullArgs,
+               ("verbose",) . showValue <$> Anon.get #verbose fullArgs]
+        (keys, vals) = unzip scalarArgs
       in
       do dis <- mxListDataIters
          di <- return (dis !! 1)
          mxDataIterCreateIter di keys vals
 
-type instance ParameterList "_ImageRecordIter_v1" dummy =
+type ParameterList_ImageRecordIter_v1 =
      '[ '("path_imglist", AttrOpt Text), '("path_imgrec", AttrOpt Text),
         '("path_imgidx", AttrOpt Text), '("aug_seq", AttrOpt Text),
         '("label_width", AttrOpt Int), '("data_shape", AttrReq [Int]),
@@ -281,121 +271,107 @@ type instance ParameterList "_ImageRecordIter_v1" dummy =
         '("verbose", AttrOpt Bool)]
 
 _ImageRecordIter_v1 ::
-                    forall a . Fullfilled "_ImageRecordIter_v1" () a =>
-                      ArgsHMap "_ImageRecordIter_v1" () a -> IO DataIterHandle
+                    forall r .
+                      (FieldsAcc ParameterList_ImageRecordIter_v1 r, HasCallStack) =>
+                      Record r -> IO DataIterHandle
 _ImageRecordIter_v1 args
-  = let allargs
+  = let fullArgs
+          = paramListWithDefault (Proxy @(ParameterList_ImageRecordIter_v1))
+              args
+        scalarArgs
           = catMaybes
-              [("path_imglist",) . showValue <$>
-                 (args !? #path_imglist :: Maybe Text),
-               ("path_imgrec",) . showValue <$>
-                 (args !? #path_imgrec :: Maybe Text),
-               ("path_imgidx",) . showValue <$>
-                 (args !? #path_imgidx :: Maybe Text),
-               ("aug_seq",) . showValue <$> (args !? #aug_seq :: Maybe Text),
-               ("label_width",) . showValue <$>
-                 (args !? #label_width :: Maybe Int),
+              [("path_imglist",) . showValue <$> Anon.get #path_imglist fullArgs,
+               ("path_imgrec",) . showValue <$> Anon.get #path_imgrec fullArgs,
+               ("path_imgidx",) . showValue <$> Anon.get #path_imgidx fullArgs,
+               ("aug_seq",) . showValue <$> Anon.get #aug_seq fullArgs,
+               ("label_width",) . showValue <$> Anon.get #label_width fullArgs,
                ("data_shape",) . showValue <$>
-                 (args !? #data_shape :: Maybe [Int]),
+                 Just (Anon.get #data_shape fullArgs),
                ("preprocess_threads",) . showValue <$>
-                 (args !? #preprocess_threads :: Maybe Int),
-               ("verbose",) . showValue <$> (args !? #verbose :: Maybe Bool),
-               ("num_parts",) . showValue <$> (args !? #num_parts :: Maybe Int),
-               ("part_index",) . showValue <$> (args !? #part_index :: Maybe Int),
-               ("device_id",) . showValue <$> (args !? #device_id :: Maybe Int),
+                 Anon.get #preprocess_threads fullArgs,
+               ("verbose",) . showValue <$> Anon.get #verbose fullArgs,
+               ("num_parts",) . showValue <$> Anon.get #num_parts fullArgs,
+               ("part_index",) . showValue <$> Anon.get #part_index fullArgs,
+               ("device_id",) . showValue <$> Anon.get #device_id fullArgs,
                ("shuffle_chunk_size",) . showValue <$>
-                 (args !? #shuffle_chunk_size :: Maybe Int),
+                 Anon.get #shuffle_chunk_size fullArgs,
                ("shuffle_chunk_seed",) . showValue <$>
-                 (args !? #shuffle_chunk_seed :: Maybe Int),
-               ("seed_aug",) . showValue <$>
-                 (args !? #seed_aug :: Maybe (Maybe Int)),
-               ("shuffle",) . showValue <$> (args !? #shuffle :: Maybe Bool),
-               ("seed",) . showValue <$> (args !? #seed :: Maybe Int),
-               ("verbose",) . showValue <$> (args !? #verbose :: Maybe Bool),
-               ("batch_size",) . showValue <$> (args !? #batch_size :: Maybe Int),
-               ("round_batch",) . showValue <$>
-                 (args !? #round_batch :: Maybe Bool),
+                 Anon.get #shuffle_chunk_seed fullArgs,
+               ("seed_aug",) . showValue <$> Anon.get #seed_aug fullArgs,
+               ("shuffle",) . showValue <$> Anon.get #shuffle fullArgs,
+               ("seed",) . showValue <$> Anon.get #seed fullArgs,
+               ("verbose",) . showValue <$> Anon.get #verbose fullArgs,
+               ("batch_size",) . showValue <$>
+                 Just (Anon.get #batch_size fullArgs),
+               ("round_batch",) . showValue <$> Anon.get #round_batch fullArgs,
                ("prefetch_buffer",) . showValue <$>
-                 (args !? #prefetch_buffer :: Maybe Int),
-               ("ctx",) . showValue <$>
-                 (args !? #ctx :: Maybe (EnumType '["cpu", "gpu"])),
-               ("dtype",) . showValue <$>
-                 (args !? #dtype ::
-                    Maybe
-                      (Maybe
-                         (EnumType
-                            '["bfloat16", "float16", "float32", "float64", "int32", "int64",
-                              "int8", "uint8"]))),
-               ("resize",) . showValue <$> (args !? #resize :: Maybe Int),
-               ("rand_crop",) . showValue <$> (args !? #rand_crop :: Maybe Bool),
+                 Anon.get #prefetch_buffer fullArgs,
+               ("ctx",) . showValue <$> Anon.get #ctx fullArgs,
+               ("dtype",) . showValue <$> Anon.get #dtype fullArgs,
+               ("resize",) . showValue <$> Anon.get #resize fullArgs,
+               ("rand_crop",) . showValue <$> Anon.get #rand_crop fullArgs,
                ("random_resized_crop",) . showValue <$>
-                 (args !? #random_resized_crop :: Maybe Bool),
+                 Anon.get #random_resized_crop fullArgs,
                ("max_rotate_angle",) . showValue <$>
-                 (args !? #max_rotate_angle :: Maybe Int),
+                 Anon.get #max_rotate_angle fullArgs,
                ("max_aspect_ratio",) . showValue <$>
-                 (args !? #max_aspect_ratio :: Maybe Float),
+                 Anon.get #max_aspect_ratio fullArgs,
                ("min_aspect_ratio",) . showValue <$>
-                 (args !? #min_aspect_ratio :: Maybe (Maybe Float)),
+                 Anon.get #min_aspect_ratio fullArgs,
                ("max_shear_ratio",) . showValue <$>
-                 (args !? #max_shear_ratio :: Maybe Float),
+                 Anon.get #max_shear_ratio fullArgs,
                ("max_crop_size",) . showValue <$>
-                 (args !? #max_crop_size :: Maybe Int),
+                 Anon.get #max_crop_size fullArgs,
                ("min_crop_size",) . showValue <$>
-                 (args !? #min_crop_size :: Maybe Int),
+                 Anon.get #min_crop_size fullArgs,
                ("max_random_scale",) . showValue <$>
-                 (args !? #max_random_scale :: Maybe Float),
+                 Anon.get #max_random_scale fullArgs,
                ("min_random_scale",) . showValue <$>
-                 (args !? #min_random_scale :: Maybe Float),
+                 Anon.get #min_random_scale fullArgs,
                ("max_random_area",) . showValue <$>
-                 (args !? #max_random_area :: Maybe Float),
+                 Anon.get #max_random_area fullArgs,
                ("min_random_area",) . showValue <$>
-                 (args !? #min_random_area :: Maybe Float),
-               ("max_img_size",) . showValue <$>
-                 (args !? #max_img_size :: Maybe Float),
-               ("min_img_size",) . showValue <$>
-                 (args !? #min_img_size :: Maybe Float),
-               ("brightness",) . showValue <$>
-                 (args !? #brightness :: Maybe Float),
-               ("contrast",) . showValue <$> (args !? #contrast :: Maybe Float),
-               ("saturation",) . showValue <$>
-                 (args !? #saturation :: Maybe Float),
-               ("pca_noise",) . showValue <$> (args !? #pca_noise :: Maybe Float),
-               ("random_h",) . showValue <$> (args !? #random_h :: Maybe Int),
-               ("random_s",) . showValue <$> (args !? #random_s :: Maybe Int),
-               ("random_l",) . showValue <$> (args !? #random_l :: Maybe Int),
-               ("rotate",) . showValue <$> (args !? #rotate :: Maybe Int),
-               ("fill_value",) . showValue <$> (args !? #fill_value :: Maybe Int),
+                 Anon.get #min_random_area fullArgs,
+               ("max_img_size",) . showValue <$> Anon.get #max_img_size fullArgs,
+               ("min_img_size",) . showValue <$> Anon.get #min_img_size fullArgs,
+               ("brightness",) . showValue <$> Anon.get #brightness fullArgs,
+               ("contrast",) . showValue <$> Anon.get #contrast fullArgs,
+               ("saturation",) . showValue <$> Anon.get #saturation fullArgs,
+               ("pca_noise",) . showValue <$> Anon.get #pca_noise fullArgs,
+               ("random_h",) . showValue <$> Anon.get #random_h fullArgs,
+               ("random_s",) . showValue <$> Anon.get #random_s fullArgs,
+               ("random_l",) . showValue <$> Anon.get #random_l fullArgs,
+               ("rotate",) . showValue <$> Anon.get #rotate fullArgs,
+               ("fill_value",) . showValue <$> Anon.get #fill_value fullArgs,
                ("data_shape",) . showValue <$>
-                 (args !? #data_shape :: Maybe [Int]),
-               ("inter_method",) . showValue <$>
-                 (args !? #inter_method :: Maybe Int),
-               ("pad",) . showValue <$> (args !? #pad :: Maybe Int),
-               ("seed",) . showValue <$> (args !? #seed :: Maybe Int),
-               ("mirror",) . showValue <$> (args !? #mirror :: Maybe Bool),
-               ("rand_mirror",) . showValue <$>
-                 (args !? #rand_mirror :: Maybe Bool),
-               ("mean_img",) . showValue <$> (args !? #mean_img :: Maybe Text),
-               ("mean_r",) . showValue <$> (args !? #mean_r :: Maybe Float),
-               ("mean_g",) . showValue <$> (args !? #mean_g :: Maybe Float),
-               ("mean_b",) . showValue <$> (args !? #mean_b :: Maybe Float),
-               ("mean_a",) . showValue <$> (args !? #mean_a :: Maybe Float),
-               ("std_r",) . showValue <$> (args !? #std_r :: Maybe Float),
-               ("std_g",) . showValue <$> (args !? #std_g :: Maybe Float),
-               ("std_b",) . showValue <$> (args !? #std_b :: Maybe Float),
-               ("std_a",) . showValue <$> (args !? #std_a :: Maybe Float),
-               ("scale",) . showValue <$> (args !? #scale :: Maybe Float),
+                 Just (Anon.get #data_shape fullArgs),
+               ("inter_method",) . showValue <$> Anon.get #inter_method fullArgs,
+               ("pad",) . showValue <$> Anon.get #pad fullArgs,
+               ("seed",) . showValue <$> Anon.get #seed fullArgs,
+               ("mirror",) . showValue <$> Anon.get #mirror fullArgs,
+               ("rand_mirror",) . showValue <$> Anon.get #rand_mirror fullArgs,
+               ("mean_img",) . showValue <$> Anon.get #mean_img fullArgs,
+               ("mean_r",) . showValue <$> Anon.get #mean_r fullArgs,
+               ("mean_g",) . showValue <$> Anon.get #mean_g fullArgs,
+               ("mean_b",) . showValue <$> Anon.get #mean_b fullArgs,
+               ("mean_a",) . showValue <$> Anon.get #mean_a fullArgs,
+               ("std_r",) . showValue <$> Anon.get #std_r fullArgs,
+               ("std_g",) . showValue <$> Anon.get #std_g fullArgs,
+               ("std_b",) . showValue <$> Anon.get #std_b fullArgs,
+               ("std_a",) . showValue <$> Anon.get #std_a fullArgs,
+               ("scale",) . showValue <$> Anon.get #scale fullArgs,
                ("max_random_contrast",) . showValue <$>
-                 (args !? #max_random_contrast :: Maybe Float),
+                 Anon.get #max_random_contrast fullArgs,
                ("max_random_illumination",) . showValue <$>
-                 (args !? #max_random_illumination :: Maybe Float),
-               ("verbose",) . showValue <$> (args !? #verbose :: Maybe Bool)]
-        (keys, vals) = unzip allargs
+                 Anon.get #max_random_illumination fullArgs,
+               ("verbose",) . showValue <$> Anon.get #verbose fullArgs]
+        (keys, vals) = unzip scalarArgs
       in
       do dis <- mxListDataIters
          di <- return (dis !! 2)
          mxDataIterCreateIter di keys vals
 
-type instance ParameterList "_ImageRecordUInt8Iter_v1" dummy =
+type ParameterList_ImageRecordUInt8Iter_v1 =
      '[ '("path_imglist", AttrOpt Text), '("path_imgrec", AttrOpt Text),
         '("path_imgidx", AttrOpt Text), '("aug_seq", AttrOpt Text),
         '("label_width", AttrOpt Int), '("data_shape", AttrReq [Int]),
@@ -434,102 +410,91 @@ type instance ParameterList "_ImageRecordUInt8Iter_v1" dummy =
         '("inter_method", AttrOpt Int), '("pad", AttrOpt Int)]
 
 _ImageRecordUInt8Iter_v1 ::
-                         forall a . Fullfilled "_ImageRecordUInt8Iter_v1" () a =>
-                           ArgsHMap "_ImageRecordUInt8Iter_v1" () a -> IO DataIterHandle
+                         forall r .
+                           (FieldsAcc ParameterList_ImageRecordUInt8Iter_v1 r,
+                            HasCallStack) =>
+                           Record r -> IO DataIterHandle
 _ImageRecordUInt8Iter_v1 args
-  = let allargs
+  = let fullArgs
+          = paramListWithDefault
+              (Proxy @(ParameterList_ImageRecordUInt8Iter_v1))
+              args
+        scalarArgs
           = catMaybes
-              [("path_imglist",) . showValue <$>
-                 (args !? #path_imglist :: Maybe Text),
-               ("path_imgrec",) . showValue <$>
-                 (args !? #path_imgrec :: Maybe Text),
-               ("path_imgidx",) . showValue <$>
-                 (args !? #path_imgidx :: Maybe Text),
-               ("aug_seq",) . showValue <$> (args !? #aug_seq :: Maybe Text),
-               ("label_width",) . showValue <$>
-                 (args !? #label_width :: Maybe Int),
+              [("path_imglist",) . showValue <$> Anon.get #path_imglist fullArgs,
+               ("path_imgrec",) . showValue <$> Anon.get #path_imgrec fullArgs,
+               ("path_imgidx",) . showValue <$> Anon.get #path_imgidx fullArgs,
+               ("aug_seq",) . showValue <$> Anon.get #aug_seq fullArgs,
+               ("label_width",) . showValue <$> Anon.get #label_width fullArgs,
                ("data_shape",) . showValue <$>
-                 (args !? #data_shape :: Maybe [Int]),
+                 Just (Anon.get #data_shape fullArgs),
                ("preprocess_threads",) . showValue <$>
-                 (args !? #preprocess_threads :: Maybe Int),
-               ("verbose",) . showValue <$> (args !? #verbose :: Maybe Bool),
-               ("num_parts",) . showValue <$> (args !? #num_parts :: Maybe Int),
-               ("part_index",) . showValue <$> (args !? #part_index :: Maybe Int),
-               ("device_id",) . showValue <$> (args !? #device_id :: Maybe Int),
+                 Anon.get #preprocess_threads fullArgs,
+               ("verbose",) . showValue <$> Anon.get #verbose fullArgs,
+               ("num_parts",) . showValue <$> Anon.get #num_parts fullArgs,
+               ("part_index",) . showValue <$> Anon.get #part_index fullArgs,
+               ("device_id",) . showValue <$> Anon.get #device_id fullArgs,
                ("shuffle_chunk_size",) . showValue <$>
-                 (args !? #shuffle_chunk_size :: Maybe Int),
+                 Anon.get #shuffle_chunk_size fullArgs,
                ("shuffle_chunk_seed",) . showValue <$>
-                 (args !? #shuffle_chunk_seed :: Maybe Int),
-               ("seed_aug",) . showValue <$>
-                 (args !? #seed_aug :: Maybe (Maybe Int)),
-               ("shuffle",) . showValue <$> (args !? #shuffle :: Maybe Bool),
-               ("seed",) . showValue <$> (args !? #seed :: Maybe Int),
-               ("verbose",) . showValue <$> (args !? #verbose :: Maybe Bool),
-               ("batch_size",) . showValue <$> (args !? #batch_size :: Maybe Int),
-               ("round_batch",) . showValue <$>
-                 (args !? #round_batch :: Maybe Bool),
+                 Anon.get #shuffle_chunk_seed fullArgs,
+               ("seed_aug",) . showValue <$> Anon.get #seed_aug fullArgs,
+               ("shuffle",) . showValue <$> Anon.get #shuffle fullArgs,
+               ("seed",) . showValue <$> Anon.get #seed fullArgs,
+               ("verbose",) . showValue <$> Anon.get #verbose fullArgs,
+               ("batch_size",) . showValue <$>
+                 Just (Anon.get #batch_size fullArgs),
+               ("round_batch",) . showValue <$> Anon.get #round_batch fullArgs,
                ("prefetch_buffer",) . showValue <$>
-                 (args !? #prefetch_buffer :: Maybe Int),
-               ("ctx",) . showValue <$>
-                 (args !? #ctx :: Maybe (EnumType '["cpu", "gpu"])),
-               ("dtype",) . showValue <$>
-                 (args !? #dtype ::
-                    Maybe
-                      (Maybe
-                         (EnumType
-                            '["bfloat16", "float16", "float32", "float64", "int32", "int64",
-                              "int8", "uint8"]))),
-               ("resize",) . showValue <$> (args !? #resize :: Maybe Int),
-               ("rand_crop",) . showValue <$> (args !? #rand_crop :: Maybe Bool),
+                 Anon.get #prefetch_buffer fullArgs,
+               ("ctx",) . showValue <$> Anon.get #ctx fullArgs,
+               ("dtype",) . showValue <$> Anon.get #dtype fullArgs,
+               ("resize",) . showValue <$> Anon.get #resize fullArgs,
+               ("rand_crop",) . showValue <$> Anon.get #rand_crop fullArgs,
                ("random_resized_crop",) . showValue <$>
-                 (args !? #random_resized_crop :: Maybe Bool),
+                 Anon.get #random_resized_crop fullArgs,
                ("max_rotate_angle",) . showValue <$>
-                 (args !? #max_rotate_angle :: Maybe Int),
+                 Anon.get #max_rotate_angle fullArgs,
                ("max_aspect_ratio",) . showValue <$>
-                 (args !? #max_aspect_ratio :: Maybe Float),
+                 Anon.get #max_aspect_ratio fullArgs,
                ("min_aspect_ratio",) . showValue <$>
-                 (args !? #min_aspect_ratio :: Maybe (Maybe Float)),
+                 Anon.get #min_aspect_ratio fullArgs,
                ("max_shear_ratio",) . showValue <$>
-                 (args !? #max_shear_ratio :: Maybe Float),
+                 Anon.get #max_shear_ratio fullArgs,
                ("max_crop_size",) . showValue <$>
-                 (args !? #max_crop_size :: Maybe Int),
+                 Anon.get #max_crop_size fullArgs,
                ("min_crop_size",) . showValue <$>
-                 (args !? #min_crop_size :: Maybe Int),
+                 Anon.get #min_crop_size fullArgs,
                ("max_random_scale",) . showValue <$>
-                 (args !? #max_random_scale :: Maybe Float),
+                 Anon.get #max_random_scale fullArgs,
                ("min_random_scale",) . showValue <$>
-                 (args !? #min_random_scale :: Maybe Float),
+                 Anon.get #min_random_scale fullArgs,
                ("max_random_area",) . showValue <$>
-                 (args !? #max_random_area :: Maybe Float),
+                 Anon.get #max_random_area fullArgs,
                ("min_random_area",) . showValue <$>
-                 (args !? #min_random_area :: Maybe Float),
-               ("max_img_size",) . showValue <$>
-                 (args !? #max_img_size :: Maybe Float),
-               ("min_img_size",) . showValue <$>
-                 (args !? #min_img_size :: Maybe Float),
-               ("brightness",) . showValue <$>
-                 (args !? #brightness :: Maybe Float),
-               ("contrast",) . showValue <$> (args !? #contrast :: Maybe Float),
-               ("saturation",) . showValue <$>
-                 (args !? #saturation :: Maybe Float),
-               ("pca_noise",) . showValue <$> (args !? #pca_noise :: Maybe Float),
-               ("random_h",) . showValue <$> (args !? #random_h :: Maybe Int),
-               ("random_s",) . showValue <$> (args !? #random_s :: Maybe Int),
-               ("random_l",) . showValue <$> (args !? #random_l :: Maybe Int),
-               ("rotate",) . showValue <$> (args !? #rotate :: Maybe Int),
-               ("fill_value",) . showValue <$> (args !? #fill_value :: Maybe Int),
+                 Anon.get #min_random_area fullArgs,
+               ("max_img_size",) . showValue <$> Anon.get #max_img_size fullArgs,
+               ("min_img_size",) . showValue <$> Anon.get #min_img_size fullArgs,
+               ("brightness",) . showValue <$> Anon.get #brightness fullArgs,
+               ("contrast",) . showValue <$> Anon.get #contrast fullArgs,
+               ("saturation",) . showValue <$> Anon.get #saturation fullArgs,
+               ("pca_noise",) . showValue <$> Anon.get #pca_noise fullArgs,
+               ("random_h",) . showValue <$> Anon.get #random_h fullArgs,
+               ("random_s",) . showValue <$> Anon.get #random_s fullArgs,
+               ("random_l",) . showValue <$> Anon.get #random_l fullArgs,
+               ("rotate",) . showValue <$> Anon.get #rotate fullArgs,
+               ("fill_value",) . showValue <$> Anon.get #fill_value fullArgs,
                ("data_shape",) . showValue <$>
-                 (args !? #data_shape :: Maybe [Int]),
-               ("inter_method",) . showValue <$>
-                 (args !? #inter_method :: Maybe Int),
-               ("pad",) . showValue <$> (args !? #pad :: Maybe Int)]
-        (keys, vals) = unzip allargs
+                 Just (Anon.get #data_shape fullArgs),
+               ("inter_method",) . showValue <$> Anon.get #inter_method fullArgs,
+               ("pad",) . showValue <$> Anon.get #pad fullArgs]
+        (keys, vals) = unzip scalarArgs
       in
       do dis <- mxListDataIters
          di <- return (dis !! 3)
          mxDataIterCreateIter di keys vals
 
-type instance ParameterList "_ImageRecordIter" dummy =
+type ParameterList_ImageRecordIter =
      '[ '("path_imglist", AttrOpt Text), '("path_imgrec", AttrOpt Text),
         '("path_imgidx", AttrOpt Text), '("aug_seq", AttrOpt Text),
         '("label_width", AttrOpt Int), '("data_shape", AttrReq [Int]),
@@ -577,121 +542,107 @@ type instance ParameterList "_ImageRecordIter" dummy =
         '("verbose", AttrOpt Bool)]
 
 _ImageRecordIter ::
-                 forall a . Fullfilled "_ImageRecordIter" () a =>
-                   ArgsHMap "_ImageRecordIter" () a -> IO DataIterHandle
+                 forall r .
+                   (FieldsAcc ParameterList_ImageRecordIter r, HasCallStack) =>
+                   Record r -> IO DataIterHandle
 _ImageRecordIter args
-  = let allargs
+  = let fullArgs
+          = paramListWithDefault (Proxy @(ParameterList_ImageRecordIter))
+              args
+        scalarArgs
           = catMaybes
-              [("path_imglist",) . showValue <$>
-                 (args !? #path_imglist :: Maybe Text),
-               ("path_imgrec",) . showValue <$>
-                 (args !? #path_imgrec :: Maybe Text),
-               ("path_imgidx",) . showValue <$>
-                 (args !? #path_imgidx :: Maybe Text),
-               ("aug_seq",) . showValue <$> (args !? #aug_seq :: Maybe Text),
-               ("label_width",) . showValue <$>
-                 (args !? #label_width :: Maybe Int),
+              [("path_imglist",) . showValue <$> Anon.get #path_imglist fullArgs,
+               ("path_imgrec",) . showValue <$> Anon.get #path_imgrec fullArgs,
+               ("path_imgidx",) . showValue <$> Anon.get #path_imgidx fullArgs,
+               ("aug_seq",) . showValue <$> Anon.get #aug_seq fullArgs,
+               ("label_width",) . showValue <$> Anon.get #label_width fullArgs,
                ("data_shape",) . showValue <$>
-                 (args !? #data_shape :: Maybe [Int]),
+                 Just (Anon.get #data_shape fullArgs),
                ("preprocess_threads",) . showValue <$>
-                 (args !? #preprocess_threads :: Maybe Int),
-               ("verbose",) . showValue <$> (args !? #verbose :: Maybe Bool),
-               ("num_parts",) . showValue <$> (args !? #num_parts :: Maybe Int),
-               ("part_index",) . showValue <$> (args !? #part_index :: Maybe Int),
-               ("device_id",) . showValue <$> (args !? #device_id :: Maybe Int),
+                 Anon.get #preprocess_threads fullArgs,
+               ("verbose",) . showValue <$> Anon.get #verbose fullArgs,
+               ("num_parts",) . showValue <$> Anon.get #num_parts fullArgs,
+               ("part_index",) . showValue <$> Anon.get #part_index fullArgs,
+               ("device_id",) . showValue <$> Anon.get #device_id fullArgs,
                ("shuffle_chunk_size",) . showValue <$>
-                 (args !? #shuffle_chunk_size :: Maybe Int),
+                 Anon.get #shuffle_chunk_size fullArgs,
                ("shuffle_chunk_seed",) . showValue <$>
-                 (args !? #shuffle_chunk_seed :: Maybe Int),
-               ("seed_aug",) . showValue <$>
-                 (args !? #seed_aug :: Maybe (Maybe Int)),
-               ("shuffle",) . showValue <$> (args !? #shuffle :: Maybe Bool),
-               ("seed",) . showValue <$> (args !? #seed :: Maybe Int),
-               ("verbose",) . showValue <$> (args !? #verbose :: Maybe Bool),
-               ("batch_size",) . showValue <$> (args !? #batch_size :: Maybe Int),
-               ("round_batch",) . showValue <$>
-                 (args !? #round_batch :: Maybe Bool),
+                 Anon.get #shuffle_chunk_seed fullArgs,
+               ("seed_aug",) . showValue <$> Anon.get #seed_aug fullArgs,
+               ("shuffle",) . showValue <$> Anon.get #shuffle fullArgs,
+               ("seed",) . showValue <$> Anon.get #seed fullArgs,
+               ("verbose",) . showValue <$> Anon.get #verbose fullArgs,
+               ("batch_size",) . showValue <$>
+                 Just (Anon.get #batch_size fullArgs),
+               ("round_batch",) . showValue <$> Anon.get #round_batch fullArgs,
                ("prefetch_buffer",) . showValue <$>
-                 (args !? #prefetch_buffer :: Maybe Int),
-               ("ctx",) . showValue <$>
-                 (args !? #ctx :: Maybe (EnumType '["cpu", "gpu"])),
-               ("dtype",) . showValue <$>
-                 (args !? #dtype ::
-                    Maybe
-                      (Maybe
-                         (EnumType
-                            '["bfloat16", "float16", "float32", "float64", "int32", "int64",
-                              "int8", "uint8"]))),
-               ("resize",) . showValue <$> (args !? #resize :: Maybe Int),
-               ("rand_crop",) . showValue <$> (args !? #rand_crop :: Maybe Bool),
+                 Anon.get #prefetch_buffer fullArgs,
+               ("ctx",) . showValue <$> Anon.get #ctx fullArgs,
+               ("dtype",) . showValue <$> Anon.get #dtype fullArgs,
+               ("resize",) . showValue <$> Anon.get #resize fullArgs,
+               ("rand_crop",) . showValue <$> Anon.get #rand_crop fullArgs,
                ("random_resized_crop",) . showValue <$>
-                 (args !? #random_resized_crop :: Maybe Bool),
+                 Anon.get #random_resized_crop fullArgs,
                ("max_rotate_angle",) . showValue <$>
-                 (args !? #max_rotate_angle :: Maybe Int),
+                 Anon.get #max_rotate_angle fullArgs,
                ("max_aspect_ratio",) . showValue <$>
-                 (args !? #max_aspect_ratio :: Maybe Float),
+                 Anon.get #max_aspect_ratio fullArgs,
                ("min_aspect_ratio",) . showValue <$>
-                 (args !? #min_aspect_ratio :: Maybe (Maybe Float)),
+                 Anon.get #min_aspect_ratio fullArgs,
                ("max_shear_ratio",) . showValue <$>
-                 (args !? #max_shear_ratio :: Maybe Float),
+                 Anon.get #max_shear_ratio fullArgs,
                ("max_crop_size",) . showValue <$>
-                 (args !? #max_crop_size :: Maybe Int),
+                 Anon.get #max_crop_size fullArgs,
                ("min_crop_size",) . showValue <$>
-                 (args !? #min_crop_size :: Maybe Int),
+                 Anon.get #min_crop_size fullArgs,
                ("max_random_scale",) . showValue <$>
-                 (args !? #max_random_scale :: Maybe Float),
+                 Anon.get #max_random_scale fullArgs,
                ("min_random_scale",) . showValue <$>
-                 (args !? #min_random_scale :: Maybe Float),
+                 Anon.get #min_random_scale fullArgs,
                ("max_random_area",) . showValue <$>
-                 (args !? #max_random_area :: Maybe Float),
+                 Anon.get #max_random_area fullArgs,
                ("min_random_area",) . showValue <$>
-                 (args !? #min_random_area :: Maybe Float),
-               ("max_img_size",) . showValue <$>
-                 (args !? #max_img_size :: Maybe Float),
-               ("min_img_size",) . showValue <$>
-                 (args !? #min_img_size :: Maybe Float),
-               ("brightness",) . showValue <$>
-                 (args !? #brightness :: Maybe Float),
-               ("contrast",) . showValue <$> (args !? #contrast :: Maybe Float),
-               ("saturation",) . showValue <$>
-                 (args !? #saturation :: Maybe Float),
-               ("pca_noise",) . showValue <$> (args !? #pca_noise :: Maybe Float),
-               ("random_h",) . showValue <$> (args !? #random_h :: Maybe Int),
-               ("random_s",) . showValue <$> (args !? #random_s :: Maybe Int),
-               ("random_l",) . showValue <$> (args !? #random_l :: Maybe Int),
-               ("rotate",) . showValue <$> (args !? #rotate :: Maybe Int),
-               ("fill_value",) . showValue <$> (args !? #fill_value :: Maybe Int),
+                 Anon.get #min_random_area fullArgs,
+               ("max_img_size",) . showValue <$> Anon.get #max_img_size fullArgs,
+               ("min_img_size",) . showValue <$> Anon.get #min_img_size fullArgs,
+               ("brightness",) . showValue <$> Anon.get #brightness fullArgs,
+               ("contrast",) . showValue <$> Anon.get #contrast fullArgs,
+               ("saturation",) . showValue <$> Anon.get #saturation fullArgs,
+               ("pca_noise",) . showValue <$> Anon.get #pca_noise fullArgs,
+               ("random_h",) . showValue <$> Anon.get #random_h fullArgs,
+               ("random_s",) . showValue <$> Anon.get #random_s fullArgs,
+               ("random_l",) . showValue <$> Anon.get #random_l fullArgs,
+               ("rotate",) . showValue <$> Anon.get #rotate fullArgs,
+               ("fill_value",) . showValue <$> Anon.get #fill_value fullArgs,
                ("data_shape",) . showValue <$>
-                 (args !? #data_shape :: Maybe [Int]),
-               ("inter_method",) . showValue <$>
-                 (args !? #inter_method :: Maybe Int),
-               ("pad",) . showValue <$> (args !? #pad :: Maybe Int),
-               ("seed",) . showValue <$> (args !? #seed :: Maybe Int),
-               ("mirror",) . showValue <$> (args !? #mirror :: Maybe Bool),
-               ("rand_mirror",) . showValue <$>
-                 (args !? #rand_mirror :: Maybe Bool),
-               ("mean_img",) . showValue <$> (args !? #mean_img :: Maybe Text),
-               ("mean_r",) . showValue <$> (args !? #mean_r :: Maybe Float),
-               ("mean_g",) . showValue <$> (args !? #mean_g :: Maybe Float),
-               ("mean_b",) . showValue <$> (args !? #mean_b :: Maybe Float),
-               ("mean_a",) . showValue <$> (args !? #mean_a :: Maybe Float),
-               ("std_r",) . showValue <$> (args !? #std_r :: Maybe Float),
-               ("std_g",) . showValue <$> (args !? #std_g :: Maybe Float),
-               ("std_b",) . showValue <$> (args !? #std_b :: Maybe Float),
-               ("std_a",) . showValue <$> (args !? #std_a :: Maybe Float),
-               ("scale",) . showValue <$> (args !? #scale :: Maybe Float),
+                 Just (Anon.get #data_shape fullArgs),
+               ("inter_method",) . showValue <$> Anon.get #inter_method fullArgs,
+               ("pad",) . showValue <$> Anon.get #pad fullArgs,
+               ("seed",) . showValue <$> Anon.get #seed fullArgs,
+               ("mirror",) . showValue <$> Anon.get #mirror fullArgs,
+               ("rand_mirror",) . showValue <$> Anon.get #rand_mirror fullArgs,
+               ("mean_img",) . showValue <$> Anon.get #mean_img fullArgs,
+               ("mean_r",) . showValue <$> Anon.get #mean_r fullArgs,
+               ("mean_g",) . showValue <$> Anon.get #mean_g fullArgs,
+               ("mean_b",) . showValue <$> Anon.get #mean_b fullArgs,
+               ("mean_a",) . showValue <$> Anon.get #mean_a fullArgs,
+               ("std_r",) . showValue <$> Anon.get #std_r fullArgs,
+               ("std_g",) . showValue <$> Anon.get #std_g fullArgs,
+               ("std_b",) . showValue <$> Anon.get #std_b fullArgs,
+               ("std_a",) . showValue <$> Anon.get #std_a fullArgs,
+               ("scale",) . showValue <$> Anon.get #scale fullArgs,
                ("max_random_contrast",) . showValue <$>
-                 (args !? #max_random_contrast :: Maybe Float),
+                 Anon.get #max_random_contrast fullArgs,
                ("max_random_illumination",) . showValue <$>
-                 (args !? #max_random_illumination :: Maybe Float),
-               ("verbose",) . showValue <$> (args !? #verbose :: Maybe Bool)]
-        (keys, vals) = unzip allargs
+                 Anon.get #max_random_illumination fullArgs,
+               ("verbose",) . showValue <$> Anon.get #verbose fullArgs]
+        (keys, vals) = unzip scalarArgs
       in
       do dis <- mxListDataIters
          di <- return (dis !! 4)
          mxDataIterCreateIter di keys vals
 
-type instance ParameterList "_ImageRecordUInt8Iter" dummy =
+type ParameterList_ImageRecordUInt8Iter =
      '[ '("path_imglist", AttrOpt Text), '("path_imgrec", AttrOpt Text),
         '("path_imgidx", AttrOpt Text), '("aug_seq", AttrOpt Text),
         '("label_width", AttrOpt Int), '("data_shape", AttrReq [Int]),
@@ -730,102 +681,90 @@ type instance ParameterList "_ImageRecordUInt8Iter" dummy =
         '("inter_method", AttrOpt Int), '("pad", AttrOpt Int)]
 
 _ImageRecordUInt8Iter ::
-                      forall a . Fullfilled "_ImageRecordUInt8Iter" () a =>
-                        ArgsHMap "_ImageRecordUInt8Iter" () a -> IO DataIterHandle
+                      forall r .
+                        (FieldsAcc ParameterList_ImageRecordUInt8Iter r, HasCallStack) =>
+                        Record r -> IO DataIterHandle
 _ImageRecordUInt8Iter args
-  = let allargs
+  = let fullArgs
+          = paramListWithDefault
+              (Proxy @(ParameterList_ImageRecordUInt8Iter))
+              args
+        scalarArgs
           = catMaybes
-              [("path_imglist",) . showValue <$>
-                 (args !? #path_imglist :: Maybe Text),
-               ("path_imgrec",) . showValue <$>
-                 (args !? #path_imgrec :: Maybe Text),
-               ("path_imgidx",) . showValue <$>
-                 (args !? #path_imgidx :: Maybe Text),
-               ("aug_seq",) . showValue <$> (args !? #aug_seq :: Maybe Text),
-               ("label_width",) . showValue <$>
-                 (args !? #label_width :: Maybe Int),
+              [("path_imglist",) . showValue <$> Anon.get #path_imglist fullArgs,
+               ("path_imgrec",) . showValue <$> Anon.get #path_imgrec fullArgs,
+               ("path_imgidx",) . showValue <$> Anon.get #path_imgidx fullArgs,
+               ("aug_seq",) . showValue <$> Anon.get #aug_seq fullArgs,
+               ("label_width",) . showValue <$> Anon.get #label_width fullArgs,
                ("data_shape",) . showValue <$>
-                 (args !? #data_shape :: Maybe [Int]),
+                 Just (Anon.get #data_shape fullArgs),
                ("preprocess_threads",) . showValue <$>
-                 (args !? #preprocess_threads :: Maybe Int),
-               ("verbose",) . showValue <$> (args !? #verbose :: Maybe Bool),
-               ("num_parts",) . showValue <$> (args !? #num_parts :: Maybe Int),
-               ("part_index",) . showValue <$> (args !? #part_index :: Maybe Int),
-               ("device_id",) . showValue <$> (args !? #device_id :: Maybe Int),
+                 Anon.get #preprocess_threads fullArgs,
+               ("verbose",) . showValue <$> Anon.get #verbose fullArgs,
+               ("num_parts",) . showValue <$> Anon.get #num_parts fullArgs,
+               ("part_index",) . showValue <$> Anon.get #part_index fullArgs,
+               ("device_id",) . showValue <$> Anon.get #device_id fullArgs,
                ("shuffle_chunk_size",) . showValue <$>
-                 (args !? #shuffle_chunk_size :: Maybe Int),
+                 Anon.get #shuffle_chunk_size fullArgs,
                ("shuffle_chunk_seed",) . showValue <$>
-                 (args !? #shuffle_chunk_seed :: Maybe Int),
-               ("seed_aug",) . showValue <$>
-                 (args !? #seed_aug :: Maybe (Maybe Int)),
-               ("shuffle",) . showValue <$> (args !? #shuffle :: Maybe Bool),
-               ("seed",) . showValue <$> (args !? #seed :: Maybe Int),
-               ("verbose",) . showValue <$> (args !? #verbose :: Maybe Bool),
-               ("batch_size",) . showValue <$> (args !? #batch_size :: Maybe Int),
-               ("round_batch",) . showValue <$>
-                 (args !? #round_batch :: Maybe Bool),
+                 Anon.get #shuffle_chunk_seed fullArgs,
+               ("seed_aug",) . showValue <$> Anon.get #seed_aug fullArgs,
+               ("shuffle",) . showValue <$> Anon.get #shuffle fullArgs,
+               ("seed",) . showValue <$> Anon.get #seed fullArgs,
+               ("verbose",) . showValue <$> Anon.get #verbose fullArgs,
+               ("batch_size",) . showValue <$>
+                 Just (Anon.get #batch_size fullArgs),
+               ("round_batch",) . showValue <$> Anon.get #round_batch fullArgs,
                ("prefetch_buffer",) . showValue <$>
-                 (args !? #prefetch_buffer :: Maybe Int),
-               ("ctx",) . showValue <$>
-                 (args !? #ctx :: Maybe (EnumType '["cpu", "gpu"])),
-               ("dtype",) . showValue <$>
-                 (args !? #dtype ::
-                    Maybe
-                      (Maybe
-                         (EnumType
-                            '["bfloat16", "float16", "float32", "float64", "int32", "int64",
-                              "int8", "uint8"]))),
-               ("resize",) . showValue <$> (args !? #resize :: Maybe Int),
-               ("rand_crop",) . showValue <$> (args !? #rand_crop :: Maybe Bool),
+                 Anon.get #prefetch_buffer fullArgs,
+               ("ctx",) . showValue <$> Anon.get #ctx fullArgs,
+               ("dtype",) . showValue <$> Anon.get #dtype fullArgs,
+               ("resize",) . showValue <$> Anon.get #resize fullArgs,
+               ("rand_crop",) . showValue <$> Anon.get #rand_crop fullArgs,
                ("random_resized_crop",) . showValue <$>
-                 (args !? #random_resized_crop :: Maybe Bool),
+                 Anon.get #random_resized_crop fullArgs,
                ("max_rotate_angle",) . showValue <$>
-                 (args !? #max_rotate_angle :: Maybe Int),
+                 Anon.get #max_rotate_angle fullArgs,
                ("max_aspect_ratio",) . showValue <$>
-                 (args !? #max_aspect_ratio :: Maybe Float),
+                 Anon.get #max_aspect_ratio fullArgs,
                ("min_aspect_ratio",) . showValue <$>
-                 (args !? #min_aspect_ratio :: Maybe (Maybe Float)),
+                 Anon.get #min_aspect_ratio fullArgs,
                ("max_shear_ratio",) . showValue <$>
-                 (args !? #max_shear_ratio :: Maybe Float),
+                 Anon.get #max_shear_ratio fullArgs,
                ("max_crop_size",) . showValue <$>
-                 (args !? #max_crop_size :: Maybe Int),
+                 Anon.get #max_crop_size fullArgs,
                ("min_crop_size",) . showValue <$>
-                 (args !? #min_crop_size :: Maybe Int),
+                 Anon.get #min_crop_size fullArgs,
                ("max_random_scale",) . showValue <$>
-                 (args !? #max_random_scale :: Maybe Float),
+                 Anon.get #max_random_scale fullArgs,
                ("min_random_scale",) . showValue <$>
-                 (args !? #min_random_scale :: Maybe Float),
+                 Anon.get #min_random_scale fullArgs,
                ("max_random_area",) . showValue <$>
-                 (args !? #max_random_area :: Maybe Float),
+                 Anon.get #max_random_area fullArgs,
                ("min_random_area",) . showValue <$>
-                 (args !? #min_random_area :: Maybe Float),
-               ("max_img_size",) . showValue <$>
-                 (args !? #max_img_size :: Maybe Float),
-               ("min_img_size",) . showValue <$>
-                 (args !? #min_img_size :: Maybe Float),
-               ("brightness",) . showValue <$>
-                 (args !? #brightness :: Maybe Float),
-               ("contrast",) . showValue <$> (args !? #contrast :: Maybe Float),
-               ("saturation",) . showValue <$>
-                 (args !? #saturation :: Maybe Float),
-               ("pca_noise",) . showValue <$> (args !? #pca_noise :: Maybe Float),
-               ("random_h",) . showValue <$> (args !? #random_h :: Maybe Int),
-               ("random_s",) . showValue <$> (args !? #random_s :: Maybe Int),
-               ("random_l",) . showValue <$> (args !? #random_l :: Maybe Int),
-               ("rotate",) . showValue <$> (args !? #rotate :: Maybe Int),
-               ("fill_value",) . showValue <$> (args !? #fill_value :: Maybe Int),
+                 Anon.get #min_random_area fullArgs,
+               ("max_img_size",) . showValue <$> Anon.get #max_img_size fullArgs,
+               ("min_img_size",) . showValue <$> Anon.get #min_img_size fullArgs,
+               ("brightness",) . showValue <$> Anon.get #brightness fullArgs,
+               ("contrast",) . showValue <$> Anon.get #contrast fullArgs,
+               ("saturation",) . showValue <$> Anon.get #saturation fullArgs,
+               ("pca_noise",) . showValue <$> Anon.get #pca_noise fullArgs,
+               ("random_h",) . showValue <$> Anon.get #random_h fullArgs,
+               ("random_s",) . showValue <$> Anon.get #random_s fullArgs,
+               ("random_l",) . showValue <$> Anon.get #random_l fullArgs,
+               ("rotate",) . showValue <$> Anon.get #rotate fullArgs,
+               ("fill_value",) . showValue <$> Anon.get #fill_value fullArgs,
                ("data_shape",) . showValue <$>
-                 (args !? #data_shape :: Maybe [Int]),
-               ("inter_method",) . showValue <$>
-                 (args !? #inter_method :: Maybe Int),
-               ("pad",) . showValue <$> (args !? #pad :: Maybe Int)]
-        (keys, vals) = unzip allargs
+                 Just (Anon.get #data_shape fullArgs),
+               ("inter_method",) . showValue <$> Anon.get #inter_method fullArgs,
+               ("pad",) . showValue <$> Anon.get #pad fullArgs]
+        (keys, vals) = unzip scalarArgs
       in
       do dis <- mxListDataIters
          di <- return (dis !! 5)
          mxDataIterCreateIter di keys vals
 
-type instance ParameterList "_ImageRecordInt8Iter" dummy =
+type ParameterList_ImageRecordInt8Iter =
      '[ '("path_imglist", AttrOpt Text), '("path_imgrec", AttrOpt Text),
         '("path_imgidx", AttrOpt Text), '("aug_seq", AttrOpt Text),
         '("label_width", AttrOpt Int), '("data_shape", AttrReq [Int]),
@@ -864,102 +803,89 @@ type instance ParameterList "_ImageRecordInt8Iter" dummy =
         '("inter_method", AttrOpt Int), '("pad", AttrOpt Int)]
 
 _ImageRecordInt8Iter ::
-                     forall a . Fullfilled "_ImageRecordInt8Iter" () a =>
-                       ArgsHMap "_ImageRecordInt8Iter" () a -> IO DataIterHandle
+                     forall r .
+                       (FieldsAcc ParameterList_ImageRecordInt8Iter r, HasCallStack) =>
+                       Record r -> IO DataIterHandle
 _ImageRecordInt8Iter args
-  = let allargs
+  = let fullArgs
+          = paramListWithDefault (Proxy @(ParameterList_ImageRecordInt8Iter))
+              args
+        scalarArgs
           = catMaybes
-              [("path_imglist",) . showValue <$>
-                 (args !? #path_imglist :: Maybe Text),
-               ("path_imgrec",) . showValue <$>
-                 (args !? #path_imgrec :: Maybe Text),
-               ("path_imgidx",) . showValue <$>
-                 (args !? #path_imgidx :: Maybe Text),
-               ("aug_seq",) . showValue <$> (args !? #aug_seq :: Maybe Text),
-               ("label_width",) . showValue <$>
-                 (args !? #label_width :: Maybe Int),
+              [("path_imglist",) . showValue <$> Anon.get #path_imglist fullArgs,
+               ("path_imgrec",) . showValue <$> Anon.get #path_imgrec fullArgs,
+               ("path_imgidx",) . showValue <$> Anon.get #path_imgidx fullArgs,
+               ("aug_seq",) . showValue <$> Anon.get #aug_seq fullArgs,
+               ("label_width",) . showValue <$> Anon.get #label_width fullArgs,
                ("data_shape",) . showValue <$>
-                 (args !? #data_shape :: Maybe [Int]),
+                 Just (Anon.get #data_shape fullArgs),
                ("preprocess_threads",) . showValue <$>
-                 (args !? #preprocess_threads :: Maybe Int),
-               ("verbose",) . showValue <$> (args !? #verbose :: Maybe Bool),
-               ("num_parts",) . showValue <$> (args !? #num_parts :: Maybe Int),
-               ("part_index",) . showValue <$> (args !? #part_index :: Maybe Int),
-               ("device_id",) . showValue <$> (args !? #device_id :: Maybe Int),
+                 Anon.get #preprocess_threads fullArgs,
+               ("verbose",) . showValue <$> Anon.get #verbose fullArgs,
+               ("num_parts",) . showValue <$> Anon.get #num_parts fullArgs,
+               ("part_index",) . showValue <$> Anon.get #part_index fullArgs,
+               ("device_id",) . showValue <$> Anon.get #device_id fullArgs,
                ("shuffle_chunk_size",) . showValue <$>
-                 (args !? #shuffle_chunk_size :: Maybe Int),
+                 Anon.get #shuffle_chunk_size fullArgs,
                ("shuffle_chunk_seed",) . showValue <$>
-                 (args !? #shuffle_chunk_seed :: Maybe Int),
-               ("seed_aug",) . showValue <$>
-                 (args !? #seed_aug :: Maybe (Maybe Int)),
-               ("shuffle",) . showValue <$> (args !? #shuffle :: Maybe Bool),
-               ("seed",) . showValue <$> (args !? #seed :: Maybe Int),
-               ("verbose",) . showValue <$> (args !? #verbose :: Maybe Bool),
-               ("batch_size",) . showValue <$> (args !? #batch_size :: Maybe Int),
-               ("round_batch",) . showValue <$>
-                 (args !? #round_batch :: Maybe Bool),
+                 Anon.get #shuffle_chunk_seed fullArgs,
+               ("seed_aug",) . showValue <$> Anon.get #seed_aug fullArgs,
+               ("shuffle",) . showValue <$> Anon.get #shuffle fullArgs,
+               ("seed",) . showValue <$> Anon.get #seed fullArgs,
+               ("verbose",) . showValue <$> Anon.get #verbose fullArgs,
+               ("batch_size",) . showValue <$>
+                 Just (Anon.get #batch_size fullArgs),
+               ("round_batch",) . showValue <$> Anon.get #round_batch fullArgs,
                ("prefetch_buffer",) . showValue <$>
-                 (args !? #prefetch_buffer :: Maybe Int),
-               ("ctx",) . showValue <$>
-                 (args !? #ctx :: Maybe (EnumType '["cpu", "gpu"])),
-               ("dtype",) . showValue <$>
-                 (args !? #dtype ::
-                    Maybe
-                      (Maybe
-                         (EnumType
-                            '["bfloat16", "float16", "float32", "float64", "int32", "int64",
-                              "int8", "uint8"]))),
-               ("resize",) . showValue <$> (args !? #resize :: Maybe Int),
-               ("rand_crop",) . showValue <$> (args !? #rand_crop :: Maybe Bool),
+                 Anon.get #prefetch_buffer fullArgs,
+               ("ctx",) . showValue <$> Anon.get #ctx fullArgs,
+               ("dtype",) . showValue <$> Anon.get #dtype fullArgs,
+               ("resize",) . showValue <$> Anon.get #resize fullArgs,
+               ("rand_crop",) . showValue <$> Anon.get #rand_crop fullArgs,
                ("random_resized_crop",) . showValue <$>
-                 (args !? #random_resized_crop :: Maybe Bool),
+                 Anon.get #random_resized_crop fullArgs,
                ("max_rotate_angle",) . showValue <$>
-                 (args !? #max_rotate_angle :: Maybe Int),
+                 Anon.get #max_rotate_angle fullArgs,
                ("max_aspect_ratio",) . showValue <$>
-                 (args !? #max_aspect_ratio :: Maybe Float),
+                 Anon.get #max_aspect_ratio fullArgs,
                ("min_aspect_ratio",) . showValue <$>
-                 (args !? #min_aspect_ratio :: Maybe (Maybe Float)),
+                 Anon.get #min_aspect_ratio fullArgs,
                ("max_shear_ratio",) . showValue <$>
-                 (args !? #max_shear_ratio :: Maybe Float),
+                 Anon.get #max_shear_ratio fullArgs,
                ("max_crop_size",) . showValue <$>
-                 (args !? #max_crop_size :: Maybe Int),
+                 Anon.get #max_crop_size fullArgs,
                ("min_crop_size",) . showValue <$>
-                 (args !? #min_crop_size :: Maybe Int),
+                 Anon.get #min_crop_size fullArgs,
                ("max_random_scale",) . showValue <$>
-                 (args !? #max_random_scale :: Maybe Float),
+                 Anon.get #max_random_scale fullArgs,
                ("min_random_scale",) . showValue <$>
-                 (args !? #min_random_scale :: Maybe Float),
+                 Anon.get #min_random_scale fullArgs,
                ("max_random_area",) . showValue <$>
-                 (args !? #max_random_area :: Maybe Float),
+                 Anon.get #max_random_area fullArgs,
                ("min_random_area",) . showValue <$>
-                 (args !? #min_random_area :: Maybe Float),
-               ("max_img_size",) . showValue <$>
-                 (args !? #max_img_size :: Maybe Float),
-               ("min_img_size",) . showValue <$>
-                 (args !? #min_img_size :: Maybe Float),
-               ("brightness",) . showValue <$>
-                 (args !? #brightness :: Maybe Float),
-               ("contrast",) . showValue <$> (args !? #contrast :: Maybe Float),
-               ("saturation",) . showValue <$>
-                 (args !? #saturation :: Maybe Float),
-               ("pca_noise",) . showValue <$> (args !? #pca_noise :: Maybe Float),
-               ("random_h",) . showValue <$> (args !? #random_h :: Maybe Int),
-               ("random_s",) . showValue <$> (args !? #random_s :: Maybe Int),
-               ("random_l",) . showValue <$> (args !? #random_l :: Maybe Int),
-               ("rotate",) . showValue <$> (args !? #rotate :: Maybe Int),
-               ("fill_value",) . showValue <$> (args !? #fill_value :: Maybe Int),
+                 Anon.get #min_random_area fullArgs,
+               ("max_img_size",) . showValue <$> Anon.get #max_img_size fullArgs,
+               ("min_img_size",) . showValue <$> Anon.get #min_img_size fullArgs,
+               ("brightness",) . showValue <$> Anon.get #brightness fullArgs,
+               ("contrast",) . showValue <$> Anon.get #contrast fullArgs,
+               ("saturation",) . showValue <$> Anon.get #saturation fullArgs,
+               ("pca_noise",) . showValue <$> Anon.get #pca_noise fullArgs,
+               ("random_h",) . showValue <$> Anon.get #random_h fullArgs,
+               ("random_s",) . showValue <$> Anon.get #random_s fullArgs,
+               ("random_l",) . showValue <$> Anon.get #random_l fullArgs,
+               ("rotate",) . showValue <$> Anon.get #rotate fullArgs,
+               ("fill_value",) . showValue <$> Anon.get #fill_value fullArgs,
                ("data_shape",) . showValue <$>
-                 (args !? #data_shape :: Maybe [Int]),
-               ("inter_method",) . showValue <$>
-                 (args !? #inter_method :: Maybe Int),
-               ("pad",) . showValue <$> (args !? #pad :: Maybe Int)]
-        (keys, vals) = unzip allargs
+                 Just (Anon.get #data_shape fullArgs),
+               ("inter_method",) . showValue <$> Anon.get #inter_method fullArgs,
+               ("pad",) . showValue <$> Anon.get #pad fullArgs]
+        (keys, vals) = unzip scalarArgs
       in
       do dis <- mxListDataIters
          di <- return (dis !! 6)
          mxDataIterCreateIter di keys vals
 
-type instance ParameterList "_LibSVMIter" dummy =
+type ParameterList_LibSVMIter =
      '[ '("data_libsvm", AttrReq Text), '("data_shape", AttrReq [Int]),
         '("label_libsvm", AttrOpt Text), '("label_shape", AttrOpt [Int]),
         '("num_parts", AttrOpt Int), '("part_index", AttrOpt Int),
@@ -974,42 +900,35 @@ type instance ParameterList "_LibSVMIter" dummy =
                     "int8", "uint8"])))]
 
 _LibSVMIter ::
-            forall a . Fullfilled "_LibSVMIter" () a =>
-              ArgsHMap "_LibSVMIter" () a -> IO DataIterHandle
+            forall r . (FieldsAcc ParameterList_LibSVMIter r, HasCallStack) =>
+              Record r -> IO DataIterHandle
 _LibSVMIter args
-  = let allargs
+  = let fullArgs
+          = paramListWithDefault (Proxy @(ParameterList_LibSVMIter)) args
+        scalarArgs
           = catMaybes
               [("data_libsvm",) . showValue <$>
-                 (args !? #data_libsvm :: Maybe Text),
+                 Just (Anon.get #data_libsvm fullArgs),
                ("data_shape",) . showValue <$>
-                 (args !? #data_shape :: Maybe [Int]),
-               ("label_libsvm",) . showValue <$>
-                 (args !? #label_libsvm :: Maybe Text),
-               ("label_shape",) . showValue <$>
-                 (args !? #label_shape :: Maybe [Int]),
-               ("num_parts",) . showValue <$> (args !? #num_parts :: Maybe Int),
-               ("part_index",) . showValue <$> (args !? #part_index :: Maybe Int),
-               ("batch_size",) . showValue <$> (args !? #batch_size :: Maybe Int),
-               ("round_batch",) . showValue <$>
-                 (args !? #round_batch :: Maybe Bool),
+                 Just (Anon.get #data_shape fullArgs),
+               ("label_libsvm",) . showValue <$> Anon.get #label_libsvm fullArgs,
+               ("label_shape",) . showValue <$> Anon.get #label_shape fullArgs,
+               ("num_parts",) . showValue <$> Anon.get #num_parts fullArgs,
+               ("part_index",) . showValue <$> Anon.get #part_index fullArgs,
+               ("batch_size",) . showValue <$>
+                 Just (Anon.get #batch_size fullArgs),
+               ("round_batch",) . showValue <$> Anon.get #round_batch fullArgs,
                ("prefetch_buffer",) . showValue <$>
-                 (args !? #prefetch_buffer :: Maybe Int),
-               ("ctx",) . showValue <$>
-                 (args !? #ctx :: Maybe (EnumType '["cpu", "gpu"])),
-               ("dtype",) . showValue <$>
-                 (args !? #dtype ::
-                    Maybe
-                      (Maybe
-                         (EnumType
-                            '["bfloat16", "float16", "float32", "float64", "int32", "int64",
-                              "int8", "uint8"])))]
-        (keys, vals) = unzip allargs
+                 Anon.get #prefetch_buffer fullArgs,
+               ("ctx",) . showValue <$> Anon.get #ctx fullArgs,
+               ("dtype",) . showValue <$> Anon.get #dtype fullArgs]
+        (keys, vals) = unzip scalarArgs
       in
       do dis <- mxListDataIters
          di <- return (dis !! 7)
          mxDataIterCreateIter di keys vals
 
-type instance ParameterList "_MNISTIter" dummy =
+type ParameterList_MNISTIter =
      '[ '("image", AttrOpt Text), '("label", AttrOpt Text),
         '("batch_size", AttrOpt Int), '("shuffle", AttrOpt Bool),
         '("flat", AttrOpt Bool), '("seed", AttrOpt Int),
@@ -1024,32 +943,27 @@ type instance ParameterList "_MNISTIter" dummy =
                     "int8", "uint8"])))]
 
 _MNISTIter ::
-           forall a . Fullfilled "_MNISTIter" () a =>
-             ArgsHMap "_MNISTIter" () a -> IO DataIterHandle
+           forall r . (FieldsAcc ParameterList_MNISTIter r, HasCallStack) =>
+             Record r -> IO DataIterHandle
 _MNISTIter args
-  = let allargs
+  = let fullArgs
+          = paramListWithDefault (Proxy @(ParameterList_MNISTIter)) args
+        scalarArgs
           = catMaybes
-              [("image",) . showValue <$> (args !? #image :: Maybe Text),
-               ("label",) . showValue <$> (args !? #label :: Maybe Text),
-               ("batch_size",) . showValue <$> (args !? #batch_size :: Maybe Int),
-               ("shuffle",) . showValue <$> (args !? #shuffle :: Maybe Bool),
-               ("flat",) . showValue <$> (args !? #flat :: Maybe Bool),
-               ("seed",) . showValue <$> (args !? #seed :: Maybe Int),
-               ("silent",) . showValue <$> (args !? #silent :: Maybe Bool),
-               ("num_parts",) . showValue <$> (args !? #num_parts :: Maybe Int),
-               ("part_index",) . showValue <$> (args !? #part_index :: Maybe Int),
+              [("image",) . showValue <$> Anon.get #image fullArgs,
+               ("label",) . showValue <$> Anon.get #label fullArgs,
+               ("batch_size",) . showValue <$> Anon.get #batch_size fullArgs,
+               ("shuffle",) . showValue <$> Anon.get #shuffle fullArgs,
+               ("flat",) . showValue <$> Anon.get #flat fullArgs,
+               ("seed",) . showValue <$> Anon.get #seed fullArgs,
+               ("silent",) . showValue <$> Anon.get #silent fullArgs,
+               ("num_parts",) . showValue <$> Anon.get #num_parts fullArgs,
+               ("part_index",) . showValue <$> Anon.get #part_index fullArgs,
                ("prefetch_buffer",) . showValue <$>
-                 (args !? #prefetch_buffer :: Maybe Int),
-               ("ctx",) . showValue <$>
-                 (args !? #ctx :: Maybe (EnumType '["cpu", "gpu"])),
-               ("dtype",) . showValue <$>
-                 (args !? #dtype ::
-                    Maybe
-                      (Maybe
-                         (EnumType
-                            '["bfloat16", "float16", "float32", "float64", "int32", "int64",
-                              "int8", "uint8"])))]
-        (keys, vals) = unzip allargs
+                 Anon.get #prefetch_buffer fullArgs,
+               ("ctx",) . showValue <$> Anon.get #ctx fullArgs,
+               ("dtype",) . showValue <$> Anon.get #dtype fullArgs]
+        (keys, vals) = unzip scalarArgs
       in
       do dis <- mxListDataIters
          di <- return (dis !! 8)

@@ -1,10 +1,15 @@
 {-# LANGUAGE FlexibleInstances    #-}
 {-# LANGUAGE ImplicitParams       #-}
 {-# LANGUAGE RecordWildCards      #-}
+{-# LANGUAGE TypeApplications     #-}
 {-# LANGUAGE UndecidableInstances #-}
+{-# OPTIONS_GHC -fplugin=Data.Record.Anon.Plugin#-}
 module MXNet.NN.Module.Conv where
 
 import           Data.Default.Class
+import           Data.Record.Anon
+import           Data.Record.Anon.Simple     (Record)
+import qualified Data.Record.Anon.Simple     as Anon
 import           GHC.TypeLits
 import           RIO
 import qualified RIO.NonEmpty                as NE
@@ -12,22 +17,23 @@ import qualified RIO.NonEmpty.Partial        as NE (fromList)
 import qualified RIO.Text                    as T
 
 import           MXNet.Base.AutoGrad
+import           MXNet.Base.Core.Enum
+import           MXNet.Base.Core.Spec
 import qualified MXNet.Base.Operators.Tensor as O
 import           MXNet.Base.Tensor           hiding (Symbol)
 import           MXNet.Base.Types
 import           MXNet.NN.Initializer
 import           MXNet.NN.Module.Class
 
-data ConvBase args = ConvBase args (GenericModule (ConvBase args))
+data ConvBase u = ConvBase (Record (FieldsExc (O.ParameterList_Convolution NDArray u) '["_data", "bias", "weight"])) (GenericModule (ConvBase u))
 data ConvParamEnums = ConvWeights | ConvBias
 
-instance (DType t, Satisfying "_Convolution" '["data", "bias", "weight"] '(NDArray, t) args)
-    => Module (ConvBase (ArgsHMap "_Convolution" '(NDArray, t) args)) where
+instance DType u => Module (ConvBase u) where
 
-    type ModuleDType (ConvBase (ArgsHMap "_Convolution" '(NDArray, t) args)) = t
-    type ModuleArgs (ConvBase (ArgsHMap "_Convolution" '(NDArray, t) args)) = (ArgsHMap "_Convolution" '(NDArray, t) args)
-    type ModuleParamEnums (ConvBase (ArgsHMap "_Convolution" '(NDArray, t) args)) = ConvParamEnums
-    type ModuleParamTensors (ConvBase (ArgsHMap "_Convolution" '(NDArray, t) args)) = (NDArray t, NDArray t)
+    type ModuleDType (ConvBase u) = u
+    type ModuleArgs  (ConvBase u) = Record (FieldsExc (O.ParameterList_Convolution NDArray u) '["_data", "bias", "weight"])
+    type ModuleParamEnums   (ConvBase u) = ConvParamEnums
+    type ModuleParamTensors (ConvBase u) = (NDArray u, NDArray u)
 
     init scope args initializer = do
         let default_initializer ConvWeights = initEmpty
@@ -37,8 +43,8 @@ instance (DType t, Satisfying "_Convolution" '["data", "bias", "weight"] '(NDArr
     forward (ConvBase args generic) inp = do
         (bias, weights) <- getOrInitParams generic $ \initializer -> do
             [batch_size, n_channels] <- take 2 <$> ndshape inp
-            let [kh, kw] = args ! #kernel
-                num_filter = args ! #num_filter
+            let [kh, kw]   = Anon.get #kernel args
+                num_filter = Anon.get #num_filter args
             bias    <- makeEmptyNDArray [num_filter] ?device
             weights <- makeEmptyNDArray [num_filter, n_channels, kh, kw] ?device
             initializer ConvBias bias
@@ -46,14 +52,12 @@ instance (DType t, Satisfying "_Convolution" '["data", "bias", "weight"] '(NDArr
             attachGradient bias ReqWrite
             attachGradient weights ReqWrite
             return (bias, weights)
-        prim O._Convolution (#data := inp .& #bias := bias .& #weight := weights .& args)
+        prim O._Convolution (Anon.insert #_data inp $ Anon.insert #bias (Just bias) $ Anon.insert #weight (Just weights) args)
 
     parameters (ConvBase args generic@(GenericModule name _ _)) = do
         (bias, weights) <- getParams generic
         return [ Parameter (scopedName $ NE.fromList ["bias", name]) bias
                , Parameter (scopedName $ NE.fromList ["weights", name]) weights ]
-
-type FullConvArgsHMap t = BuildArgsHMap "_Convolution" t '[ '("kernel", [Int]), '("num_filter", Int), '("stride", [Int]), '("pad", [Int]), '("dilate", [Int]), '("layout", Maybe (EnumType '["NCDHW", "NCHW", "NCW", "NDHWC", "NHWC"])), '("num_group", Int), '("no_bias", Bool)]
 
 
 data ConvArgs = ConvArgs {
@@ -68,27 +72,31 @@ data ConvArgs = ConvArgs {
 instance Default ConvArgs where
     def = ConvArgs undefined undefined Nothing Nothing Nothing True
 
-newtype Conv2D t = Conv2D (ConvBase (FullConvArgsHMap t))
+newtype Conv2D u = Conv2D (ConvBase u)
 
-instance DType t => Module (Conv2D t) where
-    type ModuleDType        (Conv2D t) = t
-    type ModuleArgs         (Conv2D t) = ConvArgs
-    type ModuleParamEnums   (Conv2D t) = ModuleParamEnums   (ConvBase (FullConvArgsHMap t))
-    type ModuleParamTensors (Conv2D t) = ModuleParamTensors (ConvBase (FullConvArgsHMap t))
+instance DType u => Module (Conv2D u) where
+    type ModuleDType        (Conv2D u) = u
+    type ModuleArgs         (Conv2D u) = ConvArgs
+    type ModuleParamEnums   (Conv2D u) = ModuleParamEnums   (ConvBase u)
+    type ModuleParamTensors (Conv2D u) = ModuleParamTensors (ConvBase u)
 
     init scope ConvArgs{..} initializer =
         let stride   = fromMaybe [1, 1] _conv_stride
             padding  = fromMaybe [0, 0] _conv_padding
             dilation = fromMaybe [1, 1] _conv_dilation
-            args' = #kernel := _conv_kernel
-                 .& #num_filter := _conv_out_channels
-                 .& #stride := stride
-                 .& #pad := padding
-                 .& #dilate := dilation
-                 .& #layout := Just (EnumType (Proxy :: Proxy "NCHW"))
-                 .& #num_group := 1
-                 .& #no_bias := not _conv_bias
-                 .& Nil
+            args' = ANON {
+                 kernel = _conv_kernel,
+                 stride = Just stride,
+                 dilate = Just dilation,
+                 pad = Just padding,
+                 num_filter = _conv_out_channels,
+                 num_group = Just 1,
+                 workspace = Nothing,
+                 no_bias = Just (not _conv_bias),
+                 cudnn_tune = Nothing,
+                 cudnn_off = Nothing,
+                 layout = Just (Just (EnumType (Proxy @ "NCHW")))
+            } :: ModuleArgs (ConvBase u)
          in Conv2D <$> init scope args' initializer
 
     forward (Conv2D base) inp = forward base inp

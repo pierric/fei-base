@@ -1,6 +1,8 @@
 {-# LANGUAGE FlexibleInstances     #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE TypeApplications      #-}
 {-# LANGUAGE TypeFamilies          #-}
+{-# OPTIONS_GHC -fplugin=Data.Record.Anon.Plugin#-}
 module MXNet.NN.DataIter.Conduit (
     ConduitData(..),
     Dataset(..),
@@ -13,10 +15,13 @@ import           Data.Conduit
 import qualified Data.Conduit.Combinators as C
 import qualified Data.Conduit.List        as CL
 import           Data.Conduit.TQueue      (sinkTBQueue)
+import           Data.Record.Anon.Simple  (Record)
+import qualified Data.Record.Anon.Simple  as Anon
 import           RIO
 import           RIO.Prelude              (lift)
 
 import           MXNet.Base
+import           MXNet.Base.Core.Spec
 import qualified MXNet.Base.DataIter      as I
 import           MXNet.NN.DataIter.Class
 
@@ -25,39 +30,44 @@ data ConduitData m a = ConduitData
     , getConduit      :: ConduitM () a m ()
     }
 
-imageRecordIter_v1 :: (Fullfilled "_ImageRecordIter_v1" () args, DType a, MonadIO m)
-    => ArgsHMap "_ImageRecordIter_v1" () args -> ConduitData m (NDArray a, NDArray a)
+imageRecordIter_v1 :: (FieldsAcc I.ParameterList_ImageRecordIter_v1 r, DType a, MonadIO m)
+    => Record r -> ConduitData m (NDArray a, NDArray a)
 imageRecordIter_v1 args = ConduitData {
     getConduit = makeIter I._ImageRecordIter_v1 args,
-    iter_batch_size = Just (args ! #batch_size)
+    iter_batch_size = let args' = paramListWithDefault (Proxy @ I.ParameterList_ImageRecordIter_v1) args
+                       in Just (Anon.get #batch_size args')
 }
 
-imageRecordIter :: (Fullfilled "_ImageRecordIter" () args, DType a, MonadIO m)
-    => ArgsHMap "_ImageRecordIter" () args -> ConduitData m (NDArray a, NDArray a)
+imageRecordIter :: (FieldsAcc I.ParameterList_ImageRecordIter r, DType a, MonadIO m)
+    => Record r -> ConduitData m (NDArray a, NDArray a)
 imageRecordIter args = ConduitData {
     getConduit = makeIter I._ImageRecordIter args,
-    iter_batch_size = Just (args ! #batch_size)
+    iter_batch_size = let args' = paramListWithDefault (Proxy @ I.ParameterList_ImageRecordIter) args
+                       in Just (Anon.get #batch_size args')
 }
 
-mnistIter :: (Fullfilled "_MNISTIter" () args, DType a, MonadIO m)
-    => ArgsHMap "_MNISTIter" () args -> ConduitData m (NDArray a, NDArray a)
+mnistIter :: (FieldsAcc I.ParameterList_MNISTIter r, DType a, MonadIO m)
+    => Record r -> ConduitData m (NDArray a, NDArray a)
 mnistIter args = ConduitData {
     getConduit = makeIter I._MNISTIter args,
-    iter_batch_size = (args !? #batch_size) <|> Just 1
+    iter_batch_size = let args' = paramListWithDefault (Proxy @ I.ParameterList_MNISTIter) args
+                       in (Anon.get #batch_size args') <|> Just 1
 }
 
-csvIter :: (Fullfilled "_CSVIter" () args, DType a, MonadIO m)
-    => ArgsHMap "_CSVIter" () args -> ConduitData m (NDArray a, NDArray a)
+csvIter :: (FieldsAcc I.ParameterList_CSVIter r, DType a, MonadIO m)
+    => Record r -> ConduitData m (NDArray a, NDArray a)
 csvIter args = ConduitData {
     getConduit = makeIter I._CSVIter args,
-    iter_batch_size = Just (args ! #batch_size)
+    iter_batch_size = let args' = paramListWithDefault (Proxy @ I.ParameterList_CSVIter) args
+                       in Just (Anon.get #batch_size args')
 }
 
-libSVMIter :: (Fullfilled "_LibSVMIter" () args, DType a, MonadIO m)
-    => ArgsHMap "_LibSVMIter" () args -> ConduitData m (NDArray a, NDArray a)
+libSVMIter :: (FieldsAcc I.ParameterList_LibSVMIter r, DType a, MonadIO m)
+    => Record r -> ConduitData m (NDArray a, NDArray a)
 libSVMIter args = ConduitData {
     getConduit = makeIter I._LibSVMIter args,
-    iter_batch_size = Just (args ! #batch_size)
+    iter_batch_size = let args' = paramListWithDefault (Proxy @ I.ParameterList_LibSVMIter) args
+                       in Just (Anon.get #batch_size args')
 }
 
 makeIter :: MonadIO m

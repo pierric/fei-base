@@ -1,9 +1,14 @@
 {-# LANGUAGE DataKinds        #-}
 {-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE TypeApplications #-}
+{-# OPTIONS_GHC -fplugin=Data.Record.Anon.Plugin#-}
 module MXNet.NN.LrScheduler where
 
-import           MXNet.Base.Spec.Operator
-import           RIO                      hiding (Const)
+import           Data.Record.Anon.Simple (Record)
+import qualified Data.Record.Anon.Simple as Anon
+import           RIO                     hiding (Const)
+
+import           MXNet.Base.Core.Spec
 
 class Show sch => LrScheduler sch where
     baseLR :: sch -> Float
@@ -30,18 +35,19 @@ instance LrScheduler FactorScheduler where
         let lr = base * factor ^ (nup `div` step)
         in if lr < stop then stop else lr
 
-type instance ParameterList "lrOfFactor" () =
+type ParameterListLrOfFactor =
     '[ '("factor", 'AttrReq Float), '("step", 'AttrReq Int),
        '("base", 'AttrOpt Float), '("stop", 'AttrOpt Float)]
 
-lrOfFactor :: Fullfilled "lrOfFactor" () args
-           => ArgsHMap "lrOfFactor" () args -> FactorScheduler
+lrOfFactor :: FieldsAcc ParameterListLrOfFactor rec
+           => Record rec -> FactorScheduler
 lrOfFactor args = Factor base factor step stop
   where
-    factor = args ! #factor
-    step   = args ! #step
-    base   = fromMaybe 0.01 (args !? #base)
-    stop   = fromMaybe 1e-8 (args !? #stop)
+    fullargs = paramListWithDefault (Proxy @ParameterListLrOfFactor) args
+    factor = Anon.get #factor fullargs
+    step   = Anon.get #step   fullargs
+    base   = fromMaybe 0.01 (Anon.get #base fullargs)
+    stop   = fromMaybe 1e-8 (Anon.get #stop fullargs)
 
 data MultifactorScheduler = Multifactor Float Float [Int]
     deriving Show
@@ -53,16 +59,17 @@ instance LrScheduler MultifactorScheduler where
         go _ [] n     = n
         go a (b:bs) n = if b > a then n else go a bs (n+1)
 
-type instance ParameterList "lrOfMultifactor" () =
+type ParameterListLrOfMultifactor =
     '[ '("factor", 'AttrReq Float), '("steps", 'AttrReq [Int]), '("base", 'AttrOpt Float)]
 
-lrOfMultifactor :: Fullfilled "lrOfMultifactor" () args
-                => ArgsHMap "lrOfMultifactor" () args -> MultifactorScheduler
+lrOfMultifactor :: FieldsAcc ParameterListLrOfMultifactor r
+                => Record r -> MultifactorScheduler
 lrOfMultifactor args = Multifactor base factor steps
   where
-    factor = args ! #factor
-    steps  = args ! #steps
-    base = fromMaybe 0.01 (args !? #base)
+    fullargs = paramListWithDefault (Proxy @ParameterListLrOfMultifactor) args
+    factor = Anon.get #factor fullargs
+    steps  = Anon.get #steps  fullargs
+    base = fromMaybe 0.01 (Anon.get #base fullargs)
 
 data PolyScheduler = Poly Float Float Int
     deriving Show
@@ -73,16 +80,17 @@ instance LrScheduler PolyScheduler where
           then base * (1 - fromIntegral nup / fromIntegral maxnup) ** power
           else 0
 
-type instance ParameterList "lrOfPoly" () =
-    '[ '("maxnup", 'AttrReq Int), '("power", 'AttrReq Float), '("base", 'AttrOpt Float)]
+type ParameterListLrOfPoly =
+    '[ '("maxnup", 'AttrReq Int), '("power", 'AttrOpt Float), '("base", 'AttrOpt Float)]
 
-lrOfPoly :: Fullfilled "lrOfPoly" () args
-           => ArgsHMap "lrOfPoly" () args -> PolyScheduler
+lrOfPoly :: FieldsAcc ParameterListLrOfPoly r
+           => Record r -> PolyScheduler
 lrOfPoly args = Poly base power maxnup
   where
-    maxnup = args ! #maxnup
-    base   = fromMaybe 0.01 (args !? #base)
-    power  = fromMaybe 2    (args !? #power)
+    fullargs = paramListWithDefault (Proxy @ParameterListLrOfPoly) args
+    maxnup = Anon.get #maxnup fullargs
+    base   = fromMaybe 0.01 (Anon.get #base  fullargs)
+    power  = fromMaybe 2    (Anon.get #power fullargs)
 
 data WarmupScheduler a = WarmupScheduler Int a
     deriving Show
