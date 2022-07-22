@@ -4,19 +4,24 @@ packages:
 extra-deps:
 - c2hs-0.28.8
 - language-c-0.9.0.1
-- large-anon-0.1.0.0
-- large-generics-0.2.0.0
-- ghc-tcplugin-api-0.7.1.0
+- ghc-tcplugin-api-0.8.0.0
+#- large-anon-0.1.0.0
+#- large-generics-0.2.0.0
+#- ghc-tcplugin-api-0.7.1.0
+#- typelet-0.1.1.0
+# large-records @ 2e0bdae735c0861436907ed5e30e78afa42eeb9f
 - ../large-records/typelet
+- ../large-records/large-anon
+- ../large-records/large-generics
 - ../tuple-ops
 - git: https://github.com/0xCM/type-combinators.git
   commit: 58167dd4017b666ff592bb9493b0570a054aabdb
 - git: https://github.com/pierric/haskell-src-exts.git
   commit: 792ec73bc3b0e8d4aa2683af6b2a3fc03b5f8d95
 extra-include-dirs:
-- /home/jiasen/workspace/mxnet/build-1.8.0/include
+- mxnet/include
 extra-lib-dirs:
-- /home/jiasen/workspace/mxnet/build-1.8.0
+- mxnet
 flags:
   fei-base:
-    mxnet_geq_10800: true
+    mxnet_geq_10900: true

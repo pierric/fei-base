@@ -28,6 +28,11 @@ Flag mxnet_geq_10800 {
   Default: False
 }
 
+Flag mxnet_geq_10900 {
+  Description: With MXNet 1.9.x operators
+  Default: False
+}
+
 Flag dummy {
   Description: no operators
   Default: True
@@ -51,6 +56,10 @@ library
   elif flag(mxnet_geq_10800) {
       hs-source-dirs:  ops/1.8
       cpp-options:     -DMXNET_VERSION=10800
+  }
+  elif flag(mxnet_geq_10900) {
+      hs-source-dirs:  ops/1.9
+      cpp-options:     -DMXNET_VERSION=10900
   }
   elif flag(dummy) {
       hs-source-dirs:  ops/dummy
