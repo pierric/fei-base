@@ -114,7 +114,7 @@ library
                        MXNet.Base.Operators.Tensor,
                        MXNet.Base.DataIter,
                        MXNet.Base.Profiler
-  if flag(mxnet_geq_10600) || flag(mxnet_geq_10700) || flag(mxnet_geq_10800) {
+  if flag(mxnet_geq_10600) || flag(mxnet_geq_10700) || flag(mxnet_geq_10800) || flag(mxnet_geq_10900) {
     exposed-modules:   MXNet.Base.Tensor,
                        MXNet.Base.Tensor.Functional,
                        MXNet.Base.AutoGrad,

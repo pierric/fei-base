@@ -23,7 +23,7 @@ class Module m where
     init        :: (HasCallStack, ?device :: Context)
                 => NonEmpty Text
                 -> ModuleArgs m
-                -> Maybe (Initializer (ModuleParamEnums m) (ModuleDType m))
+                -> Map (ModuleParamEnums m) (Initializer (ModuleDType m))
                 -> IO m
     forward     :: (HasCallStack, ?device :: Context)
                 => m -> NDArray (ModuleDType m) -> IO (NDArray (ModuleDType m))
@@ -37,7 +37,7 @@ scopedName scope = foldl' T.append "" $ NE.intersperse scopeSplitter $ NE.revers
 
 data GenericModule m = GenericModule {
     _gmodule_name        :: Text,
-    _gmodule_initializer :: Initializer (ModuleParamEnums m) (ModuleDType m),
+    _gmodule_initializer :: Map (ModuleParamEnums m)  (Initializer (ModuleDType m)),
     _gmodule_tensors     :: IORef (Maybe (ModuleParamTensors m))
 }
 
