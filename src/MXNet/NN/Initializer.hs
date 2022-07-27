@@ -13,15 +13,15 @@ void' = void
 
 type Initializer t = NDArray t -> IO ()
 
-initConstant :: forall t. DType t => Float -> NDArray t -> IO ()
+initConstant :: forall t. DType t => Float -> Initializer t
 initConstant val arr = void' @t $ I.__set_value ANON{src = Just val} (Just [arr])
 
-initEmpty, initZeros, initOnes :: DType t => NDArray t -> IO ()
+initEmpty, initZeros, initOnes :: DType t => Initializer t
 initEmpty _ = return ()
 initZeros   = initConstant 0
 initOnes    = initConstant 1
 
-initNormal, initUniform :: forall t. DType t => Float -> NDArray t -> IO ()
+initNormal, initUniform :: forall t. DType t => Float -> Initializer t
 initNormal sigma arr = void' @t $ I.__random_normal ANON{loc = Just 0, scale= Just sigma} (Just [arr])
 initUniform sca arr  = void' @t $ I.__random_uniform ANON{low = Just (-sca), high = Just sca} (Just [arr])
 
@@ -34,7 +34,7 @@ data XavierRandom = XavierUniform
     | XavierGaussian
     deriving (Show, Read)
 
-initXavier :: forall t. DType t => Float -> XavierRandom -> XavierFactor -> NDArray t -> IO ()
+initXavier :: forall t. DType t => Float -> XavierRandom -> XavierFactor -> Initializer t
 initXavier magnitude distr factor arr = do
         shp <- ndshape arr
         if length shp < 2
