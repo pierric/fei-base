@@ -12,6 +12,8 @@ import           Data.Record.Anon.Simple     (Record)
 import qualified Data.Record.Anon.Simple     as Anon
 import           GHC.TypeLits
 import           RIO
+import qualified RIO.Map                     as M
+import qualified RIO.Map.Partial             as M
 import qualified RIO.NonEmpty                as NE
 import qualified RIO.NonEmpty.Partial        as NE (fromList)
 import qualified RIO.Text                    as T
@@ -27,6 +29,7 @@ import           MXNet.NN.Module.Class
 
 data ConvBase u = ConvBase (Record (FieldsExc (O.ParameterList_Convolution NDArray u) '["_data", "bias", "weight"])) (GenericModule (ConvBase u))
 data ConvParamEnums = ConvWeights | ConvBias
+    deriving (Eq, Show, Enum, Ord)
 
 instance DType u => Module (ConvBase u) where
 
@@ -36,9 +39,8 @@ instance DType u => Module (ConvBase u) where
     type ModuleParamTensors (ConvBase u) = (NDArray u, NDArray u)
 
     init scope args initializer = do
-        let default_initializer ConvWeights = initEmpty
-            default_initializer ConvBias    = initZeros
-        ConvBase args <$> initGenericModule scope (fromMaybe default_initializer initializer)
+        let default_initializer = M.fromList [(ConvWeights, initEmpty), (ConvBias, initZeros)]
+        ConvBase args <$> initGenericModule scope (M.union initializer default_initializer)
 
     forward (ConvBase args generic) inp = do
         (bias, weights) <- getOrInitParams generic $ \initializer -> do
@@ -47,8 +49,8 @@ instance DType u => Module (ConvBase u) where
                 num_filter = Anon.get #num_filter args
             bias    <- makeEmptyNDArray [num_filter] ?device
             weights <- makeEmptyNDArray [num_filter, n_channels, kh, kw] ?device
-            initializer ConvBias bias
-            initializer ConvWeights weights
+            initializer M.! ConvBias    $ bias
+            initializer M.! ConvWeights $ weights
             attachGradient bias ReqWrite
             attachGradient weights ReqWrite
             return (bias, weights)

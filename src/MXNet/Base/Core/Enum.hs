@@ -17,22 +17,22 @@ import           GHC.TypeLits         (CmpSymbol, ErrorMessage (..),
 import           RIO                  (Bool (..), Ordering (..), ($))
 import           Unsafe.Coerce        (unsafeCoerce)
 
-type Enum = [Symbol]
+type LitEnum = [Symbol]
 
-type family Member (s :: Symbol) (ss :: Enum) :: Bool where
+type family Member (s :: Symbol) (ss :: LitEnum) :: Bool where
     Member s '[] = False
     Member s (s0 ': ss) = If (CmpSymbol s s0 == EQ) True (Member s ss)
 
 type InEnum s0 ss = Member s0 ss ~ True
 
-type Insert (s :: Symbol) (ss :: Enum) = If (Member s ss) ss (s ': ss)
+type Insert (s :: Symbol) (ss :: LitEnum) = If (Member s ss) ss (s ': ss)
 
-class Subset (ss :: Enum) (ts :: Enum)
+class Subset (ss :: LitEnum) (ts :: LitEnum)
 
 instance Subset '[] ts
 instance (Subset ss ts, Member s0 ts ~ True) => Subset (s0 ': ss) ts
 
-type family (ss :: Enum) :⊆ (ts :: Enum) :: Bool where
+type family (ss :: LitEnum) :⊆ (ts :: LitEnum) :: Bool where
     '[] :⊆ ts = True
     (s0 ': ss) :⊆ ts = Member s0 ts && ss :⊆ ts
 
@@ -45,7 +45,7 @@ type family (ss :: Enum) :⊆ (ts :: Enum) :: Bool where
 enumWeaken :: forall s t x. (InEnum x s, Subset s t) :- InEnum x t
 enumWeaken = Sub $ unsafeCoerce (Dict :: Dict ())
 
-type family FormatEnum (e :: Enum) :: ErrorMessage where
+type family FormatEnum (e :: LitEnum) :: ErrorMessage where
   FormatEnum (s ': m ': n) = Text s :<>: Text ", " :<>: FormatEnum (m ': n)
   FormatEnum (s ': '[]) = Text s
   FormatEnum '[] = Text ""

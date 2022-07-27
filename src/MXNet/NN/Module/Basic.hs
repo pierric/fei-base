@@ -8,6 +8,8 @@ module MXNet.NN.Module.Basic where
 import           Control.Lens                (ix, (^?!))
 import           Data.Default.Class
 import           RIO
+import qualified RIO.Map                     as M
+import qualified RIO.Map.Partial             as M
 import qualified RIO.NonEmpty                as NE
 import qualified RIO.NonEmpty.Partial        as NE (fromList)
 import qualified RIO.Text                    as T
@@ -31,7 +33,7 @@ instance Default LinearArgs where
 data Linear t = Linear LinearArgs (GenericModule (Linear t))
 
 data LinearParamEnums = LinearWeights | LinearBias
-    deriving (Enum, Show, Eq)
+    deriving (Enum, Show, Eq, Ord)
 
 instance DType t => Module (Linear t) where
 
@@ -41,17 +43,16 @@ instance DType t => Module (Linear t) where
     type ModuleParamTensors (Linear t) = (NDArray t, NDArray t)
 
     init scope args initializer = do
-        let default_initializer LinearWeights = initEmpty
-            default_initializer LinearBias    = initZeros
-        Linear args <$> initGenericModule scope (fromMaybe default_initializer initializer)
+        let default_initializer = M.fromList [(LinearWeights, initEmpty), (LinearBias, initZeros)]
+        Linear args <$> initGenericModule scope (M.union initializer default_initializer)
 
     forward (Linear LinearArgs{..} generic) inp = do
         (bias, weights) <- getOrInitParams generic $ \initializer -> do
             [batch_size, n_in] <- take 2 <$> ndshape inp
             bias    <- makeEmptyNDArray [_linear_out_features] ?device
             weights <- makeEmptyNDArray [_linear_out_features, n_in] ?device
-            initializer LinearBias bias
-            initializer LinearWeights weights
+            initializer M.! LinearBias $ bias
+            initializer M.! LinearWeights $ weights
             attachGradient bias ReqWrite
             attachGradient weights ReqWrite
             return (bias, weights)
@@ -81,7 +82,7 @@ instance Default BatchNormArgs where
 
 data BatchNorm t = BatchNorm BatchNormArgs (GenericModule (BatchNorm t))
 data BatchNormParamEnums = BatchNormGamma | BatchNormBeta | BatchNormMean | BatchNormVar
-    deriving (Eq, Show, Enum)
+    deriving (Eq, Show, Enum, Ord)
 
 instance DType t => Module (BatchNorm t) where
 
@@ -91,11 +92,11 @@ instance DType t => Module (BatchNorm t) where
     type ModuleParamTensors (BatchNorm t) = (NDArray t, NDArray t, NDArray t, NDArray t)
 
     init scope args initializer = do
-        let default_initializer BatchNormGamma = initOnes
-            default_initializer BatchNormBeta  = initZeros
-            default_initializer BatchNormMean  = initZeros
-            default_initializer BatchNormVar   = initOnes
-        BatchNorm args <$> initGenericModule scope (fromMaybe default_initializer initializer)
+        let default_initializer = M.fromList [(BatchNormGamma, initOnes),
+                                              (BatchNormBeta,  initZeros),
+                                              (BatchNormMean,  initZeros),
+                                              (BatchNormVar,   initOnes)]
+        BatchNorm args <$> initGenericModule scope (M.union initializer default_initializer)
 
     forward (BatchNorm BatchNormArgs{..} generic) inp = do
         (gamma, beta, mean, var) <- getOrInitParams generic $ \initializer -> do
@@ -105,10 +106,10 @@ instance DType t => Module (BatchNorm t) where
             beta  <- makeEmptyNDArray [n_channels] ?device
             mean  <- makeEmptyNDArray [n_channels] ?device
             var   <- makeEmptyNDArray [n_channels] ?device
-            initializer BatchNormGamma gamma
-            initializer BatchNormBeta  beta
-            initializer BatchNormMean  mean
-            initializer BatchNormVar   var
+            initializer M.! BatchNormGamma $ gamma
+            initializer M.! BatchNormBeta  $ beta
+            initializer M.! BatchNormMean  $ mean
+            initializer M.! BatchNormVar   $ var
             attachGradient gamma ReqWrite
             attachGradient beta  ReqWrite
             return (gamma, beta, mean, var)

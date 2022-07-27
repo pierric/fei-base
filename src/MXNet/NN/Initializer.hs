@@ -11,7 +11,7 @@ import qualified MXNet.Base.Operators.Tensor as I
 void' :: IO [NDArray a] -> IO ()
 void' = void
 
-type Initializer p t = p -> NDArray t -> IO ()
+type Initializer t = NDArray t -> IO ()
 
 initConstant :: forall t. DType t => Float -> NDArray t -> IO ()
 initConstant val arr = void' @t $ I.__set_value ANON{src = Just val} (Just [arr])
