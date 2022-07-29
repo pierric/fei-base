@@ -30,3 +30,7 @@ training isTraining io = bracket (I.mxAutogradSetIsTraining flag) restore (const
     where
     flag = if isTraining then 1 else 0
     restore prev = when (prev /= flag) (void $ I.mxAutogradSetIsTraining prev)
+
+isTraining = I.mxAutogradIsTraining
+
+isRecording = I.mxAutogradIsRecording

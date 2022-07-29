@@ -84,7 +84,9 @@ library
                        resourcet,
                        conduit >= 1.2 && < 1.4,
                        conduit-combinators >= 1.1.2 && < 1.4,
-                       stm-conduit
+                       stm-conduit,
+                       hashable,
+                       unordered-containers
   default-language:    Haskell2010
   build-tool-depends:  c2hs:c2hs == 0.28.8
   default-extensions:  FlexibleContexts,

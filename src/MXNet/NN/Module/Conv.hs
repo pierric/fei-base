@@ -7,13 +7,14 @@
 module MXNet.NN.Module.Conv where
 
 import           Data.Default.Class
+import           Data.Hashable
 import           Data.Record.Anon
 import           Data.Record.Anon.Simple     (Record)
 import qualified Data.Record.Anon.Simple     as Anon
 import           GHC.TypeLits
 import           RIO
-import qualified RIO.Map                     as M
-import qualified RIO.Map.Partial             as M
+import qualified RIO.HashMap                 as M
+import qualified RIO.HashMap.Partial         as M
 import qualified RIO.NonEmpty                as NE
 import qualified RIO.NonEmpty.Partial        as NE (fromList)
 import qualified RIO.Text                    as T
@@ -27,40 +28,48 @@ import           MXNet.Base.Types
 import           MXNet.NN.Initializer
 import           MXNet.NN.Module.Class
 
-data ConvBase u = ConvBase (Record (FieldsExc (O.ParameterList_Convolution NDArray u) '["_data", "bias", "weight"])) (GenericModule (ConvBase u))
 data ConvParamEnums = ConvWeights | ConvBias
-    deriving (Eq, Show, Enum, Ord)
+    deriving (Eq, Show, Enum, Typeable)
+
+instance Hashable ConvParamEnums where
+    hashWithSalt = hashUsing fromEnum
+
+data ConvBase u = ConvBase (Record (FieldsExc (O.ParameterList_Convolution NDArray u) '["_data", "bias", "weight"])) (GenericModule ConvParamEnums u)
 
 instance DType u => Module (ConvBase u) where
 
-    type ModuleDType (ConvBase u) = u
-    type ModuleArgs  (ConvBase u) = Record (FieldsExc (O.ParameterList_Convolution NDArray u) '["_data", "bias", "weight"])
-    type ModuleParamEnums   (ConvBase u) = ConvParamEnums
-    type ModuleParamTensors (ConvBase u) = (NDArray u, NDArray u)
+    type ModuleDType  (ConvBase u) = u
+    type ModuleArgs   (ConvBase u) = Record (FieldsExc (O.ParameterList_Convolution NDArray u) '["_data", "bias", "weight"])
+    type ModuleInput  (ConvBase u) = NDArray u
+    type ModuleOutput (ConvBase u) = NDArray u
 
     init scope args initializer = do
-        let default_initializer = M.fromList [(ConvWeights, initEmpty), (ConvBias, initZeros)]
-        ConvBase args <$> initGenericModule scope (M.union initializer default_initializer)
+        let default_initializer = M.fromList
+                [(scope :> ConvWeights, initEmpty),
+                 (scope :> ConvBias, initZeros)]
+        ConvBase args <$> init scope () (M.union initializer default_initializer)
 
     forward (ConvBase args generic) inp = do
-        (bias, weights) <- getOrInitParams generic $ \initializer -> do
+        let scope = _gmodule_scope generic
+        pt <- getOrInitParams generic $ \initializer -> do
             [batch_size, n_channels] <- take 2 <$> ndshape inp
             let [kh, kw]   = Anon.get #kernel args
                 num_filter = Anon.get #num_filter args
             bias    <- makeEmptyNDArray [num_filter] ?device
             weights <- makeEmptyNDArray [num_filter, n_channels, kh, kw] ?device
-            initializer M.! ConvBias    $ bias
-            initializer M.! ConvWeights $ weights
+            initializer M.! (scope :> ConvBias)    $ bias
+            initializer M.! (scope :> ConvWeights) $ weights
             attachGradient bias ReqWrite
             attachGradient weights ReqWrite
-            return (bias, weights)
-        prim O._Convolution (Anon.insert #_data inp $ Anon.insert #bias (Just bias) $ Anon.insert #weight (Just weights) args)
+            return $ M.fromList [(ConvBias, bias), (ConvWeights, weights)]
 
-    parameters (ConvBase args generic@(GenericModule name _ _)) = do
-        (bias, weights) <- getParams generic
-        return [ Parameter (scopedName $ NE.fromList ["bias", name]) bias
-               , Parameter (scopedName $ NE.fromList ["weights", name]) weights ]
+        prim O._Convolution $
+            Anon.insert #_data inp $
+            Anon.insert #bias   (Just $ pt M.! ConvBias) $
+            Anon.insert #weight (Just $ pt M.! ConvWeights)
+            args
 
+    parameters (ConvBase _ generic) = parameters generic
 
 data ConvArgs = ConvArgs {
     _conv_out_channels :: Int,
@@ -77,10 +86,10 @@ instance Default ConvArgs where
 newtype Conv2D u = Conv2D (ConvBase u)
 
 instance DType u => Module (Conv2D u) where
-    type ModuleDType        (Conv2D u) = u
-    type ModuleArgs         (Conv2D u) = ConvArgs
-    type ModuleParamEnums   (Conv2D u) = ModuleParamEnums   (ConvBase u)
-    type ModuleParamTensors (Conv2D u) = ModuleParamTensors (ConvBase u)
+    type ModuleDType  (Conv2D u) = u
+    type ModuleArgs   (Conv2D u) = ConvArgs
+    type ModuleInput  (Conv2D u) = NDArray u
+    type ModuleOutput (Conv2D u) = NDArray u
 
     init scope ConvArgs{..} initializer =
         let stride   = fromMaybe [1, 1] _conv_stride
